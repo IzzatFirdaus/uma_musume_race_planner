@@ -1,0 +1,31 @@
+<!-- components/recent-activity.php -->
+<div class="card shadow-sm" role="region" aria-labelledby="recentActivityHeader">
+  <div class="card-header bg-uma text-white d-flex justify-content-between align-items-center">
+    <span class="fw-bold" id="recentActivityHeader">
+      <i class="bi bi-clock-history me-1" aria-hidden="true"></i> Recent Activity
+    </span>
+    <small class="text-white-50 d-none d-md-inline">Auto-refreshed</small>
+  </div>
+
+  <div class="card-body" id="recentActivityContainer">
+    <!-- Preloader Skeletons -->
+    <div class="d-flex flex-column gap-2 py-4" id="recentActivityLoading" aria-live="polite">
+      <div class="skeleton-loader rounded" style="height: 60px;"></div>
+      <div class="skeleton-loader rounded" style="height: 60px;"></div>
+      <div class="skeleton-loader rounded" style="height: 60px;"></div>
+    </div>
+
+    <!-- Fetched activity list will go here -->
+    <div class="list-group d-none" id="recentActivityList" aria-label="Recent activity logs">
+      <!-- Example (to be replaced by JS):
+      <div class="list-group-item d-flex align-items-start gap-2">
+        <i class="bi bi-plus-circle text-success fs-4 mt-1"></i>
+        <div>
+          <p class="mb-1 small text-muted">2025-07-23 10:45:33</p>
+          <p class="mb-0">Created plan for [Peak Blue] Daiwa Scarlet</p>
+        </div>
+      </div>
+      -->
+    </div>
+  </div>
+</div>

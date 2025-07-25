@@ -1,0 +1,523 @@
+/* style.css */
+
+:root {
+  --primary-color: #f06292;
+  --secondary-color: #9575cd;
+  --success-light: #e8f5e9;
+  --light-bg: #f9f7fd;
+  --dark-text: #212529;
+  --card-shadow: 0 4px 12px rgba(149, 117, 205, 0.15);
+
+  /* Dark Mode Variables */
+  --dark-mode-bg: #212121;
+  --dark-mode-card-bg: #2d2d2d;
+  --dark-mode-text: #e0e0e0;
+  --dark-mode-header-bg: #3a3a3a;
+  --dark-mode-border: rgba(255, 255, 255, 0.15);
+  --dark-mode-input-bg: #3a3a3a;
+  --dark-mode-input-text: #e0e0e0;
+  --dark-mode-table-header-bg: #4a4a4a;
+}
+
+/* --- Layer fix for modal z-index --- */
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+.modal {
+  z-index: 1050 !important;
+}
+
+body {
+  background-color: var(--light-bg);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding-bottom: 50px;
+  color: var(--dark-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode styles for body */
+body.dark-mode {
+  background-color: var(--dark-mode-bg);
+  color: var(--dark-mode-text);
+}
+
+/* --- Navigation & Header --- */
+.header-banner,
+.navbar {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.navbar a.nav-link,
+.navbar-brand {
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
+/* Dark Mode styles for navigation and header */
+body.dark-mode .header-banner,
+body.dark-mode .navbar {
+  background: var(--dark-mode-header-bg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+body.dark-mode .navbar a.nav-link,
+body.dark-mode .navbar-brand {
+  color: var(--dark-mode-text) !important;
+}
+
+/* --- Cards --- */
+.card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  background-color: white;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.card-header {
+  background-color: #fff3f5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Dark Mode styles for cards */
+body.dark-mode .card {
+  background-color: var(--dark-mode-card-bg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+body.dark-mode .card-header {
+  background-color: var(--dark-mode-header-bg);
+  border-color: var(--dark-mode-border);
+  color: var(--dark-mode-text);
+}
+body.dark-mode .text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* --- Buttons --- */
+.btn-uma {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+.btn-uma:hover {
+  background-color: #d84381;
+  color: white;
+}
+.btn-outline-uma {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+.btn-outline-uma:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* Dark Mode styles for buttons */
+body.dark-mode .btn-uma {
+  background-color: var(--primary-color);
+  color: white;
+}
+body.dark-mode .btn-uma:hover {
+  background-color: #d84381; /* Slightly darker pink */
+}
+body.dark-mode .btn-outline-uma {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+body.dark-mode .btn-outline-uma:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+body.dark-mode .btn-outline-danger {
+  color: #ff6b6b; /* Lighter red for dark mode */
+  border-color: #ff6b6b;
+}
+body.dark-mode .btn-outline-danger:hover {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+
+/* --- Form Controls --- */
+.form-control,
+.form-select {
+  border-radius: 0.5rem;
+  border-color: rgba(149, 117, 205, 0.2);
+  background-color: white;
+  color: var(--dark-text);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.25rem rgba(149, 117, 205, 0.25);
+}
+
+/* Dark Mode styles for form controls */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: var(--dark-mode-input-bg);
+  color: var(--dark-mode-input-text);
+  border-color: rgba(123, 88, 177, 0.4); /* Darker border color */
+}
+body.dark-mode .form-control::placeholder,
+body.dark-mode .form-select::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.25rem rgba(123, 88, 177, 0.4);
+}
+body.dark-mode .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+
+/* Custom style for notes textarea */
+textarea.form-control {
+  min-height: 80px;
+}
+
+/* --- Utilities --- */
+.text-uma {
+  color: var(--primary-color);
+}
+.bg-uma-light {
+  background-color: #fff3f5;
+}
+
+/* Dark Mode styles for utilities */
+body.dark-mode .text-uma {
+  color: var(--primary-color); /* Keep primary color for highlights */
+}
+body.dark-mode .bg-uma-light {
+  background-color: rgba(240, 98, 146, 0.2); /* Darker version of light uma background */
+}
+
+/* --- List & Tables --- */
+.list-group-item {
+  border-color: rgba(0, 0, 0, 0.05);
+  background-color: white;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.table {
+  color: var(--dark-text);
+  transition: color 0.3s ease;
+}
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom-width: 2px;
+  transition: background-color 0.3s ease;
+}
+.table-hover tbody tr:hover {
+  color: var(--dark-text); /* Ensure text is readable on hover */
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+
+/* Dark Mode styles for lists and tables */
+body.dark-mode .list-group-item {
+  background-color: #3a3a3a; /* Dark list group item background */
+  border-color: rgba(255, 255, 255, 0.1);
+}
+body.dark-mode .table {
+  color: var(--dark-mode-text);
+}
+body.dark-mode .table thead th {
+  background-color: var(--dark-mode-table-header-bg);
+  border-color: var(--dark-mode-border);
+}
+body.dark-mode .table-hover tbody tr:hover {
+  color: var(--dark-mode-text);
+  background-color: rgba(255, 255, 255, 0.075);
+}
+
+
+/* --- Modals --- */
+body.dark-mode .modal-content {
+  background-color: var(--dark-mode-card-bg);
+  color: var(--dark-mode-text);
+}
+body.dark-mode .modal-header {
+  border-bottom: 1px solid var(--dark-mode-border);
+}
+body.dark-mode .modal-footer {
+  border-top: 1px solid var(--dark-mode-border);
+}
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button visible on dark background */
+}
+
+/* --- Toasts --- */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1060;
+  min-width: 250px;
+}
+.toast.success {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+.toast.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+
+/* Dark Mode styles for toasts */
+body.dark-mode .toast.success {
+  background-color: #28a745;
+  color: white;
+  border-color: #218838;
+}
+body.dark-mode .toast.error {
+  background-color: #dc3545;
+  color: white;
+  border-color: #c82333;
+}
+
+
+/* --- Badges --- */
+.badge {
+  padding: 0.5em 0.7em;
+  font-weight: 600;
+  border-radius: 0.5rem;
+}
+
+/* Plan status badges */
+.bg-planning {
+  background-color: #6c757d;
+}
+.bg-active {
+  background-color: #198754;
+}
+.bg-finished {
+  background-color: #0d6efd;
+}
+.bg-draft {
+  background-color: #ffc107;
+}
+.bg-abandoned {
+  background-color: #dc3545;
+}
+
+/* Dark Mode styles for plan status badges (adjust for better contrast if needed) */
+body.dark-mode .badge {
+  color: white !important; /* Ensure text is always white on dark badges */
+}
+body.dark-mode .bg-planning {
+  background-color: #495057 !important;
+}
+body.dark-mode .bg-active {
+  background-color: #157347 !important;
+}
+body.dark-mode .bg-finished {
+  background-color: #0b5ed7 !important;
+}
+body.dark-mode .bg-draft {
+  background-color: #ffc107 !important; /* Keep as is for visibility */
+}
+body.dark-mode .bg-abandoned {
+  background-color: #bb2d3b !important;
+}
+
+
+/* Grade badges */
+.grade-ug,
+.grade-ss-plus,
+.grade-ss {
+  background-image: linear-gradient(45deg, gold, silver, gold, silver);
+  color: black;
+  font-weight: bold;
+}
+.grade-s-plus {
+  background-color: #ff8c00;
+}
+.grade-s {
+  background-color: #ffd700;
+}
+.grade-a-plus {
+  background-color: #3cb371;
+}
+.grade-a {
+  background-color: #008000;
+}
+.grade-b-plus {
+  background-color: #1e90ff;
+}
+.grade-b {
+  background-color: #0000ff;
+}
+.grade-c-plus {
+  background-color: #b0c4de;
+}
+.grade-c {
+  background-color: #87ceeb;
+}
+.grade-d-plus {
+  background-color: #d2b48c;
+}
+.grade-d {
+  background-color: #a0522d;
+}
+.grade-e-plus {
+  background-color: #a9a9a9;
+}
+.grade-e {
+  background-color: #808080;
+}
+.grade-f-plus {
+  background-color: #696969;
+}
+.grade-f {
+  background-color: #483d8b;
+}
+.grade-g-plus {
+  background-color: #000000;
+}
+.grade-g {
+  background-color: #696969;
+}
+
+/* Class badges */
+.badge.bg-orange {
+  background-color: #ff8c00;
+}
+.badge.bg-bronze {
+  background-color: #cd7f32;
+}
+.badge.bg-silver {
+  background-color: #c0c0c0;
+}
+.badge.bg-gold {
+  background-color: #ffd700;
+}
+.badge.bg-platinum {
+  background-color: #e5e4e2;
+}
+.badge.bg-star {
+  background-color: #87ceeb;
+}
+.badge.bg-legend {
+  background-color: #a0522d;
+}
+.badge.bg-muted {
+  background-color: #6c757d;
+}
+
+/* Dark Mode styles for grade and class badges (adjust to ensure readability) */
+body.dark-mode .grade-ug,
+body.dark-mode .grade-ss-plus,
+body.dark-mode .grade-ss {
+  color: white; /* Ensure text is white */
+  background-image: linear-gradient(45deg, #FFD700, #C0C0C0, #FFD700, #C0C0C0); /* Slightly adjusted gradient */
+}
+
+/* Prediction icons */
+.prediction-good {
+  color: green;
+}
+.prediction-avg {
+  color: orange;
+}
+.prediction-poor {
+  color: red;
+}
+.prediction-secondary {
+  color: gray;
+}
+
+/* Dark Mode styles for prediction icons */
+body.dark-mode .prediction-good {
+  color: #28a745; /* Lighter green */
+}
+body.dark-mode .prediction-avg {
+  color: #ffc107; /* Lighter orange */
+}
+body.dark-mode .prediction-poor {
+  color: #dc3545; /* Lighter red */
+}
+body.dark-mode .prediction-secondary {
+  color: #adb5bd; /* Lighter gray */
+}
+
+
+/* --- Dynamic form rows --- */
+.dynamic-row {
+  opacity: 1;
+  max-height: 200px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+.dynamic-row.removing {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    border-radius: 1rem;
+}
+body.dark-mode .loading-overlay {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Dark mode toggle switch */
+.dark-mode-switch {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+}
+.dark-mode-switch .form-check-input {
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+.dark-mode-switch .form-check-label {
+  color: white;
+  font-weight: 600;
+}
+body.dark-mode .dark-mode-switch .form-check-label {
+  color: var(--dark-mode-text);
+}

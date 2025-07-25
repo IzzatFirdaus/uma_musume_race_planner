@@ -1,0 +1,61 @@
+# Node and frontend build artifacts
+/node_modules/
+/dist/
+/build/
+
+# Environment configuration
+.env
+
+# PHP Composer dependencies and cache
+/vendor/
+composer.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Log and cache files
+*.log
+*.cache
+
+# Database dumps
+*.sql
+*.sqlite
+
+# Uploaded files (if stored locally)
+uploads/
+
+# Coverage reports
+coverage/
+
+# PHPUnit result cache
+.phpunit.result.cache
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+
+# Ignore generated JS bundles or minified scripts
+*.min.js
+*.bundle.js
+
+# Backup archives
+*.zip
+*.tar.gz
+
+# PHPStorm specific
+*.iml
+
+# PHPUnit cache
+.phpunit.cache
+
+# Optional local test config
+phpunit.xml
+phpunit.xml.dist

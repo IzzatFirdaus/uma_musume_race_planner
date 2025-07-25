@@ -1,0 +1,121 @@
+<?php
+require_once 'config.php';
+$pdo = require_once 'db.php';
+
+header('Content-Type: application/json');
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+try {
+    $pdo->beginTransaction();
+
+    $isEdit = !empty($data['id']);
+    $planId = $data['id'] ?? null;
+
+    $planFields = [
+        'plan_title','turn_before','race_name','name','career_stage',
+        'class','time_of_day','month','total_available_skill_points',
+        'acquire_skill','conditions','mood','energy','race_day',
+        'goal','strategy','growth_rate_speed','growth_rate_stamina',
+        'growth_rate_power','growth_rate_guts','growth_rate_wit','status'
+    ];
+
+    $planData = array_intersect_key($data, array_flip($planFields));
+    $planData['status'] = $planData['status'] ?? ($isEdit ? 'Active' : 'Planning');
+
+    foreach (['name', 'race_name'] as $field) {
+        if (empty($planData[$field])) {
+            throw new Exception("Required field missing: " . str_replace('_', ' ', $field));
+        }
+    }
+
+    foreach (['speed','stamina','power','guts','wit'] as $attr) {
+        $key = "growth_rate_$attr";
+        $planData[$key] = isset($planData[$key]) ? (int)$planData[$key] : 0;
+    }
+
+    if ($isEdit) {
+        $stmt = $pdo->prepare("SELECT deleted_at FROM plans WHERE id = ?");
+        $stmt->execute([$planId]);
+        if ($stmt->fetchColumn()) throw new Exception("Cannot edit a deleted plan.");
+
+        $planData['updated_at'] = date('Y-m-d H:i:s');
+        $set = implode(', ', array_map(fn($k) => "`$k` = ?", array_keys($planData)));
+        $stmt = $pdo->prepare("UPDATE plans SET $set WHERE id = ?");
+        $stmt->execute([...array_values($planData), $planId]);
+
+        foreach ([
+            'attributes','skills','terrain_grades','distance_grades',
+            'style_grades','race_predictions','goals','turns'
+        ] as $tbl) {
+            $pdo->prepare("DELETE FROM `$tbl` WHERE plan_id = ?")->execute([$planId]);
+        }
+
+    } else {
+        $planData['created_at'] = $planData['updated_at'] = date('Y-m-d H:i:s');
+        $cols = implode(', ', array_map(fn($k) => "`$k`", array_keys($planData)));
+        $phs  = implode(',', array_fill(0, count($planData), '?'));
+        $stmt = $pdo->prepare("INSERT INTO plans ($cols) VALUES ($phs)");
+        $stmt->execute(array_values($planData));
+        $planId = $pdo->lastInsertId();
+    }
+
+    function batchInsert(PDO $pdo, string $table, array $columns, array $rows): void {
+        if (empty($rows)) return;
+        $ph = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
+        $allPh = implode(',', array_fill(0, count($rows), $ph));
+        $flat = array_merge(...array_map('array_values', $rows));
+        $stmt = $pdo->prepare("INSERT INTO `$table` (" . implode(', ', array_map(fn($c) => "`$c`", $columns)) . ") VALUES $allPh");
+        $stmt->execute($flat);
+    }
+
+    $relations = [
+        'attributes'       => ['plan_id','attribute_name','value','grade'],
+        'skills'           => ['plan_id','skill_name','sp_cost','acquired','notes','tag'],
+        'terrain_grades'   => ['plan_id','terrain','grade'],
+        'distance_grades'  => ['plan_id','distance','grade'],
+        'style_grades'     => ['plan_id','style','grade'],
+        'race_predictions' => ['plan_id','race_name','venue','ground','distance','track_condition','direction','speed','stamina','power','guts','wit','comment'],
+        'goals'            => ['plan_id','goal','result'],
+        'turns'            => ['plan_id','turn_number','speed','stamina','power','guts','wit']
+    ];
+
+    foreach ($relations as $table => $columns) {
+        if (empty($data[$table]) || !is_array($data[$table])) continue;
+
+        $rows = array_map(function ($row) use ($planId, $table, $columns) {
+            $row['plan_id'] = $planId;
+
+            if ($table === 'race_predictions') {
+                foreach (['speed','stamina','power','guts','wit'] as $stat) {
+                    $row[$stat] = $row[$stat] ?? '○';
+                }
+            }
+
+            if ($table === 'turns') {
+                foreach (['turn_number','speed','stamina','power','guts','wit'] as $stat) {
+                    $row[$stat] = isset($row[$stat]) ? (int)$row[$stat] : 0;
+                }
+            }
+
+            // Clean skill_name
+            if ($table === 'skills') {
+                if (isset($row['skill_name'])) {
+                    $row['skill_name'] = trim($row['skill_name']);
+                }
+            }
+
+            return array_intersect_key($row, array_flip($columns));
+        }, $data[$table]);
+
+        batchInsert($pdo, $table, $columns, $rows);
+    }
+
+    $pdo->commit();
+    echo json_encode(['success' => true, 'id' => $planId]);
+
+} catch (Exception $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    error_log("Save Plan Error: " . $e->getMessage());
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+}

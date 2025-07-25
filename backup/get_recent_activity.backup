@@ -1,0 +1,62 @@
+<?php
+require_once 'config.php';
+$pdo = require_once 'db.php';
+
+if (ob_get_level()) ob_end_clean();
+header('Content-Type: application/json');
+
+$response = [
+    'success' => false,
+    'data' => [],
+    'message' => ''
+];
+
+try {
+    $stmt = $pdo->query("
+        SELECT id, name, race_name, status, created_at, updated_at
+        FROM plans
+        WHERE deleted_at IS NULL
+        ORDER BY GREATEST(created_at, updated_at) DESC
+        LIMIT 5
+    ");
+    $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $formatted = array_map(function ($item) {
+        $status = $item['status'] ?? 'Planning';
+        $timestamp = (new DateTime(max($item['created_at'], $item['updated_at'])))->format(DateTime::ATOM);
+
+        $iconClass = 'bi-file-earmark-text';
+        $type = 'Plan activity';
+
+        switch ($status) {
+            case 'Active':
+                $type = 'Plan updated';
+                $iconClass = 'bi-arrow-repeat';
+                break;
+            case 'Finished':
+                $type = 'Race completed';
+                $iconClass = 'bi-trophy';
+                break;
+            default:
+                $type = 'New plan created';
+                $iconClass = 'bi-file-earmark-plus';
+        }
+
+        return [
+            'id' => (int) $item['id'],
+            'type' => $type,
+            'description' => htmlspecialchars($item['name']) . ' - ' . htmlspecialchars($item['race_name']),
+            'status' => htmlspecialchars($status),
+            'icon_class' => $iconClass,
+            'timestamp' => $timestamp
+        ];
+    }, $activities);
+
+    $response['success'] = true;
+    $response['data'] = $formatted;
+} catch (PDOException $e) {
+    error_log("Recent Activity Error: " . $e->getMessage());
+    $response['message'] = 'Could not fetch recent activities.';
+}
+
+echo json_encode($response);

@@ -1,0 +1,45 @@
+<!-- components/stats-panel.php -->
+<section class="card shadow-sm mb-4" role="region" aria-labelledby="statsPanelTitle">
+  <header class="card-header bg-uma text-white d-flex align-items-center">
+    <i class="bi bi-bar-chart-line-fill me-2" aria-hidden="true"></i>
+    <h2 class="fw-bold mb-0" id="statsPanelTitle">Quick Stats</h2>
+  </header>
+
+  <div class="card-body text-center" id="statsContainer" aria-live="polite">
+    <div class="row text-center" role="list">
+
+      <div class="col-md-3 col-sm-6 mb-3" role="listitem">
+        <div class="fs-2 fw-bold text-primary" title="Total race plans created">
+          <i class="bi bi-journal-check me-1" aria-hidden="true"></i>
+          <span data-stat="total_plans" role="status" aria-label="Total plans">--</span>
+        </div>
+        <div class="text-muted">Total Plans</div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 mb-3" role="listitem">
+        <div class="fs-2 fw-bold text-success" title="Currently active plans">
+          <i class="bi bi-lightning-charge-fill me-1" aria-hidden="true"></i>
+          <span data-stat="active_plans" role="status" aria-label="Active plans">--</span>
+        </div>
+        <div class="text-muted">Active Plans</div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 mb-3" role="listitem">
+        <div class="fs-2 fw-bold text-info" title="Different trainees tracked">
+          <i class="bi bi-person-lines-fill me-1" aria-hidden="true"></i>
+          <span data-stat="unique_trainees" role="status" aria-label="Unique trainees">--</span>
+        </div>
+        <div class="text-muted">Unique Trainees</div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 mb-3" role="listitem">
+        <div class="fs-2 fw-bold text-warning" title="Number of race predictions">
+          <i class="bi bi-flag-fill me-1" aria-hidden="true"></i>
+          <span data-stat="race_predictions" role="status" aria-label="Race predictions">--</span>
+        </div>
+        <div class="text-muted">Race Predictions</div>
+      </div>
+
+    </div>
+  </div>
+</section>

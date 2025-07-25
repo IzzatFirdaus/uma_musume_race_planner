@@ -1,0 +1,145 @@
+<?php
+require_once 'config.php';
+$pdo = require_once 'db.php';
+
+header('Content-Type: application/json');
+
+$response = [
+    'status' => 'error',
+    'message' => 'Unknown error occurred.',
+    'imported' => 0
+];
+
+function resolveId(PDO $pdo, string $table, string $value): ?int {
+    static $cache = [];
+
+    $key = $table . ':' . strtolower($value);
+    if (isset($cache[$key])) return $cache[$key];
+
+    $stmt = $pdo->prepare("SELECT id FROM `$table` WHERE LOWER(label) = LOWER(?) LIMIT 1");
+    $stmt->execute([$value]);
+    $id = $stmt->fetchColumn();
+    $cache[$key] = $id !== false ? (int)$id : null;
+    return $cache[$key];
+}
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Invalid request method.');
+    if (!isset($_FILES['plan_json']) || $_FILES['plan_json']['error'] !== UPLOAD_ERR_OK) throw new Exception('File upload failed.');
+
+    $json = file_get_contents($_FILES['plan_json']['tmp_name']);
+    $data = json_decode($json, true);
+    if (!$data) throw new Exception('Invalid JSON format.');
+
+    $plans = isset($data[0]) ? $data : [$data];
+    $imported = 0;
+
+    $pdo->beginTransaction();
+
+    foreach ($plans as $plan) {
+        if (!is_array($plan) || !isset($plan['name'], $plan['race_name'])) continue;
+
+        // Lookup string-to-ID mappings
+        $plan['mood_id'] = isset($plan['mood']) ? resolveId($pdo, 'moods', $plan['mood']) : null;
+        $plan['condition_id'] = isset($plan['conditions']) ? resolveId($pdo, 'conditions', $plan['conditions']) : null;
+        $plan['strategy_id'] = isset($plan['strategy']) ? resolveId($pdo, 'strategies', $plan['strategy']) : null;
+
+        unset($plan['mood'], $plan['conditions'], $plan['strategy']);
+
+        $childTables = [
+            'attributes', 'skills', 'terrain_grades', 'distance_grades',
+            'style_grades', 'race_predictions', 'goals', 'turns'
+        ];
+
+        $validPlanColumns = [
+            'plan_title', 'turn_before', 'race_name', 'name', 'career_stage',
+            'class', 'time_of_day', 'month', 'total_available_skill_points',
+            'acquire_skill', 'energy', 'race_day', 'goal',
+            'growth_rate_speed', 'growth_rate_stamina',
+            'growth_rate_power', 'growth_rate_guts', 'growth_rate_wit',
+            'status', 'created_at', 'updated_at',
+            'mood_id', 'condition_id', 'strategy_id'
+        ];
+
+        $columns = array_intersect(array_keys($plan), $validPlanColumns);
+        $fields = implode(',', array_map(fn($col) => "`$col`", $columns));
+        $placeholders = implode(',', array_fill(0, count($columns), '?'));
+        $values = array_map(fn($col) => $plan[$col] ?? null, $columns);
+
+        if (!in_array('created_at', $columns)) {
+            $fields .= ", `created_at`";
+            $placeholders .= ", NOW()";
+        }
+
+        if (!in_array('updated_at', $columns)) {
+            $fields .= ", `updated_at`";
+            $placeholders .= ", NOW()";
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO plans ($fields) VALUES ($placeholders)");
+        if (!$stmt->execute($values)) {
+            throw new Exception("Failed to insert plan: " . implode(' ', $stmt->errorInfo()));
+        }
+
+        $planId = $pdo->lastInsertId();
+
+        $relationColumnsMap = [
+            'attributes'       => ['plan_id','attribute_name','value','grade'],
+            'skills'           => ['plan_id','skill_name','sp_cost','acquired','notes','tag'],
+            'terrain_grades'   => ['plan_id','terrain','grade'],
+            'distance_grades'  => ['plan_id','distance','grade'],
+            'style_grades'     => ['plan_id','style','grade'],
+            'race_predictions' => ['plan_id','race_name','venue','ground','distance','track_condition','direction','speed','stamina','power','guts','wit','comment'],
+            'goals'            => ['plan_id','goal','result'],
+            'turns'            => ['plan_id','turn_number','speed','stamina','power','guts','wit']
+        ];
+
+        foreach ($childTables as $table) {
+            if (!isset($plan[$table]) || !is_array($plan[$table])) continue;
+
+            $rows = [];
+            foreach ($plan[$table] as $entry) {
+                $entry['plan_id'] = $planId;
+
+                if ($table === 'skills' && isset($entry['skill_name'])) {
+                    $entry['skill_name'] = trim($entry['skill_name']);
+                }
+
+                $cols = $relationColumnsMap[$table];
+                $filtered = [];
+                foreach ($cols as $col) {
+                    $filtered[$col] = $entry[$col] ?? null;
+                }
+
+                ksort($filtered);
+                $rows[] = $filtered;
+            }
+
+            if (!empty($rows)) {
+                $cols = array_keys($rows[0]);
+                $ph = '(' . implode(',', array_fill(0, count($cols), '?')) . ')';
+                $allPh = implode(',', array_fill(0, count($rows), $ph));
+                $flatVals = array_merge(...array_map('array_values', $rows));
+
+                $stmt = $pdo->prepare("INSERT INTO `$table` (" . implode(',', array_map(fn($c) => "`$c`", $cols)) . ") VALUES $allPh");
+                if (!$stmt->execute($flatVals)) {
+                    throw new Exception("Failed to insert into $table: " . implode(' ', $stmt->errorInfo()));
+                }
+            }
+        }
+
+        $imported++;
+    }
+
+    $pdo->commit();
+    $response['status'] = 'success';
+    $response['imported'] = $imported;
+    $response['message'] = "$imported plan(s) imported successfully.";
+
+} catch (Exception $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    $response['message'] = $e->getMessage();
+    error_log("Import Plan Error: " . $e->getMessage());
+}
+
+echo json_encode($response);

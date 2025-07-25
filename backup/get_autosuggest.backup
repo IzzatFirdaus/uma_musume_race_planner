@@ -1,0 +1,62 @@
+<?php
+require_once 'db.php';
+require_once 'config.php';
+
+header('Content-Type: application/json');
+
+$field = $_GET['field'] ?? '';
+$term  = $_GET['term'] ?? '';
+
+// Whitelisted autosuggestable fields
+$allowedFields = [
+    'name'        => ['table' => 'plans',           'column' => 'name'],
+    'race_name'   => ['table' => 'plans',           'column' => 'race_name'],
+    'skill_name'  => ['table' => 'skills',          'column' => 'skill_name'],
+    'terrain'     => ['table' => 'terrain_grades',  'column' => 'terrain'],
+    'distance'    => ['table' => 'distance_grades', 'column' => 'distance'],
+    'style'       => ['table' => 'style_grades',    'column' => 'style'],
+    'mood'        => ['table' => 'moods',           'column' => 'label'],
+    'condition'   => ['table' => 'conditions',      'column' => 'label'],
+    'strategy'    => ['table' => 'strategies',      'column' => 'label']
+];
+
+if (!isset($allowedFields[$field])) {
+    echo json_encode([]);
+    exit;
+}
+
+$table  = $allowedFields[$field]['table'];
+$column = $allowedFields[$field]['column'];
+
+// Build base SQL
+$sql = "SELECT DISTINCT `$column` AS value FROM `$table` WHERE `$column` != ''";
+$params = [];
+
+// Apply plan_id filter for plan-bound tables
+$planBoundTables = ['skills', 'terrain_grades', 'distance_grades', 'style_grades'];
+if (in_array($table, $planBoundTables)) {
+    $sql .= " AND `plan_id` IN (SELECT id FROM plans WHERE deleted_at IS NULL)";
+}
+
+// Filter soft-deleted if in plans
+if ($table === 'plans') {
+    $sql .= " AND `deleted_at` IS NULL";
+}
+
+// Optional term filter
+if (!empty($term)) {
+    $sql .= " AND `$column` LIKE :term";
+    $params[':term'] = '%' . $term . '%';
+}
+
+$sql .= " ORDER BY `$column` ASC LIMIT 10";
+
+try {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $results = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    echo json_encode($results);
+} catch (PDOException $e) {
+    error_log("Autosuggest error [field: $field]: " . $e->getMessage());
+    echo json_encode([]);
+}

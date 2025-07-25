@@ -1,0 +1,82 @@
+<?php
+require_once 'config.php';
+$pdo = require_once 'db.php';
+
+if (ob_get_level()) ob_end_clean();
+header('Content-Type: application/json');
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+$sql = "
+    SELECT DISTINCT p.*
+    FROM plans p
+    LEFT JOIN goals g ON g.plan_id = p.id
+    LEFT JOIN skills s ON s.plan_id = p.id
+    WHERE p.deleted_at IS NULL
+";
+$params = [];
+
+// 🔹 Keyword filter (name or race_name)
+if (!empty($_GET['keyword'])) {
+    $sql .= " AND (p.name LIKE :kw OR p.race_name LIKE :kw)";
+    $params[':kw'] = '%' . $_GET['keyword'] . '%';
+}
+
+// 🔹 Career stage
+if (!empty($_GET['career_stage'])) {
+    $sql .= " AND p.career_stage = :career_stage";
+    $params[':career_stage'] = $_GET['career_stage'];
+}
+
+// 🔹 Class filter
+if (!empty($_GET['class'])) {
+    $allowedClasses = ['debut', 'maiden', 'beginner', 'bronze', 'silver', 'gold', 'platinum', 'star', 'legend'];
+    if (in_array($_GET['class'], $allowedClasses)) {
+        $sql .= " AND p.class = :class";
+        $params[':class'] = $_GET['class'];
+    }
+}
+
+// 🔹 Strategy
+if (!empty($_GET['strategy'])) {
+    $sql .= " AND p.strategy = :strategy";
+    $params[':strategy'] = $_GET['strategy'];
+}
+
+// 🔹 Status
+if (!empty($_GET['status'])) {
+    $sql .= " AND p.status = :status";
+    $params[':status'] = $_GET['status'];
+}
+
+// 🔹 Goal result
+if (!empty($_GET['goal_result'])) {
+    $sql .= " AND g.result = :goal_result";
+    $params[':goal_result'] = $_GET['goal_result'];
+}
+
+// 🔹 Skill name filter
+if (!empty($_GET['skill_name'])) {
+    $sql .= " AND s.skill_name = :skill_name";
+    $params[':skill_name'] = $_GET['skill_name'];
+}
+
+$sql .= " ORDER BY p.created_at DESC LIMIT 20";
+
+try {
+    $stmt = $pdo->prepare($sql);
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
+    }
+    $stmt->execute();
+
+    echo json_encode([
+        'success' => true,
+        'plans' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+    ]);
+} catch (PDOException $e) {
+    error_log("get_plans.php error: " . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Database error']);
+}

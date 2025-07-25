@@ -1,0 +1,75 @@
+<?php
+require_once 'db.php';
+require_once 'config.php';
+
+header('Content-Type: application/json');
+
+$planId = $_GET['id'] ?? null;
+
+function fetchRelated(PDO $pdo, string $table, int $planId): array {
+    $stmt = $pdo->prepare("SELECT * FROM `$table` WHERE plan_id = ?");
+    $stmt->execute([$planId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function enrichLookupLabels(PDO $pdo, array &$plan): void {
+    $lookups = [
+        'mood_id'      => ['table' => 'moods',      'alias' => 'mood'],
+        'condition_id' => ['table' => 'conditions', 'alias' => 'conditions'],
+        'strategy_id'  => ['table' => 'strategies', 'alias' => 'strategy'],
+    ];
+
+    foreach ($lookups as $key => $info) {
+        if (!isset($plan[$key]) || !$plan[$key]) continue;
+
+        $stmt = $pdo->prepare("SELECT label FROM `{$info['table']}` WHERE id = ?");
+        $stmt->execute([$plan[$key]]);
+        $label = $stmt->fetchColumn();
+
+        if ($label !== false) {
+            $plan[$info['alias']] = $label;
+        }
+    }
+}
+
+try {
+    if ($planId) {
+        $stmt = $pdo->prepare("SELECT * FROM plans WHERE id = ? AND deleted_at IS NULL");
+        $stmt->execute([$planId]);
+        $plan = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$plan) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Plan not found or was deleted.']);
+            exit;
+        }
+
+        enrichLookupLabels($pdo, $plan);
+
+        foreach (['attributes', 'skills', 'terrain_grades', 'distance_grades', 'style_grades', 'race_predictions', 'goals', 'turns'] as $tbl) {
+            $plan[$tbl] = fetchRelated($pdo, $tbl, $planId);
+        }
+
+        header("Content-Disposition: attachment; filename=plan_{$planId}.json");
+        echo json_encode($plan, JSON_PRETTY_PRINT);
+    } else {
+        $stmt = $pdo->query("SELECT * FROM plans WHERE deleted_at IS NULL");
+        $plans = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($plans as &$plan) {
+            enrichLookupLabels($pdo, $plan);
+            $pid = $plan['id'];
+
+            foreach (['attributes', 'skills', 'terrain_grades', 'distance_grades', 'style_grades', 'race_predictions', 'goals', 'turns'] as $tbl) {
+                $plan[$tbl] = fetchRelated($pdo, $tbl, $pid);
+            }
+        }
+
+        header("Content-Disposition: attachment; filename=uma_plans_export.json");
+        echo json_encode($plans, JSON_PRETTY_PRINT);
+    }
+} catch (Exception $e) {
+    error_log("Export error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'An unexpected error occurred while exporting.']);
+}

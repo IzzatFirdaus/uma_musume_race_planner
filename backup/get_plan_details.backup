@@ -1,0 +1,96 @@
+<?php
+require_once 'db.php';
+require_once 'config.php';
+
+header('Content-Type: application/json');
+
+$response = [
+    'success' => false,
+    'message' => 'An unknown error occurred.',
+    'data' => null
+];
+
+try {
+    $planId = $_GET['id'] ?? null;
+    if (!$planId || !is_numeric($planId)) {
+        throw new Exception('Valid Plan ID is required.');
+    }
+
+    $stmt = $pdo->prepare("SELECT * FROM plans WHERE id = :id AND deleted_at IS NULL");
+    $stmt->execute([':id' => $planId]);
+    $plan = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$plan) {
+        throw new Exception('Plan not found or has been deleted.');
+    }
+
+    function fetchRelated(PDO $pdo, string $sql, int $planId): array {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':plan_id' => $planId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    $plan['attributes'] = fetchRelated($pdo, "
+        SELECT attribute_name, value, grade 
+        FROM attributes 
+        WHERE plan_id = :plan_id", $planId);
+
+    $plan['skills'] = fetchRelated($pdo, "
+        SELECT 
+            s.skill_name,
+            s.sp_cost,
+            s.acquired,
+            s.tag,
+            s.notes,
+            r.description,
+            r.stat_type,
+            r.best_for
+        FROM skills s
+        LEFT JOIN skill_reference r 
+          ON s.skill_name = r.skill_name
+        WHERE s.plan_id = :plan_id", $planId);
+
+    $plan['terrain_grades'] = fetchRelated($pdo, "
+        SELECT terrain, grade 
+        FROM terrain_grades 
+        WHERE plan_id = :plan_id", $planId);
+
+    $plan['distance_grades'] = fetchRelated($pdo, "
+        SELECT distance, grade 
+        FROM distance_grades 
+        WHERE plan_id = :plan_id", $planId);
+
+    $plan['style_grades'] = fetchRelated($pdo, "
+        SELECT style, grade 
+        FROM style_grades 
+        WHERE plan_id = :plan_id", $planId);
+
+    $plan['race_predictions'] = fetchRelated($pdo, "
+        SELECT race_name, venue, ground, distance, track_condition, direction, 
+               speed, stamina, power, guts, wit, comment 
+        FROM race_predictions 
+        WHERE plan_id = :plan_id", $planId);
+
+    $plan['goals'] = fetchRelated($pdo, "
+        SELECT goal, result 
+        FROM goals 
+        WHERE plan_id = :plan_id", $planId);
+
+    $plan['turns'] = fetchRelated($pdo, "
+        SELECT turn_number, speed, stamina, power, guts, wit 
+        FROM turns 
+        WHERE plan_id = :plan_id 
+        ORDER BY turn_number ASC", $planId);
+
+    $response['success'] = true;
+    $response['message'] = 'Plan details fetched successfully.';
+    $response['data'] = $plan;
+
+} catch (PDOException $e) {
+    error_log("PDO Error in get_plan_details.php: " . $e->getMessage());
+    $response['message'] = 'A database error occurred.';
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
+}
+
+echo json_encode($response);

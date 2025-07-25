@@ -1,0 +1,44 @@
+<?php
+// Enable full error visibility in dev
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once 'db.php';
+require_once 'config.php';
+
+header('Content-Type: application/json');
+
+// Parse JSON input
+$data = json_decode(file_get_contents('php://input'), true);
+$id = isset($data['id']) ? (int)$data['id'] : 0;
+
+if (!$id) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'No plan ID provided.']);
+    exit;
+}
+
+try {
+    // Check if plan exists and is not already deleted
+    $stmt = $pdo->prepare("SELECT name FROM plans WHERE id = ? AND deleted_at IS NULL");
+    $stmt->execute([$id]);
+    $name = $stmt->fetchColumn();
+
+    if (!$name) {
+        throw new Exception("Plan not found or already deleted.");
+    }
+
+    // Soft delete
+    $pdo->prepare("UPDATE plans SET deleted_at = NOW() WHERE id = ?")->execute([$id]);
+
+    // Log the action
+    $log = $pdo->prepare("INSERT INTO activity_log (description, icon_class) VALUES (?, ?)");
+    $log->execute(["Soft-deleted plan \"$name\" (ID $id)", "bi-archive"]);
+
+    echo json_encode(['success' => true]);
+} catch (Exception $e) {
+    error_log("Soft Delete Error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+}

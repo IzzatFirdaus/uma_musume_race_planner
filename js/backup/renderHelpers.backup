@@ -1,0 +1,246 @@
+// js/renderHelpers.js
+
+import { getGradeBadgeClass, getPredictionIcon } from "./constants.js";
+
+// 🔒 Escape unsafe HTML
+export function safeHtml(str) {
+  return String(str).replace(/[&<>"']/g, m =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]
+  );
+}
+
+// 🔹 Attributes Table
+export function renderAttributesTable(attributes = []) {
+  if (!attributes.length) return "";
+
+  const rows = attributes.map(attr => `
+    <tr>
+      <td>${safeHtml(attr.attribute_name || "N/A")}</td>
+      <td>${safeHtml(attr.value || "N/A")}</td>
+      <td><span class="badge ${getGradeBadgeClass(attr.grade)}">${safeHtml(attr.grade || "N/A")}</span></td>
+    </tr>
+  `).join("");
+
+  return `
+    <h4 class="mt-4">Attributes</h4>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered table-striped align-middle">
+        <caption class="visually-hidden">Attribute table</caption>
+        <thead class="table-light"><tr><th>Attribute</th><th>Value</th><th>Grade</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// 🔹 Skills Table
+export function renderSkillsTable(skills = []) {
+  if (!skills.length) return "";
+
+  const rows = skills.map(skill => {
+    const acquiredBadge = skill.acquired === "✅"
+      ? `<span class="badge bg-success">Yes</span>`
+      : `<span class="badge bg-danger">No</span>`;
+
+    const tagBadge = skill.tag
+      ? `<span class="badge ${getSkillTagColor(skill.tag)} ms-2">${safeHtml(skill.tag)}</span>`
+      : "";
+
+    return `
+      <tr>
+        <td>${safeHtml(skill.skill_name || "N/A")}${tagBadge}</td>
+        <td>${safeHtml(skill.sp_cost || "N/A")}</td>
+        <td>${acquiredBadge}</td>
+        <td>${safeHtml(skill.notes || "")}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <h4 class="mt-4">Skills</h4>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered table-striped align-middle">
+        <caption class="visually-hidden">Skills table</caption>
+        <thead class="table-light">
+          <tr>
+            <th>Skill Name</th>
+            <th>SP Cost</th>
+            <th>Acquired</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// 🔹 Suitability Table (Terrain, Distance, Style)
+export function renderSuitabilityTable(data = [], type = '') {
+  if (!data.length) return "";
+
+  const labelMap = {
+    'terrain_grades': 'Terrain Suitability',
+    'distance_grades': 'Distance Suitability',
+    'style_grades': 'Style Suitability'
+  };
+  const keyMap = {
+    'terrain_grades': 'terrain',
+    'distance_grades': 'distance',
+    'style_grades': 'style'
+  };
+
+  const caption = labelMap[type] || 'Suitability';
+  const key = keyMap[type] || 'type';
+
+  const rows = data.map(item => `
+    <tr>
+      <td>${safeHtml(item[key] || "N/A")}</td>
+      <td><span class="badge ${getGradeBadgeClass(item.grade)}">${safeHtml(item.grade || "N/A")}</span></td>
+    </tr>
+  `).join("");
+
+  return `
+    <h4 class="mt-4">${caption}</h4>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered table-striped align-middle">
+        <caption class="visually-hidden">${caption}</caption>
+        <thead class="table-light"><tr><th>${key.charAt(0).toUpperCase() + key.slice(1)}</th><th>Grade</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// 🔹 Race Predictions Table
+export function renderRacePredictions(predictions = []) {
+  if (!predictions.length) return "";
+
+  const rows = predictions.map(p => `
+    <tr>
+      <td>${safeHtml(p.race_name || "N/A")}</td>
+      <td>${safeHtml(p.venue || "N/A")}</td>
+      <td>${safeHtml(p.ground || "N/A")}</td>
+      <td>${safeHtml(p.distance || "N/A")}</td>
+      <td>${safeHtml(p.track_condition || "N/A")}</td>
+      <td>${getPredictionIcon(p.speed)}</td>
+      <td>${getPredictionIcon(p.stamina)}</td>
+      <td>${getPredictionIcon(p.power)}</td>
+      <td>${getPredictionIcon(p.guts)}</td>
+      <td>${getPredictionIcon(p.wit)}</td>
+      <td>${safeHtml(p.comment || "")}</td>
+    </tr>
+  `).join("");
+
+  return `
+    <h4 class="mt-4">Race Predictions</h4>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered table-striped align-middle">
+        <caption class="visually-hidden">Race predictions table</caption>
+        <thead class="table-light">
+          <tr>
+            <th>Race</th>
+            <th>Venue</th>
+            <th>Ground</th>
+            <th>Distance</th>
+            <th>Condition</th>
+            <th>Speed</th>
+            <th>Stamina</th>
+            <th>Power</th>
+            <th>Guts</th>
+            <th>Wit</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// 🔹 Goals Table
+export function renderGoalsTable(goals = []) {
+  if (!goals.length) return "";
+
+  const rows = goals.map(g => `
+    <tr>
+      <td>${safeHtml(g.goal || "N/A")}</td>
+      <td><span class="badge ${getGoalResultClass(g.result)}">${safeHtml(g.result || "Pending")}</span></td>
+    </tr>
+  `).join("");
+
+  return `
+    <h4 class="mt-4">Goals Achieved</h4>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered table-striped align-middle">
+        <caption class="visually-hidden">Goals table</caption>
+        <thead class="table-light"><tr><th>Goal</th><th>Result</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// 🔹 Turns Table
+export function renderTurnsTable(turns = []) {
+  if (!turns.length) return "";
+
+  const rows = turns.map(t => `
+    <tr>
+      <td>${safeHtml(t.turn_number || "N/A")}</td>
+      <td>${safeHtml(t.speed || "0")}</td>
+      <td>${safeHtml(t.stamina || "0")}</td>
+      <td>${safeHtml(t.power || "0")}</td>
+      <td>${safeHtml(t.guts || "0")}</td>
+      <td>${safeHtml(t.wit || "0")}</td>
+    </tr>
+  `).join("");
+
+  return `
+    <h4 class="mt-4">Turn-wise Progression</h4>
+    <div class="table-responsive mb-3">
+      <table class="table table-bordered table-striped align-middle">
+        <caption class="visually-hidden">Turn progression table</caption>
+        <thead class="table-light">
+          <tr>
+            <th>Turn</th>
+            <th>Speed</th>
+            <th>Stamina</th>
+            <th>Power</th>
+            <th>Guts</th>
+            <th>Wit</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// 🔹 Helpers
+function getSkillTagColor(tag) {
+  const map = {
+    '🔺 Speed': 'bg-info',
+    '🔺 Acceleration': 'bg-primary',
+    '🔺 Positioning': 'bg-dark',
+    '🔋 Recovery': 'bg-success',
+    '⛔ Debuff': 'bg-danger',
+    '📊 Passive': 'bg-warning text-dark',
+    '👁️ Wit boost': 'bg-secondary',
+    '🌀 Passive': 'bg-secondary',
+    default: 'bg-secondary'
+  };
+  return map[tag] || 'bg-secondary';
+}
+
+function getGoalResultClass(result) {
+  const map = {
+    '1ST': 'bg-success',
+    'TOP 2': 'bg-info',
+    'TOP 3': 'bg-primary',
+    'TOP 5': 'bg-warning text-dark',
+    'FAILED': 'bg-danger',
+    'Pending': 'bg-secondary'
+  };
+  return map[result] || 'bg-secondary';
+}

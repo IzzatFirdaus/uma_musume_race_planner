@@ -1,0 +1,30 @@
+<!-- components/footer.php -->
+<?php require_once __DIR__ . '/../config.php'; ?>
+
+<footer class="mt-5 text-center text-muted small" role="contentinfo" aria-label="Site Footer">
+  <hr />
+
+  <p class="mb-0">
+    Made with ❤️ for Uma Musume fans. Planner by <strong>extremerazr</strong>.
+  </p>
+
+  <p class="mb-1">Data is stored locally — no cloud syncing yet.</p>
+
+  <p class="text-muted small">
+    <?= htmlspecialchars(APP_VERSION) ?> &mdash; Updated <?= htmlspecialchars(LAST_UPDATED ?: 'Unknown') ?>
+  </p>
+
+  <p class="mt-2">
+    <a href="https://github.com/extremerazr/uma-musume-planner" target="_blank" rel="noopener noreferrer"
+       class="text-decoration-none text-secondary" aria-label="View GitHub Repository">
+      <i class="bi bi-github"></i> GitHub
+    </a>
+    &nbsp;|&nbsp;
+    <a href="#" data-bs-toggle="modal" data-bs-target="#planModal"
+       class="text-decoration-none text-secondary" aria-label="Create New Plan">
+      <i class="bi bi-plus-circle"></i> Create Plan
+    </a>
+  </p>
+
+  <p class="text-muted mt-3 mb-0">&copy; <?= date('Y') ?> Uma Musume Planner</p>
+</footer>

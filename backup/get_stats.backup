@@ -1,0 +1,44 @@
+<?php
+// get_stats.php
+
+require_once 'config.php';
+$pdo = require_once 'db.php';
+
+header('Content-Type: application/json');
+
+$response = [
+    'success' => false,
+    'data' => [],
+    'error' => null
+];
+
+try {
+    $activePlans = (int) $pdo->query("
+        SELECT COUNT(*) FROM plans WHERE deleted_at IS NULL
+    ")->fetchColumn();
+
+    $totalPlans = (int) $pdo->query("
+        SELECT COUNT(*) FROM plans
+    ")->fetchColumn();
+
+    $uniqueTrainees = (int) $pdo->query("
+        SELECT COUNT(DISTINCT name) FROM plans WHERE name IS NOT NULL
+    ")->fetchColumn();
+
+    $totalRaces = (int) $pdo->query("
+        SELECT COUNT(*) FROM race_predictions
+    ")->fetchColumn();
+
+    $response['success'] = true;
+    $response['data'] = [
+        'active_plans' => $activePlans,
+        'total_plans' => $totalPlans,
+        'unique_trainees' => $uniqueTrainees,
+        'race_predictions' => $totalRaces
+    ];
+} catch (Exception $e) {
+    error_log("Stats Fetch Error: " . $e->getMessage());
+    $response['error'] = 'Failed to fetch stats.';
+}
+
+echo json_encode($response);

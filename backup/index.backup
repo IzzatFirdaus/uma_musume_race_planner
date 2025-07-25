@@ -1,0 +1,680 @@
+<?php
+// Include the database configuration file to establish a connection
+include 'config.php';
+
+// Initialize an empty array to store plans
+$plans = [];
+
+try {
+    $stmt = $pdo->query("SELECT * FROM plans ORDER BY id DESC");
+    $plans = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log("Error fetching plans: " . $e->getMessage());
+    echo "<div class='alert alert-danger container mt-3'>Error loading plans. Please try again later.</div>";
+}
+
+// Calculate quick stats
+$totalPlans = count($plans);
+$activePlans = 0;
+$finishedPlans = 0;
+$planningPlans = 0;
+$totalRaces = 0;
+
+foreach ($plans as $plan) {
+    if (isset($plan['status'])) {
+        switch ($plan['status']) {
+            case 'Active': $activePlans++; break;
+            case 'Finished': $finishedPlans++; break;
+            case 'Planning': $planningPlans++; break;
+        }
+    }
+    $totalRaces++;
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uma Musume Race Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .plan-details-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .info-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            height: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .attribute-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        .attribute-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .attribute-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+        }
+        .skill-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .prediction-icon {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: inline-block;
+            width: 1.8em;
+            text-align: center;
+        }
+        .prediction-good {
+            color: #28a745;
+        }
+        .prediction-avg {
+            color: #ffc107;
+        }
+        .prediction-poor {
+            color: #dc3545;
+        }
+        .comment-bubble {
+            background-color: #e9ecef;
+            border-radius: 15px;
+            padding: 1.25rem;
+            position: relative;
+            margin-top: 1.5rem;
+        }
+        .comment-bubble::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent #e9ecef transparent;
+        }
+        .energy-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e9ecef;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            border-radius: 4px;
+        }
+        .action-buttons .btn {
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-uma sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span>Uma Musume Planner</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="bi bi-house-door me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="newPlanBtn"><i class="bi bi-plus-circle me-1"></i> New Plan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-book me-1"></i> Guide</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header Banner -->
+        <div class="header-banner rounded-3 text-center mb-4">
+            <div class="container py-4">
+                <h1 class="display-4 fw-bold"><i class="bi bi-speedometer2"></i> Uma Musume Race Planner</h1>
+                <p class="lead">Plan, track, and optimize your horse girl's racing career</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Plan List -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-uma text-white d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">Your Race Plans</span>
+                        <button class="btn btn-light btn-sm" id="createPlanBtn">
+                            <i class="bi bi-plus-circle me-1"></i> Create New
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Career Stage</th>
+                                        <th>Class</th>
+                                        <th>Race</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="plansTableBody">
+                                    <?php if (!empty($plans)): ?>
+                                        <?php foreach ($plans as $plan): ?>
+                                            <tr class="plan-card" data-id="<?= htmlspecialchars($plan['id']) ?>">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-3">
+                                                            <?php
+                                                            $iconColor = 'text-secondary';
+                                                            if (isset($plan['status'])) {
+                                                                switch($plan['status']) {
+                                                                    case 'Active': $iconColor = 'text-success'; break;
+                                                                    case 'Planning': $iconColor = 'text-info'; break;
+                                                                    case 'Finished': $iconColor = 'text-primary'; break;
+                                                                }
+                                                            }
+                                                            ?>
+                                                            <i class="bi bi-person-circle fs-4 <?= $iconColor ?>"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-bold"><?= htmlspecialchars($plan['name']) ?></div>
+                                                            <div class="text-muted small"><?= htmlspecialchars($plan['race_name']) ?></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><?= htmlspecialchars(ucfirst($plan['career_stage'])) ?></td>
+                                                <td>
+                                                    <?php
+                                                    $badgeClass = 'bg-secondary';
+                                                    if (isset($plan['class'])) {
+                                                        switch($plan['class']) {
+                                                            case 'star': $badgeClass = 'bg-warning text-dark'; break;
+                                                            case 'gold': $badgeClass = 'bg-gold'; break;
+                                                            case 'platinum': $badgeClass = 'bg-info'; break;
+                                                            case 'legend': $badgeClass = 'bg-dark'; break;
+                                                            default: $badgeClass = 'bg-secondary';
+                                                        }
+                                                    }
+                                                    ?>
+                                                    <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars(strtoupper($plan['class'] ?? 'N/A')) ?></span>
+                                                </td>
+                                                <td><?= htmlspecialchars($plan['race_name']) ?></td>
+                                                <td>
+                                                    <?php
+                                                    $statusBadgeClass = 'bg-secondary';
+                                                    if (isset($plan['status'])) {
+                                                        switch($plan['status']) {
+                                                            case 'Active': $statusBadgeClass = 'bg-success'; break;
+                                                            case 'Planning': $statusBadgeClass = 'bg-info'; break;
+                                                            case 'Finished': $statusBadgeClass = 'bg-primary'; break;
+                                                        }
+                                                    }
+                                                    ?>
+                                                    <span class="badge <?= $statusBadgeClass ?>"><?= htmlspecialchars($plan['status'] ?? 'N/A') ?></span>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary edit-plan-btn" data-id="<?= htmlspecialchars($plan['id']) ?>"><i class="bi bi-pencil"></i></button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-plan-btn" data-id="<?= htmlspecialchars($plan['id']) ?>"><i class="bi bi-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4">
+                                                <i class="bi bi-calendar-x fs-1 text-muted"></i>
+                                                <p class="mt-2">No race plans found</p>
+                                                <button class="btn btn-uma mt-2" id="createFirstPlanBtn">
+                                                    <i class="bi bi-plus-circle me-1"></i> Create First Plan
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Plan Details Section -->
+                <div class="card shadow-sm mb-4" id="planDetails" style="display: none;">
+                    <div class="card-header bg-uma text-white d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">Plan Details</span>
+                        <button class="btn btn-light btn-sm" id="closeDetailsBtn">
+                            <i class="bi bi-x me-1"></i> Close
+                        </button>
+                    </div>
+                    <div class="card-body" id="planDetailsContent">
+                        <!-- Plan details will be loaded here dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar Panels -->
+            <div class="col-lg-4">
+                <!-- Quick Stats Panel -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-uma text-white">
+                        <span class="fw-bold">Quick Stats</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-around">
+                            <div class="px-2">
+                                <div class="fs-1 fw-bold text-primary"><?= $totalPlans ?></div>
+                                <div class="text-muted">Plans</div>
+                            </div>
+                            <div class="px-2">
+                                <div class="fs-1 fw-bold text-success"><?= $activePlans ?></div>
+                                <div class="text-muted">Active</div>
+                            </div>
+                            <div class="px-2">
+                                <div class="fs-1 fw-bold text-info"><?= $totalRaces ?></div>
+                                <div class="text-muted">Races</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Create Plan Panel -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-uma text-white">
+                        <span class="fw-bold">Create New Plan</span>
+                    </div>
+                    <div class="card-body">
+                        <form id="quickPlanForm">
+                            <div class="mb-3">
+                                <label class="form-label">Trainee Name</label>
+                                <input type="text" class="form-control" id="traineeName" placeholder="e.g. [Bestest Prize] Haru Urara" list="nameSuggestions">
+                                <datalist id="nameSuggestions"></datalist>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Career Stage</label>
+                                <select class="form-select" id="careerStage">
+                                    <option value="predebut">Pre-Debut</option>
+                                    <option value="junior">Junior Year</option>
+                                    <option value="classic">Classic Year</option>
+                                    <option value="senior">Senior Year</option>
+                                    <option value="finale">Finale Season</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Class</label>
+                                <select class="form-select" id="traineeClass">
+                                    <option value="debut">Debut</option>
+                                    <option value="maiden">Maiden</option>
+                                    <option value="beginner">Beginner</option>
+                                    <option value="bronze">Bronze</option>
+                                    <option value="silver">Silver</option>
+                                    <option value="gold">Gold</option>
+                                    <option value="platinum">Platinum</option>
+                                    <option value="star">Star</option>
+                                    <option value="legend">Legend</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Race Name</label>
+                                <input type="text" class="form-control" id="raceName" placeholder="e.g. URA Finale Qualifier" list="raceNameSuggestions">
+                                <datalist id="raceNameSuggestions"></datalist>
+                            </div>
+                            <button type="submit" class="btn btn-uma w-100">
+                                <i class="bi bi-plus-circle me-1"></i> Create Plan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-uma text-white">
+                        <span class="fw-bold">Recent Activity</span>
+                    </div>
+                    <div class="card-body" id="recentActivityContainer">
+                        <div class="d-flex align-items-center justify-content-center py-4">
+                            <div class="spinner-border text-uma" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan Modal -->
+    <div class="modal fade" id="planModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-uma text-white">
+                    <h5 class="modal-title" id="modalTitle">Create New Plan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form content will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="constants.js"></script>
+    <script type="module" src="modal.js"></script>
+    <script>
+        // Simplified version of the viewPlan function for UI demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event delegation for plan cards
+            document.querySelector('#plansTableBody').addEventListener('click', function(e) {
+                const planCard = e.target.closest('.plan-card');
+                if (planCard) {
+                    const planId = planCard.dataset.id;
+                    viewPlanDetails(planId);
+                }
+                
+                // Handle edit and delete buttons
+                if (e.target.closest('.edit-plan-btn')) {
+                    const planId = e.target.closest('.edit-plan-btn').dataset.id;
+                    alert(`Edit plan ${planId} would open modal`);
+                }
+                
+                if (e.target.closest('.delete-plan-btn')) {
+                    const planId = e.target.closest('.delete-plan-btn').dataset.id;
+                    if (confirm('Are you sure you want to delete this plan?')) {
+                        alert(`Plan ${planId} would be deleted`);
+                    }
+                }
+            });
+            
+            // Close details button
+            document.getElementById('closeDetailsBtn').addEventListener('click', function() {
+                document.getElementById('planDetails').style.display = 'none';
+            });
+            
+            // Create first plan button
+            document.getElementById('createFirstPlanBtn')?.addEventListener('click', function() {
+                document.getElementById('newPlanBtn').click();
+            });
+        });
+
+        // Function to display plan details matching the screenshot design
+        function viewPlanDetails(planId) {
+            // Mock data matching the screenshot
+            const mockPlan = {
+                name: "[Bestest Prize] Haru Urara",
+                race_name: "URA Finale Qualifier",
+                career_stage: "Finale Season",
+                class: "Star",
+                status: "Active",
+                turn_before: "0",
+                month: "1/12",
+                mood: "Good",
+                energy: 20,
+                goal: "1ST",
+                strategy: "Late",
+                attributes: [
+                    { name: "SPEED", value: 423 },
+                    { name: "STAMINA", value: 276 },
+                    { name: "POWER", value: 461 },
+                    { name: "GUTS", value: 448 },
+                    { name: "WIT", value: 264 }
+                ],
+                skills: [
+                    { 
+                        name: "Super Duper Stoked Lvl.1", 
+                        type: "Unique Burst",
+                        description: "Win Q.E.D. - Powerful finishing burst",
+                        sp_cost: 63,
+                        acquired: true
+                    },
+                    { 
+                        name: "Summer Runner O", 
+                        type: "Passive Skill",
+                        description: "Increases stamina during summer races",
+                        sp_cost: 45,
+                        acquired: true
+                    }
+                ],
+                predictions: {
+                    venue: "KYOTO",
+                    ground: "DIRT",
+                    distance: "1400M",
+                    track_condition: "SPRINT",
+                    direction: "RIGHT",
+                    attributes: [
+                        { name: "SPEED", prediction: "X", class: "prediction-poor" },
+                        { name: "STAMINA", prediction: "O", class: "prediction-avg" },
+                        { name: "POWER", prediction: "O", class: "prediction-avg" },
+                        { name: "GUTS", prediction: "X", class: "prediction-poor" },
+                        { name: "WIT", prediction: "△", class: "prediction-good" }
+                    ],
+                    comment: "Your trainee isn't a bad runner, but she may be outclassed. However, she might have a chance depending on the condition of her opponents."
+                }
+            };
+
+            // Render plan details matching the screenshot
+            const detailsContent = `
+                <div class="plan-details-header text-center">
+                    <h2 class="mb-0">${mockPlan.name} - ${mockPlan.race_name}</h2>
+                </div>
+                
+                <div class="row mb-4">
+                    <!-- Trainee Info -->
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="info-card">
+                            <h5 class="mb-3">Trainee Info</h5>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Career Stage</div>
+                                <div class="col-6">${mockPlan.career_stage}</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Class</div>
+                                <div class="col-6">
+                                    <span class="badge bg-warning text-dark">${mockPlan.class}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Month</div>
+                                <div class="col-6">${mockPlan.month}</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Mood</div>
+                                <div class="col-6">
+                                    <span class="badge bg-success">${mockPlan.mood}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6 fw-bold">Energy</div>
+                                <div class="col-6">
+                                    <div>${mockPlan.energy}/100%</div>
+                                    <div class="energy-bar">
+                                        <div class="energy-fill" style="width: ${mockPlan.energy}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Race Info -->
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <h5 class="mb-3">Race Info</h5>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Race</div>
+                                <div class="col-6">${mockPlan.race_name}</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Goal</div>
+                                <div class="col-6">
+                                    <span class="badge bg-primary">${mockPlan.goal}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6 fw-bold">Strategy</div>
+                                <div class="col-6">
+                                    <span class="badge bg-info">${mockPlan.strategy}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6 fw-bold">Turn Before</div>
+                                <div class="col-6">${mockPlan.turn_before}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Attributes Section -->
+                <h4 class="mb-3">Attributes</h4>
+                <div class="row mb-4">
+                    ${mockPlan.attributes.map(attr => `
+                        <div class="col mb-3">
+                            <div class="attribute-card">
+                                <div class="attribute-value">${attr.value}</div>
+                                <div class="attribute-label">${attr.name}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <!-- Skills Section -->
+                <h4 class="mb-3">Skills</h4>
+                <div class="mb-4">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Total Available Skill Points</span>
+                                <span class="badge bg-secondary fs-6">120</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${mockPlan.skills.map(skill => `
+                        <div class="skill-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h5 class="mb-0">${skill.name}</h5>
+                                    <div class="text-muted small">${skill.type}</div>
+                                </div>
+                                <span class="badge bg-light text-dark">SP Cost: ${skill.sp_cost}</span>
+                            </div>
+                            <div class="text-muted">
+                                <i class="bi bi-dot"></i> ${skill.description}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <!-- Race Predictions -->
+                <h4 class="mb-3">Race Predictions</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="info-card h-100">
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">Venue</div>
+                                <div class="col-8">${mockPlan.predictions.venue}</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">Ground</div>
+                                <div class="col-8">${mockPlan.predictions.ground}</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">Distance</div>
+                                <div class="col-8">${mockPlan.predictions.distance}</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">Track Condition</div>
+                                <div class="col-8">${mockPlan.predictions.track_condition}</div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-4 fw-bold">Direction</div>
+                                <div class="col-8">${mockPlan.predictions.direction}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-card h-100">
+                            <h6 class="mb-3">Attribute Predictions</h6>
+                            <div class="row">
+                                ${mockPlan.predictions.attributes.map(pred => `
+                                    <div class="col-6 mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="fw-bold me-2">${pred.name}</div>
+                                            <div class="prediction-icon ${pred.class}">${pred.prediction}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Prediction Comment -->
+                <div class="comment-bubble">
+                    <div class="d-flex">
+                        <span class="fw-bold me-2">①</span>
+                        <div>
+                            "${mockPlan.predictions.comment}"
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-end mt-4 action-buttons">
+                    <button class="btn btn-primary me-2">
+                        <i class="bi bi-pencil me-1"></i> Edit Plan
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="bi bi-printer me-1"></i> Print
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('planDetailsContent').innerHTML = detailsContent;
+            document.getElementById('planDetails').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
