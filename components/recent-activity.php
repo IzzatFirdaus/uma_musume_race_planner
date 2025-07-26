@@ -1,6 +1,18 @@
 <div class="card">
   <div class="card-header">Recent Activity</div>
   <div class="card-body" id="recentActivity">
-    <!-- Activity items injected dynamically via JS -->
+    <ul class="list-group list-group-flush">
+      <?php if (isset($activities) && $activities->rowCount() > 0) : ?>
+          <?php foreach ($activities as $activity) : ?>
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi <?= htmlspecialchars($activity['icon_class']) ?> me-2"></i>
+                <?= htmlspecialchars($activity['description']) ?>
+            <small class="text-muted ms-auto"><?= (new DateTime($activity['timestamp']))->format('M d, H:i') ?></small>
+          </li>
+          <?php endforeach; ?>
+      <?php else : ?>
+        <li class="list-group-item text-muted text-center">No recent activity.</li>
+      <?php endif; ?>
+    </ul>
   </div>
 </div>

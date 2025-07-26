@@ -1,31 +1,35 @@
 <?php
-// get_stats.php
-require_once 'config.php'; // Assumes config.php provides $conn (MySQLi connection)
 
+// get_stats.php
 header('Content-Type: application/json');
+$pdo = require __DIR__ . '/includes/db.php';
+$log = require __DIR__ . '/includes/logger.php';
 
 try {
-  // Use MySQLi connection ($conn)
-  $total = $conn->query("SELECT COUNT(*) FROM plans WHERE deleted_at IS NULL")->fetch_row()[0];
-  $active = $conn->query("SELECT COUNT(*) FROM plans WHERE status = 'Active' AND deleted_at IS NULL")->fetch_row()[0];
-  $finished = $conn->query("SELECT COUNT(*) FROM plans WHERE status = 'Finished' AND deleted_at IS NULL")->fetch_row()[0]; // Added finished plans stat
-  $planning = $conn->query("SELECT COUNT(*) FROM plans WHERE status = 'Planning' AND deleted_at IS NULL")->fetch_row()[0]; // Added planning plans stat
-  $unique = $conn->query("SELECT COUNT(DISTINCT name) FROM plans WHERE deleted_at IS NULL")->fetch_row()[0];
-  $predictions = $conn->query("SELECT COUNT(*) FROM race_predictions")->fetch_row()[0];
+    $stats_query = "
+        SELECT
+            COUNT(*) AS total_plans,
+            SUM(CASE WHEN status = 'Active' THEN 1 ELSE 0 END) AS active_plans,
+            SUM(CASE WHEN status = 'Finished' THEN 1 ELSE 0 END) AS finished_plans,
+            SUM(CASE WHEN status = 'Planning' THEN 1 ELSE 0 END) AS planning_plans,
+            COUNT(DISTINCT name) AS unique_trainees
+        FROM plans
+        WHERE deleted_at IS NULL
+    ";
+    $stmt = $pdo->query($stats_query);
+    $stats = $stmt->fetch();
 
-  echo json_encode([
-    'success' => true,
-    'stats' => [
-      'total_plans' => (int)$total,
-      'active_plans' => (int)$active,
-      'finished_plans' => (int)$finished, // Included in response
-      'planning_plans' => (int)$planning, // Included in response
-      'unique_trainees' => (int)$unique,
-      'race_predictions' => (int)$predictions,
-    ]
-  ]);
-} catch (Throwable $e) {
-  http_response_code(500);
-  echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    // Cast values to integers
+    foreach ($stats as $key => $value) {
+        $stats[$key] = (int)$value;
+    }
+
+    echo json_encode(['success' => true, 'stats' => $stats]);
+} catch (PDOException $e) {
+    // Log the detailed error to your file
+    $log->error('Failed to fetch stats', ['message' => $e->getMessage()]);
+
+    // Send a generic error to the client
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'A database error occurred while fetching stats.']);
 }
-?>

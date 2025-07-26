@@ -1,6 +1,6 @@
 <?php
 
-// get_plan_predictions.php
+// get_plan_turns.php
 header('Content-Type: application/json');
 $pdo = require __DIR__ . '/includes/db.php';
 $log = require __DIR__ . '/includes/logger.php';
@@ -14,13 +14,13 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare('SELECT * FROM race_predictions WHERE plan_id = ? ORDER BY id');
+    $stmt = $pdo->prepare('SELECT turn_number, speed, stamina, power, guts, wit FROM turns WHERE plan_id = ? ORDER BY turn_number');
     $stmt->execute([$plan_id]);
-    $predictions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $turns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode(['success' => true, 'predictions' => $predictions]); // Consistent success response
+    echo json_encode(['success' => true, 'turns' => $turns]); // Consistent success response
 } catch (PDOException $e) {
-    $log->error('Failed to fetch plan predictions', [
+    $log->error('Failed to fetch plan turns', [
         'plan_id' => $plan_id ?? 0,
         'message' => $e->getMessage(),
         'file' => $e->getFile(), // Added for debugging

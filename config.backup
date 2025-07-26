@@ -1,0 +1,67 @@
+<?php
+
+// config.php
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'uma_musume_planner');
+
+// Create connection
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
+
+// Check connection
+if ($conn->connect_error) {
+    die('Connection failed: ' . $conn->connect_error);
+}
+
+// Create database if it doesn't exist and select it
+$conn->query('CREATE DATABASE IF NOT EXISTS ' . DB_NAME);
+$conn->select_db(DB_NAME);
+
+// Set charset to handle special characters properly
+$conn->set_charset('utf8mb4');
+
+// --- TABLE CREATION & DATA SEEDING ---
+// This section will run once to set up the database and tables.
+// It uses IGNORE to prevent errors on subsequent runs.
+
+try {
+    // Lookup Tables
+    $conn->query('CREATE TABLE IF NOT EXISTS moods (id INT AUTO_INCREMENT PRIMARY KEY, label VARCHAR(50) NOT NULL UNIQUE)');
+    $conn->query('CREATE TABLE IF NOT EXISTS conditions (id INT AUTO_INCREMENT PRIMARY KEY, label VARCHAR(50) NOT NULL UNIQUE)');
+    $conn->query('CREATE TABLE IF NOT EXISTS strategies (id INT AUTO_INCREMENT PRIMARY KEY, label VARCHAR(50) NOT NULL UNIQUE)');
+    $conn->query('CREATE TABLE IF NOT EXISTS skill_reference (`id` INT AUTO_INCREMENT PRIMARY KEY, `skill_name` VARCHAR(255) NOT NULL UNIQUE, `description` TEXT, `stat_type` VARCHAR(20), `best_for` TEXT, `tag` VARCHAR(5))');
+
+    // Main Entity Tables from uma_musume_planner.sql
+    $main_tables_sql = file_get_contents('uma_musume_planner.sql'); // Assumes the .sql file is in the same directory
+    if ($main_tables_sql) {
+        // Remove CREATE DATABASE and USE statements from the SQL file content to avoid errors
+        $main_tables_sql = preg_replace('/CREATE DATABASE IF NOT EXISTS `uma_musume_planner`;/i', '', $main_tables_sql);
+        $main_tables_sql = preg_replace('/USE `uma_musume_planner`;/i', '', $main_tables_sql);
+        $conn->multi_query($main_tables_sql);
+        // Clear results from multi_query
+        while ($conn->next_result()) {
+            ;
+        }
+    }
+
+    // --- INITIAL DATA SEEDING ---
+    // Correctly bind parameters for mood insertion
+    $stmt_mood = $conn->prepare('INSERT IGNORE INTO moods (label) VALUES (?), (?), (?), (?), (?), (?)');
+    $mood_labels = ['AWFUL', 'BAD', 'GOOD', 'GREAT', 'NORMAL', 'N/A'];
+    $stmt_mood->bind_param('ssssss', $mood_labels[0], $mood_labels[1], $mood_labels[2], $mood_labels[3], $mood_labels[4], $mood_labels[5]);
+    $stmt_mood->execute();
+    $stmt_mood->close();
+
+    // Correctly bind parameters for strategy insertion
+    $stmt_strat = $conn->prepare('INSERT IGNORE INTO strategies (label) VALUES (?), (?), (?), (?), (?)');
+    $strat_labels = ['FRONT', 'PACE', 'LATE', 'END', 'N/A'];
+    $stmt_strat->bind_param('sssss', $strat_labels[0], $strat_labels[1], $strat_labels[2], $strat_labels[3], $strat_labels[4]);
+    $stmt_strat->execute();
+    $stmt_strat->close();
+
+    // Insert skill reference data from your .sql file
+    // The INSERT statements in your uma_musume_planner.sql handle this part, so no new PHP code is needed here.
+} catch (Exception $e) {
+    die('Database setup failed: ' . $e->getMessage());
+}

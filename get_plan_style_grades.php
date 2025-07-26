@@ -1,6 +1,6 @@
 <?php
 
-// get_plan_predictions.php
+// get_plan_style_grades.php
 header('Content-Type: application/json');
 $pdo = require __DIR__ . '/includes/db.php';
 $log = require __DIR__ . '/includes/logger.php';
@@ -14,13 +14,13 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare('SELECT * FROM race_predictions WHERE plan_id = ? ORDER BY id');
+    $stmt = $pdo->prepare('SELECT style, grade FROM style_grades WHERE plan_id = ? ORDER BY id');
     $stmt->execute([$plan_id]);
-    $predictions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $style_grades = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode(['success' => true, 'predictions' => $predictions]); // Consistent success response
+    echo json_encode(['success' => true, 'style_grades' => $style_grades]); // Consistent success response
 } catch (PDOException $e) {
-    $log->error('Failed to fetch plan predictions', [
+    $log->error('Failed to fetch plan style grades', [
         'plan_id' => $plan_id ?? 0,
         'message' => $e->getMessage(),
         'file' => $e->getFile(), // Added for debugging

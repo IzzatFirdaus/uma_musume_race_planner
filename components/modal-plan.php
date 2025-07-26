@@ -38,15 +38,14 @@
 <datalist id="skillSuggestions">
 <?php
 try {
-  require_once __DIR__ . '/../config.php';
-  $pdo = require_once __DIR__ . '/../db.php';
-
-  $stmt = $pdo->query("SELECT DISTINCT skill_name FROM skill_reference ORDER BY skill_name ASC");
-  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    echo '<option value="' . htmlspecialchars($row['skill_name']) . '"></option>';
-  }
+    require_once __DIR__ . '/../config.php';
+    $pdo = require_once __DIR__ . '/../db.php';
+    $stmt = $pdo->query('SELECT DISTINCT skill_name FROM skill_reference ORDER BY skill_name ASC');
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        echo '<option value="' . htmlspecialchars($row['skill_name']) . '"></option>';
+    }
 } catch (Throwable $e) {
-  error_log("Skill datalist load error: " . $e->getMessage());
+    error_log('Skill datalist load error: ' . $e->getMessage());
 }
 ?>
 </datalist>
