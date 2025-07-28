@@ -1,5 +1,4 @@
 <?php
-
 // navbar.php
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
@@ -20,7 +19,7 @@
           <a class="nav-link" href="#" id="newPlanBtn"><i class="bi bi-plus-circle me-1"></i> New Plan</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="bi bi-book me-1"></i> Guide</a>
+          <a class="nav-link" href="guide.php"><i class="bi bi-book me-1"></i> Guide</a>
         </li>
         <li class="nav-item d-flex align-items-center ms-lg-3">
           <div class="form-check form-switch text-light">
