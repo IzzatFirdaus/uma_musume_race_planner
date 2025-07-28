@@ -30,8 +30,10 @@ try {
         WHERE p.id = ? AND p.deleted_at IS NULL
     ';
     $stmt = $pdo->prepare($sql);
+    // It's good practice to check if prepare was successful, though PDO::ERRMODE_EXCEPTION helps
+    // by throwing an exception if prepare fails due to bad SQL.
     $stmt->execute([$planId]);
-    $planData = $stmt->fetch();
+    $planData = $stmt->fetch(PDO::FETCH_ASSOC); // Ensure associative array
 
     if (!$planData) {
         http_response_code(404);
@@ -40,13 +42,34 @@ try {
     }
 
     // --- Fetch all related data using prepared statements ---
-    $planData['attributes'] = $pdo->prepare('SELECT attribute_name, value, grade FROM attributes WHERE plan_id = ?')->execute([$planId])->fetchAll();
-    $planData['skills'] = $pdo->prepare('SELECT s.skill_name, s.sp_cost, s.acquired, s.notes, sr.tag FROM skills s LEFT JOIN skill_reference sr ON s.skill_name = sr.skill_name WHERE s.plan_id = ?')->execute([$planId])->fetchAll();
-    $planData['terrain_grades'] = $pdo->prepare('SELECT terrain, grade FROM terrain_grades WHERE plan_id = ?')->execute([$planId])->fetchAll();
-    $planData['distance_grades'] = $pdo->prepare('SELECT distance, grade FROM distance_grades WHERE plan_id = ?')->execute([$planId])->fetchAll();
-    $planData['style_grades'] = $pdo->prepare('SELECT style, grade FROM style_grades WHERE plan_id = ?')->execute([$planId])->fetchAll();
-    $planData['race_predictions'] = $pdo->prepare('SELECT race_name, venue, ground, distance, track_condition, direction, speed, stamina, power, guts, wit, comment FROM race_predictions WHERE plan_id = ?')->execute([$planId])->fetchAll();
-    $planData['goals'] = $pdo->prepare('SELECT goal, result FROM goals WHERE plan_id = ?')->execute([$planId])->fetchAll();
+    // Corrected pattern for fetching data
+    $stmtAttributes = $pdo->prepare('SELECT attribute_name, value, grade FROM attributes WHERE plan_id = ?');
+    $stmtAttributes->execute([$planId]);
+    $planData['attributes'] = $stmtAttributes->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtSkills = $pdo->prepare('SELECT s.skill_name, s.sp_cost, s.acquired, s.notes, sr.tag FROM skills s LEFT JOIN skill_reference sr ON s.skill_name = sr.skill_name WHERE s.plan_id = ?');
+    $stmtSkills->execute([$planId]);
+    $planData['skills'] = $stmtSkills->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtTerrainGrades = $pdo->prepare('SELECT terrain, grade FROM terrain_grades WHERE plan_id = ?');
+    $stmtTerrainGrades->execute([$planId]);
+    $planData['terrain_grades'] = $stmtTerrainGrades->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtDistanceGrades = $pdo->prepare('SELECT distance, grade FROM distance_grades WHERE plan_id = ?');
+    $stmtDistanceGrades->execute([$planId]);
+    $planData['distance_grades'] = $stmtDistanceGrades->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtStyleGrades = $pdo->prepare('SELECT style, grade FROM style_grades WHERE plan_id = ?');
+    $stmtStyleGrades->execute([$planId]);
+    $planData['style_grades'] = $stmtStyleGrades->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtRacePredictions = $pdo->prepare('SELECT race_name, venue, ground, distance, track_condition, direction, speed, stamina, power, guts, wit, comment FROM race_predictions WHERE plan_id = ?');
+    $stmtRacePredictions->execute([$planId]);
+    $planData['race_predictions'] = $stmtRacePredictions->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtGoals = $pdo->prepare('SELECT goal, result FROM goals WHERE plan_id = ?');
+    $stmtGoals->execute([$planId]);
+    $planData['goals'] = $stmtGoals->fetchAll(PDO::FETCH_ASSOC);
 
     // Return the aggregated data as JSON
     echo json_encode($planData);
@@ -54,7 +77,9 @@ try {
     // Handle any exceptions during database operations
     $log->error('Failed to export plan data', [
         'plan_id' => $planId,
-        'message' => $e->getMessage()
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(), // Added for better logging
+        'line' => $e->getLine(),  // Added for better logging
     ]);
     http_response_code(500);
     echo json_encode(['error' => 'An internal server error occurred.']);

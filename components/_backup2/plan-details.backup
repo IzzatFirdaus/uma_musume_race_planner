@@ -9,6 +9,6 @@
     <!-- Plan details injected via JS -->
   </div>
 </div>
-<button class="btn btn-sm btn-outline-primary me-2" id="exportVisiblePlanBtn">
+<!--<button class="btn btn-sm btn-outline-primary me-2" id="exportVisiblePlanBtn">
   <i class="bi bi-box-arrow-up"></i> Export
-</button>
+</button>-->

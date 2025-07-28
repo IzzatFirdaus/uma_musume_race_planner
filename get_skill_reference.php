@@ -27,7 +27,7 @@ try {
     }
 
     $sql = 'SELECT skill_name, tag, stat_type FROM skill_reference';
-    if (!empty($whereConditions)) {
+    if ($whereConditions !== []) {
         $sql .= ' WHERE ' . implode(' AND ', $whereConditions);
     }
     $sql .= ' ORDER BY skill_name';
@@ -40,7 +40,7 @@ try {
 } catch (PDOException $e) {
     $log->error('Failed to fetch skill reference data', [
         'params' => $_GET,
-        'message' => $e->getMessage()
+        'message' => $e->getMessage(),
     ]);
     http_response_code(500);
     echo json_encode(['error' => 'A database error occurred.']);

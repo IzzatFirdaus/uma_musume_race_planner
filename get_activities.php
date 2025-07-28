@@ -6,7 +6,7 @@ $pdo = require __DIR__ . '/includes/db.php';
 $log = require __DIR__ . '/includes/logger.php';
 try {
     $stmt = $pdo->query('SELECT description, icon_class, timestamp FROM activity_log ORDER BY timestamp DESC LIMIT 5');
-// Adjust limit as needed
+    // Adjust limit as needed
     $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode(['success' => true, 'activities' => $activities]);
 } catch (PDOException $e) {

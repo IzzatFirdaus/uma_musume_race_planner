@@ -39,7 +39,7 @@ try {
         'plan_id' => $planId,
         'message' => $e->getMessage(),
         'file' => $e->getFile(),
-        'line' => $e->getLine()
+        'line' => $e->getLine(),
     ]);
 
     echo json_encode(['success' => false, 'error' => 'Database error while fetching main plan details.']);

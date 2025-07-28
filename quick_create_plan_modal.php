@@ -26,8 +26,8 @@
                             <label for="quick_career_stage" class="form-label">Career Stage</label>
                             <select class="form-select" id="quick_career_stage" name="career_stage" required>
                                 <?php foreach ($careerStageOptions as $option) : ?>
-                                    <option value="<?= htmlspecialchars($option['value']); ?>">
-                                    <?= htmlspecialchars($option['text']); ?>
+                                    <option value="<?= htmlspecialchars((string) $option['value']); ?>">
+                                    <?= htmlspecialchars((string) $option['text']); ?>
 </option>
                                 <?php endforeach; ?>
                             </select>
@@ -36,7 +36,7 @@
                             <label for="quick_traineeClass" class="form-label">Class</label>
                             <select class="form-select" id="quick_traineeClass" name="traineeClass" required>
                                 <?php foreach ($classOptions as $option) : ?>
-                                    <option value="<?= htmlspecialchars($option['value']); ?>"><?= htmlspecialchars($option['text']); ?></option>
+                                    <option value="<?= htmlspecialchars((string) $option['value']); ?>"><?= htmlspecialchars((string) $option['text']); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

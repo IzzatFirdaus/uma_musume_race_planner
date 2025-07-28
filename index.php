@@ -122,32 +122,58 @@ try {
 </head>
 
 <body>
-  <?php require_once 'components/navbar.php'; ?>
+  <?php require_once __DIR__ . '/components/navbar.php'; ?>
 
   <div class="container">
     <div class="header-banner rounded-3 text-center mb-4">
       <div class="container">
         <h1 class="display-4 fw-bold"><i class="bi bi-speedometer2"></i> Uma Musume Race Planner</h1>
-        <p class="lead">Plan, track, and optimize your horse girl's racing career</p>
+        <p class="lead">Plan, track, and optimize your umamusume's racing career</p>
       </div>
     </div>
 
-    <div class="row">
+    <div id="mainContent" class="row">
       <div class="col-lg-8">
-        <?php include 'components/plan-list.php'; ?>
+        <?php include __DIR__ . '/components/plan-list.php'; ?>
       </div>
       <div class="col-lg-4">
-        <?php include 'components/stats-panel.php'; ?>
-        <?php include 'components/recent-activity.php'; ?>
+        <?php include __DIR__ . '/components/stats-panel.php'; ?>
+        <?php include __DIR__ . '/components/recent-activity.php'; ?>
+      </div>
+    </div>
+
+    <?php require_once __DIR__ . '/components/plan-inline-details.php'; ?>
+
+  </div>
+
+  <?php require_once __DIR__ . '/quick_create_plan_modal.php'; ?>
+  <?php require_once __DIR__ . '/plan_details_modal.php'; ?>
+
+  <?php require_once __DIR__ . '/components/footer.php'; ?>
+
+  <div class="modal fade" id="messageBoxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body text-center alert alert-success mb-0" id="messageBoxBody"></div>
       </div>
     </div>
   </div>
 
-  <?php require_once 'quick_create_plan_modal.php'; ?>
-  <?php require_once 'plan_details_modal.php'; ?>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <?php require_once __DIR__ . '/components/copy_to_clipboard.php'; ?>
   <script>
+    // --- GLOBAL HELPERS AND VARIABLES ---
+    let messageBoxModalInstance;
+
+    function showMessageBox(message, type = 'success') {
+        if (!messageBoxModalInstance) return;
+        const messageBoxBody = document.getElementById('messageBoxBody');
+        messageBoxBody.textContent = message;
+        messageBoxBody.className = `modal-body text-center alert alert-${type} mb-0`;
+        messageBoxModalInstance.show();
+        setTimeout(() => messageBoxModalInstance.hide(), 3000);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       // --- MODAL AND GLOBAL ELEMENT INITIALIZATION ---
       const body = document.body;
@@ -156,7 +182,16 @@ try {
       const planDetailsModal = new bootstrap.Modal(planDetailsModalElement);
       const quickCreateModalElement = document.getElementById('createPlanModal');
       const quickCreateModal = new bootstrap.Modal(quickCreateModalElement);
-      const messageBoxModalInstance = new bootstrap.Modal(document.getElementById('messageBoxModal'));
+      
+      messageBoxModalInstance = new bootstrap.Modal(document.getElementById('messageBoxModal'));
+
+      const mainContentDiv = document.getElementById('mainContent');
+      const planInlineDetailsDiv = document.getElementById('planInlineDetails');
+      const closeInlineDetailsBtn = document.getElementById('closeInlineDetailsBtn');
+      const planInlineDetailsLoadingOverlay = document.getElementById('planInlineDetailsLoadingOverlay');
+
+      let currentModalPlanData = {};
+      let currentInlinePlanData = {};
 
       // --- DARK MODE LOGIC ---
       function setDarkMode(isDarkMode) {
@@ -166,33 +201,17 @@ try {
       }
 
       const savedDarkMode = localStorage.getItem('darkMode');
-      if (savedDarkMode === 'enabled') {
-        setDarkMode(true);
-      } else if (savedDarkMode === 'disabled') {
-        setDarkMode(false);
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setDarkMode(true);
-      }
+      if (savedDarkMode === 'enabled') { setDarkMode(true); } 
+      else if (savedDarkMode === 'disabled') { setDarkMode(false); } 
+      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) { setDarkMode(true); }
 
       if (darkModeToggle) {
           darkModeToggle.addEventListener('change', () => setDarkMode(darkModeToggle.checked));
       }
-
-      // --- MESSAGE BOX HELPER ---
-      function showMessageBox(message, type = 'success') {
-        const messageBoxBody = document.getElementById('messageBoxBody');
-        messageBoxBody.textContent = message;
-        messageBoxBody.className = `modal-body text-center alert alert-${type} mb-0`;
-        messageBoxModalInstance.show();
-        setTimeout(() => messageBoxModalInstance.hide(), 3000);
-      }
       
-      // --- DYNAMIC ROW CREATION HELPERS ---
-      function createSkillRow(skill = {}) {
+      // --- DYNAMIC ROW/ELEMENT CREATION HELPERS ---
+      function createModalSkillRow(skill = {}) {
         const row = document.createElement('tr');
-        // Ensure skillTagOptions is accessible in this scope, if not defined globally.
-        // For now, it's defined in PHP and encoded to JS in the renderSkills function,
-        // so we can pass it here or fetch it if createSkillRow is called directly.
         const skillTagOptions = <?php echo json_encode($skillTagOptions); ?>;
         row.innerHTML = `
             <td><input type="text" class="form-control form-control-sm skill-name-input" value="${skill.skill_name || ''}"></td>
@@ -210,14 +229,10 @@ try {
         return row;
       }
       
-      function createPredictionRow(prediction = {}) {
+      function createModalPredictionRow(prediction = {}) {
           const row = document.createElement('tr');
           const predictionIcons = <?php echo json_encode($predictionIcons); ?>;
-          const createSelect = (name, selectedValue) => `
-              <select class="form-select form-select-sm prediction-${name}-input">
-                  ${predictionIcons.map(icon => `<option value="${icon}" ${icon === selectedValue ? 'selected' : ''}>${icon}</option>`).join('')}
-              </select>`;
-      
+          const createSelect = (name, selectedValue) => `<select class="form-select form-select-sm prediction-${name}-input">${predictionIcons.map(icon => `<option value="${icon}" ${icon === selectedValue ? 'selected' : ''}>${icon}</option>`).join('')}</select>`;
           row.innerHTML = `
               <td><input type="text" class="form-control form-control-sm" value="${prediction.race_name || ''}"></td>
               <td><input type="text" class="form-control form-control-sm" value="${prediction.venue || ''}"></td>
@@ -236,9 +251,21 @@ try {
         return row;
       }
 
-      // --- RENDER FUNCTIONS FOR MODAL ---
-      function renderAttributes(attributes) {
-        const attributeGrid = document.getElementById('attributeGrid');
+      function createModalGoalRow(goal = {}) {
+          const row = document.createElement('tr');
+          row.dataset.id = goal.id || '';
+          row.innerHTML = `
+              <td><input type="text" class="form-control form-control-sm goal-input" value="${goal.goal || ''}"></td>
+              <td><input type="text" class="form-control form-control-sm result-input" value="${goal.result || ''}"></td>
+              <td><button type="button" class="btn btn-danger btn-sm remove-goal-btn"><i class="bi bi-x-circle"></i></button></td>
+          `;
+          return row;
+      }
+      
+      // --- RENDER FUNCTIONS ---
+      function renderModalAttributes(attributes, isInline) {
+        const gridId = isInline ? 'attributeGridInline' : 'attributeGrid';
+        const attributeGrid = document.getElementById(gridId);
         attributeGrid.innerHTML = '';
         const grades = <?php echo json_encode($attributeGradeOptions); ?>;
         attributes.forEach(attr => {
@@ -246,28 +273,77 @@ try {
           div.className = 'col-md-4';
           const optionsHtml = grades.map(grade => `<option value="${grade}" ${grade === attr.grade ? 'selected' : ''}>${grade}</option>`).join('');
           div.innerHTML = `
-            <label class="form-label" for="attr-${attr.attribute_name}">${attr.attribute_name}</label>
+            <label class="form-label" for="attr-${attr.attribute_name}${isInline ? '-inline' : ''}">${attr.attribute_name}</label>
             <div class="input-group mb-3">
-                <input type="number" class="form-control attribute-value-input" id="attr-${attr.attribute_name}" 
-                       data-attribute-name="${attr.attribute_name}" value="${attr.value}" min="0" max="1200">
-                <select class="form-select attribute-grade-input" data-attribute-name="${attr.attribute_name}">
-                    ${optionsHtml}
-                </select>
+                <input type="number" class="form-control attribute-value-input" id="attr-${attr.attribute_name}${isInline ? '-inline' : ''}" data-attribute-name="${attr.attribute_name}" value="${attr.value}" min="0" max="1200">
+                <select class="form-select attribute-grade-input" data-attribute-name="${attr.attribute_name}">${optionsHtml}</select>
             </div>`;
           attributeGrid.appendChild(div);
         });
       }
 
-      function renderSkills(skills) {
-        const skillsTableBody = document.getElementById('skillsTable').querySelector('tbody');
+      function renderModalSkills(skills, isInline) {
+        const tableId = isInline ? 'skillsTableInline' : 'skillsTable';
+        const skillsTableBody = document.getElementById(tableId).querySelector('tbody');
         skillsTableBody.innerHTML = '';
-        skills.forEach(skill => skillsTableBody.appendChild(createSkillRow(skill)));
+        skills.forEach(skill => skillsTableBody.appendChild(createModalSkillRow(skill)));
       }
 
-      function renderPredictions(predictions) {
-        const predictionsTableBody = document.getElementById('predictionsTable').querySelector('tbody');
+      function renderModalPredictions(predictions, isInline) {
+        const tableId = isInline ? 'predictionsTableInline' : 'predictionsTable';
+        const predictionsTableBody = document.getElementById(tableId).querySelector('tbody');
         predictionsTableBody.innerHTML = '';
-        predictions.forEach(prediction => predictionsTableBody.appendChild(createPredictionRow(prediction)));
+        predictions.forEach(prediction => predictionsTableBody.appendChild(createModalPredictionRow(prediction)));
+      }
+
+      function renderModalGoals(goals, isInline) {
+          const tableId = isInline ? 'goalsTableInline' : 'goalsTable';
+          const goalsTableBody = document.getElementById(tableId).querySelector('tbody');
+          goalsTableBody.innerHTML = '';
+          goals.forEach(goal => goalsTableBody.appendChild(createModalGoalRow(goal)));
+      }
+
+      function renderAptitudeGrades(gradesData, isInline) {
+        const containerId = isInline ? 'aptitudeGradesContainerInline' : 'aptitudeGradesContainer';
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        const gradeTypes = [
+            { title: 'Terrain', data: gradesData.terrain_grades || [], key: 'terrain' },
+            { title: 'Distance', data: gradesData.distance_grades || [], key: 'distance' },
+            { title: 'Style', data: gradesData.style_grades || [], key: 'style' }
+        ];
+
+        const gradeOptions = <?php echo json_encode($attributeGradeOptions); ?>;
+        
+        gradeTypes.forEach(type => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4';
+            let content = `<h5 class="mt-2">${type.title}</h5>`;
+            
+            const gradeMap = new Map(type.data.map(item => [item[type.key], item.grade]));
+
+            const defaultGrades = {
+                terrain: ['Turf', 'Dirt'],
+                distance: ['Sprint', 'Mile', 'Medium', 'Long'],
+                style: ['Front', 'Pace', 'Late', 'End']
+            };
+
+            defaultGrades[type.key].forEach(itemKey => {
+                const currentGrade = gradeMap.get(itemKey) || 'G';
+                const optionsHtml = gradeOptions.map(grade => `<option value="${grade}" ${grade === currentGrade ? 'selected' : ''}>${grade}</option>`).join('');
+                content += `
+                    <div class="mb-2 row align-items-center">
+                        <label class="col-sm-4 col-form-label">${itemKey}</label>
+                        <div class="col-sm-8">
+                            <select class="form-select form-select-sm aptitude-grade-select" data-grade-type="${type.key}" data-item-key="${itemKey}">${optionsHtml}</select>
+                        </div>
+                    </div>
+                `;
+            });
+            col.innerHTML = content;
+            container.appendChild(col);
+        });
       }
 
       // --- DYNAMIC UI UPDATE FUNCTIONS ---
@@ -277,12 +353,10 @@ try {
               .then(data => {
                   if (data.success) {
                       const planListBody = document.getElementById('planListBody');
-                      planListBody.innerHTML = ''; // Clear current list
-
+                      planListBody.innerHTML = ''; 
                       if (data.plans.length > 0) {
                           data.plans.forEach(plan => {
                               const row = document.createElement('tr');
-                              // Dynamically apply status badge class
                               let statusClass = '';
                               switch(plan.status) {
                                   case 'Planning': statusClass = 'bg-planning'; break;
@@ -293,40 +367,24 @@ try {
                                   default: statusClass = 'bg-secondary'; break;
                               }
                               row.innerHTML = `
-                                  <td>
-                                      <strong>${plan.plan_title || 'Untitled Plan'}</strong><br>
-                                      <small class="text-muted">${plan.name}</small>
-                                  </td>
+                                  <td><strong>${plan.plan_title || 'Untitled Plan'}</strong><br><small class="text-muted">${plan.name}</small></td>
                                   <td>${plan.career_stage ? plan.career_stage.charAt(0).toUpperCase() + plan.career_stage.slice(1) : ''}</td>
                                   <td>${plan.class ? plan.class.charAt(0).toUpperCase() + plan.class.slice(1) : ''}</td>
                                   <td>${plan.race_name || ''}</td>
+                                  <td><span class="badge ${statusClass} rounded-pill">${plan.status || ''}</span></td>
                                   <td>
-                                      <span class="badge ${statusClass} rounded-pill">
-                                          ${plan.status || ''}
-                                      </span>
-                                  </td>
-                                  <td>
-                                    <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}">
-                                      <i class="bi bi-pencil-square"></i> Edit
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}">
-                                      <i class="bi bi-trash"></i>
-                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}"><i class="bi bi-pencil-square"></i> Edit</button>
+                                    <button class="btn btn-sm btn-outline-info view-inline-btn me-1" data-id="${plan.id}"><i class="bi bi-eye"></i> View Details</button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}"><i class="bi bi-trash"></i></button>
                                   </td>
                               `;
                               planListBody.appendChild(row);
                           });
                       } else {
-                          planListBody.innerHTML = `
-                              <tr>
-                                  <td colspan="6" class="text-center text-muted p-4">
-                                      No plans found. Click "Create New" to get started!
-                                  </td>
-                              </tr>
-                          `;
+                          planListBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted p-4">No plans found. Click "Create New" to get started!</td></tr>`;
                       }
-                      updateStats(); // Also update stats after plan list changes
-                      updateRecentActivity(); // Update recent activity
+                      updateStats(); 
+                      updateRecentActivity();
                   } else {
                       throw new Error(data.error || 'Failed to fetch plans.');
                   }
@@ -341,7 +399,7 @@ try {
                   if (data.success && data.stats) {
                       document.getElementById('statsPlans').textContent = data.stats.total_plans;
                       document.getElementById('statsActive').textContent = data.stats.active_plans;
-                      document.getElementById('statsFinished').textContent = data.stats.finished_plans; // Now using 'finished_plans'
+                      document.getElementById('statsFinished').textContent = data.stats.finished_plans;
                   } else {
                       throw new Error(data.error || 'Failed to fetch stats.');
                   }
@@ -350,13 +408,12 @@ try {
       }
 
       function updateRecentActivity() {
-          fetch('get_activities.php') // Assuming a new get_activities.php endpoint exists
+          fetch('get_activities.php')
               .then(response => response.json())
               .then(data => {
                   if (data.success) {
                       const recentActivityBody = document.getElementById('recentActivity');
-                      recentActivityBody.innerHTML = ''; // Clear current activity
-
+                      recentActivityBody.innerHTML = '';
                       if (data.activities && data.activities.length > 0) {
                           const ul = document.createElement('ul');
                           ul.className = 'list-group list-group-flush';
@@ -364,11 +421,7 @@ try {
                               const li = document.createElement('li');
                               li.className = 'list-group-item d-flex align-items-center';
                               const timestamp = new Date(activity.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                              li.innerHTML = `
-                                  <i class="bi ${activity.icon_class || 'bi-info-circle'} me-2"></i>
-                                  ${activity.description}
-                                  <small class="text-muted ms-auto">${timestamp}</small>
-                              `;
+                              li.innerHTML = `<i class="bi ${activity.icon_class || 'bi-info-circle'} me-2"></i> ${activity.description} <small class="text-muted ms-auto">${timestamp}</small>`;
                               ul.appendChild(li);
                           });
                           recentActivityBody.appendChild(ul);
@@ -388,105 +441,107 @@ try {
         const target = event.target;
         const editBtn = target.closest('.edit-btn');
         const deleteBtn = target.closest('.delete-btn');
-        const newPlanBtn = target.closest('#newPlanBtn, #createPlanBtn'); // Both buttons open quick create
+        const newPlanBtn = target.closest('#newPlanBtn, #createPlanBtn');
+        const viewInlineBtn = target.closest('.view-inline-btn');
 
-        // Handle EDIT Plan Button
-        if (editBtn) {
-          const planId = editBtn.dataset.id;
-          document.getElementById('planDetailsLoadingOverlay').style.display = 'flex';
-          document.getElementById('planDetailsForm').reset(); // Clear form on load
-          
-          // Reset active tab to General
-          document.getElementById('general-tab').classList.add('active');
-          document.getElementById('general').classList.add('show', 'active');
-          document.getElementById('attributes-tab').classList.remove('active');
-          document.getElementById('attributes').classList.remove('show', 'active');
-          document.getElementById('skills-tab').classList.remove('active');
-          document.getElementById('skills').classList.remove('show', 'active');
-          document.getElementById('predictions-tab').classList.remove('active');
-          document.getElementById('predictions').classList.remove('show', 'active');
+        async function fetchAndPopulatePlan(planId, isInlineView) {
+            const loadingOverlay = isInlineView ? planInlineDetailsLoadingOverlay : document.getElementById('planDetailsLoadingOverlay');
+            const formElement = isInlineView ? document.getElementById('planDetailsFormInline') : document.getElementById('planDetailsForm');
+            const planDetailsLabel = isInlineView ? document.getElementById('planInlineDetailsLabel') : document.getElementById('planDetailsModalLabel');
+            
+            loadingOverlay.style.display = 'flex';
+            formElement.reset();
+            
+            const tabsContainerId = isInlineView ? 'planTabsInline' : 'planTabs';
+            document.querySelectorAll(`#${tabsContainerId} .nav-link`).forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll(`#${tabsContainerId} ~ .tab-content .tab-pane`).forEach(pane => pane.classList.remove('show', 'active'));
+            const generalTabBtn = isInlineView ? document.getElementById('general-tab-inline') : document.getElementById('general-tab');
+            generalTabBtn.classList.add('active');
+            const generalTabPane = isInlineView ? document.getElementById('general-inline') : document.getElementById('general');
+            generalTabPane.classList.add('show', 'active');
 
+            try {
+                const responses = await Promise.all([
+                    fetch(`fetch_plan_details.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_attributes.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_skills.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_predictions.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_goals.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_terrain_grades.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_distance_grades.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_style_grades.php?id=${planId}`).then(res => res.json()),
+                    fetch(`get_plan_turns.php?id=${planId}`).then(res => res.json())
+                ]);
 
-          // Fetch all related data concurrently
-          Promise.all([
-              fetch(`fetch_plan_details.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_attributes.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_skills.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_predictions.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_goals.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_terrain_grades.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_distance_grades.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_style_grades.php?id=${planId}`).then(res => res.json()),
-              fetch(`get_plan_turns.php?id=${planId}`).then(res => res.json())
-          ])
-            .then(([
-                mainPlanResponse,
-                attributesResponse,
-                skillsResponse,
-                predictionsResponse,
-                goalsResponse,
-                terrainGradesResponse,
-                distanceGradesResponse,
-                styleGradesResponse,
-                turnsResponse
-            ]) => {
-                // Check for errors in any response
-                if (mainPlanResponse.error) throw new Error(mainPlanResponse.error);
-                if (attributesResponse.error) throw new Error(attributesResponse.error);
-                if (skillsResponse.error) throw new Error(skillsResponse.error);
-                if (predictionsResponse.error) throw new Error(predictionsResponse.error);
-                if (goalsResponse.error) throw new Error(goalsResponse.error);
-                if (terrainGradesResponse.error) throw new Error(terrainGradesResponse.error);
-                if (distanceGradesResponse.error) throw new Error(distanceGradesResponse.error);
-                if (styleGradesResponse.error) throw new Error(styleGradesResponse.error);
-                if (turnsResponse.error) throw new Error(turnsResponse.error);
-
-                const data = mainPlanResponse.plan; // Main plan data is now nested under 'plan'
-
-                // Populate form fields (from main plan data)
-                document.getElementById('planId').value = data.id || '';
-                document.getElementById('planDetailsModalLabel').textContent = `Plan Details: ${data.plan_title || 'Untitled'}`;
-                document.getElementById('plan_title').value = data.plan_title || '';
-                document.getElementById('modalName').value = data.name || '';
-                document.getElementById('modalCareerStage').value = data.career_stage || '';
-                document.getElementById('modalClass').value = data.class || '';
-                document.getElementById('modalRaceName').value = data.race_name || '';
-                document.getElementById('modalTurnBefore').value = data.turn_before || 0;
-                document.getElementById('modalGoal').value = data.goal || '';
-                document.getElementById('modalStrategy').value = data.strategy_id || '';
-                document.getElementById('modalMood').value = data.mood_id || '';
-                document.getElementById('modalCondition').value = data.condition_id || '';
-                document.getElementById('energyRange').value = data.energy || 0;
-                document.getElementById('energyValue').textContent = data.energy || 0;
-                document.getElementById('raceDaySwitch').checked = data.race_day === 'yes';
-                document.getElementById('acquireSkillSwitch').checked = data.acquire_skill === 'YES';
-                document.getElementById('skillPoints').value = data.total_available_skill_points || 0;
-                document.getElementById('modalStatus').value = data.status || 'Planning';
-                document.getElementById('modalTimeOfDay').value = data.time_of_day || '';
-                document.getElementById('modalMonth').value = data.month || '';
-                document.getElementById('modalSource').value = data.source || '';
-                document.getElementById('growthRateSpeed').value = data.growth_rate_speed || 0;
-                document.getElementById('growthRateStamina').value = data.growth_rate_stamina || 0;
-                document.getElementById('growthRatePower').value = data.growth_rate_power || 0;
-                document.getElementById('growthRateGuts').value = data.growth_rate_guts || 0;
-                document.getElementById('growthRateWit').value = data.growth_rate_wit || 0;
+                const allData = {};
+                responses.forEach(res => {
+                    if (res.error) throw new Error(res.error);
+                    Object.assign(allData, res);
+                });
                 
-                // Render dynamic content (from separate API calls)
-                renderAttributes(attributesResponse.attributes || []);
-                renderSkills(skillsResponse.skills || []);
-                renderPredictions(predictionsResponse.predictions || []);
-                // Add rendering for goals, terrain_grades, distance_grades, style_grades, turns if they have UI elements
-                // E.g., if you add a Goals tab: renderGoals(goalsResponse.goals || []);
+                if (isInlineView) { currentInlinePlanData = allData; } 
+                else { currentModalPlanData = allData; }
 
-                planDetailsModal.show();
-            })
-            .catch(error => showMessageBox(`Error fetching plan details: ${error.message}`, 'danger'))
-            .finally(() => {
-              document.getElementById('planDetailsLoadingOverlay').style.display = 'none';
-            });
+                const data = allData.plan;
+                const suffix = isInlineView ? '_inline' : '';
+                
+                document.getElementById(`planId${isInlineView ? 'Inline' : ''}`).value = data.id || '';
+                planDetailsLabel.textContent = `Plan Details: ${data.plan_title || 'Untitled'}`;
+                document.getElementById(`plan_title${suffix}`).value = data.plan_title || '';
+                document.getElementById(`modalName${suffix}`).value = data.name || '';
+                document.getElementById(`modalCareerStage${suffix}`).value = data.career_stage || '';
+                document.getElementById(`modalClass${suffix}`).value = data.class || '';
+                document.getElementById(`modalRaceName${suffix}`).value = data.race_name || '';
+                document.getElementById(`modalTurnBefore${suffix}`).value = data.turn_before || 0;
+                document.getElementById(`modalGoal${suffix}`).value = data.goal || '';
+                document.getElementById(`modalStrategy${suffix}`).value = data.strategy_id || '';
+                document.getElementById(`modalMood${suffix}`).value = data.mood_id || '';
+                document.getElementById(`modalCondition${suffix}`).value = data.condition_id || '';
+                const energyRange = document.getElementById(`energyRange${suffix}`);
+                energyRange.value = data.energy || 0;
+                document.getElementById(`energyValue${suffix}`).textContent = energyRange.value;
+                document.getElementById(`raceDaySwitch${suffix}`).checked = data.race_day === 'yes';
+                document.getElementById(`acquireSkillSwitch${suffix}`).checked = data.acquire_skill === 'YES';
+                document.getElementById(`skillPoints${suffix}`).value = data.total_available_skill_points || 0;
+                document.getElementById(`modalStatus${suffix}`).value = data.status || 'Planning';
+                document.getElementById(`modalTimeOfDay${suffix}`).value = data.time_of_day || '';
+                document.getElementById(`modalMonth${suffix}`).value = data.month || '';
+                document.getElementById(`modalSource${suffix}`).value = data.source || '';
+                document.getElementById(`growthRateSpeed${suffix}`).value = data.growth_rate_speed || 0;
+                document.getElementById(`growthRateStamina${suffix}`).value = data.growth_rate_stamina || 0;
+                document.getElementById(`growthRatePower${suffix}`).value = data.growth_rate_power || 0;
+                document.getElementById(`growthRateGuts${suffix}`).value = data.growth_rate_guts || 0;
+                document.getElementById(`growthRateWit${suffix}`).value = data.growth_rate_wit || 0;
+                
+                const gradesData = {
+                    terrain_grades: allData.terrain_grades,
+                    distance_grades: allData.distance_grades,
+                    style_grades: allData.style_grades,
+                };
+                
+                renderModalAttributes(allData.attributes || [], isInlineView);
+                renderAptitudeGrades(gradesData, isInlineView);
+                renderModalSkills(allData.skills || [], isInlineView);
+                renderModalPredictions(allData.predictions || [], isInlineView);
+                renderModalGoals(allData.goals || [], isInlineView);
+
+                if (isInlineView) {
+                    mainContentDiv.style.display = 'none';
+                    planInlineDetailsDiv.style.display = 'block';
+                } else {
+                    planDetailsModal.show();
+                }
+
+            } catch (error) {
+                showMessageBox(`Error fetching plan details: ${error.message}`, 'danger');
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
         }
 
-        // Handle DELETE Plan Button
+        if (editBtn) { fetchAndPopulatePlan(editBtn.dataset.id, false); }
+        if (viewInlineBtn) { fetchAndPopulatePlan(viewInlineBtn.dataset.id, true); }
+
         if (deleteBtn) {
           const planId = deleteBtn.dataset.id;
           if (confirm('Are you sure you want to delete this plan?')) {
@@ -496,34 +551,43 @@ try {
               .then(response => response.json())
               .then(data => {
                 if (data.success) {
-                    showMessageBox('Plan deleted successfully!', 'success');
-                    updatePlanList(); // Update UI instead of full reload
-                }
-                else throw new Error(data.error || 'Failed to delete plan.');
+                    showMessageBox('Plan deleted successfully!');
+                    updatePlanList();
+                } else { throw new Error(data.error || 'Failed to delete plan.'); }
               })
               .catch(error => showMessageBox(`Error: ${error.message}`, 'danger'));
           }
         }
 
-        // Handle NEW Plan Button
         if (newPlanBtn) {
           document.getElementById('quickCreatePlanForm').reset();
           quickCreateModal.show();
         }
 
-        // Handle Add/Remove buttons inside the modal
-        if (target.closest('#addSkillBtn')) {
-            document.querySelector('#skillsTable tbody').appendChild(createSkillRow());
+        const addSkillBtn = target.closest('#addSkillBtn, #addSkillBtnInline');
+        if (addSkillBtn) {
+            const tableId = addSkillBtn.id.includes('Inline') ? 'skillsTableInline' : 'skillsTable';
+            document.querySelector(`#${tableId} tbody`).appendChild(createModalSkillRow());
         }
-        if (target.closest('.remove-skill-btn')) {
-            target.closest('tr').remove();
+        const removeBtn = target.closest('.remove-skill-btn, .remove-prediction-btn, .remove-goal-btn');
+        if (removeBtn) {
+            removeBtn.closest('tr').remove();
         }
-        if (target.closest('#addPredictionBtn')) {
-            document.querySelector('#predictionsTable tbody').appendChild(createPredictionRow());
+        const addPredictionBtn = target.closest('#addPredictionBtn, #addPredictionBtnInline');
+        if (addPredictionBtn) {
+            const tableId = addPredictionBtn.id.includes('Inline') ? 'predictionsTableInline' : 'predictionsTable';
+            document.querySelector(`#${tableId} tbody`).appendChild(createModalPredictionRow());
         }
-        if (target.closest('.remove-prediction-btn')) {
-            target.closest('tr').remove();
+        const addGoalBtn = target.closest('#addGoalBtn, #addGoalBtnInline');
+        if (addGoalBtn) {
+            const tableId = addGoalBtn.id.includes('Inline') ? 'goalsTableInline' : 'goalsTable';
+            document.querySelector(`#${tableId} tbody`).appendChild(createModalGoalRow());
         }
+      });
+
+      closeInlineDetailsBtn.addEventListener('click', () => {
+          planInlineDetailsDiv.style.display = 'none';
+          mainContentDiv.style.display = 'flex';
       });
 
       // --- FORM SUBMISSION LISTENERS ---
@@ -531,135 +595,46 @@ try {
         document.getElementById(formId).addEventListener('submit', function(e) {
           e.preventDefault();
           const formData = new FormData(this);
-
-          if (formId === 'planDetailsForm') {
-            const attributes = Array.from(document.querySelectorAll('#attributeGrid .attribute-value-input')).map(input => ({
-              attribute_name: input.dataset.attributeName,
-              value: parseInt(input.value) || 0,
-              grade: input.closest('.input-group').querySelector('.attribute-grade-input').value
-            }));
-            formData.append('attributes', JSON.stringify(attributes));
-
-            const skills = Array.from(document.querySelectorAll('#skillsTable tbody tr')).map(row => ({
-                skill_name: row.querySelector('.skill-name-input').value,
-                sp_cost: parseInt(row.querySelector('.skill-sp-cost-input').value) || 0,
-                acquired: row.querySelector('.skill-acquired-checkbox').checked ? 'yes' : 'no',
-                tag: row.querySelector('.skill-tag-select').value,
-                notes: row.querySelector('.skill-notes-input').value
-            }));
-            formData.append('skills', JSON.stringify(skills));
-
-            const predictions = Array.from(document.querySelectorAll('#predictionsTable tbody tr')).map(row => ({
-                race_name: row.children[0].querySelector('input').value,
-                venue: row.children[1].querySelector('input').value,
-                ground: row.children[2].querySelector('input').value,
-                distance: row.children[3].querySelector('input').value,
-                track_condition: row.children[4].querySelector('input').value,
-                direction: row.children[5].querySelector('input').value,
-                speed: row.children[6].querySelector('select').value,
-                stamina: row.children[7].querySelector('select').value,
-                power: row.children[8].querySelector('select').value,
-                guts: row.children[9].querySelector('select').value,
-                wit: row.children[10].querySelector('select').value,
-                comment: row.children[11].querySelector('input').value
-            }));
-            formData.append('predictions', JSON.stringify(predictions));
-            // Add other dynamic data collection here (goals, terrain_grades, etc.) if they are added to the modal
-          }
-
-          fetch(url, { method: 'POST', body: formData })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                showMessageBox('Plan saved successfully!', 'success');
-                if (formId === 'planDetailsForm') {
-                    planDetailsModal.hide();
-                } else if (formId === 'quickCreatePlanForm') {
-                    quickCreateModal.hide();
-                }
-                updatePlanList(); // Update UI instead of full reload
-              }
-              else throw new Error(data.error || 'An unknown error occurred.');
-            })
-            .catch(error => showMessageBox(`Error: ${error.message}`, 'danger'));
-        });
-      }
-      
-      handleFormSubmit('quickCreatePlanForm', 'handle_plan_crud.php');
-      handleFormSubmit('planDetailsForm', 'handle_plan_crud.php');
-
-      // Initial UI updates on page load
-      updatePlanList(); // This also triggers updateStats and updateRecentActivity
-
-      // Energy range display update
-      document.getElementById('energyRange').addEventListener('input', function() {
-        document.getElementById('energyValue').textContent = this.value;
-      });
-
-      // Export Plan Button
-      document.getElementById('exportPlanBtn').addEventListener('click', function() {
-          const planId = document.getElementById('planId').value;
-          if (planId) {
-              // Construct a detailed text representation of the plan
-              const planTitle = document.getElementById('plan_title').value;
-              const traineeName = document.getElementById('modalName').value;
-              const careerStage = document.getElementById('modalCareerStage').value;
-              const planStatus = document.getElementById('modalStatus').value;
-
-              let exportText = `--- Plan Details: ${planTitle || 'Untitled Plan'} ---\n`;
-              exportText += `Trainee: ${traineeName || 'N/A'}\n`;
-              exportText += `Career Stage: ${careerStage || 'N/A'}\n`;
-              exportText += `Status: ${planStatus || 'N/A'}\n\n`;
-
-              // General Tab Data
-              exportText += "GENERAL INFORMATION:\n";
-              exportText += `  Race Name: ${document.getElementById('modalRaceName').value || 'N/A'}\n`;
-              exportText += `  Turn Before: ${document.getElementById('modalTurnBefore').value || 'N/A'}\n`;
-              exportText += `  Goal: ${document.getElementById('modalGoal').value || 'N/A'}\n`;
-              exportText += `  Strategy: ${document.getElementById('modalStrategy').selectedOptions[0].text || 'N/A'}\n`;
-              exportText += `  Mood: ${document.getElementById('modalMood').selectedOptions[0].text || 'N/A'}\n`;
-              exportText += `  Condition: ${document.getElementById('modalCondition').selectedOptions[0].text || 'N/A'}\n`;
-              exportText += `  Energy: ${document.getElementById('energyRange').value || 'N/A'}%\n`;
-              exportText += `  Race Day: ${document.getElementById('raceDaySwitch').checked ? 'Yes' : 'No'}\n`;
-              exportText += `  Acquire Skill: ${document.getElementById('acquireSkillSwitch').checked ? 'Yes' : 'No'}\n`;
-              exportText += `  Total SP: ${document.getElementById('skillPoints').value || 'N/A'}\n`;
-              exportText += `  Time of Day: ${document.getElementById('modalTimeOfDay').value || 'N/A'}\n`;
-              exportText += `  Month: ${document.getElementById('modalMonth').value || 'N/A'}\n`;
-              exportText += `  Source: ${document.getElementById('modalSource').value || 'N/A'}\n`;
-              exportText += `  Growth Rates (S/St/P/G/W): ${document.getElementById('growthRateSpeed').value}% / ${document.getElementById('growthRateStamina').value}% / ${document.getElementById('growthRatePower').value}% / ${document.getElementById('growthRateGuts').value}% / ${document.getElementById('growthRateWit').value}%\n\n`;
-
-              // Attributes Tab Data
-              const attributes = Array.from(document.querySelectorAll('#attributeGrid .attribute-value-input')).map(input => ({
+          
+          if (formId === 'planDetailsForm' || formId === 'planDetailsFormInline') {
+              const isInline = formId.includes('Inline');
+              const suffix = isInline ? 'Inline' : '';
+              
+              const gradeSelector = `#aptitudeGradesContainer${suffix} .aptitude-grade-select`;
+              let terrainGradesData = [];
+              let distanceGradesData = [];
+              let styleGradesData = [];
+              document.querySelectorAll(gradeSelector).forEach(select => {
+                  const gradeType = select.dataset.gradeType;
+                  const itemKey = select.dataset.itemKey;
+                  const grade = select.value;
+                  if (gradeType === 'terrain') { terrainGradesData.push({ terrain: itemKey, grade: grade }); } 
+                  else if (gradeType === 'distance') { distanceGradesData.push({ distance: itemKey, grade: grade }); } 
+                  else if (gradeType === 'style') { styleGradesData.push({ style: itemKey, grade: grade }); }
+              });
+              formData.append('terrainGrades', JSON.stringify(terrainGradesData));
+              formData.append('distanceGrades', JSON.stringify(distanceGradesData));
+              formData.append('styleGrades', JSON.stringify(styleGradesData));
+          
+              const attributesData = Array.from(document.querySelectorAll(`#attributeGrid${suffix} .attribute-value-input`)).map(input => ({
                   attribute_name: input.dataset.attributeName,
-                  value: input.value,
+                  value: parseInt(input.value) || 0,
                   grade: input.closest('.input-group').querySelector('.attribute-grade-input').value
               }));
-              if (attributes.length > 0) {
-                  exportText += "ATTRIBUTES:\n";
-                  attributes.forEach(attr => {
-                      exportText += `  ${attr.attribute_name}: ${attr.value} (${attr.grade})\n`;
-                  });
-                  exportText += "\n";
-              }
-
-              // Skills Tab Data
-              const skills = Array.from(document.querySelectorAll('#skillsTable tbody tr')).map(row => ({
+              formData.append('attributes', JSON.stringify(attributesData));
+              
+              const skillsData = Array.from(document.querySelectorAll(`#skillsTable${suffix} tbody tr`)).map(row => ({
+                  id: row.dataset.id || null,
                   skill_name: row.querySelector('.skill-name-input').value,
                   sp_cost: row.querySelector('.skill-sp-cost-input').value,
-                  acquired: row.querySelector('.skill-acquired-checkbox').checked ? 'Yes' : 'No',
+                  acquired: row.querySelector('.skill-acquired-checkbox').checked ? 'yes' : 'no',
                   tag: row.querySelector('.skill-tag-select').value,
                   notes: row.querySelector('.skill-notes-input').value
               }));
-              if (skills.length > 0) {
-                  exportText += "SKILLS:\n";
-                  skills.forEach(skill => {
-                      exportText += `  - ${skill.skill_name} (SP: ${skill.sp_cost}, Acquired: ${skill.acquired}, Tag: ${skill.tag}, Notes: ${skill.notes})\n`;
-                  });
-                  exportText += "\n";
-              }
+              formData.append('skills', JSON.stringify(skillsData));
 
-              // Race Predictions Tab Data
-              const predictions = Array.from(document.querySelectorAll('#predictionsTable tbody tr')).map(row => ({
+              const predictionsData = Array.from(document.querySelectorAll(`#predictionsTable${suffix} tbody tr`)).map(row => ({
+                  id: row.dataset.id || null,
                   race_name: row.children[0].querySelector('input').value,
                   venue: row.children[1].querySelector('input').value,
                   ground: row.children[2].querySelector('input').value,
@@ -673,42 +648,50 @@ try {
                   wit: row.children[10].querySelector('select').value,
                   comment: row.children[11].querySelector('input').value
               }));
-              if (predictions.length > 0) {
-                  exportText += "RACE PREDICTIONS:\n";
-                  predictions.forEach(pred => {
-                      exportText += `  - Race: ${pred.race_name} (${pred.venue}, ${pred.distance})\n`;
-                      exportText += `    Ground: ${pred.ground}, Track: ${pred.track_condition}, Direction: ${pred.direction}\n`;
-                      exportText += `    Stats: S:${pred.speed} St:${pred.stamina} P:${pred.power} G:${pred.guts} W:${pred.wit}\n`;
-                      exportText += `    Comment: ${pred.comment}\n`;
-                  });
-                  exportText += "\n";
-              }
+              formData.append('predictions', JSON.stringify(predictionsData));
 
-              // Create a Blob and download it
-              const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
-              const link = document.createElement('a');
-              link.href = URL.createObjectURL(blob);
-              link.download = `${planTitle || 'Untitled_Plan'}.txt`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(link.href);
-
-              showMessageBox('Plan exported successfully!', 'success');
-          } else {
-              showMessageBox('No plan selected to export.', 'warning');
+              const goalsData = Array.from(document.querySelectorAll(`#goalsTable${suffix} tbody tr`)).map(row => ({
+                  id: row.dataset.id || null,
+                  goal: row.querySelector('.goal-input').value,
+                  result: row.querySelector('.result-input').value
+              }));
+              formData.append('goals', JSON.stringify(goalsData));
           }
+
+          fetch(url, { method: 'POST', body: formData })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                showMessageBox('Plan saved successfully!');
+                if (formId === 'planDetailsForm') { planDetailsModal.hide(); } 
+                else if (formId === 'planDetailsFormInline') { closeInlineDetailsBtn.click(); } 
+                else if (formId === 'quickCreatePlanForm') { quickCreateModal.hide(); }
+                updatePlanList();
+              } else { throw new Error(data.error || 'An unknown error occurred.'); }
+            })
+            .catch(error => showMessageBox(`Error: ${error.message}`, 'danger'));
+        });
+      }
+      
+      handleFormSubmit('quickCreatePlanForm', 'handle_plan_crud.php');
+      handleFormSubmit('planDetailsForm', 'handle_plan_crud.php');
+      handleFormSubmit('planDetailsFormInline', 'handle_plan_crud.php'); 
+
+      updatePlanList();
+
+      document.getElementById('energyRange').addEventListener('input', function() { document.getElementById('energyValue').textContent = this.value; });
+      document.getElementById('energyRange_inline').addEventListener('input', function() { document.getElementById('energyValue_inline').textContent = this.value; });
+
+      document.getElementById('exportPlanBtn').addEventListener('click', () => {
+          if (document.getElementById('planId').value) { copyPlanDetailsToClipboard(currentModalPlanData); } 
+          else { showMessageBox('No plan selected to export.', 'warning'); }
+      });
+      document.getElementById('exportPlanBtnInline').addEventListener('click', () => {
+          if (document.getElementById('planIdInline').value) { copyPlanDetailsToClipboard(currentInlinePlanData); } 
+          else { showMessageBox('No plan selected to export.', 'warning'); }
       });
     });
   </script>
 
-  <div class="modal fade" id="messageBoxModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-body text-center alert alert-success mb-0" id="messageBoxBody"></div>
-      </div>
-    </div>
-  </div>
 </body>
-
 </html>

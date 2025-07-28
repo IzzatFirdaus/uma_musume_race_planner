@@ -20,16 +20,16 @@ try {
     // This assumes 1 is a valid, existing ID if the label isn't found.
     // In a real application, you'd ensure these defaults are seeded and known.
     if ($default_mood_id === null) {
-        $default_mood_id = $pdo->query("SELECT id FROM moods LIMIT 1")->fetchColumn() ?: 1;
+        $default_mood_id = $pdo->query('SELECT id FROM moods LIMIT 1')->fetchColumn() ?: 1;
     }
     if ($default_strategy_id === null) {
-        $default_strategy_id = $pdo->query("SELECT id FROM strategies LIMIT 1")->fetchColumn() ?: 1;
+        $default_strategy_id = $pdo->query('SELECT id FROM strategies LIMIT 1')->fetchColumn() ?: 1;
     }
     if ($default_condition_id === null) {
-        $default_condition_id = $pdo->query("SELECT id FROM conditions LIMIT 1")->fetchColumn() ?: 1;
+        $default_condition_id = $pdo->query('SELECT id FROM conditions LIMIT 1')->fetchColumn() ?: 1;
     }
 } catch (PDOException $e) {
-    $log->error("Failed to fetch lookup data or default IDs: " . $e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine()]);
+    $log->error('Failed to fetch lookup data or default IDs: ' . $e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine()]);
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Database initialization error.']);
     exit;
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
 
         $planIdToUse = $id; // Will be set on insert
 
-        if ($id) {
+        if ($id !== 0) {
             // --- UPDATE EXISTING PLAN ---
             $log->info('Updating main plan details.', ['plan_id' => $id]);
             $sql = 'UPDATE plans SET
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
                 $goal_main, $strategy_id, $mood_id, $condition_id, $energy, $race_day,
                 $acquire_skill, $skill_points, $status, $time_of_day, $month, $source,
                 $growth_rate_speed, $growth_rate_stamina, $growth_rate_power,
-                $growth_rate_guts, $growth_rate_wit, $id
+                $growth_rate_guts, $growth_rate_wit, $id,
             ]);
         } else {
             // --- CREATE NEW PLAN ---
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
                 $goal_main, $strategy_id, $mood_id, $condition_id, $energy, $race_day,
                 $acquire_skill, $skill_points, $status, $time_of_day, $month, $source,
                 $growth_rate_speed, $growth_rate_stamina, $growth_rate_power,
-                $growth_rate_guts, $growth_rate_wit
+                $growth_rate_guts, $growth_rate_wit,
             ]);
             $planIdToUse = $pdo->lastInsertId();
             $log->info('New plan created successfully.', ['new_plan_id' => $planIdToUse, 'plan_title' => $plan_title]);
@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
             array $insertColumns, // Use an array of column names
             $updateSetSql,
             $log
-        ) {
+        ): void {
             $existingIdentifiers = [];
             // Only query for existing records if there's actually a plan ID (i.e., not a new plan)
             if ($planId > 0) { // Use > 0 to ensure it's a valid ID for fetching existing data
@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
 
             foreach ($incomingData as $item) {
                 $identifier = trim($item[$identifierColumn] ?? ''); // Ensure identifier is trimmed/cleaned
-                if (empty($identifier)) {
+                if ($identifier === '' || $identifier === '0') {
                     $log->warning("Skipping $tableName record with empty identifier.", ['plan_id' => $planId, 'item' => $item]);
                     continue;
                 }
@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
                         'plan_id' => $planId,
                         'identifier' => $identifier,
                         'message' => $e->getMessage(),
-                        'sql' => $upsertStmt->queryString // Log the SQL query
+                        'sql' => $upsertStmt->queryString, // Log the SQL query
                     ]);
                     // Re-throw the exception to trigger the main transaction rollback
                     throw $e;
@@ -199,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
 
             // Delete records that are in DB but not in incoming data
             $toDeleteIdentifiers = array_diff($existingIdentifiers, $incomingIdentifiers);
-            if (!empty($toDeleteIdentifiers)) {
+            if ($toDeleteIdentifiers !== []) {
                 $placeholders = rtrim(str_repeat('?,', count($toDeleteIdentifiers)), ',');
                 $stmt_delete = $pdo->prepare("DELETE FROM `$tableName` WHERE `plan_id` = ? AND `$identifierColumn` IN ($placeholders)");
                 $stmt_delete->execute(array_merge([$planId], $toDeleteIdentifiers));
@@ -289,7 +289,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
         // Skills
         $existing_skills_db = [];
         if ($planIdToUse > 0) { // <-- Use $planIdToUse and check if it's > 0
-            $stmt = $pdo->prepare("SELECT id, skill_name FROM skills WHERE plan_id = ?");
+            $stmt = $pdo->prepare('SELECT id, skill_name FROM skills WHERE plan_id = ?');
             $stmt->execute([$planIdToUse]);
             $existing_skills_db = $stmt->fetchAll(PDO::FETCH_KEY_PAIR); // [id => skill_name]
         }
@@ -300,38 +300,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
                 // Update existing skill
                 $stmt_update = $pdo->prepare('UPDATE skills SET skill_name=?, sp_cost=?, acquired=?, tag=?, notes=? WHERE id=? AND plan_id=?');
                 $stmt_update->execute([
-                    trim($skill['skill_name']), trim($skill['sp_cost'] ?? ''), ($skill['acquired'] === 'yes' ? 'yes' : 'no'), trim($skill['tag'] ?? ''), trim($skill['notes'] ?? ''),
-                    $skill_id, $planIdToUse
+                    trim((string) $skill['skill_name']), trim($skill['sp_cost'] ?? ''), ($skill['acquired'] === 'yes' ? 'yes' : 'no'), trim($skill['tag'] ?? ''), trim($skill['notes'] ?? ''),
+                    $skill_id, $planIdToUse,
                 ]);
                 $incoming_skill_ids[] = $skill_id;
-                $log->debug("Updated skill.", ['id' => $skill_id, 'plan_id' => $planIdToUse, 'skill_name' => $skill['skill_name']]);
-            } else {
+                $log->debug('Updated skill.', ['id' => $skill_id, 'plan_id' => $planIdToUse, 'skill_name' => $skill['skill_name']]);
+            } elseif (!in_array(trim((string) $skill['skill_name']), ['', '0'], true)) {
                 // Insert new skill (if skill name is not empty)
-                if (!empty(trim($skill['skill_name']))) {
-                    $stmt_insert = $pdo->prepare('INSERT INTO skills (plan_id, skill_name, sp_cost, acquired, tag, notes) VALUES (?, ?, ?, ?, ?, ?)');
-                    $stmt_insert->execute([
-                        $planIdToUse, trim($skill['skill_name']), trim($skill['sp_cost'] ?? ''), ($skill['acquired'] === 'yes' ? 'yes' : 'no'), trim($skill['tag'] ?? ''), trim($skill['notes'] ?? '')
-                    ]);
-                    $log->debug("Inserted new skill.", ['plan_id' => $planIdToUse, 'skill_name' => $skill['skill_name']]);
-                } else {
-                    $log->warning("Skipped inserting skill with empty name.", ['plan_id' => $planIdToUse, 'skill_data' => $skill]);
-                }
+                $stmt_insert = $pdo->prepare('INSERT INTO skills (plan_id, skill_name, sp_cost, acquired, tag, notes) VALUES (?, ?, ?, ?, ?, ?)');
+                $stmt_insert->execute([
+                    $planIdToUse, trim((string) $skill['skill_name']), trim($skill['sp_cost'] ?? ''), ($skill['acquired'] === 'yes' ? 'yes' : 'no'), trim($skill['tag'] ?? ''), trim($skill['notes'] ?? ''),
+                ]);
+                $log->debug('Inserted new skill.', ['plan_id' => $planIdToUse, 'skill_name' => $skill['skill_name']]);
+            } else {
+                $log->warning('Skipped inserting skill with empty name.', ['plan_id' => $planIdToUse, 'skill_data' => $skill]);
             }
         }
         // Delete skills that are in DB but not in incoming data
         $skills_to_delete_ids = array_diff(array_keys($existing_skills_db), $incoming_skill_ids);
-        if (!empty($skills_to_delete_ids)) {
+        if ($skills_to_delete_ids !== []) {
             $placeholders = rtrim(str_repeat('?,', count($skills_to_delete_ids)), ',');
             $stmt_delete = $pdo->prepare("DELETE FROM skills WHERE plan_id = ? AND id IN ($placeholders)");
             $stmt_delete->execute(array_merge([$planIdToUse], $skills_to_delete_ids));
-            $log->info("Deleted old skills.", ['plan_id' => $planIdToUse, 'ids' => $skills_to_delete_ids]);
+            $log->info('Deleted old skills.', ['plan_id' => $planIdToUse, 'ids' => $skills_to_delete_ids]);
         }
 
 
         // Race Predictions
         $existing_predictions_db = [];
         if ($planIdToUse > 0) { // <-- Use $planIdToUse and check if it's > 0
-            $stmt = $pdo->prepare("SELECT id, race_name FROM race_predictions WHERE plan_id = ?");
+            $stmt = $pdo->prepare('SELECT id, race_name FROM race_predictions WHERE plan_id = ?');
             $stmt->execute([$planIdToUse]);
             $existing_predictions_db = $stmt->fetchAll(PDO::FETCH_KEY_PAIR); // [id => race_name]
         }
@@ -342,40 +340,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
                 // Update existing prediction
                 $stmt_update = $pdo->prepare('UPDATE race_predictions SET race_name = ?, venue = ?, ground = ?, distance = ?, track_condition = ?, direction = ?, speed = ?, stamina = ?, power = ?, guts = ?, wit = ?, comment = ? WHERE id = ? AND plan_id = ?');
                 $stmt_update->execute([
-                    trim($pred['race_name']), trim($pred['venue']), trim($pred['ground']), trim($pred['distance']), trim($pred['track_condition'] ?? ''),
-                    trim($pred['direction']), trim($pred['speed']), trim($pred['stamina']), trim($pred['power']), trim($pred['guts']), trim($pred['wit']),
-                    trim($pred['comment'] ?? ''), $pred_id, $planIdToUse
+                    trim((string) $pred['race_name']), trim((string) $pred['venue']), trim((string) $pred['ground']), trim((string) $pred['distance']), trim($pred['track_condition'] ?? ''),
+                    trim((string) $pred['direction']), trim((string) $pred['speed']), trim((string) $pred['stamina']), trim((string) $pred['power']), trim((string) $pred['guts']), trim((string) $pred['wit']),
+                    trim($pred['comment'] ?? ''), $pred_id, $planIdToUse,
                 ]);
                 $incoming_prediction_ids[] = $pred_id;
-                $log->debug("Updated prediction.", ['id' => $pred_id, 'plan_id' => $planIdToUse, 'race_name' => $pred['race_name']]);
-            } else {
+                $log->debug('Updated prediction.', ['id' => $pred_id, 'plan_id' => $planIdToUse, 'race_name' => $pred['race_name']]);
+            } elseif (!in_array(trim((string) $pred['race_name']), ['', '0'], true)) {
                 // Insert new prediction (if race name is not empty)
-                if (!empty(trim($pred['race_name']))) {
-                    $stmt_insert = $pdo->prepare('INSERT INTO race_predictions (plan_id, race_name, venue, ground, distance, track_condition, direction, speed, stamina, power, guts, wit, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                    $stmt_insert->execute([
-                        $planIdToUse, trim($pred['race_name']), trim($pred['venue']), trim($pred['ground']), trim($pred['distance']), trim($pred['track_condition'] ?? ''),
-                        trim($pred['direction']), trim($pred['speed']), trim($pred['stamina']), trim($pred['power']), trim($pred['guts']), trim($pred['wit']), trim($pred['comment'] ?? '')
-                    ]);
-                    $log->debug("Inserted new prediction.", ['plan_id' => $planIdToUse, 'race_name' => $pred['race_name']]);
-                } else {
-                     $log->warning("Skipped inserting prediction with empty race name.", ['plan_id' => $planIdToUse, 'prediction_data' => $pred]);
-                }
+                $stmt_insert = $pdo->prepare('INSERT INTO race_predictions (plan_id, race_name, venue, ground, distance, track_condition, direction, speed, stamina, power, guts, wit, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                $stmt_insert->execute([
+                    $planIdToUse, trim((string) $pred['race_name']), trim((string) $pred['venue']), trim((string) $pred['ground']), trim((string) $pred['distance']), trim($pred['track_condition'] ?? ''),
+                    trim((string) $pred['direction']), trim((string) $pred['speed']), trim((string) $pred['stamina']), trim((string) $pred['power']), trim((string) $pred['guts']), trim((string) $pred['wit']), trim($pred['comment'] ?? ''),
+                ]);
+                $log->debug('Inserted new prediction.', ['plan_id' => $planIdToUse, 'race_name' => $pred['race_name']]);
+            } else {
+                $log->warning('Skipped inserting prediction with empty race name.', ['plan_id' => $planIdToUse, 'prediction_data' => $pred]);
             }
         }
         // Delete predictions that are in DB but not in incoming data
         $predictions_to_delete_ids = array_diff(array_keys($existing_predictions_db), $incoming_prediction_ids);
-        if (!empty($predictions_to_delete_ids)) {
+        if ($predictions_to_delete_ids !== []) {
             $placeholders = rtrim(str_repeat('?,', count($predictions_to_delete_ids)), ',');
             $stmt_delete = $pdo->prepare("DELETE FROM race_predictions WHERE plan_id = ? AND id IN ($placeholders)");
             $stmt_delete->execute(array_merge([$planIdToUse], $predictions_to_delete_ids));
-            $log->info("Deleted old predictions.", ['plan_id' => $planIdToUse, 'ids' => $predictions_to_delete_ids]);
+            $log->info('Deleted old predictions.', ['plan_id' => $planIdToUse, 'ids' => $predictions_to_delete_ids]);
         }
 
 
         // Add to activity log
-        $log_desc = $id ? "Plan updated: $name" : "New plan created: $name";
-        $log_icon = $id ? 'bi-arrow-repeat' : 'bi-person-plus';
-        $pdo->prepare("INSERT INTO activity_log (description, icon_class) VALUES (?, ?)")->execute([$log_desc, $log_icon]);
+        $log_desc = $id !== 0 ? "Plan updated: $name" : "New plan created: $name";
+        $log_icon = $id !== 0 ? 'bi-arrow-repeat' : 'bi-person-plus';
+        $pdo->prepare('INSERT INTO activity_log (description, icon_class) VALUES (?, ?)')->execute([$log_desc, $log_icon]);
 
         $pdo->commit();
         echo json_encode(['success' => true, 'new_id' => $planIdToUse]);
@@ -386,7 +382,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modalName'])) {
             'message' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
             'file' => $e->getFile(), // Ensure file/line are logged
-            'line' => $e->getLine()
+            'line' => $e->getLine(),
         ]);
         http_response_code(500);
         echo json_encode(['success' => false, 'error' => 'A database error occurred. Please check the logs.']);
@@ -409,7 +405,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 
         $log->info('Plan soft-deleted successfully.', ['plan_id' => $id]);
 
-        $pdo->prepare("INSERT INTO activity_log (description, icon_class) VALUES (?, ?)")
+        $pdo->prepare('INSERT INTO activity_log (description, icon_class) VALUES (?, ?)')
             ->execute(["Plan (ID: $id) soft-deleted", 'bi-trash']);
 
         echo json_encode(['success' => true]);
@@ -418,7 +414,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
             'plan_id' => $id,
             'message' => $e->getMessage(),
             'file' => $e->getFile(),
-            'line' => $e->getLine()
+            'line' => $e->getLine(),
         ]);
         http_response_code(500);
         echo json_encode(['success' => false, 'error' => 'Database error during deletion.']);
@@ -436,13 +432,13 @@ if ($is_quick_create) {
     $log->info('Processing quick create request.');
 
     // Input Sanitization and Validation
-    $trainee_name = trim($_POST['trainee_name']);
+    $trainee_name = trim((string) $_POST['trainee_name']);
     $career_stage = in_array($_POST['career_stage'] ?? '', ['predebut','junior','classic','senior','finale']) ? $_POST['career_stage'] : null;
     $class = in_array($_POST['traineeClass'] ?? '', ['debut','maiden','beginner','bronze','silver','gold','platinum','star','legend']) ? $_POST['traineeClass'] : null;
-    $race_name = trim($_POST['race_name']);
+    $race_name = trim((string) $_POST['race_name']);
     $status = 'Planning'; // Always planning for quick create
 
-    if (empty($trainee_name) || empty($career_stage) || empty($class)) {
+    if ($trainee_name === '' || $trainee_name === '0' || empty($career_stage) || empty($class)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'Missing required fields for quick create.']);
         exit;
@@ -462,7 +458,7 @@ if ($is_quick_create) {
             strategy_id, condition_id, acquire_skill, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $pdo->prepare($sql)->execute([
             $trainee_name, $plan_title_default, $career_stage, $class, $race_name, $mood_id,
-            $strategy_id, $condition_id, $acquire_skill_default, $status
+            $strategy_id, $condition_id, $acquire_skill_default, $status,
         ]);
         $plan_id = $pdo->lastInsertId();
 
@@ -477,8 +473,8 @@ if ($is_quick_create) {
 
         $log->info('Plan quick-created successfully.', ['new_plan_id' => $plan_id, 'trainee_name' => $trainee_name]);
 
-        $pdo->prepare("INSERT INTO activity_log (description, icon_class) VALUES (?, ?)")
-             ->execute(["New plan quick-created: " . $trainee_name, 'bi-person-plus']);
+        $pdo->prepare('INSERT INTO activity_log (description, icon_class) VALUES (?, ?)')
+             ->execute(['New plan quick-created: ' . $trainee_name, 'bi-person-plus']);
 
         echo json_encode(['success' => true, 'new_id' => $plan_id]);
     } catch (PDOException $e) {
@@ -486,7 +482,7 @@ if ($is_quick_create) {
         $log->error('Database error in quick create', [
             'message' => $e->getMessage(),
             'file' => $e->getFile(),
-            'line' => $e->getLine()
+            'line' => $e->getLine(),
         ]);
         http_response_code(500);
         echo json_encode(['success' => false, 'error' => 'Quick create failed.']);

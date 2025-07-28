@@ -1,0 +1,14 @@
+# phpstan.neon
+parameters:
+    level: 5 # Adjust this to your desired level (0-8)
+    paths:
+        - . # Include the root directory
+        - components # Include the components directory
+    excludePaths:
+        - %rootDir%/vendor/*
+        - %rootDir%/js/* # Exclude JavaScript files if PHPStan tries to scan them
+        - %rootDir%/css/* # Exclude CSS files
+        - %rootDir%/*.sql # Exclude SQL dump file
+        # - %rootDir%/tests/* # Uncomment if you have tests and want to exclude them
+    # You can add more options here, like custom rules or extensions
+    # See https://phpstan.org/config-reference

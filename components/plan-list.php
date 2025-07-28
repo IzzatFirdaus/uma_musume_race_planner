@@ -52,20 +52,23 @@
                     ?>
               <tr>
                 <td>
-                    <strong><?= htmlspecialchars($plan['plan_title'] ?: 'Untitled Plan') ?></strong><br>
-                    <small class="text-muted"><?= htmlspecialchars($plan['name']) ?></small>
+                    <strong><?= htmlspecialchars((string) $plan['plan_title'] ?: 'Untitled Plan') ?></strong><br>
+                    <small class="text-muted"><?= htmlspecialchars((string) $plan['name']) ?></small>
                 </td>
-                <td><?= htmlspecialchars(ucfirst($plan['career_stage'] ?: '')) ?></td>
-                <td><?= htmlspecialchars(ucfirst($plan['class'] ?: '')) ?></td>
-                <td><?= htmlspecialchars($plan['race_name'] ?: '') ?></td>
+                <td><?= htmlspecialchars(ucfirst((string) $plan['career_stage'] ?: '')) ?></td>
+                <td><?= htmlspecialchars(ucfirst((string) $plan['class'] ?: '')) ?></td>
+                <td><?= htmlspecialchars((string) $plan['race_name'] ?: '') ?></td>
                 <td>
                     <span class="badge <?= $statusClass ?> rounded-pill">
-                        <?= htmlspecialchars($plan['status']) ?>
+                        <?= htmlspecialchars((string) $plan['status']) ?>
                     </span>
                 </td>
                 <td>
                   <button class="btn btn-sm btn-outline-primary edit-btn" data-id="<?= $plan['id'] ?>">
                     <i class="bi bi-pencil-square"></i> Edit
+                  </button>
+                  <button class="btn btn-sm btn-outline-info view-inline-btn me-1" data-id="<?= $plan['id'] ?>">
+                    <i class="bi bi-eye"></i> View Details
                   </button>
                   <button class="btn btn-sm btn-outline-danger delete-btn" data-id="<?= $plan['id'] ?>">
                     <i class="bi bi-trash"></i>

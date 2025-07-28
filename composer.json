@@ -7,5 +7,17 @@
     },
     "require": {
         "monolog/monolog": "^3.9"
+    },
+    "scripts": {
+        "cs:fix": "php-cs-fixer fix --ansi --config=.php-cs-fixer.php",
+        "cs:check": "phpcs --standard=PSR12 . components/",
+        "analyse": "phpstan analyse --ansi --no-progress --configuration=phpstan.neon . components/",
+        "rector": "rector process",
+        "rector:dry-run": "rector process --dry-run"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     }
 }

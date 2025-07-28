@@ -6,7 +6,7 @@
 
 // This check prevents the function from being redeclared if included multiple times.
 if (!function_exists('load_env')) {
-    function load_env()
+    function load_env(): void
     {
         if (!getenv('DB_HOST')) {
             $env = __DIR__ . '/../.env';
@@ -31,15 +31,14 @@ $user = getenv('DB_USER') ?: 'root';
 $pass = getenv('DB_PASS') ?: '';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass, [
+    return new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
-    return $pdo;
 } catch (PDOException $e) {
     // In a production environment, you would have a more robust error handling system
-    error_log("Database Connection Error: " . $e->getMessage());
+    error_log('Database Connection Error: ' . $e->getMessage());
     http_response_code(500);
     // Send a JSON error response as the frontend expects JSON
     echo json_encode(['success' => false, 'error' => 'Database connection failed. Please check server logs.']);

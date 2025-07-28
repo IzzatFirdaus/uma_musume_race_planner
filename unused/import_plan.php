@@ -1,7 +1,7 @@
 <?php
 
-require_once 'config.php';
-$pdo = require_once 'db.php';
+require_once __DIR__ . '/config.php';
+$pdo = require_once __DIR__ . '/db.php';
 
 header('Content-Type: application/json');
 
@@ -69,7 +69,7 @@ try {
             $stmt = $pdo->prepare("INSERT INTO `$table` ($colnames) VALUES ($placeholders)");
 
             foreach ($plan[$table] as $row) {
-                $values = array_map(fn ($col) => $row[$col] ?? null, $columns);
+                $values = array_map(fn ($col): mixed => $row[$col] ?? null, $columns);
                 $values[] = $planId;
                 $stmt->execute($values);
             }

@@ -5,8 +5,8 @@
       <?php if (isset($activities) && $activities->rowCount() > 0) : ?>
           <?php foreach ($activities as $activity) : ?>
           <li class="list-group-item d-flex align-items-center">
-            <i class="bi <?= htmlspecialchars($activity['icon_class']) ?> me-2"></i>
-                <?= htmlspecialchars($activity['description']) ?>
+            <i class="bi <?= htmlspecialchars((string) $activity['icon_class']) ?> me-2"></i>
+                <?= htmlspecialchars((string) $activity['description']) ?>
             <small class="text-muted ms-auto"><?= (new DateTime($activity['timestamp']))->format('M d, H:i') ?></small>
           </li>
           <?php endforeach; ?>

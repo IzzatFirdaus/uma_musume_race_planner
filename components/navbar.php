@@ -14,12 +14,19 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="index.php"><i class="bi bi-house-door me-1"></i> Home</a> </li>
+          <a class="nav-link" href="index.php"><i class="bi bi-house-door me-1"></i> Home</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="#" id="newPlanBtn"><i class="bi bi-plus-circle me-1"></i> New Plan</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#"><i class="bi bi-book me-1"></i> Guide</a>
+        </li>
+        <li class="nav-item d-flex align-items-center ms-lg-3">
+          <div class="form-check form-switch text-light">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+          </div>
         </li>
       </ul>
     </div>

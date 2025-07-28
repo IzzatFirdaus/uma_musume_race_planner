@@ -2,6 +2,13 @@
 // plan_details_modal.php
 // This file relies on PHP variables being available from index.php
 require_once __DIR__ . '/includes/logger.php';
+
+// Ensure these variables are available from index.php, provide empty arrays as a fallback
+$careerStageOptions = $careerStageOptions ?? [];
+$classOptions = $classOptions ?? [];
+$strategyOptions = $strategyOptions ?? [];
+$moodOptions = $moodOptions ?? [];
+$conditionOptions = $conditionOptions ?? [];
 ?>
 
 <div class="modal fade" id="planDetailsModal" tabindex="-1" aria-labelledby="planDetailsModalLabel" aria-hidden="true">
@@ -26,10 +33,16 @@ require_once __DIR__ . '/includes/logger.php';
                             <button class="nav-link" id="attributes-tab" data-bs-toggle="tab" data-bs-target="#attributes" type="button" role="tab" aria-controls="attributes" aria-selected="false">Attributes</button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="grades-tab" data-bs-toggle="tab" data-bs-target="#grades" type="button" role="tab" aria-controls="grades" aria-selected="false">Aptitude Grades</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab" aria-controls="skills" aria-selected="false">Skills</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="predictions-tab" data-bs-toggle="tab" data-bs-target="#predictions" type="button" role="tab" aria-controls="predictions" aria-selected="false">Race Predictions</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals" type="button" role="tab" aria-controls="goals" aria-selected="false">Goals</button>
                         </li>
                     </ul>
 
@@ -61,7 +74,7 @@ require_once __DIR__ . '/includes/logger.php';
                                     <label for="modalCareerStage" class="form-label">Career Stage</label>
                                     <select class="form-select" id="modalCareerStage" name="modalCareerStage" required>
                                         <?php foreach ($careerStageOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars($option['value']); ?>"><?php echo htmlspecialchars($option['text']); ?></option>
+                                            <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -69,7 +82,7 @@ require_once __DIR__ . '/includes/logger.php';
                                     <label for="modalClass" class="form-label">Class</label>
                                     <select class="form-select" id="modalClass" name="modalClass" required>
                                         <?php foreach ($classOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars($option['value']); ?>"><?php echo htmlspecialchars($option['text']); ?></option>
+                                            <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -89,7 +102,7 @@ require_once __DIR__ . '/includes/logger.php';
                                     <label for="modalStrategy" class="form-label">Strategy</label>
                                     <select class="form-select" id="modalStrategy" name="modalStrategy">
                                         <?php foreach ($strategyOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars($option['id']); ?>"><?php echo htmlspecialchars($option['label']); ?></option>
+                                            <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -97,7 +110,7 @@ require_once __DIR__ . '/includes/logger.php';
                                     <label for="modalMood" class="form-label">Mood</label>
                                     <select class="form-select" id="modalMood" name="modalMood">
                                         <?php foreach ($moodOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars($option['id']); ?>"><?php echo htmlspecialchars($option['label']); ?></option>
+                                            <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -105,7 +118,7 @@ require_once __DIR__ . '/includes/logger.php';
                                     <label for="modalCondition" class="form-label">Condition</label>
                                     <select class="form-select" id="modalCondition" name="modalCondition">
                                         <?php foreach ($conditionOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars($option['id']); ?>"><?php echo htmlspecialchars($option['label']); ?></option>
+                                            <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -183,6 +196,11 @@ require_once __DIR__ . '/includes/logger.php';
                             <div class="row g-3" id="attributeGrid"></div>
                         </div>
 
+                        <div class="tab-pane fade" id="grades" role="tabpanel" aria-labelledby="grades-tab">
+                            <div class="row" id="aptitudeGradesContainer">
+                                </div>
+                        </div>
+
                         <div class="tab-pane fade" id="skills" role="tabpanel" aria-labelledby="skills-tab">
                             <div class="table-responsive">
                                 <table class="table table-sm" id="skillsTable">
@@ -226,6 +244,22 @@ require_once __DIR__ . '/includes/logger.php';
                                 </table>
                             </div>
                             <button type="button" class="btn btn-uma w-100 mt-2" id="addPredictionBtn">Add Prediction</button>
+                        </div>
+
+                        <div class="tab-pane fade" id="goals" role="tabpanel" aria-labelledby="goals-tab">
+                            <div class="table-responsive">
+                                <table class="table table-sm" id="goalsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Goal</th>
+                                            <th>Result</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-uma w-100 mt-2" id="addGoalBtn">Add Goal</button>
                         </div>
                     </div>
                 </div>

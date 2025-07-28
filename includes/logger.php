@@ -6,12 +6,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+
 // Create a log channel
 $log = new Logger('app');
 // Create a formatter
 $formatter = new LineFormatter(
     "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
-    "Y-m-d H:i:s", // Date format
+    'Y-m-d H:i:s', // Date format
     true, // Allow inline line breaks
     true  // Ignore empty context/extra
 );
