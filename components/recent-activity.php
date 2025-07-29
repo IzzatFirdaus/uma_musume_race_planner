@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card recent-activity-card">
   <div class="card-header">Recent Activity</div>
   <div class="card-body" id="recentActivity">
     <ul class="list-group list-group-flush">

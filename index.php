@@ -43,14 +43,14 @@ try {
 }
 
 try {
-    $moodOptions = $pdo->query('SELECT id, label FROM moods ORDER BY label')->fetchAll();
+    $moodOptions = $pdo->query('SELECT id, label FROM moods')->fetchAll();
 } catch (PDOException $e) {
     $log->error('Failed to fetch mood options in index.php', ['message' => $e->getMessage()]);
     $moodOptions = [];
 }
 
 try {
-    $conditionOptions = $pdo->query('SELECT id, label FROM conditions ORDER BY label')->fetchAll();
+    $conditionOptions = $pdo->query('SELECT id, label FROM conditions')->fetchAll();
 } catch (PDOException $e) {
     $log->error('Failed to fetch condition options in index.php', ['message' => $e->getMessage()]);
     $conditionOptions = [];
@@ -64,7 +64,7 @@ try {
 }
 
 
-// Fetch all plans with mood and strategy names (only non-deleted ones)
+// Fetch all plans for the initial server-side render of plan-list.php
 $plans_query = '
     SELECT p.*, m.label AS mood, s.label AS strategy
     FROM plans p
@@ -74,10 +74,10 @@ $plans_query = '
     ORDER BY p.updated_at DESC
 ';
 try {
-    $plans = $pdo->query($plans_query); // PDO query returns a statement object to iterate over
+    $plans = $pdo->query($plans_query);
 } catch (PDOException $e) {
     $log->error('Failed to fetch plan list in index.php', ['message' => $e->getMessage()]);
-    $plans = new PDOStatement(); // Create a dummy empty statement to prevent errors in plan-list.php
+    $plans = new PDOStatement();
 }
 
 
@@ -90,14 +90,13 @@ $stats_query = "SELECT
     COUNT(DISTINCT name) AS unique_trainees
     FROM plans WHERE deleted_at IS NULL";
 try {
-    $stats = $pdo->query($stats_query)->fetch(PDO::FETCH_ASSOC); // fetch() is used for a single row
-    // Ensure all stats are integers
+    $stats = $pdo->query($stats_query)->fetch(PDO::FETCH_ASSOC);
     foreach ($stats as $key => $value) {
         $stats[$key] = (int)$value;
     }
 } catch (PDOException $e) {
     $log->error('Failed to fetch stats in index.php', ['message' => $e->getMessage()]);
-    $stats = ['total_plans' => 0, 'active_plans' => 0, 'planning_plans' => 0, 'finished_plans' => 0, 'unique_trainees' => 0]; // Default values
+    $stats = ['total_plans' => 0, 'active_plans' => 0, 'planning_plans' => 0, 'finished_plans' => 0, 'unique_trainees' => 0];
 }
 
 
@@ -106,7 +105,7 @@ try {
     $activities = $pdo->query('SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT 3');
 } catch (PDOException $e) {
     $log->error('Failed to fetch activities in index.php', ['message' => $e->getMessage()]);
-    $activities = new PDOStatement(); // Create a dummy empty statement
+    $activities = new PDOStatement();
 }
 
 ?>
@@ -118,6 +117,12 @@ try {
   <title>Uma Musume Race Planner</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -161,9 +166,19 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <?php require_once __DIR__ . '/components/copy_to_clipboard.php'; ?>
-  <script>
-    // --- GLOBAL HELPERS AND VARIABLES ---
+  <script src="js/autosuggest.js"></script>
+
+<script>
+    // --- V3.0: GLOBAL HELPERS AND VARIABLES ---
     let messageBoxModalInstance;
+
+    const statIcons = {
+        speed:   { class: 'bi bi-lightning-charge-fill', colorClass: 'text-speed-blue' },
+        stamina: { class: 'bi bi-heart-fill', colorClass: 'text-stamina-red' },
+        power:   { class: 'bi bi-arm-flex', colorClass: 'text-power-orange' },
+        guts:    { class: 'bi bi-fire', colorClass: 'text-guts-magenta' },
+        wit:     { class: 'bi bi-mortarboard-fill', colorClass: 'text-wit-green' }
+    };
 
     function showMessageBox(message, type = 'success') {
         if (!messageBoxModalInstance) return;
@@ -193,6 +208,7 @@ try {
       let currentModalPlanData = {};
       let currentInlinePlanData = {};
 
+
       // --- DARK MODE LOGIC ---
       function setDarkMode(isDarkMode) {
         body.classList.toggle('dark-mode', isDarkMode);
@@ -214,7 +230,7 @@ try {
         const row = document.createElement('tr');
         const skillTagOptions = <?php echo json_encode($skillTagOptions); ?>;
         row.innerHTML = `
-            <td><input type="text" class="form-control form-control-sm skill-name-input" value="${skill.skill_name || ''}"></td>
+            <td class="autocomplete-container"><input type="text" class="form-control form-control-sm skill-name-input" value="${skill.skill_name || ''}"></td>
             <td><input type="number" class="form-control form-control-sm skill-sp-cost-input" value="${skill.sp_cost || 0}" min="0"></td>
             <td class="text-center"><input type="checkbox" class="form-check-input skill-acquired-checkbox" ${skill.acquired === 'yes' ? 'checked' : ''}></td>
             <td>
@@ -263,30 +279,54 @@ try {
       }
       
       // --- RENDER FUNCTIONS ---
-      function renderModalAttributes(attributes, isInline) {
-        const gridId = isInline ? 'attributeGridInline' : 'attributeGrid';
-        const attributeGrid = document.getElementById(gridId);
-        attributeGrid.innerHTML = '';
-        const grades = <?php echo json_encode($attributeGradeOptions); ?>;
-        attributes.forEach(attr => {
-          const div = document.createElement('div');
-          div.className = 'col-md-4';
-          const optionsHtml = grades.map(grade => `<option value="${grade}" ${grade === attr.grade ? 'selected' : ''}>${grade}</option>`).join('');
-          div.innerHTML = `
-            <label class="form-label" for="attr-${attr.attribute_name}${isInline ? '-inline' : ''}">${attr.attribute_name}</label>
-            <div class="input-group mb-3">
-                <input type="number" class="form-control attribute-value-input" id="attr-${attr.attribute_name}${isInline ? '-inline' : ''}" data-attribute-name="${attr.attribute_name}" value="${attr.value}" min="0" max="1200">
-                <select class="form-select attribute-grade-input" data-attribute-name="${attr.attribute_name}">${optionsHtml}</select>
-            </div>`;
-          attributeGrid.appendChild(div);
+    function renderModalAttributes(attributes, isInline) {
+        const containerId = isInline ? 'attributeSlidersContainerInline' : 'attributeSlidersContainer';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = '';
+        const defaultAttributes = ['speed', 'stamina', 'power', 'guts', 'wit'];
+
+        defaultAttributes.forEach(attrName => {
+            const attr = attributes.find(a => a.attribute_name.toLowerCase() === attrName) || { value: 0 };
+            const div = document.createElement('div');
+            div.className = 'col-6 col-md-4 col-lg-2 mb-3';
+
+            const iconInfo = statIcons[attrName];
+
+            div.innerHTML = `
+                <div class="d-flex align-items-center mb-1">
+                    <i class="${iconInfo.class} stat-icon ${iconInfo.colorClass} me-2"></i>
+                    <label class="form-label mb-0">${attrName.charAt(0).toUpperCase() + attrName.slice(1)}</label>
+                </div>
+                <input type="number" class="form-control" min="0" max="1200" value="${attr.value}" data-stat="${attrName}">
+            `;
+            container.appendChild(div);
         });
-      }
+        container.classList.add('row', 'g-3', 'justify-content-center');
+    }
 
       function renderModalSkills(skills, isInline) {
         const tableId = isInline ? 'skillsTableInline' : 'skillsTable';
         const skillsTableBody = document.getElementById(tableId).querySelector('tbody');
         skillsTableBody.innerHTML = '';
         skills.forEach(skill => skillsTableBody.appendChild(createModalSkillRow(skill)));
+
+        skillsTableBody.querySelectorAll('.skill-name-input').forEach(input => {
+            attachAutosuggest(input, 'skill_name', function(skill) {
+                const parentRow = input.closest('tr');
+                if (parentRow) {
+                    let infoBox = parentRow.nextElementSibling;
+                    if (!infoBox || !infoBox.classList.contains('skill-context-row')) {
+                        infoBox = document.createElement('tr');
+                        infoBox.className = 'skill-context-row';
+                        infoBox.innerHTML = `<td colspan="6" class="skill-context-info"></td>`;
+                        parentRow.after(infoBox);
+                    }
+                    infoBox.querySelector('.skill-context-info').textContent = skill.description || 'No description available.';
+                }
+            });
+        });
       }
 
       function renderModalPredictions(predictions, isInline) {
@@ -306,7 +346,10 @@ try {
       function renderAptitudeGrades(gradesData, isInline) {
         const containerId = isInline ? 'aptitudeGradesContainerInline' : 'aptitudeGradesContainer';
         const container = document.getElementById(containerId);
+        if (!container) return;
+
         container.innerHTML = '';
+        container.classList.add('row', 'g-3');
 
         const gradeTypes = [
             { title: 'Terrain', data: gradesData.terrain_grades || [], key: 'terrain' },
@@ -347,51 +390,6 @@ try {
       }
 
       // --- DYNAMIC UI UPDATE FUNCTIONS ---
-      function updatePlanList() {
-          fetch('get_plans.php')
-              .then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      const planListBody = document.getElementById('planListBody');
-                      planListBody.innerHTML = ''; 
-                      if (data.plans.length > 0) {
-                          data.plans.forEach(plan => {
-                              const row = document.createElement('tr');
-                              let statusClass = '';
-                              switch(plan.status) {
-                                  case 'Planning': statusClass = 'bg-planning'; break;
-                                  case 'Active': statusClass = 'bg-active'; break;
-                                  case 'Finished': statusClass = 'bg-finished'; break;
-                                  case 'Draft': statusClass = 'bg-draft'; break;
-                                  case 'Abandoned': statusClass = 'bg-abandoned'; break;
-                                  default: statusClass = 'bg-secondary'; break;
-                              }
-                              row.innerHTML = `
-                                  <td><strong>${plan.plan_title || 'Untitled Plan'}</strong><br><small class="text-muted">${plan.name}</small></td>
-                                  <td>${plan.career_stage ? plan.career_stage.charAt(0).toUpperCase() + plan.career_stage.slice(1) : ''}</td>
-                                  <td>${plan.class ? plan.class.charAt(0).toUpperCase() + plan.class.slice(1) : ''}</td>
-                                  <td>${plan.race_name || ''}</td>
-                                  <td><span class="badge ${statusClass} rounded-pill">${plan.status || ''}</span></td>
-                                  <td>
-                                    <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}"><i class="bi bi-pencil-square"></i> Edit</button>
-                                    <button class="btn btn-sm btn-outline-info view-inline-btn me-1" data-id="${plan.id}"><i class="bi bi-eye"></i> View Details</button>
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}"><i class="bi bi-trash"></i></button>
-                                  </td>
-                              `;
-                              planListBody.appendChild(row);
-                          });
-                      } else {
-                          planListBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted p-4">No plans found. Click "Create New" to get started!</td></tr>`;
-                      }
-                      updateStats(); 
-                      updateRecentActivity();
-                  } else {
-                      throw new Error(data.error || 'Failed to fetch plans.');
-                  }
-              })
-              .catch(error => showMessageBox(`Error updating plan list: ${error.message}`, 'danger'));
-      }
-
       function updateStats() {
           fetch('get_stats.php')
               .then(response => response.json())
@@ -435,15 +433,17 @@ try {
               .catch(error => showMessageBox(`Error updating recent activity: ${error.message}`, 'danger'));
       }
 
-
       // --- MAIN EVENT LISTENERS (DELEGATED) ---
-      document.addEventListener('click', function(event) {
+      document.addEventListener('click', async function(event) {
         const target = event.target;
         const editBtn = target.closest('.edit-btn');
         const deleteBtn = target.closest('.delete-btn');
         const newPlanBtn = target.closest('#newPlanBtn, #createPlanBtn');
         const viewInlineBtn = target.closest('.view-inline-btn');
+        const exportPlanModalBtn = target.closest('#exportPlanBtn');
+        const exportPlanInlineBtn = target.closest('#exportPlanBtnInline');
 
+        // *** UPDATED fetchAndPopulatePlan FUNCTION ***
         async function fetchAndPopulatePlan(planId, isInlineView) {
             const loadingOverlay = isInlineView ? planInlineDetailsLoadingOverlay : document.getElementById('planDetailsLoadingOverlay');
             const formElement = isInlineView ? document.getElementById('planDetailsFormInline') : document.getElementById('planDetailsForm');
@@ -452,6 +452,7 @@ try {
             loadingOverlay.style.display = 'flex';
             formElement.reset();
             
+            // Reset tabs to the first one
             const tabsContainerId = isInlineView ? 'planTabsInline' : 'planTabs';
             document.querySelectorAll(`#${tabsContainerId} .nav-link`).forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll(`#${tabsContainerId} ~ .tab-content .tab-pane`).forEach(pane => pane.classList.remove('show', 'active'));
@@ -461,6 +462,7 @@ try {
             generalTabPane.classList.add('show', 'active');
 
             try {
+                // Fetch all data concurrently
                 const responses = await Promise.all([
                     fetch(`fetch_plan_details.php?id=${planId}`).then(res => res.json()),
                     fetch(`get_plan_attributes.php?id=${planId}`).then(res => res.json()),
@@ -485,9 +487,11 @@ try {
                 const data = allData.plan;
                 const suffix = isInlineView ? '_inline' : '';
                 
+                // Populate all form fields
                 document.getElementById(`planId${isInlineView ? 'Inline' : ''}`).value = data.id || '';
                 planDetailsLabel.textContent = `Plan Details: ${data.plan_title || 'Untitled'}`;
-                document.getElementById(`plan_title${suffix}`).value = data.plan_title || '';
+                const planTitleEl = document.getElementById(`plan_title${suffix}`);
+                if (planTitleEl) planTitleEl.value = data.plan_title || '';
                 document.getElementById(`modalName${suffix}`).value = data.name || '';
                 document.getElementById(`modalCareerStage${suffix}`).value = data.career_stage || '';
                 document.getElementById(`modalClass${suffix}`).value = data.class || '';
@@ -513,17 +517,38 @@ try {
                 document.getElementById(`growthRateGuts${suffix}`).value = data.growth_rate_guts || 0;
                 document.getElementById(`growthRateWit${suffix}`).value = data.growth_rate_wit || 0;
                 
+                // Render related data tables/sections
                 const gradesData = {
                     terrain_grades: allData.terrain_grades,
                     distance_grades: allData.distance_grades,
                     style_grades: allData.style_grades,
                 };
-                
                 renderModalAttributes(allData.attributes || [], isInlineView);
                 renderAptitudeGrades(gradesData, isInlineView);
                 renderModalSkills(allData.skills || [], isInlineView);
                 renderModalPredictions(allData.predictions || [], isInlineView);
                 renderModalGoals(allData.goals || [], isInlineView);
+
+                // *** NEW: Directly update the image handler UI ***
+                const previewImg = document.getElementById(`traineeImagePreview${suffix}`);
+                const previewContainer = document.getElementById(`traineeImagePreviewContainer${suffix}`);
+                const clearBtn = document.getElementById(`clearTraineeImageBtn${suffix}`);
+                const existingPathInput = document.getElementById(`existingTraineeImagePath${suffix}`);
+                const clearFlagInput = document.getElementById(`clearTraineeImageFlag${suffix}`);
+                const uploadInput = document.getElementById(`traineeImageUpload${suffix}`);
+
+                if (data.trainee_image_path) {
+                    previewImg.src = data.trainee_image_path;
+                    previewContainer.style.display = 'block';
+                    clearBtn.style.display = 'inline-block';
+                    existingPathInput.value = data.trainee_image_path;
+                } else {
+                    previewContainer.style.display = 'none';
+                    clearBtn.style.display = 'none';
+                    existingPathInput.value = '';
+                }
+                clearFlagInput.value = '0';
+                uploadInput.value = '';
 
                 if (isInlineView) {
                     mainContentDiv.style.display = 'none';
@@ -531,16 +556,15 @@ try {
                 } else {
                     planDetailsModal.show();
                 }
-
             } catch (error) {
                 showMessageBox(`Error fetching plan details: ${error.message}`, 'danger');
             } finally {
                 loadingOverlay.style.display = 'none';
             }
         }
-
-        if (editBtn) { fetchAndPopulatePlan(editBtn.dataset.id, false); }
-        if (viewInlineBtn) { fetchAndPopulatePlan(viewInlineBtn.dataset.id, true); }
+        
+        if (editBtn) { await fetchAndPopulatePlan(editBtn.dataset.id, false); }
+        if (viewInlineBtn) { await fetchAndPopulatePlan(viewInlineBtn.dataset.id, true); }
 
         if (deleteBtn) {
           const planId = deleteBtn.dataset.id;
@@ -551,8 +575,8 @@ try {
               .then(response => response.json())
               .then(data => {
                 if (data.success) {
+                    document.dispatchEvent(new CustomEvent('planUpdated'));
                     showMessageBox('Plan deleted successfully!');
-                    updatePlanList();
                 } else { throw new Error(data.error || 'Failed to delete plan.'); }
               })
               .catch(error => showMessageBox(`Error: ${error.message}`, 'danger'));
@@ -564,20 +588,64 @@ try {
           quickCreateModal.show();
         }
 
+        if (exportPlanModalBtn) {
+            if (Object.keys(currentModalPlanData).length > 0) {
+                copyPlanDetailsToClipboard(currentModalPlanData);
+            } else {
+                showMessageBox('No plan data loaded in the modal to export.', 'warning');
+            }
+        }
+
+        if (exportPlanInlineBtn) {
+            if (Object.keys(currentInlinePlanData).length > 0) {
+                copyPlanDetailsToClipboard(currentInlinePlanData);
+            } else {
+                showMessageBox('No plan data loaded to export.', 'warning');
+            }
+        }
+
         const addSkillBtn = target.closest('#addSkillBtn, #addSkillBtnInline');
         if (addSkillBtn) {
             const tableId = addSkillBtn.id.includes('Inline') ? 'skillsTableInline' : 'skillsTable';
-            document.querySelector(`#${tableId} tbody`).appendChild(createModalSkillRow());
+            const skillsTableBody = document.querySelector(`#${tableId} tbody`);
+            const newRow = createModalSkillRow();
+            skillsTableBody.appendChild(newRow);
+            const newSkillInput = newRow.querySelector('.skill-name-input');
+            if (newSkillInput) {
+                attachAutosuggest(newSkillInput, 'skill_name', function(skill) {
+                    const parentRow = newSkillInput.closest('tr');
+                    if (parentRow) {
+                        let infoBox = parentRow.nextElementSibling;
+                        if (!infoBox || !infoBox.classList.contains('skill-context-row')) {
+                            infoBox = document.createElement('tr');
+                            infoBox.className = 'skill-context-row';
+                            infoBox.innerHTML = `<td colspan="6" class="skill-context-info"></td>`;
+                            parentRow.after(infoBox);
+                        }
+                        infoBox.querySelector('.skill-context-info').textContent = skill.description || 'No description available.';
+                    }
+                });
+            }
         }
+
         const removeBtn = target.closest('.remove-skill-btn, .remove-prediction-btn, .remove-goal-btn');
         if (removeBtn) {
-            removeBtn.closest('tr').remove();
+            const parentTr = removeBtn.closest('tr');
+            if (parentTr && parentTr.querySelector('.skill-name-input')) {
+                const nextSibling = parentTr.nextElementSibling;
+                if (nextSibling && nextSibling.classList.contains('skill-context-row')) {
+                    nextSibling.remove();
+                }
+            }
+            parentTr.remove();
         }
+
         const addPredictionBtn = target.closest('#addPredictionBtn, #addPredictionBtnInline');
         if (addPredictionBtn) {
             const tableId = addPredictionBtn.id.includes('Inline') ? 'predictionsTableInline' : 'predictionsTable';
             document.querySelector(`#${tableId} tbody`).appendChild(createModalPredictionRow());
         }
+
         const addGoalBtn = target.closest('#addGoalBtn, #addGoalBtnInline');
         if (addGoalBtn) {
             const tableId = addGoalBtn.id.includes('Inline') ? 'goalsTableInline' : 'goalsTable';
@@ -590,108 +658,112 @@ try {
           mainContentDiv.style.display = 'flex';
       });
 
-      // --- FORM SUBMISSION LISTENERS ---
-      function handleFormSubmit(formId, url) {
-        document.getElementById(formId).addEventListener('submit', function(e) {
-          e.preventDefault();
-          const formData = new FormData(this);
-          
-          if (formId === 'planDetailsForm' || formId === 'planDetailsFormInline') {
-              const isInline = formId.includes('Inline');
-              const suffix = isInline ? 'Inline' : '';
-              
-              const gradeSelector = `#aptitudeGradesContainer${suffix} .aptitude-grade-select`;
-              let terrainGradesData = [];
-              let distanceGradesData = [];
-              let styleGradesData = [];
-              document.querySelectorAll(gradeSelector).forEach(select => {
-                  const gradeType = select.dataset.gradeType;
-                  const itemKey = select.dataset.itemKey;
-                  const grade = select.value;
-                  if (gradeType === 'terrain') { terrainGradesData.push({ terrain: itemKey, grade: grade }); } 
-                  else if (gradeType === 'distance') { distanceGradesData.push({ distance: itemKey, grade: grade }); } 
-                  else if (gradeType === 'style') { styleGradesData.push({ style: itemKey, grade: grade }); }
-              });
-              formData.append('terrainGrades', JSON.stringify(terrainGradesData));
-              formData.append('distanceGrades', JSON.stringify(distanceGradesData));
-              formData.append('styleGrades', JSON.stringify(styleGradesData));
-          
-              const attributesData = Array.from(document.querySelectorAll(`#attributeGrid${suffix} .attribute-value-input`)).map(input => ({
-                  attribute_name: input.dataset.attributeName,
-                  value: parseInt(input.value) || 0,
-                  grade: input.closest('.input-group').querySelector('.attribute-grade-input').value
+      // --- INITIAL AUTOSUGGEST ATTACHMENTS ---
+      attachAutosuggest(document.getElementById('modalName'), 'name');
+      attachAutosuggest(document.getElementById('modalName_inline'), 'name');
+      attachAutosuggest(document.getElementById('modalRaceName'), 'race_name');
+      attachAutosuggest(document.getElementById('modalRaceName_inline'), 'race_name');
+      attachAutosuggest(document.getElementById('modalGoal'), 'goal');
+      attachAutosuggest(document.getElementById('modalGoal_inline'), 'goal');
+
+      // --- AJAX FORM SUBMISSION HANDLER ---
+      async function handleFormSubmit(formElement) {
+          const isInline = formElement.id.includes('Inline');
+          const loadingOverlay = isInline ? planInlineDetailsLoadingOverlay : document.getElementById('planDetailsLoadingOverlay');
+          loadingOverlay.style.display = 'flex';
+          try {
+              const formData = new FormData(formElement);
+              const currentData = isInline ? currentInlinePlanData : currentModalPlanData;
+              const gatherDataForSubmission = (containerSelector, dataExtractor) => {
+                  const items = [];
+                  document.querySelectorAll(containerSelector).forEach(row => {
+                      const item = dataExtractor(row);
+                      if (item) items.push(item);
+                  });
+                  return items;
+              };
+              const attributesData = gatherDataForSubmission(`#attributeSlidersContainer${isInline ? 'Inline' : ''} input[type="number"]`, el => ({
+                  attribute_name: el.dataset.stat.toUpperCase(), value: el.value, grade: 'G'
               }));
               formData.append('attributes', JSON.stringify(attributesData));
-              
-              const skillsData = Array.from(document.querySelectorAll(`#skillsTable${suffix} tbody tr`)).map(row => ({
-                  id: row.dataset.id || null,
-                  skill_name: row.querySelector('.skill-name-input').value,
-                  sp_cost: row.querySelector('.skill-sp-cost-input').value,
-                  acquired: row.querySelector('.skill-acquired-checkbox').checked ? 'yes' : 'no',
-                  tag: row.querySelector('.skill-tag-select').value,
-                  notes: row.querySelector('.skill-notes-input').value
-              }));
+              const terrainGrades = gatherDataForSubmission(`#aptitudeGradesContainer${isInline ? 'Inline' : ''} select[data-grade-type="terrain"]`, el => ({ terrain: el.dataset.itemKey, grade: el.value }));
+              formData.append('terrainGrades', JSON.stringify(terrainGrades));
+              const distanceGrades = gatherDataForSubmission(`#aptitudeGradesContainer${isInline ? 'Inline' : ''} select[data-grade-type="distance"]`, el => ({ distance: el.dataset.itemKey, grade: el.value }));
+              formData.append('distanceGrades', JSON.stringify(distanceGrades));
+              const styleGrades = gatherDataForSubmission(`#aptitudeGradesContainer${isInline ? 'Inline' : ''} select[data-grade-type="style"]`, el => ({ style: el.dataset.itemKey, grade: el.value }));
+              formData.append('styleGrades', JSON.stringify(styleGrades));
+              const skillsData = gatherDataForSubmission(`#skillsTable${isInline ? 'Inline' : ''} tbody tr`, tr => {
+                  if (tr.classList.contains('skill-context-row')) return null;
+                  return {
+                      skill_name: tr.querySelector('.skill-name-input')?.value.trim(),
+                      sp_cost: tr.querySelector('.skill-sp-cost-input')?.value,
+                      acquired: tr.querySelector('.skill-acquired-checkbox')?.checked ? 'yes' : 'no',
+                      tag: tr.querySelector('.skill-tag-select')?.value,
+                      notes: tr.querySelector('.skill-notes-input')?.value.trim()
+                  };
+              });
               formData.append('skills', JSON.stringify(skillsData));
-
-              const predictionsData = Array.from(document.querySelectorAll(`#predictionsTable${suffix} tbody tr`)).map(row => ({
-                  id: row.dataset.id || null,
-                  race_name: row.children[0].querySelector('input').value,
-                  venue: row.children[1].querySelector('input').value,
-                  ground: row.children[2].querySelector('input').value,
-                  distance: row.children[3].querySelector('input').value,
-                  track_condition: row.children[4].querySelector('input').value,
-                  direction: row.children[5].querySelector('input').value,
-                  speed: row.children[6].querySelector('select').value,
-                  stamina: row.children[7].querySelector('select').value,
-                  power: row.children[8].querySelector('select').value,
-                  guts: row.children[9].querySelector('select').value,
-                  wit: row.children[10].querySelector('select').value,
-                  comment: row.children[11].querySelector('input').value
+              const predictionsData = gatherDataForSubmission(`#predictionsTable${isInline ? 'Inline' : ''} tbody tr`, tr => ({
+                  race_name: tr.cells[0].querySelector('input').value.trim(), venue: tr.cells[1].querySelector('input').value.trim(), ground: tr.cells[2].querySelector('input').value.trim(), distance: tr.cells[3].querySelector('input').value.trim(), track_condition: tr.cells[4].querySelector('input').value.trim(), direction: tr.cells[5].querySelector('input').value.trim(), speed: tr.cells[6].querySelector('select').value, stamina: tr.cells[7].querySelector('select').value, power: tr.cells[8].querySelector('select').value, guts: tr.cells[9].querySelector('select').value, wit: tr.cells[10].querySelector('select').value, comment: tr.cells[11].querySelector('input').value.trim()
               }));
               formData.append('predictions', JSON.stringify(predictionsData));
-
-              const goalsData = Array.from(document.querySelectorAll(`#goalsTable${suffix} tbody tr`)).map(row => ({
-                  id: row.dataset.id || null,
-                  goal: row.querySelector('.goal-input').value,
-                  result: row.querySelector('.result-input').value
+              const goalsData = gatherDataForSubmission(`#goalsTable${isInline ? 'Inline' : ''} tbody tr`, tr => ({
+                  goal: tr.querySelector('.goal-input')?.value.trim(), result: tr.querySelector('.result-input')?.value.trim()
               }));
               formData.append('goals', JSON.stringify(goalsData));
+              formData.append('turns', JSON.stringify(currentData.turns || []));
+              const response = await fetch('handle_plan_crud.php', { method: 'POST', body: formData });
+              const result = await response.json();
+              if (result.success) {
+                  if (result.debug_output) {
+                      console.warn("Server produced debug output:", result.debug_output);
+                  }
+                  showMessageBox('Plan saved successfully!');
+                  document.dispatchEvent(new CustomEvent('planUpdated'));
+                  if (isInline) {
+                      closeInlineDetailsBtn.click();
+                  } else {
+                      planDetailsModal.hide();
+                  }
+              } else {
+                  error.result = result;
+                  throw new Error(result.error || 'An unknown error occurred.');
+              }
+          } catch (error) {
+              console.error("An error occurred. Full server response:", error.result || error);
+              showMessageBox(`Error saving plan: ${error.message}`, 'danger');
+          } finally {
+              loadingOverlay.style.display = 'none';
           }
-
-          fetch(url, { method: 'POST', body: formData })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                showMessageBox('Plan saved successfully!');
-                if (formId === 'planDetailsForm') { planDetailsModal.hide(); } 
-                else if (formId === 'planDetailsFormInline') { closeInlineDetailsBtn.click(); } 
-                else if (formId === 'quickCreatePlanForm') { quickCreateModal.hide(); }
-                updatePlanList();
-              } else { throw new Error(data.error || 'An unknown error occurred.'); }
-            })
-            .catch(error => showMessageBox(`Error: ${error.message}`, 'danger'));
-        });
       }
       
-      handleFormSubmit('quickCreatePlanForm', 'handle_plan_crud.php');
-      handleFormSubmit('planDetailsForm', 'handle_plan_crud.php');
-      handleFormSubmit('planDetailsFormInline', 'handle_plan_crud.php'); 
-
-      updatePlanList();
-
-      document.getElementById('energyRange').addEventListener('input', function() { document.getElementById('energyValue').textContent = this.value; });
-      document.getElementById('energyRange_inline').addEventListener('input', function() { document.getElementById('energyValue_inline').textContent = this.value; });
-
-      document.getElementById('exportPlanBtn').addEventListener('click', () => {
-          if (document.getElementById('planId').value) { copyPlanDetailsToClipboard(currentModalPlanData); } 
-          else { showMessageBox('No plan selected to export.', 'warning'); }
+      document.getElementById('planDetailsForm').addEventListener('submit', function(event) {
+          event.preventDefault();
+          handleFormSubmit(this);
       });
-      document.getElementById('exportPlanBtnInline').addEventListener('click', () => {
-          if (document.getElementById('planIdInline').value) { copyPlanDetailsToClipboard(currentInlinePlanData); } 
-          else { showMessageBox('No plan selected to export.', 'warning'); }
+      document.getElementById('planDetailsFormInline').addEventListener('submit', function(event) {
+          event.preventDefault();
+          handleFormSubmit(this);
       });
+
+      // --- UI REFRESH LISTENER ---
+      document.addEventListener('planUpdated', function() {
+          fetch('components/plan-list.php')
+              .then(response => response.text())
+              .then(html => {
+                  const planListContainer = document.getElementById('planListContainer');
+                  if(planListContainer) planListContainer.innerHTML = html;
+              })
+              .catch(error => console.error('Failed to refresh plan list:', error));
+          updateStats();
+          updateRecentActivity();
+      });
+
+      // Initial load
+      updateStats();
+      updateRecentActivity();
     });
-  </script>
+</script>
 
 </body>
 </html>

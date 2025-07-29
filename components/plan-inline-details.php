@@ -22,7 +22,7 @@ $conditionOptions = $conditionOptions ?? [];
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <form id="planDetailsFormInline">
+    <form id="planDetailsFormInline" enctype="multipart/form-data">
         <div class="card-body">
             <ul class="nav nav-tabs" id="planTabsInline" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -69,31 +69,39 @@ $conditionOptions = $conditionOptions ?? [];
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="modalCareerStage_inline" class="form-label">Career Stage</label>
-                            <select class="form-select" id="modalCareerStage_inline" name="modalCareerStage" required>
-                                <?php foreach ($careerStageOptions as $option) : ?>
-                                    <option value="<?= htmlspecialchars((string) $option['value']); ?>"><?= htmlspecialchars((string) $option['text']); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="modalClass_inline" class="form-label">Class</label>
-                            <select class="form-select" id="modalClass_inline" name="modalClass" required>
-                                <?php foreach ($classOptions as $option) : ?>
-                                    <option value="<?= htmlspecialchars((string) $option['value']); ?>"><?= htmlspecialchars((string) $option['text']); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="modalStatus_inline" class="form-label">Status</label>
-                            <select class="form-select" id="modalStatus_inline" name="modalStatus">
-                                <option value="Planning">Planning</option>
-                                <option value="Active">Active</option>
-                                <option value="Finished">Finished</option>
-                                <option value="Draft">Draft</option>
-                                <option value="Abandoned">Abandoned</option>
-                            </select>
+                        <?php $id_suffix = '_inline'; // Use '_inline' suffix for this view?>
+                        <?php include __DIR__ . '/trainee_image_handler.php'; ?>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label for="modalCareerStage_inline" class="form-label">Career Stage</label>
+                                    <select class="form-select" id="modalCareerStage_inline" name="modalCareerStage" required>
+                                        <?php foreach ($careerStageOptions as $option) : ?>
+                                            <option value="<?= htmlspecialchars((string) $option['value']); ?>"><?= htmlspecialchars((string) $option['text']); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="modalClass_inline" class="form-label">Class</label>
+                                    <select class="form-select" id="modalClass_inline" name="modalClass" required>
+                                        <?php foreach ($classOptions as $option) : ?>
+                                            <option value="<?= htmlspecialchars((string) $option['value']); ?>"><?= htmlspecialchars((string) $option['text']); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-12">
+                                    <label for="modalStatus_inline" class="form-label">Status</label>
+                                    <select class="form-select" id="modalStatus_inline" name="modalStatus">
+                                        <option value="Planning">Planning</option>
+                                        <option value="Active">Active</option>
+                                        <option value="Finished">Finished</option>
+                                        <option value="Draft">Draft</option>
+                                        <option value="Abandoned">Abandoned</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -192,7 +200,8 @@ $conditionOptions = $conditionOptions ?? [];
                 </div>
 
                 <div class="tab-pane fade" id="attributes-inline" role="tabpanel" aria-labelledby="attributes-tab-inline">
-                    <div class="row g-3" id="attributeGridInline"></div>
+                    <div id="attributeSlidersContainerInline">
+                        </div>
                 </div>
 
                 <div class="tab-pane fade" id="grades-inline" role="tabpanel" aria-labelledby="grades-tab-inline">

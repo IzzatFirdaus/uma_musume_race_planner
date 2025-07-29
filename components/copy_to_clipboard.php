@@ -1,5 +1,5 @@
 <?php
-// components/copy_to_clipboard.php (Refactored for Better Formatting)
+// components/copy_to_clipboard.php (Refactored for Better Formatting and Robustness)
 ?>
 
 <script>
@@ -39,6 +39,13 @@ const TxtBuilder = {
      * @returns {string} The formatted table as a string.
      */
     buildTable: function(headers, rows, columnConfigs = []) {
+        // If no rows, just return headers and divider
+        if (rows.length === 0) {
+            const headerRow = `| ${headers.map(h => this.pad(h, h.length)).join(' | ')} |`; // Pad headers to their own length
+            const dividerRow = `|${headers.map(h => '-'.repeat(h.length + 2)).join('|')}|`; // Divider based on header length
+            return [headerRow, dividerRow, '| ' + this.pad('No data.', headerRow.length - 4, 'center') + ' |\n'].join('\n'); // Add "No data" message
+        }
+
         const colWidths = headers.map((h, i) => {
             const rowLengths = rows.map(r => String(r[i] || '').length);
             return Math.max(h.length, ...rowLengths);
@@ -78,6 +85,11 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     const distanceGradesData = allFetchedData.distance_grades || [];
     const styleGradesData = allFetchedData.style_grades || [];
 
+    // console.log("Starting copyPlanDetailsToClipboard function."); // Debug log
+    // console.log("allFetchedData:", allFetchedData); // Debug log
+    // console.log("attributesData (after || []):", attributesData); // Debug log
+    // console.log("SkillsData (after || []):", skillsData); // Debug log
+
     const moodOptions = <?php echo json_encode($moodOptions); ?>;
     const strategyOptions = <?php echo json_encode($strategyOptions); ?>;
     const conditionOptions = <?php echo json_encode($conditionOptions); ?>;
@@ -109,9 +121,16 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     output += sectionDivider;
 
     // Attributes Table
+    // Corrected: attributesData.map expects attribute_name to be lowercase, but DB returns uppercase.
+    // Ensure display is consistent by converting to Title Case.
+    const formattedAttributesData = attributesData.map(attr => [
+        attr.attribute_name ? attr.attribute_name.charAt(0).toUpperCase() + attr.attribute_name.slice(1).toLowerCase() : '',
+        attr.value,
+        attr.grade
+    ]);
     const attributesTable = TxtBuilder.buildTable(
         ['Attribute', 'Value', 'Grade'],
-        attributesData.map(attr => [attr.attribute_name, attr.value, attr.grade]),
+        formattedAttributesData,
         [{ align: 'left' }, { align: 'right' }, { align: 'center' }]
     );
     output += 'ATTRIBUTES\n' + attributesTable + '\n\n';
@@ -119,19 +138,37 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     // Grades Table
     const maxGradeRows = Math.max(terrainGradesData.length, distanceGradesData.length, styleGradesData.length);
     const gradeRows = [];
-    for (let i = 0; i < maxGradeRows; i++) {
-        gradeRows.push([
-            distanceGradesData[i]?.distance || '',
-            distanceGradesData[i]?.grade || '',
-            styleGradesData[i]?.style || '',
-            styleGradesData[i]?.grade || '',
-            terrainGradesData[i]?.terrain || '',
-            terrainGradesData[i]?.grade || '',
+    // Ensure all grade data is available even if one type is missing data
+    const allGradeItems = new Set();
+    terrainGradesData.forEach(item => allGradeItems.add(item.terrain));
+    distanceGradesData.forEach(item => allGradeItems.add(item.distance));
+    styleGradesData.forEach(item => allGradeItems.add(item.style));
+
+    const terrainMap = new Map(terrainGradesData.map(item => [item.terrain, item.grade]));
+    const distanceMap = new Map(distanceGradesData.map(item => [item.distance, item.grade]));
+    const styleMap = new Map(styleGradesData.map(item => [item.style, item.grade]));
+    
+    const defaultGradeKeys = {
+        terrain: ['Turf', 'Dirt'],
+        distance: ['Sprint', 'Mile', 'Medium', 'Long'],
+        style: ['Front', 'Pace', 'Late', 'End']
+    };
+
+    const combinedGradeRows = [];
+    // Iterate over expected types for consistent order and completeness
+    for (const key of defaultGradeKeys.distance) {
+        combinedGradeRows.push([
+            key, distanceMap.get(key) || 'G',
+            defaultGradeKeys.style[defaultGradeKeys.distance.indexOf(key)] || '', // Attempt to align style conceptually
+            styleMap.get(defaultGradeKeys.style[defaultGradeKeys.distance.indexOf(key)]) || 'G',
+            defaultGradeKeys.terrain[defaultGradeKeys.distance.indexOf(key)] || '', // Attempt to align terrain conceptually
+            terrainMap.get(defaultGradeKeys.terrain[defaultGradeKeys.distance.indexOf(key)]) || 'G',
         ]);
     }
+
     const gradesTable = TxtBuilder.buildTable(
         ['Distance', 'G', 'Style', 'G', 'Terrain', 'G'],
-        gradeRows,
+        combinedGradeRows.filter(row => row.some(cell => cell !== '' && cell !== 'G')), // Filter out completely empty rows
         [{align: 'left'}, {align: 'center'}, {align: 'left'}, {align: 'center'}, {align: 'left'}, {align: 'center'}]
     );
     output += 'APTITUDE GRADES\n' + gradesTable + '\n';
@@ -206,11 +243,16 @@ function copyPlanDetailsToClipboard(allFetchedData) {
 
 
     // --- FINAL ACTION: Copy to clipboard ---
-    navigator.clipboard.writeText(output.trim()).then(() => {
-        showMessageBox('Formatted plan copied to clipboard!', 'success');
-    }).catch(err => {
-        console.error('Failed to copy text: ', err);
-        showMessageBox('Failed to copy plan details to clipboard.', 'danger');
-    });
+    try {
+        navigator.clipboard.writeText(output.trim()).then(() => {
+            showMessageBox('Formatted plan copied to clipboard!', 'success');
+        }).catch(err => {
+            console.error('Failed to copy text (clipboard API error): ', err); // More specific error
+            showMessageBox('Failed to copy plan details to clipboard. Browser permission denied or API error.', 'danger');
+        });
+    } catch (e) {
+        console.error("Error before clipboard API call:", e); // Catch immediate errors
+        showMessageBox('An unexpected error occurred before attempting to copy.', 'danger');
+    }
 }
 </script>

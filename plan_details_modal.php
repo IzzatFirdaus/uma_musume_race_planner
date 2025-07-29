@@ -23,7 +23,7 @@ $conditionOptions = $conditionOptions ?? [];
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <form id="planDetailsForm">
+            <form id="planDetailsForm" enctype="multipart/form-data">
                 <div class="modal-body">
                     <ul class="nav nav-tabs" id="planTabs" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -43,6 +43,9 @@ $conditionOptions = $conditionOptions ?? [];
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals" type="button" role="tab" aria-controls="goals" aria-selected="false">Goals</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="progress-chart-tab" data-bs-toggle="tab" data-bs-target="#progress-chart" type="button" role="tab" aria-controls="progress-chart" aria-selected="false">Progress Chart</button>
                         </li>
                     </ul>
 
@@ -70,31 +73,39 @@ $conditionOptions = $conditionOptions ?? [];
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="modalCareerStage" class="form-label">Career Stage</label>
-                                    <select class="form-select" id="modalCareerStage" name="modalCareerStage" required>
-                                        <?php foreach ($careerStageOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalClass" class="form-label">Class</label>
-                                    <select class="form-select" id="modalClass" name="modalClass" required>
-                                        <?php foreach ($classOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalStatus" class="form-label">Status</label>
-                                    <select class="form-select" id="modalStatus" name="modalStatus">
-                                        <option value="Planning">Planning</option>
-                                        <option value="Active">Active</option>
-                                        <option value="Finished">Finished</option>
-                                        <option value="Draft">Draft</option>
-                                        <option value="Abandoned">Abandoned</option>
-                                    </select>
+                                <?php $id_suffix = ''; // Use no suffix for the modal ?>
+                                <?php include __DIR__ . '/components/trainee_image_handler.php'; ?>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <label for="modalCareerStage" class="form-label">Career Stage</label>
+                                            <select class="form-select" id="modalCareerStage" name="modalCareerStage" required>
+                                                <?php foreach ($careerStageOptions as $option) : ?>
+                                                    <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="modalClass" class="form-label">Class</label>
+                                            <select class="form-select" id="modalClass" name="modalClass" required>
+                                                <?php foreach ($classOptions as $option) : ?>
+                                                    <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-12">
+                                            <label for="modalStatus" class="form-label">Status</label>
+                                            <select class="form-select" id="modalStatus" name="modalStatus">
+                                                <option value="Planning">Planning</option>
+                                                <option value="Active">Active</option>
+                                                <option value="Finished">Finished</option>
+                                                <option value="Draft">Draft</option>
+                                                <option value="Abandoned">Abandoned</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -193,12 +204,12 @@ $conditionOptions = $conditionOptions ?? [];
                         </div>
 
                         <div class="tab-pane fade" id="attributes" role="tabpanel" aria-labelledby="attributes-tab">
-                            <div class="row g-3" id="attributeGrid"></div>
+                            <div id="attributeSlidersContainer">
+                                </div>
                         </div>
 
                         <div class="tab-pane fade" id="grades" role="tabpanel" aria-labelledby="grades-tab">
-                            <div class="row" id="aptitudeGradesContainer">
-                                </div>
+                            <div class="row" id="aptitudeGradesContainer"></div>
                         </div>
 
                         <div class="tab-pane fade" id="skills" role="tabpanel" aria-labelledby="skills-tab">
@@ -261,6 +272,12 @@ $conditionOptions = $conditionOptions ?? [];
                             </div>
                             <button type="button" class="btn btn-uma w-100 mt-2" id="addGoalBtn">Add Goal</button>
                         </div>
+                        
+                        <div class="tab-pane fade" id="progress-chart" role="tabpanel" aria-labelledby="progress-chart-tab">
+                            <div class="chart-container">
+                                <canvas id="growthChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -272,3 +289,61 @@ $conditionOptions = $conditionOptions ?? [];
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const planDetailsModalElement = document.getElementById('planDetailsModal');
+    if (!planDetailsModalElement) return;
+
+    // --- Chart.js Feature ---
+    const chartTab = document.getElementById('progress-chart-tab');
+    let growthChartInstance = null; // To hold the chart object
+
+    async function renderGrowthChart(planId) {
+        if (!planId) return;
+
+        try {
+            const response = await fetch(`get_progress_chart_data.php?id=${planId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                const turns = result.turns;
+                const ctx = document.getElementById('growthChart').getContext('2d');
+                
+                if (growthChartInstance) {
+                    growthChartInstance.destroy(); // Destroy previous chart instance
+                }
+
+                growthChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: turns.map(t => `Turn ${t.turn_number}`),
+                        datasets: [
+                            { label: 'Speed', data: turns.map(t => t.speed), borderColor: 'var(--stat-speed-color)', tension: 0.1 },
+                            { label: 'Stamina', data: turns.map(t => t.stamina), borderColor: 'var(--stat-stamina-color)', tension: 0.1 },
+                            { label: 'Power', data: turns.map(t => t.power), borderColor: 'var(--stat-power-color)', tension: 0.1 },
+                            { label: 'Guts', data: turns.map(t => t.guts), borderColor: 'var(--stat-guts-color)', tension: 0.1 },
+                            { label: 'Wit', data: turns.map(t => t.wit), borderColor: 'var(--stat-wit-color)', tension: 0.1 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false }
+                    }
+                });
+            } else {
+                console.error('Error fetching chart data:', result.error);
+            }
+        } catch (error) {
+            console.error('Failed to render growth chart:', error);
+        }
+    }
+
+    // Listen for when the chart tab is shown and render the chart
+    chartTab.addEventListener('shown.bs.tab', function () {
+        const currentPlanId = document.getElementById('planId').value;
+        renderGrowthChart(currentPlanId);
+    });
+});
+</script>

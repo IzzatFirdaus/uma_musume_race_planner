@@ -1,15 +1,16 @@
 <?php
 
+// get_autosuggest.php
+
 require_once __DIR__ . '/config.php';
 $pdo = require_once __DIR__ . '/db.php';
 
 header('Content-Type: application/json');
 
-// The field to get suggestions for (e.g., 'skill_name', 'race_name')
 $field = $_GET['field'] ?? '';
+$search_query = $_GET['query'] ?? '';
 
-// Whitelist of valid fields for security
-$validFields = ['name', 'race_name', 'skill_name', 'goal']; //
+$validFields = ['name', 'race_name', 'skill_name', 'goal'];
 
 if (!in_array($field, $validFields)) {
     http_response_code(400);
@@ -18,23 +19,35 @@ if (!in_array($field, $validFields)) {
 }
 
 try {
-    // --- V2.0 UPDATE: Handle skill_name separately to return richer data ---
     if ($field === 'skill_name') {
-        // For skills, we need more than just the name to populate the contextual info box.
-        // We select all relevant fields from the skill_reference table.
-        $stmt = $pdo->query('SELECT skill_name, description, stat_type, tag FROM skill_reference ORDER BY skill_name ASC');
+        $sql = 'SELECT skill_name, description, stat_type, tag FROM skill_reference';
+        $params = [];
+
+        if (!empty($search_query)) {
+            $sql .= ' WHERE skill_name LIKE ?';
+            $params[] = '%' . $search_query . '%';
+        }
+        $sql .= ' ORDER BY skill_name ASC LIMIT 10';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         $suggestions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        // For other fields, we just need a simple list of distinct values.
-        // This logic remains the same as the original file.
-        $stmt = $pdo->prepare("SELECT DISTINCT `$field` AS value FROM plans WHERE `$field` IS NOT NULL AND `$field` != '' ORDER BY `$field` ASC");
-        $stmt->execute();
-        // Flatten the result into a simple array of strings.
+        $sql = "SELECT DISTINCT `$field` AS value FROM plans WHERE `$field` IS NOT NULL AND `$field` != ''";
+        $params = [];
+
+        if (!empty($search_query)) {
+            $sql .= ' AND `' . $field . '` LIKE ?';
+            $params[] = '%' . $search_query . '%';
+        }
+        $sql .= ' ORDER BY `' . $field . '` ASC LIMIT 10';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         $suggestions = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'value');
     }
 
     echo json_encode(['success' => true, 'suggestions' => $suggestions]);
-
 } catch (Throwable $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);

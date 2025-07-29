@@ -11,12 +11,12 @@
   --dark-text: #212529;
   --card-shadow: 0 4px 12px rgba(149, 117, 205, 0.15);
 
-  /* --- V2.0: New Stat Colors --- */
-  --stat-speed-color: #55a3e8;
-  --stat-stamina-color: #65d48b;
-  --stat-power-color: #f7716a;
-  --stat-guts-color: #f7ba52;
-  --stat-wit-color: #ab77d7;
+  /* --- V2.0: New Stat Colors (UPDATED) --- */
+  --stat-speed-color: #007bff; /* Blue for Speed */
+  --stat-stamina-color: #dc3545; /* Red for Stamina */
+  --stat-power-color: #fd7e14; /* Orange for Power */
+  --stat-guts-color: #e83e8c; /* Magenta for Guts */
+  --stat-wit-color: #28a745; /* Green for Wit */
 
   /* Dark Mode Variables */
   --dark-mode-bg: #212121;
@@ -27,6 +27,13 @@
   --dark-mode-input-bg: #3a3a3a;
   --dark-mode-input-text: #e0e0e0;
   --dark-mode-table-header-bg: #4a4a4a;
+  --dark-mode-table-border: rgba(255, 255, 255, 0.1);
+  --dark-mode-general-border: rgba(255, 255, 255, 0.1);
+
+  /* ADDED: Dark mode specific colors for Quick Stats / Badges */
+  --dark-mode-quick-stat-bg: #3a3a3a; /* A slightly darker background for numbers */
+  --dark-mode-quick-stat-text: #e0e0e0; /* White/light text for numbers */
+  --dark-mode-badge-text: #ffffff; /* White text for badges in dark mode */
 }
 
 /* --- Layer fix for modal z-index --- */
@@ -91,6 +98,11 @@ body.dark-mode .navbar-brand {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 .card-body { padding: 1.5rem; }
+/* ADDED: Ensure card-body text color in light mode */
+.card-body {
+    color: var(--dark-text);
+}
+
 
 body.dark-mode .card {
   background-color: var(--dark-mode-card-bg);
@@ -104,6 +116,35 @@ body.dark-mode .card-header {
 body.dark-mode .text-muted {
   color: rgba(255, 255, 255, 0.6) !important;
 }
+/* ADDED: Ensure card-body text color in dark mode */
+body.dark-mode .card-body {
+    color: var(--dark-mode-text);
+}
+
+/* ADDED: Styling for Quick Stats numbers */
+.quick-stats-number {
+  color: var(--dark-text); /* Default to dark text in light mode */
+  /* Assuming these are vanilla colored blocks. If they are specific elements,
+     you'd need to target them more precisely. For now, assuming they are direct text. */
+}
+
+body.dark-mode .quick-stats-number {
+  /* This targets the actual numbers "2", "1", "1" */
+  color: var(--dark-mode-quick-stat-text); /* Use a light color for visibility */
+}
+
+/* ADDED: Styling for "Recent Activity" card specifically */
+.recent-activity-card {
+  background-color: white; /* Default for light mode */
+  color: var(--dark-text);
+}
+body.dark-mode .recent-activity-card {
+  background-color: var(--dark-mode-card-bg);
+  color: var(--dark-mode-text);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4); /* Match other cards */
+  border: none; /* Ensure no residual borders */
+}
+
 
 /* --- Buttons --- */
 .btn-uma {
@@ -145,14 +186,35 @@ body.dark-mode .form-select {
   font-weight: 700; /* Bolder for new font */
   background-color: #f8f9fa;
   border-bottom-width: 2px;
+  border-color: rgba(0, 0, 0, 0.1);
 }
 .table-hover tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-border-color: rgba(0, 0, 0, 0.1);
+    color: var(--dark-text);
+}
+
 body.dark-mode .table-hover tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.075);
 }
+body.dark-mode .table thead th {
+    background-color: var(--dark-mode-table-header-bg);
+    border-color: var(--dark-mode-table-border);
+    color: var(--dark-mode-text);
+}
+body.dark-mode .table {
+    color: var(--dark-mode-text);
+    --bs-table-border-color: var(--dark-mode-table-border);
+}
+body.dark-mode .table td,
+body.dark-mode .table th {
+    border-color: var(--dark-mode-table-border);
+}
+
 
 /* --- Modals --- */
 body.dark-mode .modal-content {
@@ -169,15 +231,38 @@ body.dark-mode .btn-close {
 }
 
 /* --- Badges --- */
-.bg-active { background-color: #198754; }
-.bg-finished { background-color: #0d6efd; }
-
-/* --- V2.0: Custom Stat Icons --- */
-.stat-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 0.5rem;
+/* Ensure badges have sufficient contrast in dark mode */
+.bg-active {
+  background-color: #198754; /* Green */
+  color: white; /* White text for contrast */
 }
+.bg-finished {
+  background-color: #0d6efd; /* Blue */
+  color: white; /* White text for contrast */
+}
+
+/* ADDED: Dark mode specific badge styling if needed */
+body.dark-mode .bg-active,
+body.dark-mode .bg-finished {
+    color: var(--dark-mode-badge-text); /* Use defined badge text color for dark mode */
+}
+
+
+/* --- V2.0: Custom Stat Icons (UPDATED) --- */
+.stat-icon {
+  font-size: 1.5rem; /* Use font-size to control icon size (approx 24px) */
+  margin-right: 0.5rem;
+  vertical-align: middle; /* Helps align with text */
+}
+
+/* --- V2.0: Bootstrap Icon Color Helpers --- */
+/* These classes will be applied in JavaScript to the <i> tag */
+.text-speed-blue { color: var(--stat-speed-color); }
+.text-stamina-red { color: var(--stat-stamina-color); }
+.text-power-orange { color: var(--stat-power-color); }
+.text-guts-magenta { color: var(--stat-guts-color); }
+.text-wit-green { color: var(--stat-wit-color); }
+
 
 /* --- V2.0: Dashboard Enhancements --- */
 .plan-filters {
@@ -235,6 +320,7 @@ body.dark-mode .stat-bar {
 .autocomplete-items div {
   padding: 10px;
   cursor: pointer;
+  color: var(--dark-text);
 }
 .autocomplete-items div:hover, .autocomplete-active {
   background-color: #e9e9e9;
@@ -243,6 +329,9 @@ body.dark-mode .stat-bar {
 body.dark-mode .autocomplete-items {
   background-color: var(--dark-mode-header-bg);
   border-color: var(--dark-mode-border);
+}
+body.dark-mode .autocomplete-items div {
+  color: var(--dark-mode-text);
 }
 body.dark-mode .autocomplete-items div:hover,
 body.dark-mode .autocomplete-active {
@@ -265,22 +354,11 @@ body.dark-mode .skill-context-info {
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* Visual Stat Sliders */
-.stat-slider-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+/* Visual Stat Inputs (UPDATED) */
+.stat-input-group {
 }
-.stat-slider-group label {
-  font-weight: 600;
-  flex-basis: 100px;
-}
-.stat-slider-group input[type="range"] {
-  flex-grow: 1;
-}
-.stat-slider-group input[type="number"] {
-  width: 80px;
+.stat-input-group label.form-label {
+    font-weight: 600;
 }
 
 /* --- V2.0: Charting --- */

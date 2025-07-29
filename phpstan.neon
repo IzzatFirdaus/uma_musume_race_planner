@@ -10,5 +10,10 @@ parameters:
         - %rootDir%/css/* # Exclude CSS files
         - %rootDir%/*.sql # Exclude SQL dump file
         # - %rootDir%/tests/* # Uncomment if you have tests and want to exclude them
+        # Explicitly exclude the rector directory within vendor
+        - %rootDir%/vendor/rector/*
+        # Add more specific exclusions for Rector's internal paths if needed
+        - %rootDir%/vendor/rector/rector/templates/*
+        - %rootDir%/vendor/rector/rector/vendor/* # This is crucial if Rector has its own nested vendor
     # You can add more options here, like custom rules or extensions
     # See https://phpstan.org/config-reference

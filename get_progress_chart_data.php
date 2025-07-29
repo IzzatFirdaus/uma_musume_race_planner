@@ -23,7 +23,6 @@ try {
 
     // Return the data in a consistent JSON format
     echo json_encode(['success' => true, 'turns' => $turns]);
-
 } catch (PDOException $e) {
     // Log any database errors
     $log->error('Failed to fetch plan turns', [

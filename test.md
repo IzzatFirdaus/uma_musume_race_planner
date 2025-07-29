@@ -12,19 +12,19 @@ Turn Before:  12
 ATTRIBUTES
 | Attribute | Value | Grade |
 |-----------|-------|-------|
-| SPEED     |   194 |  F+   |
-| STAMINA   |   154 |  F+   |
-| POWER     |   133 |   F   |
-| GUTS      |    97 |  G+   |
-| WIT       |   156 |  F+   |
+| Speed     |   194 |  F+   |
+| Stamina   |   154 |  F+   |
+| Power     |   133 |   F   |
+| Guts      |    97 |  G+   |
+| Wit       |   156 |  F+   |
 
 APTITUDE GRADES
 | Distance | G | Style | G | Terrain | G |
 |----------|---|-------|---|---------|---|
 | Sprint   | F | Front | C | Turf    | A |
 | Mile     | A | Pace  | A | Dirt    | B |
-| Medium   | A | Late  | A |         |   |
-| Long     | B | End   | C |         |   |
+| Medium   | A | Late  | A |         | G |
+| Long     | B | End   | C |         | G |
 
 ================================================================================
 
@@ -51,14 +51,14 @@ SUMMARY & GROWTH
 ACQUIRED SKILLS
 | Skill Name                  | SP Cost | Acquired | Notes                |
 |-----------------------------|---------|----------|----------------------|
-| Corazón ☆ Ardiente          |       0 |    ✅     | (Unique Burst)       |
+| Corazón ☆ Ardiente          |     N/A |    ✅     | (Unique Burst)       |
 | Resplendent Red Ace         |     180 |    ❌     | Received from Legacy |
 | Certain Victory             |     180 |    ❌     | Received from Legacy |
 | Straightaway Adept          |     170 |    ❌     |                      |
 | Stamina to Spare            |     180 |    ❌     |                      |
 | Hawkeye                     |     110 |    ❌     |                      |
 | Soft Step                   |     144 |    ❌     |                      |
-| Pace Chaser Straightaways ○ |       0 |    ✅     |                      |
+| Pace Chaser Straightaways ○ |     N/A |    ✅     |                      |
 | Pace Chaser Straightaways ⦾ |     140 |    ❌     |                      |
 
 ================================================================================
@@ -66,13 +66,13 @@ ACQUIRED SKILLS
 CAREER GOALS
 --------------------------------------------------------------------------------
 • JUNIOR MAKE DEBUT (Result: 1ST)
-• Kyodo News Hai
-• NHK Mile C.
-• Japanese Derby
-• Mainichi Okan
-• Takarazuka Kinen
-• Japan C.
-• Arima Kinen
+• Kyodo News Hai (Result: TOP 5)
+• NHK Mile C. (Result: TOP 5)
+• Japanese Derby (Result: TOP 5)
+• Mainichi Okan (Result: TOP 3)
+• Takarazuka Kinen (Result: 1ST)
+• Japan C. (Result: 1ST)
+• Arima Kinen (Result: 1ST)
 
 ================================================================================
 
