@@ -1,64 +1,53 @@
 <?php
-// components/copy_to_clipboard.php (Refactored for Better Formatting and Robustness)
+
+/**
+ * components/copy_to_clipboard.php
+ *
+ * 📋 Generates a formatted plain-text version of a training plan and copies it to clipboard.
+ * Includes general info, attributes, grades, summary, skills, goals, and predictions.
+ *
+ * Uses:
+ * - TxtBuilder: modular utility for text-based tables
+ * - Clipboard API with fallback error handling
+ *
+ * Injected server-side:
+ * - $moodOptions, $strategyOptions, $conditionOptions
+ *
+ * Author: extremerazr
+ * Updated: July 29, 2025
+ */
+
 ?>
 
 <script>
-/**
- * A set of helper functions to build nicely formatted plain-text tables.
- */
 const TxtBuilder = {
-    /**
-     * Pads a string with spaces to a certain length.
-     * @param {string} str The string to pad.
-     * @param {number} length The target length.
-     * @param {string} align Alignment ('left', 'right', or 'center').
-     * @returns {string} The padded string.
-     */
     pad: function(str, length, align = 'left') {
         str = String(str);
         const diff = length - str.length;
         if (diff <= 0) return str;
 
-        if (align === 'right') {
-            return ' '.repeat(diff) + str;
-        }
+        if (align === 'right') return ' '.repeat(diff) + str;
         if (align === 'center') {
             const left = Math.floor(diff / 2);
             const right = diff - left;
             return ' '.repeat(left) + str + ' '.repeat(right);
         }
-        // Default to left alignment
         return str + ' '.repeat(diff);
     },
 
-    /**
-     * Builds a complete plain-text table from headers and rows.
-     * @param {string[]} headers - Array of header titles.
-     * @param {string[][]} rows - Array of arrays, where each inner array is a row.
-     * @param {object[]} columnConfigs - Array of config objects for each column, e.g., [{align: 'left'}, {align: 'right'}].
-     * @returns {string} The formatted table as a string.
-     */
     buildTable: function(headers, rows, columnConfigs = []) {
-        // If no rows, just return headers and divider
         if (rows.length === 0) {
-            const headerRow = `| ${headers.map(h => this.pad(h, h.length)).join(' | ')} |`; // Pad headers to their own length
-            const dividerRow = `|${headers.map(h => '-'.repeat(h.length + 2)).join('|')}|`; // Divider based on header length
-            return [headerRow, dividerRow, '| ' + this.pad('No data.', headerRow.length - 4, 'center') + ' |\n'].join('\n'); // Add "No data" message
+            const headerRow = `| ${headers.map(h => this.pad(h, h.length)).join(' | ')} |`;
+            const dividerRow = `|${headers.map(h => '-'.repeat(h.length + 2)).join('|')}|`;
+            return [headerRow, dividerRow, '| ' + this.pad('No data.', headerRow.length - 4, 'center') + ' |\n'].join('\n');
         }
 
-        const colWidths = headers.map((h, i) => {
-            const rowLengths = rows.map(r => String(r[i] || '').length);
-            return Math.max(h.length, ...rowLengths);
-        });
+        const colWidths = headers.map((h, i) => Math.max(h.length, ...rows.map(r => String(r[i] || '').length)));
 
-        const buildRow = (rowItems) => {
-            const paddedItems = rowItems.map((item, i) => {
-                const align = columnConfigs[i]?.align || 'left';
-                return this.pad(item, colWidths[i], align);
-            });
-            return `| ${paddedItems.join(' | ')} |`;
+        const buildRow = (items) => {
+            return `| ${items.map((item, i) => this.pad(item, colWidths[i], columnConfigs[i]?.align || 'left')).join(' | ')} |`;
         };
-        
+
         const headerRow = buildRow(headers);
         const dividerRow = `|${colWidths.map(w => '-'.repeat(w + 2)).join('|')}|`;
         const dataRows = rows.map(r => buildRow(r)).join('\n');
@@ -67,15 +56,7 @@ const TxtBuilder = {
     }
 };
 
-
-/**
- * Copies a complete, formatted plan to the clipboard.
- * This function is now independent of the DOM and gets all data from the provided object.
- *
- * @param {object} allFetchedData - The aggregated data object containing the plan, attributes, skills, etc.
- */
 function copyPlanDetailsToClipboard(allFetchedData) {
-    // --- DATA GATHERING ---
     const plan = allFetchedData.plan || {};
     const attributesData = allFetchedData.attributes || [];
     const skillsData = allFetchedData.skills || [];
@@ -85,14 +66,9 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     const distanceGradesData = allFetchedData.distance_grades || [];
     const styleGradesData = allFetchedData.style_grades || [];
 
-    // console.log("Starting copyPlanDetailsToClipboard function."); // Debug log
-    // console.log("allFetchedData:", allFetchedData); // Debug log
-    // console.log("attributesData (after || []):", attributesData); // Debug log
-    // console.log("SkillsData (after || []):", skillsData); // Debug log
-
-    const moodOptions = <?php echo json_encode($moodOptions); ?>;
-    const strategyOptions = <?php echo json_encode($strategyOptions); ?>;
-    const conditionOptions = <?php echo json_encode($conditionOptions); ?>;
+    const moodOptions = <?= json_encode($moodOptions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const strategyOptions = <?= json_encode($strategyOptions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const conditionOptions = <?= json_encode($conditionOptions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
     const moodLabel = moodOptions.find(opt => opt.id == plan.mood_id)?.label || 'N/A';
     const strategyLabel = strategyOptions.find(opt => opt.id == plan.strategy_id)?.label || 'N/A';
@@ -101,82 +77,59 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     let output = '';
     const sectionDivider = '\n' + '='.repeat(80) + '\n\n';
 
-    // --- GENERAL SECTION ---
+    // --- GENERAL INFO ---
     output += `## PLAN: ${plan.plan_title || 'Untitled Plan'} ##\n\n`;
     const generalInfo = [
-        ['Trainee Name:', `${plan.name || ''}`],
+        ['Trainee Name:', plan.name || ''],
         ['Career Stage:', `${(plan.career_stage || '').toUpperCase()} (${(plan.month || '').toUpperCase()} ${(plan.time_of_day || '').toUpperCase()})`],
-        ['Class:', `${(plan.class || '').toUpperCase()}`],
-        ['Status:', `${plan.status || 'Planning'}`],
-        ['Next Race:', `${plan.race_name || 'N/A'}`],
-        ['Turn Before:', `${plan.turn_before || 0}`],
+        ['Class:', (plan.class || '').toUpperCase()],
+        ['Status:', plan.status || 'Planning'],
+        ['Next Race:', plan.race_name || 'N/A'],
+        ['Turn Before:', plan.turn_before || 0],
     ];
-    // Simple key-value pair output, padded for alignment
     const maxKeyLength = Math.max(...generalInfo.map(row => row[0].length));
     generalInfo.forEach(row => {
         output += `${TxtBuilder.pad(row[0], maxKeyLength)} ${row[1]}\n`;
     });
-    
-    // --- ATTRIBUTES & GRADES SECTION ---
-    output += sectionDivider;
 
-    // Attributes Table
-    // Corrected: attributesData.map expects attribute_name to be lowercase, but DB returns uppercase.
-    // Ensure display is consistent by converting to Title Case.
-    const formattedAttributesData = attributesData.map(attr => [
+    // --- ATTRIBUTES ---
+    output += sectionDivider;
+    const formattedAttributes = attributesData.map(attr => [
         attr.attribute_name ? attr.attribute_name.charAt(0).toUpperCase() + attr.attribute_name.slice(1).toLowerCase() : '',
         attr.value,
         attr.grade
     ]);
-    const attributesTable = TxtBuilder.buildTable(
+    output += 'ATTRIBUTES\n' + TxtBuilder.buildTable(
         ['Attribute', 'Value', 'Grade'],
-        formattedAttributesData,
-        [{ align: 'left' }, { align: 'right' }, { align: 'center' }]
-    );
-    output += 'ATTRIBUTES\n' + attributesTable + '\n\n';
+        formattedAttributes,
+        [{align: 'left'}, {align: 'right'}, {align: 'center'}]
+    ) + '\n\n';
 
-    // Grades Table
-    const maxGradeRows = Math.max(terrainGradesData.length, distanceGradesData.length, styleGradesData.length);
-    const gradeRows = [];
-    // Ensure all grade data is available even if one type is missing data
-    const allGradeItems = new Set();
-    terrainGradesData.forEach(item => allGradeItems.add(item.terrain));
-    distanceGradesData.forEach(item => allGradeItems.add(item.distance));
-    styleGradesData.forEach(item => allGradeItems.add(item.style));
-
-    const terrainMap = new Map(terrainGradesData.map(item => [item.terrain, item.grade]));
-    const distanceMap = new Map(distanceGradesData.map(item => [item.distance, item.grade]));
-    const styleMap = new Map(styleGradesData.map(item => [item.style, item.grade]));
-    
+    // --- GRADES ---
     const defaultGradeKeys = {
         terrain: ['Turf', 'Dirt'],
         distance: ['Sprint', 'Mile', 'Medium', 'Long'],
         style: ['Front', 'Pace', 'Late', 'End']
     };
+    const terrainMap = new Map(terrainGradesData.map(item => [item.terrain, item.grade]));
+    const distanceMap = new Map(distanceGradesData.map(item => [item.distance, item.grade]));
+    const styleMap = new Map(styleGradesData.map(item => [item.style, item.grade]));
 
-    const combinedGradeRows = [];
-    // Iterate over expected types for consistent order and completeness
-    for (const key of defaultGradeKeys.distance) {
-        combinedGradeRows.push([
-            key, distanceMap.get(key) || 'G',
-            defaultGradeKeys.style[defaultGradeKeys.distance.indexOf(key)] || '', // Attempt to align style conceptually
-            styleMap.get(defaultGradeKeys.style[defaultGradeKeys.distance.indexOf(key)]) || 'G',
-            defaultGradeKeys.terrain[defaultGradeKeys.distance.indexOf(key)] || '', // Attempt to align terrain conceptually
-            terrainMap.get(defaultGradeKeys.terrain[defaultGradeKeys.distance.indexOf(key)]) || 'G',
-        ]);
-    }
+    const gradeRows = defaultGradeKeys.distance.map((key, i) => [
+        key, distanceMap.get(key) || 'G',
+        defaultGradeKeys.style[i], styleMap.get(defaultGradeKeys.style[i]) || 'G',
+        defaultGradeKeys.terrain[i] || '', terrainMap.get(defaultGradeKeys.terrain[i]) || 'G'
+    ]);
 
-    const gradesTable = TxtBuilder.buildTable(
+    output += 'APTITUDE GRADES\n' + TxtBuilder.buildTable(
         ['Distance', 'G', 'Style', 'G', 'Terrain', 'G'],
-        combinedGradeRows.filter(row => row.some(cell => cell !== '' && cell !== 'G')), // Filter out completely empty rows
+        gradeRows,
         [{align: 'left'}, {align: 'center'}, {align: 'left'}, {align: 'center'}, {align: 'left'}, {align: 'center'}]
-    );
-    output += 'APTITUDE GRADES\n' + gradesTable + '\n';
-
+    ) + '\n';
 
     // --- SUMMARY & GROWTH ---
     output += sectionDivider;
-    const summaryRows = [
+    const summary = [
         ['Total SP', plan.total_available_skill_points || 0],
         ['Acquire Skill?', (plan.acquire_skill || 'NO').toUpperCase()],
         ['Conditions', conditionLabel],
@@ -185,74 +138,63 @@ function copyPlanDetailsToClipboard(allFetchedData) {
         ['Race Day?', (plan.race_day || 'no').toUpperCase()],
         ['Goal', plan.goal || ''],
         ['Strategy', strategyLabel],
-        ['---', '---'], // Divider
+        ['---', '---'],
         ['Growth: Speed', `+${plan.growth_rate_speed || 0}%`],
         ['Growth: Stamina', `+${plan.growth_rate_stamina || 0}%`],
         ['Growth: Power', `+${plan.growth_rate_power || 0}%`],
         ['Growth: Guts', `+${plan.growth_rate_guts || 0}%`],
         ['Growth: Wit', `+${plan.growth_rate_wit || 0}%`],
     ];
-    const summaryTable = TxtBuilder.buildTable(
+    output += 'SUMMARY & GROWTH\n' + TxtBuilder.buildTable(
         ['Item', 'Value'],
-        summaryRows,
+        summary,
         [{align: 'left'}, {align: 'right'}]
-    );
-    output += 'SUMMARY & GROWTH\n' + summaryTable + '\n';
+    ) + '\n';
 
-
-    // --- SKILLS SECTION ---
+    // --- SKILLS ---
     output += sectionDivider;
-    const skillsTable = TxtBuilder.buildTable(
+    output += 'ACQUIRED SKILLS\n';
+    output += TxtBuilder.buildTable(
         ['Skill Name', 'SP Cost', 'Acquired', 'Notes'],
         skillsData.map(skill => [
             skill.skill_name || '',
-            skill.sp_cost || 'N/A',
+            typeof skill.sp_cost === 'number' ? skill.sp_cost : 'N/A',
             (skill.acquired || '').toLowerCase() === 'yes' ? '✅' : '❌',
             skill.notes || ''
         ]),
         [{align: 'left'}, {align: 'right'}, {align: 'center'}, {align: 'left'}]
-    );
-    output += 'ACQUIRED SKILLS\n' + skillsTable + '\n';
-    
-    // --- GOALS SECTION ---
-    output += sectionDivider;
-    output += 'CAREER GOALS\n' + '-'.repeat(80) + '\n';
-    if (goalsData.length > 0) {
-        goalsData.forEach(goal => {
-            const result = (goal.result && goal.result !== 'Pending') ? ` (Result: ${goal.result})` : '';
-            output += `• ${goal.goal}${result}\n`;
-        });
-    } else {
-        output += 'No goals specified.\n';
-    }
-    
+    ) + '\n';
+
+    // --- GOALS ---
+    output += sectionDivider + 'CAREER GOALS\n' + '-'.repeat(80) + '\n';
+    output += goalsData.length > 0
+        ? goalsData.map(g => `• ${g.goal}${g.result && g.result !== 'Pending' ? ` (Result: ${g.result})` : ''}`).join('\n') + '\n'
+        : 'No goals specified.\n';
+
     // --- RACE PREDICTIONS ---
-    output += sectionDivider;
-    output += 'RACE DAY PREDICTIONS\n' + '-'.repeat(80) + '\n';
+    output += sectionDivider + 'RACE DAY PREDICTIONS\n' + '-'.repeat(80) + '\n';
     if (predictionsData.length > 0) {
-        predictionsData.forEach((pred, index) => {
-            output += `Prediction #${index + 1}: ${pred.race_name || 'N/A'}\n`;
-            output += `  Venue: ${pred.venue}, ${pred.ground}, ${pred.distance}, ${pred.direction}, Track: ${pred.track_condition}\n`;
-            const stats = `  SPEED[${pred.speed}] STAMINA[${pred.stamina}] POWER[${pred.power}] GUTS[${pred.guts}] WIT[${pred.wit}]`;
-            output += stats + '\n';
-            output += `  Comment: ${pred.comment || 'N/A'}\n\n`;
+        predictionsData.forEach((p, i) => {
+            output += `Prediction #${i + 1}: ${p.race_name || 'N/A'}\n`;
+            output += `  Venue: ${p.venue}, ${p.ground}, ${p.distance}, ${p.direction}, Track: ${p.track_condition}\n`;
+            output += `  SPEED[${p.speed}] STAMINA[${p.stamina}] POWER[${p.power}] GUTS[${p.guts}] WIT[${p.wit}]\n`;
+            output += `  Comment: ${p.comment || 'N/A'}\n\n`;
         });
     } else {
         output += 'No race predictions available.\n';
     }
 
-
-    // --- FINAL ACTION: Copy to clipboard ---
+    // --- COPY TO CLIPBOARD ---
     try {
         navigator.clipboard.writeText(output.trim()).then(() => {
             showMessageBox('Formatted plan copied to clipboard!', 'success');
         }).catch(err => {
-            console.error('Failed to copy text (clipboard API error): ', err); // More specific error
-            showMessageBox('Failed to copy plan details to clipboard. Browser permission denied or API error.', 'danger');
+            console.error('Clipboard API Error:', err);
+            showMessageBox('Failed to copy to clipboard. Check browser permissions.', 'danger');
         });
     } catch (e) {
-        console.error("Error before clipboard API call:", e); // Catch immediate errors
-        showMessageBox('An unexpected error occurred before attempting to copy.', 'danger');
+        console.error('Unexpected copy error:', e);
+        showMessageBox('Unexpected error occurred during copy.', 'danger');
     }
 }
 </script>

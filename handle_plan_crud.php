@@ -1,8 +1,11 @@
 <?php
 
 ob_start();
-ini_set('display_errors', 0); // Add this line
-error_reporting(0);          // Add this line
+
+// It's recommended to remove these lines during development to see errors.
+// Configure error reporting in your php.ini for a production server instead.
+// ini_set('display_errors', 0);
+// error_reporting(0);
 
 // handle_plan_crud.php
 // This script handles CRUD operations (Create, Read, Update, Delete) for trainee plans
@@ -42,7 +45,7 @@ try {
             $pdo->beginTransaction(); // Start transaction for delete
 
             // Before deleting the plan, fetch and delete its associated image file
-            $stmt_fetch_image = $pdo->prepare("SELECT trainee_image_path FROM plans WHERE id = ?");
+            $stmt_fetch_image = $pdo->prepare('SELECT trainee_image_path FROM plans WHERE id = ?');
             $stmt_fetch_image->execute([$plan_id]);
             $image_to_delete = $stmt_fetch_image->fetchColumn();
 
@@ -55,7 +58,7 @@ try {
                 }
             }
 
-            $stmt = $pdo->prepare("UPDATE plans SET deleted_at = NOW() WHERE id = ?");
+            $stmt = $pdo->prepare('UPDATE plans SET deleted_at = NOW() WHERE id = ?');
             $stmt->execute([$plan_id]);
 
             if ($stmt->rowCount()) {
@@ -129,7 +132,7 @@ try {
             if ($plan_id > 0) {
                 // --- UPDATE EXISTING PLAN ---
                 // First, get the current trainee_image_path from the DB before calling handleTraineeImageUpload
-                $stmt_get_current_image = $pdo->prepare("SELECT trainee_image_path FROM plans WHERE id = ?");
+                $stmt_get_current_image = $pdo->prepare('SELECT trainee_image_path FROM plans WHERE id = ?');
                 $stmt_get_current_image->execute([$plan_id]);
                 $currentDbImagePath = $stmt_get_current_image->fetchColumn();
 
@@ -159,7 +162,7 @@ try {
                     $growth_rate_speed, $growth_rate_stamina, $growth_rate_power,
                     $growth_rate_guts, $growth_rate_wit,
                     $newImagePath, // NEW: trainee_image_path
-                    $plan_id
+                    $plan_id,
                 ]);
             } else {
                 // --- CREATE NEW PLAN ---
@@ -177,7 +180,7 @@ try {
                     $acquire_skill, $total_available_skill_points, $status, $time_of_day, $month, $source,
                     $growth_rate_speed, $growth_rate_stamina, $growth_rate_power,
                     $growth_rate_guts, $growth_rate_wit,
-                    null // NEW: trainee_image_path is initially NULL for new plans, handled after insert for file processing
+                    null, // NEW: trainee_image_path is initially NULL for new plans, handled after insert for file processing
                 ]);
                 $planIdToUse = $pdo->lastInsertId(); // Get the ID of the newly inserted plan
                 $log->info('New plan created successfully.', ['new_plan_id' => $planIdToUse, 'plan_title' => $plan_title]);
@@ -192,7 +195,7 @@ try {
                 );
                 // Update the newly created plan with the image path if one was uploaded
                 if ($newImagePath !== null) {
-                    $stmt_update_image = $pdo->prepare("UPDATE plans SET trainee_image_path = ? WHERE id = ?");
+                    $stmt_update_image = $pdo->prepare('UPDATE plans SET trainee_image_path = ? WHERE id = ?');
                     $stmt_update_image->execute([$newImagePath, $planIdToUse]);
                 }
             }
@@ -359,7 +362,7 @@ try {
             // and then re-inserting all submitted records. This ensures no orphaned records and reflects frontend state.
 
             // Skills
-            $stmt_delete_skills = $pdo->prepare("DELETE FROM skills WHERE plan_id = ?");
+            $stmt_delete_skills = $pdo->prepare('DELETE FROM skills WHERE plan_id = ?');
             $stmt_delete_skills->execute([$planIdToUse]);
             $log->info('Cleared old skills for re-insertion.', ['plan_id' => $planIdToUse]);
 
@@ -376,14 +379,14 @@ try {
                             trim($skill['sp_cost'] ?? ''),
                             (isset($skill['acquired']) && $skill['acquired'] === 'yes' ? 'yes' : 'no'),
                             trim($skill['tag'] ?? ''),
-                            trim($skill['notes'] ?? '')
+                            trim($skill['notes'] ?? ''),
                         ]);
                     } else {
                         $log->warning('Skipped inserting skill with empty name.', ['plan_id' => $planIdToUse, 'skill_data' => $skill]);
                     }
                 }
                 if ($placeholders !== []) {
-                    $insert_sql = "INSERT INTO skills (plan_id, skill_name, sp_cost, acquired, tag, notes) VALUES " . implode(', ', $placeholders);
+                    $insert_sql = 'INSERT INTO skills (plan_id, skill_name, sp_cost, acquired, tag, notes) VALUES ' . implode(', ', $placeholders);
                     $stmt_insert_skills = $pdo->prepare($insert_sql);
                     $stmt_insert_skills->execute($insert_values);
                     $log->debug('Inserted new skills.', ['plan_id' => $planIdToUse, 'count' => count($placeholders)]);
@@ -391,7 +394,7 @@ try {
             }
 
             // Race Predictions
-            $stmt_delete_predictions = $pdo->prepare("DELETE FROM race_predictions WHERE plan_id = ?");
+            $stmt_delete_predictions = $pdo->prepare('DELETE FROM race_predictions WHERE plan_id = ?');
             $stmt_delete_predictions->execute([$planIdToUse]);
             $log->info('Cleared old predictions for re-insertion.', ['plan_id' => $planIdToUse]);
 
@@ -415,14 +418,14 @@ try {
                             trim((string) $pred['power'] ?? '○'),
                             trim((string) $pred['guts'] ?? '○'),
                             trim((string) $pred['wit'] ?? '○'),
-                            trim((string) $pred['comment'] ?? '')
+                            trim((string) $pred['comment'] ?? ''),
                         ]);
                     } else {
                         $log->warning('Skipped inserting prediction with empty race name.', ['plan_id' => $planIdToUse, 'prediction_data' => $pred]);
                     }
                 }
                 if ($placeholders !== []) {
-                    $insert_sql = "INSERT INTO race_predictions (plan_id, race_name, venue, ground, distance, track_condition, direction, speed, stamina, power, guts, wit, comment) VALUES " . implode(', ', $placeholders);
+                    $insert_sql = 'INSERT INTO race_predictions (plan_id, race_name, venue, ground, distance, track_condition, direction, speed, stamina, power, guts, wit, comment) VALUES ' . implode(', ', $placeholders);
                     $stmt_insert_predictions = $pdo->prepare($insert_sql);
                     $stmt_insert_predictions->execute($insert_values);
                     $log->debug('Inserted new predictions.', ['plan_id' => $planIdToUse, 'count' => count($placeholders)]);
@@ -509,7 +512,7 @@ try {
         'message' => $e->getMessage(),
         'plan_id' => $plan_id ?? null,
         'trace' => $e->getTraceAsString(),
-        'post_data' => $_POST // Log relevant POST data for debugging
+        'post_data' => $_POST, // Log relevant POST data for debugging
     ]);
     http_response_code(500);
     $response = ['success' => false, 'error' => 'A database error occurred: ' . $e->getMessage()];
@@ -522,7 +525,7 @@ try {
         'message' => $e->getMessage(),
         'plan_id' => $plan_id ?? null,
         'trace' => $e->getTraceAsString(),
-        'post_data' => $_POST
+        'post_data' => $_POST,
     ]);
     http_response_code(500);
     $response = ['success' => false, 'error' => 'An unexpected error occurred: ' . $e->getMessage()];

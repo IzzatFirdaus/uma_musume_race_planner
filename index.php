@@ -115,13 +115,20 @@ try {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uma Musume Race Planner</title>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="icon" href="uploads/app_logo/uma_musume_race_planner_logo_32.ico" sizes="32x32">
+  <link rel="icon" href="uploads/app_logo/uma_musume_race_planner_logo_128.png" sizes="128x128">
+  <link rel="icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png" sizes="256x256">
+  <link rel="apple-touch-icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png">
 
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -132,7 +139,10 @@ try {
   <div class="container">
     <div class="header-banner rounded-3 text-center mb-4">
       <div class="container">
-        <h1 class="display-4 fw-bold"><i class="bi bi-speedometer2"></i> Uma Musume Race Planner</h1>
+        <h1 class="display-4 fw-bold">
+          <img src="uploads/app_logo/uma_musume_race_planner_logo_128.png" alt="Uma Musume Race Planner Logo" class="logo">
+          Uma Musume Race Planner
+        </h1>
         <p class="lead">Plan, track, and optimize your umamusume's racing career</p>
       </div>
     </div>
@@ -764,6 +774,5 @@ try {
       updateRecentActivity();
     });
 </script>
-
 </body>
 </html>

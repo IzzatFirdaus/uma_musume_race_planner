@@ -1,12 +1,25 @@
 <?php
 
-// get_stats.php
+/**
+ * get_stats.php
+ *
+ * Endpoint to fetch summary statistics for plans and trainees.
+ *
+ * Returns:
+ * - total_plans: All undeleted plans
+ * - active_plans: Count with status = 'Active'
+ * - finished_plans: Count with status = 'Finished'
+ * - planning_plans: Count with status = 'Planning'
+ * - unique_trainees: Unique trainee names
+ */
+
 header('Content-Type: application/json');
+
 $pdo = require __DIR__ . '/includes/db.php';
 $log = require __DIR__ . '/includes/logger.php';
 
 try {
-    $stats_query = "
+    $sql = "
         SELECT
             COUNT(*) AS total_plans,
             SUM(CASE WHEN status = 'Active' THEN 1 ELSE 0 END) AS active_plans,
@@ -16,20 +29,33 @@ try {
         FROM plans
         WHERE deleted_at IS NULL
     ";
-    $stmt = $pdo->query($stats_query);
-    $stats = $stmt->fetch();
 
-    // Cast values to integers
-    foreach ($stats as $key => $value) {
-        $stats[$key] = (int)$value;
-    }
+    $stmt = $pdo->query($sql);
+    $stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    echo json_encode(['success' => true, 'stats' => $stats]);
+    // Force values to be integers (null fallback = 0)
+    $safeStats = [
+        'total_plans'     => (int)($stats['total_plans'] ?? 0),
+        'active_plans'    => (int)($stats['active_plans'] ?? 0),
+        'finished_plans'  => (int)($stats['finished_plans'] ?? 0),
+        'planning_plans'  => (int)($stats['planning_plans'] ?? 0),
+        'unique_trainees' => (int)($stats['unique_trainees'] ?? 0),
+    ];
+
+    echo json_encode([
+        'success' => true,
+        'stats' => $safeStats
+    ]);
 } catch (PDOException $e) {
-    // Log the detailed error to your file
-    $log->error('Failed to fetch stats', ['message' => $e->getMessage()]);
+    $log->error('Failed to fetch stats', [
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
 
-    // Send a generic error to the client
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'A database error occurred while fetching stats.']);
-}
+    echo json_encode([
+        'success' => false,
+        'error' => 'A database error occurred while fetching stats.'
+    ]);
+}//

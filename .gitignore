@@ -30,6 +30,8 @@ Thumbs.db
 
 # Uploaded files (if stored locally)
 uploads/
+screenshot/
+backup/
 
 # Coverage reports
 coverage/

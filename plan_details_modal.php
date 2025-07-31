@@ -27,30 +27,44 @@ $conditionOptions = $conditionOptions ?? [];
                 <div class="modal-body">
                     <ul class="nav nav-tabs" id="planTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">General</button>
+                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab"
+                                data-bs-target="#general" type="button" role="tab" aria-controls="general"
+                                aria-selected="true">General</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="attributes-tab" data-bs-toggle="tab" data-bs-target="#attributes" type="button" role="tab" aria-controls="attributes" aria-selected="false">Attributes</button>
+                            <button class="nav-link" id="attributes-tab" data-bs-toggle="tab"
+                                data-bs-target="#attributes" type="button" role="tab" aria-controls="attributes"
+                                aria-selected="false">Attributes</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="grades-tab" data-bs-toggle="tab" data-bs-target="#grades" type="button" role="tab" aria-controls="grades" aria-selected="false">Aptitude Grades</button>
+                            <button class="nav-link" id="grades-tab" data-bs-toggle="tab" data-bs-target="#grades"
+                                type="button" role="tab" aria-controls="grades" aria-selected="false">Aptitude
+                                Grades</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab" aria-controls="skills" aria-selected="false">Skills</button>
+                            <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills"
+                                type="button" role="tab" aria-controls="skills"
+                                aria-selected="false">Skills</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="predictions-tab" data-bs-toggle="tab" data-bs-target="#predictions" type="button" role="tab" aria-controls="predictions" aria-selected="false">Race Predictions</button>
+                            <button class="nav-link" id="predictions-tab" data-bs-toggle="tab"
+                                data-bs-target="#predictions" type="button" role="tab" aria-controls="predictions"
+                                aria-selected="false">Race Predictions</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals" type="button" role="tab" aria-controls="goals" aria-selected="false">Goals</button>
+                            <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals"
+                                type="button" role="tab" aria-controls="goals" aria-selected="false">Goals</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="progress-chart-tab" data-bs-toggle="tab" data-bs-target="#progress-chart" type="button" role="tab" aria-controls="progress-chart" aria-selected="false">Progress Chart</button>
+                            <button class="nav-link" id="progress-chart-tab" data-bs-toggle="tab"
+                                data-bs-target="#progress-chart" type="button" role="tab"
+                                aria-controls="progress-chart" aria-selected="false">Progress Chart</button>
                         </li>
                     </ul>
 
                     <div class="tab-content pt-3">
-                        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                        <div class="tab-pane fade show active" id="general" role="tabpanel"
+                            aria-labelledby="general-tab">
                             <div class="row mb-3">
                                 <div class="col-md-8">
                                     <label for="plan_title" class="form-label">Plan Title</label>
@@ -59,17 +73,20 @@ $conditionOptions = $conditionOptions ?? [];
                                 </div>
                                 <div class="col-md-4">
                                     <label for="modalTurnBefore" class="form-label">Turn Before</label>
-                                    <input type="number" class="form-control" id="modalTurnBefore" name="modalTurnBefore">
+                                    <input type="number" class="form-control" id="modalTurnBefore"
+                                        name="modalTurnBefore">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="modalName" class="form-label">Trainee Name</label>
-                                    <input type="text" class="form-control" id="modalName" name="modalName" required>
+                                    <input type="text" class="form-control" id="modalName" name="modalName"
+                                        required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="modalRaceName" class="form-label">Next Race Name</label>
-                                    <input type="text" class="form-control" id="modalRaceName" name="modalRaceName">
+                                    <input type="text" class="form-control" id="modalRaceName"
+                                        name="modalRaceName">
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -79,9 +96,10 @@ $conditionOptions = $conditionOptions ?? [];
                                     <div class="row">
                                         <div class="col-md-8">
                                             <label for="modalCareerStage" class="form-label">Career Stage</label>
-                                            <select class="form-select" id="modalCareerStage" name="modalCareerStage" required>
+                                            <select class="form-select" id="modalCareerStage" name="modalCareerStage"
+                                                required>
                                                 <?php foreach ($careerStageOptions as $option) : ?>
-                                                    <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
+                                                <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -89,7 +107,7 @@ $conditionOptions = $conditionOptions ?? [];
                                             <label for="modalClass" class="form-label">Class</label>
                                             <select class="form-select" id="modalClass" name="modalClass" required>
                                                 <?php foreach ($classOptions as $option) : ?>
-                                                    <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
+                                                <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -113,7 +131,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <label for="modalStrategy" class="form-label">Strategy</label>
                                     <select class="form-select" id="modalStrategy" name="modalStrategy">
                                         <?php foreach ($strategyOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
+                                        <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -121,7 +139,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <label for="modalMood" class="form-label">Mood</label>
                                     <select class="form-select" id="modalMood" name="modalMood">
                                         <?php foreach ($moodOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
+                                        <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -129,7 +147,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <label for="modalCondition" class="form-label">Condition</label>
                                     <select class="form-select" id="modalCondition" name="modalCondition">
                                         <?php foreach ($conditionOptions as $option) : ?>
-                                            <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
+                                        <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -147,65 +165,78 @@ $conditionOptions = $conditionOptions ?? [];
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="modalMonth" class="form-label">Month</label>
-                                    <input type="text" class="form-control" id="modalMonth" name="modalMonth" placeholder="e.g., July">
+                                    <input type="text" class="form-control" id="modalMonth" name="modalMonth"
+                                        placeholder="e.g., July">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="modalTimeOfDay" class="form-label">Time of Day</label>
-                                    <input type="text" class="form-control" id="modalTimeOfDay" name="modalTimeOfDay" placeholder="e.g., Early / Late">
+                                    <input type="text" class="form-control" id="modalTimeOfDay"
+                                        name="modalTimeOfDay" placeholder="e.g., Early / Late">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label for="skillPoints" class="form-label">Total SP</label>
-                                    <input type="number" class="form-control" id="skillPoints" name="skillPoints" value="0">
+                                    <input type="number" class="form-control" id="skillPoints" name="skillPoints"
+                                        value="0">
                                 </div>
                                 <div class="col-md-4 d-flex align-items-center">
                                     <div class="form-check form-switch mt-4">
-                                        <input class="form-check-input" type="checkbox" id="acquireSkillSwitch" name="acquireSkillSwitch" value="YES">
-                                        <label class="form-check-label" for="acquireSkillSwitch">Acquire Skill?</label>
+                                        <input class="form-check-input" type="checkbox" id="acquireSkillSwitch"
+                                            name="acquireSkillSwitch" value="YES">
+                                        <label class="form-check-label" for="acquireSkillSwitch">Acquire
+                                            Skill?</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4 d-flex align-items-center">
                                     <div class="form-check form-switch mt-4">
-                                        <input class="form-check-input" type="checkbox" id="raceDaySwitch" name="raceDaySwitch">
+                                        <input class="form-check-input" type="checkbox" id="raceDaySwitch"
+                                            name="raceDaySwitch">
                                         <label class="form-check-label" for="raceDaySwitch">Race Day?</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-12">
-                                    <label for="energyRange" class="form-label">Energy (<span id="energyValue">0</span>/100%)</label>
-                                    <input type="range" class="form-range" min="0" max="100" id="energyRange" name="energyRange">
+                                    <label for="energyRange" class="form-label">Energy (<span
+                                            id="energyValue">0</span>/100%)</label>
+                                    <input type="range" class="form-range" min="0" max="100"
+                                        id="energyRange" name="energyRange">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <h6>Growth Rates (%)</h6>
                                 <div class="col">
                                     <label for="growthRateSpeed" class="form-label">Speed</label>
-                                    <input type="number" class="form-control" id="growthRateSpeed" name="growthRateSpeed" value="0">
+                                    <input type="number" class="form-control" id="growthRateSpeed"
+                                        name="growthRateSpeed" value="0">
                                 </div>
                                 <div class="col">
                                     <label for="growthRateStamina" class="form-label">Stamina</label>
-                                    <input type="number" class="form-control" id="growthRateStamina" name="growthRateStamina" value="0">
+                                    <input type="number" class="form-control" id="growthRateStamina"
+                                        name="growthRateStamina" value="0">
                                 </div>
                                 <div class="col">
                                     <label for="growthRatePower" class="form-label">Power</label>
-                                    <input type="number" class="form-control" id="growthRatePower" name="growthRatePower" value="0">
+                                    <input type="number" class="form-control" id="growthRatePower"
+                                        name="growthRatePower" value="0">
                                 </div>
                                 <div class="col">
                                     <label for="growthRateGuts" class="form-label">Guts</label>
-                                    <input type="number" class="form-control" id="growthRateGuts" name="growthRateGuts" value="0">
+                                    <input type="number" class="form-control" id="growthRateGuts"
+                                        name="growthRateGuts" value="0">
                                 </div>
                                 <div class="col">
                                     <label for="growthRateWit" class="form-label">Wit</label>
-                                    <input type="number" class="form-control" id="growthRateWit" name="growthRateWit" value="0">
+                                    <input type="number" class="form-control" id="growthRateWit"
+                                        name="growthRateWit" value="0">
                                 </div>
                             </div>
                         </div>
 
                         <div class="tab-pane fade" id="attributes" role="tabpanel" aria-labelledby="attributes-tab">
                             <div id="attributeSlidersContainer">
-                                </div>
+                            </div>
                         </div>
 
                         <div class="tab-pane fade" id="grades" role="tabpanel" aria-labelledby="grades-tab">
@@ -231,7 +262,8 @@ $conditionOptions = $conditionOptions ?? [];
                             <button type="button" class="btn btn-uma w-100 mt-2" id="addSkillBtn">Add Skill</button>
                         </div>
 
-                        <div class="tab-pane fade" id="predictions" role="tabpanel" aria-labelledby="predictions-tab">
+                        <div class="tab-pane fade" id="predictions" role="tabpanel"
+                            aria-labelledby="predictions-tab">
                             <div class="table-responsive">
                                 <table class="table table-sm" id="predictionsTable">
                                     <thead>
@@ -254,7 +286,8 @@ $conditionOptions = $conditionOptions ?? [];
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn btn-uma w-100 mt-2" id="addPredictionBtn">Add Prediction</button>
+                            <button type="button" class="btn btn-uma w-100 mt-2" id="addPredictionBtn">Add
+                                Prediction</button>
                         </div>
 
                         <div class="tab-pane fade" id="goals" role="tabpanel" aria-labelledby="goals-tab">
@@ -272,17 +305,22 @@ $conditionOptions = $conditionOptions ?? [];
                             </div>
                             <button type="button" class="btn btn-uma w-100 mt-2" id="addGoalBtn">Add Goal</button>
                         </div>
-                        
+
                         <div class="tab-pane fade" id="progress-chart" role="tabpanel" aria-labelledby="progress-chart-tab">
-                            <div class="chart-container">
+                            <div class="chart-container" style="position: relative; height: 400px;">
                                 <canvas id="growthChart"></canvas>
+                                <div id="growthChartMessage" class="text-center p-5 h-100 d-flex justify-content-center align-items-center" style="display: none;">
+                                    <p class="text-muted fs-5">No progression data available for this plan.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-info" id="exportPlanBtn">Export Plan</button>
+                    <button type="button" class="btn btn-info" id="exportPlanBtn">Copy to Clipboard</button>
+                    <a href="#" id="downloadTxtLink" class="btn btn-outline-secondary">
+                        <i class="bi bi-file-earmark-text"></i> Export as TXT</a>
                     <button type="submit" class="btn btn-uma">Save Changes</button>
                 </div>
             </form>
@@ -291,59 +329,165 @@ $conditionOptions = $conditionOptions ?? [];
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const planDetailsModalElement = document.getElementById('planDetailsModal');
     if (!planDetailsModalElement) return;
 
-    // --- Chart.js Feature ---
     const chartTab = document.getElementById('progress-chart-tab');
-    let growthChartInstance = null; // To hold the chart object
+    let growthChartInstance = null;
+
+    // Helper function to get computed CSS variable values
+    function getCssVariableValue(variableName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+    }
 
     async function renderGrowthChart(planId) {
         if (!planId) return;
 
+        const chartCanvas = document.getElementById('growthChart');
+        const messageContainer = document.getElementById('growthChartMessage');
+
+        // Always destroy the old instance to prevent stale charts or errors
+        if (growthChartInstance) {
+            growthChartInstance.destroy();
+            growthChartInstance = null;
+        }
+
         try {
-            const response = await fetch(`get_progress_chart_data.php?id=${planId}`);
+            // Set chart-wide font styles to match your app's body styles
+            Chart.defaults.font.family = getCssVariableValue('--bs-body-font-family');
+            Chart.defaults.color = getCssVariableValue('--bs-secondary-color');
+
+            const response = await fetch(`get_progress_chart_data.php?plan_id=${planId}`);
             const result = await response.json();
 
-            if (result.success) {
-                const turns = result.turns;
-                const ctx = document.getElementById('growthChart').getContext('2d');
+            // UPDATED: Robust check for data
+            if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+                // We have data: show canvas, hide message
+                chartCanvas.style.display = 'block';
+                messageContainer.style.display = 'none';
                 
-                if (growthChartInstance) {
-                    growthChartInstance.destroy(); // Destroy previous chart instance
-                }
+                const turns = result.data;
+                const ctx = chartCanvas.getContext('2d');
 
                 growthChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: turns.map(t => `Turn ${t.turn_number}`),
-                        datasets: [
-                            { label: 'Speed', data: turns.map(t => t.speed), borderColor: 'var(--stat-speed-color)', tension: 0.1 },
-                            { label: 'Stamina', data: turns.map(t => t.stamina), borderColor: 'var(--stat-stamina-color)', tension: 0.1 },
-                            { label: 'Power', data: turns.map(t => t.power), borderColor: 'var(--stat-power-color)', tension: 0.1 },
-                            { label: 'Guts', data: turns.map(t => t.guts), borderColor: 'var(--stat-guts-color)', tension: 0.1 },
-                            { label: 'Wit', data: turns.map(t => t.wit), borderColor: 'var(--stat-wit-color)', tension: 0.1 }
+                        labels: turns.map(t => `Turn ${t.turn}`),
+                        datasets: [{
+                                label: 'Speed',
+                                data: turns.map(t => t.speed),
+                                borderColor: getCssVariableValue('--stat-speed-color'),
+                                pointBackgroundColor: getCssVariableValue('--stat-speed-color'),
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Stamina',
+                                data: turns.map(t => t.stamina),
+                                borderColor: getCssVariableValue('--stat-stamina-color'),
+                                pointBackgroundColor: getCssVariableValue('--stat-stamina-color'),
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Power',
+                                data: turns.map(t => t.power),
+                                borderColor: getCssVariableValue('--stat-power-color'),
+                                pointBackgroundColor: getCssVariableValue('--stat-power-color'),
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Guts',
+                                data: turns.map(t => t.guts),
+                                borderColor: getCssVariableValue('--stat-guts-color'),
+                                pointBackgroundColor: getCssVariableValue('--stat-guts-color'),
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Wit',
+                                data: turns.map(t => t.wit),
+                                borderColor: getCssVariableValue('--stat-wit-color'),
+                                pointBackgroundColor: getCssVariableValue('--stat-wit-color'),
+                                tension: 0.3
+                            }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false }
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    usePointStyle: true,
+                                    color: getCssVariableValue('--bs-body-color'),
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                padding: 12,
+                                cornerRadius: 4,
+                                displayColors: true
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: getCssVariableValue('--bs-border-color-translucent')
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: getCssVariableValue('--bs-border-color-translucent')
+                                }
+                            }
+                        }
                     }
                 });
             } else {
-                console.error('Error fetching chart data:', result.error);
+                // No data: hide canvas, show message
+                chartCanvas.style.display = 'none';
+                messageContainer.style.display = 'block';
+                // Also reset the message text in case it was changed to an error
+                messageContainer.innerHTML = '<p class="text-muted fs-5">No progression data available for this plan.</p>';
             }
         } catch (error) {
-            console.error('Failed to render growth chart:', error);
+            // Error state: hide canvas, show an error message
+            chartCanvas.style.display = 'none';
+            messageContainer.style.display = 'block';
+            messageContainer.innerHTML = '<p class="text-danger">Could not load chart data. Please check the console for details.</p>';
+            console.error('Error loading chart:', error);
         }
     }
 
     // Listen for when the chart tab is shown and render the chart
-    chartTab.addEventListener('shown.bs.tab', function () {
+    chartTab.addEventListener('shown.bs.tab', function() {
         const currentPlanId = document.getElementById('planId').value;
         renderGrowthChart(currentPlanId);
+    });
+
+    document.getElementById('downloadTxtLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        const planId = document.getElementById('planId').value;
+        if (!planId) return;
+
+        const planTitle = document.getElementById('plan_title').value || 'plan';
+        const safeFileName = planTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        
+        const fileName = `${safeFileName}_${planId}.txt`;
+        const link = document.createElement('a');
+        link.href = `export_plan_data.php?id=${planId}&format=txt`;
+        link.download = fileName;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     });
 });
 </script>

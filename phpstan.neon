@@ -1,19 +1,33 @@
 # phpstan.neon
 parameters:
-    level: 5 # Adjust this to your desired level (0-8)
+    level: 5 # Good starting point, adjust as needed (0-8)
     paths:
         - . # Include the root directory
         - components # Include the components directory
     excludePaths:
-        - %rootDir%/vendor/*
-        - %rootDir%/js/* # Exclude JavaScript files if PHPStan tries to scan them
-        - %rootDir%/css/* # Exclude CSS files
-        - %rootDir%/*.sql # Exclude SQL dump file
-        # - %rootDir%/tests/* # Uncomment if you have tests and want to exclude them
-        # Explicitly exclude the rector directory within vendor
-        - %rootDir%/vendor/rector/*
-        # Add more specific exclusions for Rector's internal paths if needed
-        - %rootDir%/vendor/rector/rector/templates/*
-        - %rootDir%/vendor/rector/rector/vendor/* # This is crucial if Rector has its own nested vendor
-    # You can add more options here, like custom rules or extensions
-    # See https://phpstan.org/config-reference
+        - %rootDir%/vendor/* # This should correctly exclude all vendor directory analysis
+        - %rootDir%/js/*
+        - %rootDir%/css/*
+        - %rootDir%/*.sql
+        # - %rootDir%/tests/* # Uncomment if you have tests and want to exclude them from analysis
+
+    # Crucial for resolving vendor classes and interfaces
+    bootstrapFiles:
+        - %rootDir%/vendor/autoload.php
+
+    # Optional: Enable parallel processing for faster analysis on larger projects
+    # You might need to install `php-parallel-lint/php-parallel-lint` for this to work
+    # parallel:
+    #    maximumNumberOfProcesses: 8 # Adjust based on your CPU cores
+
+    # Optional: If you want to ignore specific errors from vendor packages (use with caution!)
+    # This is a band-aid, not a fix for "class.notFound" errors if they persist.
+    # It's better to fix the root cause (autoloading) first.
+    # ignoreErrors:
+    #     - '#Class Symfony\\Component\\VarDumper\\Dumper\\CliDumper not found\.#'
+    #     - '#Call to an undefined method Symfony\\Component\\Console\\Helper\\HelperInterface::start\(\)\.#'
+    #     # Add more patterns here if absolutely necessary for persistent vendor errors you can't fix
+    #     # But ideally, you want to fix the underlying autoloading.
+
+    # Optional: Treat PHPDoc types as certain (can reduce some false positives related to PHPDoc mismatches)
+    # treatPhpDocTypesAsCertain: false # You already have this hint in your output, consider uncommenting if you get lots of false positives from PHPDocs

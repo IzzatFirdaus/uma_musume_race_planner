@@ -78,7 +78,7 @@ try {
                 'stamina' => 0,
                 'power' => 0,
                 'guts' => 0,
-                'wit' => 0
+                'wit' => 0,
             ];
             // Remove the raw attribute columns from the top level, as they'll be nested
             unset($plans_with_attributes[$plan_id]['attribute_name']);

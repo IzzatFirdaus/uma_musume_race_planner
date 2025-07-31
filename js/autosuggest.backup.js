@@ -1,17 +1,6 @@
 // js/autosuggest.js
 const activeSuggestLists = new Map(); // Stores active suggestion lists for easy cleanup
 
-// CRITICAL SECURITY FIX 3: Sanitization helper (for general use, though textContent is primary defense here)
-// This function is useful if you ever need to embed user-controlled text into innerHTML for specific formatting.
-// For directly displaying text, textContent is generally safer and preferred.
-function sanitizeText(str)
-{
-    const div = document.createElement('div');
-    div.textContent = str; // Using textContent automatically escapes HTML entities
-    return div.innerHTML; // Returns the HTML-escaped string
-}
-
-
 /**
  * Attaches autosuggest functionality to an input field.
  * @param {HTMLInputElement} input The input element to attach autosuggest to.
@@ -19,36 +8,23 @@ function sanitizeText(str)
  * @param {function(Object): void} [onSelectCallback] Optional callback function when a suggestion is selected.
  * For skill_name, this will receive the full skill object.
  */
-function attachAutosuggest(input, field, onSelectCallback = null)
-{
+function attachAutosuggest(input, field, onSelectCallback = null) {
     let currentFocus = -1;
     let currentInput = input; // Store reference for closure
-
-    // CRITICAL SECURITY FIX 2: Validate field parameter
-    const allowedFields = ['name', 'race_name', 'skill_name', 'goal']; // FIXED: Added 'goal' to allowedFields
-    if (!allowedFields.includes(field)) {
-        console.error('Autosuggest: Invalid field parameter provided:', field); //
-        // Optionally throw an error or disable functionality if field is invalid
-        return;
-    }
 
     // Close any existing autosuggest list for this input
     closeAllLists(input);
 
-    input.addEventListener("input", function (e) {
+    input.addEventListener("input", function(e) {
         const val = this.value;
         closeAllLists(this); // Close any open lists before creating a new one
 
-        if (!val) {
-            return false; }
+        if (!val) { return false; }
 
         currentFocus = -1;
         const a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
         a.setAttribute("class", "autocomplete-items card"); // Use card class for styling
-        // ACCESSIBILITY: Add ARIA attributes for listbox role
-        a.setAttribute('role', 'listbox');
-        a.setAttribute('aria-label', `Suggestions for ${input.id}`); // Dynamic label for context
         this.parentNode.appendChild(a);
         activeSuggestLists.set(this, a); // Store the list element
 
@@ -59,8 +35,7 @@ function attachAutosuggest(input, field, onSelectCallback = null)
         loadingDiv.style.textAlign = "center";
         a.appendChild(loadingDiv);
 
-        // Ensure no extra spaces in the fetch URL
-        fetch(`get_autosuggest.php ? field = ${field} & query = ${encodeURIComponent(val)}`) // Removed spaces around ? and &
+        fetch(`get_autosuggest.php?field=${field}&query=${encodeURIComponent(val)}`)
             .then(response => {
                 // Check if response is OK (status 200-299)
                 if (!response.ok) {
@@ -75,40 +50,13 @@ function attachAutosuggest(input, field, onSelectCallback = null)
                 try {
                     const data = JSON.parse(text); // Try parsing as JSON
                     if (data.success && data.suggestions) {
-                        if (data.suggestions.length === 0) {
-                            const noResults = document.createElement("DIV");
-                            noResults.textContent = "No results found.";
-                            noResults.style.padding = "10px";
-                            noResults.style.color = "var(--color-text-muted-light)";
-                            a.appendChild(noResults);
-                            return; // Exit if no results
-                        }
-
                         data.suggestions.forEach(item => {
                             const valToDisplay = field === 'skill_name' ? item.skill_name : item;
                             const b = document.createElement("DIV");
-                            // ACCESSIBILITY: Add ARIA attributes for option role
-                            b.setAttribute('role', 'option');
-                            b.setAttribute('aria-selected', 'false'); // Will be toggled by addActive
-
-                            // CRITICAL SECURITY FIX 1: Use textContent and DOM methods to prevent XSS
-                            // Create <strong> for matched part
-                            const strong = document.createElement('strong');
-                            strong.textContent = valToDisplay.substring(0, val.length); // Use textContent for safety
-                            b.appendChild(strong);
-
-                            // Add the rest of the text
-                            const restOfText = document.createTextNode(valToDisplay.substring(val.length));
-                            b.appendChild(restOfText);
-
-                            // Create hidden input
-                            const hiddenInput = document.createElement('input');
-                            hiddenInput.type = 'hidden';
-                            hiddenInput.value = valToDisplay; // This value is not rendered as HTML
-                            b.appendChild(hiddenInput);
-
-
-                            b.addEventListener("click", function (e) {
+                            b.innerHTML = "<strong>" + valToDisplay.substr(0, val.length) + "</strong>";
+                            b.innerHTML += valToDisplay.substr(val.length);
+                            b.innerHTML += "<input type='hidden' value='" + valToDisplay + "'>";
+                            b.addEventListener("click", function(e) {
                                 input.value = this.getElementsByTagName("input")[0].value;
                                 if (onSelectCallback) {
                                     // If skill_name, pass the full item object
@@ -119,6 +67,13 @@ function attachAutosuggest(input, field, onSelectCallback = null)
                             });
                             a.appendChild(b);
                         });
+                        if (data.suggestions.length === 0) {
+                            const noResults = document.createElement("DIV");
+                            noResults.textContent = "No results found.";
+                            noResults.style.padding = "10px";
+                            noResults.style.color = "var(--color-text-muted-light)";
+                            a.appendChild(noResults);
+                        }
                     } else {
                         // Handle server-side errors reported in JSON
                         console.error("Autosuggest server error:", data.error || "Unknown error from server.");
@@ -149,67 +104,40 @@ function attachAutosuggest(input, field, onSelectCallback = null)
             });
     });
 
-    // ACCESSIBILITY: Set ARIA attributes for the input itself
-    input.setAttribute('aria-autocomplete', 'list');
-    input.setAttribute('aria-controls', input.id + 'autocomplete-list');
-
-
-    input.addEventListener("keydown", function (e) {
+    input.addEventListener("keydown", function(e) {
         let x = document.getElementById(this.id + "autocomplete-list");
-        if (x) {
-            x = x.getElementsByTagName("div");
-        }
-        // MODERN JS: Use e.key instead of keyCode
-        if (e.key === 'ArrowDown') { // DOWN arrow
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) { // DOWN arrow
             currentFocus++;
             addActive(x);
-            e.preventDefault(); // Prevent cursor movement in input
-        } else if (e.key === 'ArrowUp') { // UP arrow
+        } else if (e.keyCode == 38) { // UP arrow
             currentFocus--;
             addActive(x);
-            e.preventDefault(); // Prevent cursor movement in input
-        } else if (e.key === 'Enter') { // ENTER key
+        } else if (e.keyCode == 13) { // ENTER key
             e.preventDefault();
             if (currentFocus > -1) {
-                if (x && x[currentFocus]) {
-                    x[currentFocus].click();
-                }
+                if (x) x[currentFocus].click();
             }
         }
     });
 
-    function addActive(x)
-    {
-        if (!x) {
-            return false;
-        }
+    function addActive(x) {
+        if (!x) return false;
         removeActive(x);
-        if (currentFocus >= x.length) {
-            currentFocus = 0;
-        }
-        if (currentFocus < 0) {
-            currentFocus = (x.length - 1);
-        }
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
         x[currentFocus].classList.add("autocomplete-active");
-        // ACCESSIBILITY: Set aria-selected for the active option
-        x[currentFocus].setAttribute('aria-selected', 'true');
-        // ACCESSIBILITY: Ensure active element is visually focused
-        x[currentFocus].focus(); // CRITICAL ACCESSIBILITY FIX: Focus the active element
         // Scroll into view if out of bounds
         x[currentFocus].parentNode.scrollTop = x[currentFocus].offsetTop - x[currentFocus].parentNode.offsetTop;
     }
 
-    function removeActive(x)
-    {
+    function removeActive(x) {
         for (let i = 0; i < x.length; i++) {
             x[i].classList.remove("autocomplete-active");
-            // ACCESSIBILITY: Reset aria-selected
-            x[i].setAttribute('aria-selected', 'false');
         }
     }
 
-    function closeAllLists(elmnt = null)
-    {
+    function closeAllLists(elmnt = null) {
         activeSuggestLists.forEach((listEl, inputEl) => {
             if (elmnt !== inputEl) { // Only close lists not associated with the current input
                 listEl.parentNode.removeChild(listEl);
@@ -224,7 +152,6 @@ function attachAutosuggest(input, field, onSelectCallback = null)
             if (e.target !== inputEl && e.target !== listEl && !listEl.contains(e.target)) {
                 closeAllLists(inputEl); // Pass the input to close only its associated list
             }
-            // Ensure no stray output appears by trimming the result
         });
     });
 }

@@ -4,64 +4,111 @@ A lightweight PHP + MySQL web application for planning and tracking turn-based t
 
 ---
 
-## 💡 Features
+### Application Preview
 
-- 📋 Full turn-based planning UI: stats, skills, terrain, race data
-- 🔍 Autosuggest fields based on previous entries (skills, races, names)
-- 🏷️ Tag and label skills with colored categories (e.g., Burst, Passive)
-- 🔄 Create, edit, update, and soft-delete plans (no data loss)
-- 📊 View structured plan history and recent activity
-- ⚡ Zero-login simplicity, fully local and lightweight
+<details>
+<summary>Click to view Application Screenshots (v1.3.2)</summary>
+
+_Note: These screenshots showcase the core interface. The latest version (v1.4.0) adds the new Trainee Image and Progress Chart features._
+
+|             Light Mode Dashboard             |                     Dark Mode Dashboard                      |
+| :------------------------------------------: | :----------------------------------------------------------: |
+|     ![Homepage](screenshot/Homepage.png)     | ![Dark Mode Homepage](screenshot/Dark%20Mode%20Homepage.png) |
+|            **Quick Create Modal**            |                       **In-App Guide**                       |
+| ![Create Plan](screenshot/Create%20Plan.png) |             ![Guide Page](screenshot/Guide.png)              |
+
+**Plan Editor Tabs:**
+
+|                              General                               |                                       Attributes                                       |                                   Aptitude Grades                                    |
+| :----------------------------------------------------------------: | :------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
+| ![Plan Editor - General](screenshot/001_GENERAL%20Edit%20Plan.png) |        ![Plan Editor - Attributes](screenshot/002_ATTRIBUTES%20Edit%20Plan.png)        | ![Plan Editor - Aptitude Grades](screenshot/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
+|                             **Skills**                             |                                  **Race Predictions**                                  |                                      **Goals**                                       |
+|  ![Plan Editor - Skills](screenshot/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](screenshot/006_GOALS%20Edit%20Plan.png)            |
+
+</details>
+
+---
+
+## ✨ Features
+
+- **Visual Enhancements (New in v1.4.0)**
+  - **Trainee Image Management:** Personalize each plan by uploading a trainee image, which appears in the editor and as a thumbnail on the main dashboard.
+  - **Stat Progression Chart:** A new "Progress Chart" tab in the editor provides a line graph visualizing the trainee's stat growth.
+  - **Dynamic Theming:** The application's primary accent color is now configurable via the `.env` file.
+- **Core Functionality**
+  - **Detailed Plan Management:** Create, view, update, and delete comprehensive training plans.
+  - **Two Editing Views:** A full-screen **Details Modal** for in-depth editing and an **Inline Details Panel** for quick access.
+  - **Dynamic Dashboard:** Includes panels for quick stats and a log of recent activity.
+- **Utility & UX**
+  - **Quick Create Modal:** Quickly start a new plan with essential details.
+  - **Dark Mode:** A theme toggle for user comfort.
+  - **Plain Text Export:** A "Copy to Clipboard" feature generates a clean summary of any plan, perfect for sharing.
+  - **Active Navbar Links:** The navbar now highlights the active page for better navigation.
 
 ---
 
 ## 🖥️ Tech Stack
 
-- **Frontend**: HTML, CSS (Bootstrap 5), JavaScript (Vanilla)
-- **Backend**: PHP 7.4+
-- **Database**: MySQL 5.7+/8+
+- **Frontend**: HTML, CSS (Bootstrap 5), Vanilla JavaScript
+- **Backend**: PHP 8.0+, Composer
+- **Database**: MySQL / MariaDB
 
 ---
 
 ## 🚀 Getting Started
 
+### Prerequisites
+
+- A local web server environment (e.g., XAMPP, WAMP, MAMP).
+- PHP 8.0 or higher.
+- MySQL or MariaDB database server.
+- [Composer](https://getcomposer.org/) for managing PHP dependencies.
+
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/uma_musume_race_planner.git
+git clone [https://github.com/IzzatFirdaus/uma_musume_race_planner.git](https://github.com/IzzatFirdaus/uma_musume_race_planner.git)
 cd uma_musume_race_planner
-````
+```
 
-### 2. Setup the Database
+### 2\. Install Dependencies
 
-1. Import the schema file into your MySQL server:
+The project uses Monolog for logging. Install it using Composer.
 
 ```bash
-mysql -u your_user -p < uma_musume_planner.sql
+composer install
 ```
 
-2. Update `config.php` with your DB credentials:
+### 3\. Database Setup
 
-```php
-<?php
-define('DB_HOST', 'localhost');
-define('DB_USER', 'your_user');
-define('DB_PASS', 'your_password');
-define('DB_NAME', 'uma_musume_planner');
-?>
-```
+1.  **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
 
-### 3. Run the App
+2.  **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
 
-You can use PHP’s built-in server for local testing:
+### 4\. Environment Configuration
 
-```bash
-php -S localhost:8000
-```
+1.  In the root directory, create a file named `.env`.
 
-Then go to: [http://localhost:8000](http://localhost:8000)
+2.  Copy the following configuration, adjusting the database credentials to match your local setup.
 
-Alternatively, deploy inside `/htdocs` if you're using XAMPP or WAMP.
+    ```ini
+    # .env - Local Development Configuration
+
+    # Database Configuration
+    DB_HOST=localhost
+    DB_NAME=uma_musume_planner
+    DB_USER=root
+    DB_PASS=
+
+    # Application Metadata & Theming
+    APP_VERSION=v1.4.0
+    APP_THEME_COLOR=#7d2b8b
+    LAST_UPDATED="July 29, 2025"
+    ```
+
+### 5\. Running the Application
+
+Place the project folder inside your web server's root directory (e.g., `C:/xampp/htdocs/`) and navigate to it in your browser (e.g., `http://localhost/uma_musume_race_planner/`).
 
 ---
 
@@ -70,79 +117,65 @@ Alternatively, deploy inside `/htdocs` if you're using XAMPP or WAMP.
 ```
 uma_musume_race_planner/
 │
-├── components/
-│   ├── create-panel.php
-│   ├── filter-panel.php
-│   ├── footer.php         
-│   ├── header.php
-│   ├── modal-plan.php
-│   ├── modal-import.php        
-│   ├── navbar.php
-│   ├── plan-details.php
-│   ├── plan-list.php
-│   ├── recent-activity.php
-│   └── stats-panel.php
+├── .vscode/                  # VS Code editor settings & tasks
+├── components/               # Reusable UI partials (navbar, footer, plan list, etc.)
+├── css/                      # Main application stylesheet (style.css)
+├── includes/                 # Core backend scripts (DB connection, logger)
+├── js/                       # Client-side JavaScript utilities (e.g., autosuggest.js)
+├── screenshot/               # Application screenshots for documentation
+├── uploads/                  # Directory for user-uploaded content
+│   └── trainee_images/       # Stores uploaded trainee images
+├── vendor/                   # Composer-managed PHP dependencies
 │
-├── css/
-│   └── style.css
+├── index.php                 # Main application entry point and dashboard UI
+├── guide.php                 # The in-app user guide page
+├── handle_plan_crud.php      # Primary API endpoint for Create, Update, & Delete operations
 │
-├── js/
-│   ├── constants.js
-│   ├── formEvents.js
-│   ├── modal.js
-│   ├── renderHelpers.js
-│   ├── script.js
-│   └── utils.js
+├── get_*.php                 # Various API endpoints for fetching data (e.g., get_plans.php)
+├── plan_details_modal.php    # UI for the full-screen plan editor
+├── quick_create_plan_modal.php # UI for the quick create plan modal
 │
-├── config.php
-├── delete_plan.php
-├── export_plan.php             
-├── import_plan.php             
-├── get_autosuggest.php
-├── get_plan_details.php
-├── get_plans.php
-├── get_recent_activity.php
-├── index.php
-├── save_plan.php
-├── uma_musume_planner.sql
-└── README.md
+├── .env                      # Environment configuration (DB credentials, app settings)
+├── composer.json             # PHP project dependencies
+├── uma_musume_planner.sql    # The complete database schema
+├── sample_data.sql           # Optional data for populating the database
+│
+├── ARCHITECTURE_SPEC.md      # Technical documentation for the application's design
+├── DIRECTORY.md              # Auto-generated detailed file and directory listing
+├── README.md                 # This file
+└── ...                       # Other development and config files (.gitignore, phpcs.xml, etc.)
 ```
 
 ---
 
 ## 🗃️ Database Overview
 
-This project uses a normalized schema:
-
-* `plans`: core plan and race metadata (with soft-delete via `deleted_at`)
-* `attributes`: stat values and grades
-* `skills`: skills acquired or considered (with `tag`)
-* `terrain_grades`, `distance_grades`, `style_grades`: affinity grades
-* `race_predictions`: pre-race commentary and stat impact
-* `goals`: objectives with actual results
-
-Optimized with indexes for fast autosuggestion and filtering.
+- `plans`: The core table storing general plan info, including the `trainee_image_path`.
+- `attributes`: Stores the five core stats for each plan.
+- `skills`, `goals`, `race_predictions`: Child tables for detailed tracking.
+- `terrain_grades`, `distance_grades`, `style_grades`: Aptitude grades.
+- `turns`: Stores turn-by-turn stat progression for the Progress Chart.
+- `activity_log`: Tracks recent user actions.
 
 ---
 
 ## 📌 Notes
 
-* ✅ Built for single-user, offline use
-* 🔒 No authentication required
-* 🐣 Inspired by Uma Musume: Pretty Derby
-* 🧪 Ideal for simulation planning and strategy testing
+- ✅ Built for single-user, local/offline use
+- 🔒 No authentication required
+- 🐣 Inspired by Uma Musume: Pretty Derby
+- 🧪 Ideal for simulation planning and strategy testing
 
 ---
 
 ## 🧩 To-Do
 
-* [x] Autosuggest skills, races, names
-* [x] Add tag/category color labeling to skills
-* [x] Plan search and filtering panel
-* [x] Export/import plans as JSON
-* [x] Soft-delete support
-* [ ] Optional login & cloud sync support
-* [ ] Race/training performance visualizations
+- [x] Autosuggest skills, races, names
+- [x] Soft-delete support
+- [x] Export plans as formatted text
+- [x] Stat progression chart
+- [ ] Optional login & cloud sync support
+- [ ] Advanced search/filtering (by stats, skills, etc.)
 
 ---
 

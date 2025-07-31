@@ -14,6 +14,7 @@ components\plan-inline-details.php
 components\plan-list.php
 components\recent-activity.php
 components\stats-panel.php
+components\trainee_image_handler.php
 
 ~~css\print.css~~
 css\style.css
@@ -24,15 +25,25 @@ css\style.css
 ~~js\renderHelpers.js~~
 ~~js\script.js~~
 ~~js\utils.js~~
+js\autosuggest.js
 
 includes\db.php
 includes\logger.php
+includes\env.php
 
-.env
+screenshot\
+uploads\trainee_images\
+
+\vendor
+
+~~.env~~
+.env.example
+.gitignore
+.php-cs-fixer.cache
 .php-cs-fixer.php
 composer.json
 composer.lock
-~~config.php~~
+config.php
 ~~delete_plan.php~~
 ~~export_plan.php~~
 export_plan_data.php
@@ -43,6 +54,7 @@ get_plan_attributes.php
 get_plan_distance_grades.php
 get_plan_goals.php
 get_plan_predictions.php
+get_plan_section.php
 get_plan_skills.php
 get_plan_style_grades.php
 get_plan_terrain_grades.php
@@ -54,9 +66,10 @@ get_skill_reference.php
 ~~get_recent_activity.php~~
 guide.php
 handle_plan_crud.php
-~~get_stats.php~~
+get_stats.php
 ~~import_plan.php~~
 index.php
+php_errors.log
 phpcs.xml
 ~~save_plan.php~~
 phpstan.neon
