@@ -1,21 +1,21 @@
 <?php
-
 // Navbar component with active link highlighting and persistent dark mode toggle
-
 $current_page = basename($_SERVER['PHP_SELF']); // Determine current file for active link
-
+// Compute base path for asset links
+$isPublic = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/public/') !== false;
+$base = $isPublic ? '../' : '';
 // Optional: read initial dark mode setting from cookie or default to auto
 $darkModeSetting = $_COOKIE['darkMode'] ?? 'auto';
 $isDarkModeChecked = ($darkModeSetting === 'enabled') ? 'checked' : '';
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="index.php">
-      <img src="uploads/app_logo/uma_musume_race_planner_logo_64.ico" alt="Logo" style="height: 24px; margin-right: 8px;">
+    <a class="navbar-brand d-flex align-items-center" href="<?= $isPublic ? 'index.php' : 'index.php' ?>">
+  <img src="<?= $base ?>assets/images/app_logo/uma_musume_race_planner_logo_64.ico" alt="Logo" style="height: 24px; margin-right: 8px;">
       <span>Uma Musume Planner</span>
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -39,11 +39,13 @@ $isDarkModeChecked = ($darkModeSetting === 'enabled') ? 'checked' : '';
           </a>
         </li>
 
-        <li class="nav-item d-flex align-items-center ms-lg-3">
-          <div class="form-check form-switch text-light">
-            <input class="form-check-input" type="checkbox" id="darkModeToggle" <?= $isDarkModeChecked ?>>
-            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-          </div>
+        <li class="nav-item ms-auto">
+          <button id="themeToggle" class="btn btn-outline-secondary"
+          type="button" aria-pressed="false" aria-label="Toggle dark mode"
+          title="Toggle dark mode">
+            <span class="theme-icon" aria-hidden="true">🌙</span>
+            <span class="visually-hidden">Toggle dark mode</span>
+          </button>
         </li>
       </ul>
     </div>
