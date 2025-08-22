@@ -14,12 +14,15 @@
  * - $moodOptions, $strategyOptions, $conditionOptions
  *
  * Author: extremerazr
- * Updated: July 29, 2025
+ * Updated: August 16, 2025
  */
 
 ?>
 
 <script>
+// TxtBuilder: Utility for creating formatted text tables.
+// pad: Pads a string to a specific length, with alignment options.
+// buildTable: Builds a text table from headers and rows, with optional per-column alignment.
 const TxtBuilder = {
     pad: function(str, length, align = 'left') {
         str = String(str);
@@ -35,6 +38,7 @@ const TxtBuilder = {
         return str + ' '.repeat(diff);
     },
 
+    // Returns a formatted table as plain text.
     buildTable: function(headers, rows, columnConfigs = []) {
         if (rows.length === 0) {
             const headerRow = `| ${headers.map(h => this.pad(h, h.length)).join(' | ')} |`;
@@ -42,8 +46,10 @@ const TxtBuilder = {
             return [headerRow, dividerRow, '| ' + this.pad('No data.', headerRow.length - 4, 'center') + ' |\n'].join('\n');
         }
 
+        // Calculate column widths (max of header/row cell for each column)
         const colWidths = headers.map((h, i) => Math.max(h.length, ...rows.map(r => String(r[i] || '').length)));
 
+        // Build each row with proper padding/alignment
         const buildRow = (items) => {
             return `| ${items.map((item, i) => this.pad(item, colWidths[i], columnConfigs[i]?.align || 'left')).join(' | ')} |`;
         };
@@ -56,6 +62,7 @@ const TxtBuilder = {
     }
 };
 
+// Main function to copy plan details to clipboard.
 function copyPlanDetailsToClipboard(allFetchedData) {
     const plan = allFetchedData.plan || {};
     const attributesData = allFetchedData.attributes || [];
@@ -66,10 +73,12 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     const distanceGradesData = allFetchedData.distance_grades || [];
     const styleGradesData = allFetchedData.style_grades || [];
 
+    // Server-side injected options for human-readable labels
     const moodOptions = <?= json_encode($moodOptions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     const strategyOptions = <?= json_encode($strategyOptions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     const conditionOptions = <?= json_encode($conditionOptions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
+    // Lookup labels from options arrays
     const moodLabel = moodOptions.find(opt => opt.id == plan.mood_id)?.label || 'N/A';
     const strategyLabel = strategyOptions.find(opt => opt.id == plan.strategy_id)?.label || 'N/A';
     const conditionLabel = conditionOptions.find(opt => opt.id == plan.condition_id)?.label || 'N/A';
@@ -95,14 +104,16 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     // --- ATTRIBUTES ---
     output += sectionDivider;
     const formattedAttributes = attributesData.map(attr => [
-        attr.attribute_name ? attr.attribute_name.charAt(0).toUpperCase() + attr.attribute_name.slice(1).toLowerCase() : '',
+        attr.attribute_name
+            ? attr.attribute_name.charAt(0).toUpperCase() + attr.attribute_name.slice(1).toLowerCase()
+            : '',
         attr.value,
         attr.grade
     ]);
     output += 'ATTRIBUTES\n' + TxtBuilder.buildTable(
         ['Attribute', 'Value', 'Grade'],
         formattedAttributes,
-        [{align: 'left'}, {align: 'right'}, {align: 'center'}]
+        [{ align: 'left' }, { align: 'right' }, { align: 'center' }]
     ) + '\n\n';
 
     // --- GRADES ---
@@ -115,6 +126,7 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     const distanceMap = new Map(distanceGradesData.map(item => [item.distance, item.grade]));
     const styleMap = new Map(styleGradesData.map(item => [item.style, item.grade]));
 
+    // Build rows for grades table. If key is missing, fallback to 'G'.
     const gradeRows = defaultGradeKeys.distance.map((key, i) => [
         key, distanceMap.get(key) || 'G',
         defaultGradeKeys.style[i], styleMap.get(defaultGradeKeys.style[i]) || 'G',
@@ -124,7 +136,7 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     output += 'APTITUDE GRADES\n' + TxtBuilder.buildTable(
         ['Distance', 'G', 'Style', 'G', 'Terrain', 'G'],
         gradeRows,
-        [{align: 'left'}, {align: 'center'}, {align: 'left'}, {align: 'center'}, {align: 'left'}, {align: 'center'}]
+        [{ align: 'left' }, { align: 'center' }, { align: 'left' }, { align: 'center' }, { align: 'left' }, { align: 'center' }]
     ) + '\n';
 
     // --- SUMMARY & GROWTH ---
@@ -148,7 +160,7 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     output += 'SUMMARY & GROWTH\n' + TxtBuilder.buildTable(
         ['Item', 'Value'],
         summary,
-        [{align: 'left'}, {align: 'right'}]
+        [{ align: 'left' }, { align: 'right' }]
     ) + '\n';
 
     // --- SKILLS ---
@@ -158,11 +170,11 @@ function copyPlanDetailsToClipboard(allFetchedData) {
         ['Skill Name', 'SP Cost', 'Acquired', 'Notes'],
         skillsData.map(skill => [
             skill.skill_name || '',
-            typeof skill.sp_cost === 'number' ? skill.sp_cost : 'N/A',
+            typeof skill.sp_cost === 'number' || /^\d+$/.test(skill.sp_cost) ? skill.sp_cost : 'N/A',
             (skill.acquired || '').toLowerCase() === 'yes' ? '✅' : '❌',
             skill.notes || ''
         ]),
-        [{align: 'left'}, {align: 'right'}, {align: 'center'}, {align: 'left'}]
+        [{ align: 'left' }, { align: 'right' }, { align: 'center' }, { align: 'left' }]
     ) + '\n';
 
     // --- GOALS ---
@@ -185,13 +197,33 @@ function copyPlanDetailsToClipboard(allFetchedData) {
     }
 
     // --- COPY TO CLIPBOARD ---
+    // Uses Clipboard API if available, otherwise fallback to execCommand method for older browsers.
     try {
-        navigator.clipboard.writeText(output.trim()).then(() => {
-            showMessageBox('Formatted plan copied to clipboard!', 'success');
-        }).catch(err => {
-            console.error('Clipboard API Error:', err);
-            showMessageBox('Failed to copy to clipboard. Check browser permissions.', 'danger');
-        });
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(output.trim()).then(() => {
+                showMessageBox('Formatted plan copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Clipboard API Error:', err);
+                showMessageBox('Failed to copy to clipboard. Check browser permissions.', 'danger');
+            });
+        } else {
+            // Fallback for older browsers (not recommended, but available)
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = output.trim();
+            tempTextArea.setAttribute('readonly', '');
+            tempTextArea.style.position = 'absolute';
+            tempTextArea.style.left = '-9999px';
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            try {
+                document.execCommand('copy');
+                showMessageBox('Formatted plan copied to clipboard!', 'success');
+            } catch (e) {
+                console.error('Unexpected copy error:', e);
+                showMessageBox('Unexpected error occurred during copy.', 'danger');
+            }
+            document.body.removeChild(tempTextArea);
+        }
     } catch (e) {
         console.error('Unexpected copy error:', e);
         showMessageBox('Unexpected error occurred during copy.', 'danger');

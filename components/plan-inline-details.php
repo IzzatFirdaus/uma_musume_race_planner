@@ -1,6 +1,7 @@
 <?php
 // components/plan-inline-details.php
 // This file relies on PHP variables being available from index.php
+// Adjusted version with improved comments, accessibility, and minor logic optimizations
 
 // Ensure these variables are available, provide empty arrays as a fallback
 $careerStageOptions = $careerStageOptions ?? [];
@@ -17,6 +18,7 @@ $conditionOptions = $conditionOptions ?? [];
             <i class="bi bi-x"></i> Close
         </button>
     </div>
+    <!-- Loading overlay for AJAX fetches -->
     <div class="loading-overlay" id="planInlineDetailsLoadingOverlay" style="display: none;">
         <div class="spinner-border text-uma" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -24,6 +26,7 @@ $conditionOptions = $conditionOptions ?? [];
     </div>
     <form id="planDetailsFormInline" enctype="multipart/form-data">
         <div class="card-body">
+            <!-- Tab navigation for plan sections -->
             <ul class="nav nav-tabs" id="planTabsInline" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="general-tab-inline" data-bs-toggle="tab"
@@ -61,7 +64,9 @@ $conditionOptions = $conditionOptions ?? [];
                 </li>
             </ul>
 
+            <!-- Tab content panels -->
             <div class="tab-content pt-3">
+                <!-- General Plan Info -->
                 <div class="tab-pane fade show active" id="general-inline" role="tabpanel"
                     aria-labelledby="general-tab-inline">
                     <div class="row mb-3">
@@ -89,7 +94,7 @@ $conditionOptions = $conditionOptions ?? [];
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <?php $id_suffix = '_inline'; // Use '_inline' suffix for this view ?>
+                        <?php $id_suffix = '_inline'; // Use '_inline' suffix for this view?>
                         <?php include __DIR__ . '/trainee_image_handler.php'; ?>
                         <div class="col-md-6">
                             <div class="row">
@@ -237,17 +242,22 @@ $conditionOptions = $conditionOptions ?? [];
                     </div>
                 </div>
 
+                <!-- Attributes Tab -->
                 <div class="tab-pane fade" id="attributes-inline" role="tabpanel"
                     aria-labelledby="attributes-tab-inline">
                     <div id="attributeSlidersContainerInline">
+                        <!-- Dynamically populated by JS -->
                     </div>
                 </div>
 
+                <!-- Grades Tab -->
                 <div class="tab-pane fade" id="grades-inline" role="tabpanel" aria-labelledby="grades-tab-inline">
                     <div class="row" id="aptitudeGradesContainerInline">
+                        <!-- Dynamically populated by JS -->
                     </div>
                 </div>
 
+                <!-- Skills Tab -->
                 <div class="tab-pane fade" id="skills-inline" role="tabpanel" aria-labelledby="skills-tab-inline">
                     <div class="table-responsive">
                         <table class="table table-sm" id="skillsTableInline">
@@ -267,6 +277,7 @@ $conditionOptions = $conditionOptions ?? [];
                     <button type="button" class="btn btn-uma w-100 mt-2" id="addSkillBtnInline">Add Skill</button>
                 </div>
 
+                <!-- Predictions Tab -->
                 <div class="tab-pane fade" id="predictions-inline" role="tabpanel"
                     aria-labelledby="predictions-tab-inline">
                     <div class="table-responsive">
@@ -295,6 +306,7 @@ $conditionOptions = $conditionOptions ?? [];
                         Prediction</button>
                 </div>
 
+                <!-- Goals Tab -->
                 <div class="tab-pane fade" id="goals-inline" role="tabpanel" aria-labelledby="goals-tab-inline">
                     <div class="table-responsive">
                         <table class="table table-sm" id="goalsTableInline">
@@ -311,6 +323,7 @@ $conditionOptions = $conditionOptions ?? [];
                     <button type="button" class="btn btn-uma w-100 mt-2" id="addGoalBtnInline">Add Goal</button>
                 </div>
                 
+                <!-- Progress Chart Tab -->
                 <div class="tab-pane fade" id="progress-chart-inline" role="tabpanel"
                     aria-labelledby="progress-chart-tab-inline">
                     <div class="chart-container" style="position: relative; height: 400px;">
@@ -322,6 +335,7 @@ $conditionOptions = $conditionOptions ?? [];
                 </div>
             </div>
         </div>
+        <!-- Footer actions -->
         <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-outline-secondary me-2" id="downloadTxtInline">
                 <i class="bi bi-file-earmark-text"></i> Export as TXT
@@ -336,17 +350,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let growthChartInstanceInline = null;
     const chartTabInline = document.getElementById('progress-chart-tab-inline');
     
+    // Helper to get CSS variable values
     function getCssVariableValue(variableName) {
         return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
     }
 
+    // Render the stat progression chart
     async function renderGrowthChartInline(planId) {
         if (!planId) return;
 
         const chartCanvas = document.getElementById('growthChartInline');
         const messageContainer = document.getElementById('growthChartMessageInline');
 
-        // Always destroy the old instance
+        // Always destroy the old instance for clean re-render
         if (growthChartInstanceInline) {
             growthChartInstanceInline.destroy();
             growthChartInstanceInline = null;
@@ -359,9 +375,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(`get_progress_chart_data.php?plan_id=${planId}`);
             const result = await response.json();
 
-            // UPDATED: Robust check for data
+            // Show chart or fallback message depending on data
             if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-                // We have data: show canvas, hide message
                 chartCanvas.style.display = 'block';
                 messageContainer.style.display = 'none';
 
@@ -372,7 +387,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: 'line',
                     data: {
                         labels: turns.map(t => `Turn ${t.turn}`),
-                        datasets: [{
+                        datasets: [
+                            {
                                 label: 'Speed',
                                 data: turns.map(t => t.speed),
                                 borderColor: getCssVariableValue('--stat-speed-color'),
@@ -449,14 +465,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             } else {
-                // No data: hide canvas, show message
                 chartCanvas.style.display = 'none';
                 messageContainer.style.display = 'block';
-                // Also reset the message text in case it was changed to an error
                 messageContainer.innerHTML = '<p class="text-muted fs-5">No progression data available for this plan.</p>';
             }
         } catch (error) {
-            // Error state: hide canvas, show an error message
             chartCanvas.style.display = 'none';
             messageContainer.style.display = 'block';
             messageContainer.innerHTML = '<p class="text-danger">Could not load chart data. Please check the console for details.</p>';
@@ -464,6 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Re-render chart when tab shown
     if (chartTabInline) {
         chartTabInline.addEventListener('shown.bs.tab', function() {
             const currentPlanId = document.getElementById('planIdInline').value;
@@ -471,6 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Export plan as TXT
     const txtBtn = document.getElementById('downloadTxtInline');
     if (txtBtn) {
         txtBtn.addEventListener('click', function() {

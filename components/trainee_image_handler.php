@@ -1,4 +1,6 @@
+
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // components/trainee_image_handler.php
 // This component handles trainee image preview, upload, and deletion both client-side and server-side.
@@ -17,10 +19,10 @@ if (!function_exists('handleTraineeImageUpload')) {
      * @param int $planId Associated plan ID
      * @param array $fileData The $_FILES['traineeImageUpload'] input
      * @param string|null $oldImagePath Existing image path (optional)
-     * @param Monolog\Logger $log Logger instance
+    * @param \Psr\Log\LoggerInterface $log Logger instance
      * @return string|null Relative path to saved image, or null if deleted
      */
-    function handleTraineeImageUpload(PDO $pdo, int $planId, array $fileData, ?string $oldImagePath, Monolog\Logger $log): ?string
+    function handleTraineeImageUpload(PDO $pdo, int $planId, array $fileData, ?string $oldImagePath, $log): ?string
     {
         $uploadDir = __DIR__ . '/../uploads/trainee_images/';
         $relativePath = 'uploads/trainee_images/';

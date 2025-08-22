@@ -19,12 +19,12 @@ try {
     $style_grades = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode(['success' => true, 'style_grades' => $style_grades]); // Consistent success response
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $log->error('Failed to fetch plan style grades', [
         'plan_id' => $plan_id ?? 0,
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(), // Added for debugging
-        'line' => $e->getLine(),  // Added for debugging
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
+        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
     ]);
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'A database error occurred.']); // Consistent error response

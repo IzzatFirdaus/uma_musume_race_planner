@@ -54,8 +54,8 @@ try {
 
     $plan['attributes'] = $fetch('SELECT attribute_name, value, grade FROM attributes WHERE plan_id = ?');
     $plan['skills'] = $fetch('
-        SELECT s.skill_name, s.sp_cost, s.acquired, s.notes, sr.tag
-        FROM skills s LEFT JOIN skill_reference sr ON s.skill_name = sr.skill_name
+        SELECT COALESCE(sr.skill_name, "") AS skill_name, s.sp_cost, s.acquired, s.notes, sr.tag
+        FROM skills s LEFT JOIN skill_reference sr ON s.skill_reference_id = sr.id
         WHERE s.plan_id = ?');
     $plan['terrain_grades'] = $fetch('SELECT terrain, grade FROM terrain_grades WHERE plan_id = ?');
     $plan['distance_grades'] = $fetch('SELECT distance, grade FROM distance_grades WHERE plan_id = ?');
@@ -92,13 +92,13 @@ try {
         {
             $widths = [];
             foreach ($headers as $i => $h) {
-                $widths[$i] = max(strlen($h), ...array_map(fn($r) => strlen(strval($r[$i] ?? '')), $rows));
+                $widths[$i] = max(strlen($h), ...array_map(fn ($r) => strlen(strval($r[$i] ?? '')), $rows));
             }
             $line = function ($row) use ($widths, $aligns) {
-                $cells = array_map(fn($c, $i) => pad($c, $widths[$i], $aligns[$i] ?? 'left'), $row, array_keys($row));
+                $cells = array_map(fn ($c, $i) => pad($c, $widths[$i], $aligns[$i] ?? 'left'), $row, array_keys($row));
                 return '| ' . implode(' | ', $cells) . ' |';
             };
-            $divider = '|' . implode('|', array_map(fn($w) => str_repeat('-', $w + 2), $widths)) . '|';
+            $divider = '|' . implode('|', array_map(fn ($w) => str_repeat('-', $w + 2), $widths)) . '|';
             return implode("\n", [
                 $line($headers),
                 $divider,
@@ -119,14 +119,14 @@ try {
             ['Next Race:', $plan['race_name'] ?: 'N/A'],
             ['Turn Before:', $plan['turn_before'] ?? 0],
         ];
-        $maxLen = max(array_map(fn($r) => strlen($r[0]), $info));
+        $maxLen = max(array_map(fn ($r) => strlen($r[0]), $info));
         foreach ($info as $r) {
             $out .= pad($r[0], $maxLen) . ' ' . $r[1] . "\n";
         }
 
         // Attributes
         $out .= $divider . "ATTRIBUTES\n";
-        $attrs = array_map(fn($a) => [$a['attribute_name'], $a['value'], $a['grade']], $plan['attributes']);
+        $attrs = array_map(fn ($a) => [$a['attribute_name'], $a['value'], $a['grade']], $plan['attributes']);
         $out .= buildTable(['Attribute', 'Value', 'Grade'], $attrs, ['left', 'right', 'center']) . "\n";
 
         // Grades
@@ -168,7 +168,7 @@ try {
 
         // Skills
         $out .= $divider . "ACQUIRED SKILLS\n";
-        $skills = array_map(fn($s) => [
+        $skills = array_map(fn ($s) => [
             $s['skill_name'], $s['sp_cost'] ?? 'N/A',
             strtolower($s['acquired']) === 'yes' ? '✅' : '❌',
             $s['notes'] ?? ''
@@ -202,12 +202,12 @@ try {
     } else {
         echo json_encode($plan);
     }
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $log->error('Failed to export plan data', [
         'plan_id' => $planId,
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
+        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
     ]);
     http_response_code(500);
     echo json_encode(['error' => 'An internal server error occurred.']);

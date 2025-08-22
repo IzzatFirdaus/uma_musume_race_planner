@@ -37,29 +37,29 @@ $monthOptions = [
 // Fetch dynamic options from the database using PDO with error handling
 try {
     $strategyOptions = $pdo->query('SELECT id, label FROM strategies ORDER BY label')->fetchAll();
-} catch (PDOException $e) {
-    $log->error('Failed to fetch strategy options in index.php', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch strategy options in index.php', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     $strategyOptions = [];
 }
 
 try {
     $moodOptions = $pdo->query('SELECT id, label FROM moods')->fetchAll();
-} catch (PDOException $e) {
-    $log->error('Failed to fetch mood options in index.php', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch mood options in index.php', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     $moodOptions = [];
 }
 
 try {
     $conditionOptions = $pdo->query('SELECT id, label FROM conditions')->fetchAll();
-} catch (PDOException $e) {
-    $log->error('Failed to fetch condition options in index.php', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch condition options in index.php', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     $conditionOptions = [];
 }
 
 try {
     $skillTagOptions = $pdo->query('SELECT DISTINCT tag, stat_type FROM skill_reference ORDER BY tag')->fetchAll();
-} catch (PDOException $e) {
-    $log->error('Failed to fetch skill tag options in index.php', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch skill tag options in index.php', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     $skillTagOptions = [];
 }
 
@@ -75,8 +75,8 @@ $plans_query = '
 ';
 try {
     $plans = $pdo->query($plans_query);
-} catch (PDOException $e) {
-    $log->error('Failed to fetch plan list in index.php', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch plan list in index.php', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     $plans = new PDOStatement();
 }
 
@@ -94,8 +94,8 @@ try {
     foreach ($stats as $key => $value) {
         $stats[$key] = (int)$value;
     }
-} catch (PDOException $e) {
-    $log->error('Failed to fetch stats in index.php', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch stats in index.php', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     $stats = ['total_plans' => 0, 'active_plans' => 0, 'planning_plans' => 0, 'finished_plans' => 0, 'unique_trainees' => 0];
 }
 
@@ -103,8 +103,8 @@ try {
 // Fetch recent activities
 try {
     $activities = $pdo->query('SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT 3');
-} catch (PDOException $e) {
-    $log->error('Failed to fetch activities in index.php', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch activities in index.php', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     $activities = new PDOStatement();
 }
 

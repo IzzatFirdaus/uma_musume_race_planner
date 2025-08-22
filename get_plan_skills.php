@@ -14,17 +14,23 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare('SELECT skill_name, sp_cost, acquired, tag, notes FROM skills WHERE plan_id = ? ORDER BY id');
+    // The skills table stores a reference id to the skill_reference table.
+    // Join with skill_reference to obtain the human-readable skill_name and metadata.
+    $sql = 'SELECT r.skill_name, s.sp_cost, s.acquired, s.tag, s.notes '
+        . 'FROM skills s '
+        . 'LEFT JOIN skill_reference r ON s.skill_reference_id = r.id '
+        . 'WHERE s.plan_id = ? ORDER BY s.id';
+    $stmt = $pdo->prepare($sql);
     $stmt->execute([$plan_id]);
     $skills = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode(['success' => true, 'skills' => $skills]); // Consistent success response
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $log->error('Failed to fetch plan skills', [
         'plan_id' => $plan_id ?? 0,
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(), // Added for debugging
-        'line' => $e->getLine(),  // Added for debugging
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
+        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
     ]);
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'A database error occurred.']); // Consistent error response

@@ -1,3 +1,48 @@
+# Uma Musume Race Planner - Git ignore
+
+# Runtime logs and error files
+/logs/
+php_errors.log
+
+# Uploaded assets
+/uploads/
+
+# Temporary files
+/tmp/
+tmp/
+
+# Environment and secrets
+.env
+includes/env.php
+
+# Composer dependencies (recommended to be installed via composer install)
+# If you intentionally track vendor/ for deployment, remove this line
+/vendor/
+
+# Editor & OS files
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Database dumps / backups
+*.sql
+*.sql.gz
+*.backup
+backup/
+
+# Node
+node_modules/
+
+# Test/coverage
+/coverage/
+phpunit.xml.cache
+
+# Build artifacts
+/dist/
+/build/
 # Node and frontend build artifacts
 /node_modules/
 /dist/

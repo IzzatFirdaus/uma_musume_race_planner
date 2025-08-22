@@ -100,12 +100,12 @@ try {
 
     // Encode the final array of plans into a JSON response
     echo json_encode(['success' => true, 'plans' => $final_plans]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     // Log the database error for debugging purposes
     $log->error('Failed to fetch plan list', [
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(), // Add file for more context
-        'line' => $e->getLine(),  // Add line for more context
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
+        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
     ]);
     // Set HTTP response code to 500 (Internal Server Error)
     http_response_code(500);

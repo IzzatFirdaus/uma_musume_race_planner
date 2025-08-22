@@ -126,8 +126,8 @@ footer,
 
   /* Apply the semi-transparent overlay and blur */
   background-color: var(--light-surface-bg);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px); /* For Safari */
+  backdrop-filter: blur(10px);
 }
 
 .card-header {
@@ -282,6 +282,7 @@ body.dark-mode .form-select {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0 0 0.5rem 0.5rem;
   box-shadow: var(--card-shadow);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
   backdrop-filter: blur(10px);
 }
 
@@ -372,6 +373,7 @@ body.dark-mode .quick-stats-number.text-primary {
 .skill-context-info {
   font-size: 0.85rem;
   background-color: var(--light-surface-bg);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
   backdrop-filter: blur(10px);
   color: var(--text);
   padding: 0.5rem 0.75rem;

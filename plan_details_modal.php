@@ -90,7 +90,7 @@ $conditionOptions = $conditionOptions ?? [];
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <?php $id_suffix = ''; // Use no suffix for the modal ?>
+                                <?php $id_suffix = ''; // Use no suffix for the modal?>
                                 <?php include __DIR__ . '/components/trainee_image_handler.php'; ?>
                                 <div class="col-md-6">
                                     <div class="row">
@@ -99,7 +99,7 @@ $conditionOptions = $conditionOptions ?? [];
                                             <select class="form-select" id="modalCareerStage" name="modalCareerStage"
                                                 required>
                                                 <?php foreach ($careerStageOptions as $option) : ?>
-                                                <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
+                                                <option value="<?php echo htmlspecialchars((string) ($option['value'] ?? '')); ?>"><?php echo htmlspecialchars((string) ($option['text'] ?? '')); ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -107,7 +107,7 @@ $conditionOptions = $conditionOptions ?? [];
                                             <label for="modalClass" class="form-label">Class</label>
                                             <select class="form-select" id="modalClass" name="modalClass" required>
                                                 <?php foreach ($classOptions as $option) : ?>
-                                                <option value="<?php echo htmlspecialchars((string) $option['value']); ?>"><?php echo htmlspecialchars((string) $option['text']); ?></option>
+                                                <option value="<?php echo htmlspecialchars((string) ($option['value'] ?? '')); ?>"><?php echo htmlspecialchars((string) ($option['text'] ?? '')); ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -131,7 +131,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <label for="modalStrategy" class="form-label">Strategy</label>
                                     <select class="form-select" id="modalStrategy" name="modalStrategy">
                                         <?php foreach ($strategyOptions as $option) : ?>
-                                        <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
+                                        <option value="<?php echo htmlspecialchars((string) ($option['id'] ?? '')); ?>"><?php echo htmlspecialchars((string) ($option['label'] ?? '')); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -139,7 +139,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <label for="modalMood" class="form-label">Mood</label>
                                     <select class="form-select" id="modalMood" name="modalMood">
                                         <?php foreach ($moodOptions as $option) : ?>
-                                        <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
+                                        <option value="<?php echo htmlspecialchars((string) ($option['id'] ?? '')); ?>"><?php echo htmlspecialchars((string) ($option['label'] ?? '')); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -147,7 +147,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <label for="modalCondition" class="form-label">Condition</label>
                                     <select class="form-select" id="modalCondition" name="modalCondition">
                                         <?php foreach ($conditionOptions as $option) : ?>
-                                        <option value="<?php echo htmlspecialchars((string) $option['id']); ?>"><?php echo htmlspecialchars((string) $option['label']); ?></option>
+                                        <option value="<?php echo htmlspecialchars((string) ($option['id'] ?? '')); ?>"><?php echo htmlspecialchars((string) ($option['label'] ?? '')); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>

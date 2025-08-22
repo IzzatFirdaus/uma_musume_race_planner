@@ -1,4 +1,4 @@
-## PLAN: [El☆Número 1] El Condor Pasa Plan ##
+# PLAN: [El☆Número 1] El Condor Pasa Plan
 
 Trainee Name: [El☆Número 1] El Condor Pasa
 Career Stage: JUNIOR (AUG EARLY)
@@ -8,8 +8,8 @@ Next Race:    Kyodo News Hai
 Turn Before:  12
 
 ================================================================================
-
 ATTRIBUTES
+
 | Attribute | Value | Grade |
 |-----------|-------|-------|
 | Speed     |   194 |  F+   |
@@ -19,6 +19,7 @@ ATTRIBUTES
 | Wit       |   156 |  F+   |
 
 APTITUDE GRADES
+
 | Distance | G | Style | G | Terrain | G |
 |----------|---|-------|---|---------|---|
 | Sprint   | F | Front | C | Turf    | A |
@@ -29,6 +30,7 @@ APTITUDE GRADES
 ================================================================================
 
 SUMMARY & GROWTH
+
 | Item            |    Value |
 |-----------------|----------|
 | Total SP        |       75 |
@@ -49,6 +51,7 @@ SUMMARY & GROWTH
 ================================================================================
 
 ACQUIRED SKILLS
+
 | Skill Name                  | SP Cost | Acquired | Notes                |
 |-----------------------------|---------|----------|----------------------|
 | Corazón ☆ Ardiente          |     N/A |    ✅     | (Unique Burst)       |
@@ -63,9 +66,9 @@ ACQUIRED SKILLS
 
 ================================================================================
 
-CAREER GOALS
---------------------------------------------------------------------------------
-• JUNIOR MAKE DEBUT (Result: 1ST)
+## CAREER GOALS
+
+ • JUNIOR MAKE DEBUT (Result: 1ST)
 • Kyodo News Hai (Result: TOP 5)
 • NHK Mile C. (Result: TOP 5)
 • Japanese Derby (Result: TOP 5)
@@ -76,9 +79,9 @@ CAREER GOALS
 
 ================================================================================
 
-RACE DAY PREDICTIONS
---------------------------------------------------------------------------------
-Prediction #1: DEBUT
+## RACE DAY PREDICTIONS
+
+ Prediction #1: DEBUT
   Venue: TOKYO, DIRT, 1600M, LEFT, Track: MILE
   SPEED[⦾] STAMINA[○] POWER[○] GUTS[○] WIT[⦾]
   Comment: Your trainee looks more than ready for this race. She’ll likely be a top contender.

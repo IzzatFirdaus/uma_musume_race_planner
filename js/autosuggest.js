@@ -1,79 +1,77 @@
 // js/autosuggest.js
-const activeSuggestLists = new Map(); // Stores active suggestion lists for easy cleanup
+// Autosuggest utility for Uma Musume Race Planner
+// Provides live database-backed suggestions for input fields (name, race_name, skill_name, goal, etc.)
 
-// CRITICAL SECURITY FIX 3: Sanitization helper (for general use, though textContent is primary defense here)
-// This function is useful if you ever need to embed user-controlled text into innerHTML for specific formatting.
-// For directly displaying text, textContent is generally safer and preferred.
-function sanitizeText(str)
-{
-    const div = document.createElement('div');
-    div.textContent = str; // Using textContent automatically escapes HTML entities
-    return div.innerHTML; // Returns the HTML-escaped string
-}
-
+// Store active suggestion lists for cleanup
+const activeSuggestLists = new Map();
 
 /**
- * Attaches autosuggest functionality to an input field.
- * @param {HTMLInputElement} input The input element to attach autosuggest to.
- * @param {string} field The database field name to query (e.g., 'name', 'race_name', 'skill_name').
- * @param {function(Object): void} [onSelectCallback] Optional callback function when a suggestion is selected.
- * For skill_name, this will receive the full skill object.
+ * Helper: Escape and sanitize text for safe HTML display.
+ * Typically, textContent is enough, but this can be used for more complex cases.
  */
-function attachAutosuggest(input, field, onSelectCallback = null)
-{
-    let currentFocus = -1;
-    let currentInput = input; // Store reference for closure
+function sanitizeText(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
 
-    // CRITICAL SECURITY FIX 2: Validate field parameter
-    const allowedFields = ['name', 'race_name', 'skill_name', 'goal']; // FIXED: Added 'goal' to allowedFields
+/**
+ * Attach autosuggest functionality to an input field.
+ * @param {HTMLInputElement} input The input element to attach autosuggest to.
+ * @param {string} field The database field name to query (e.g., 'name', 'race_name', 'skill_name', 'goal').
+ * @param {function(Object): void} [onSelectCallback] Optional callback function when a suggestion is selected.
+ *        For skill_name, this will receive the full skill object.
+ */
+function attachAutosuggest(input, field, onSelectCallback = null) {
+    let currentFocus = -1;
+
+    // --- Security: Only allow whitelisted fields ---
+    const allowedFields = ['name', 'race_name', 'skill_name', 'goal'];
     if (!allowedFields.includes(field)) {
-        console.error('Autosuggest: Invalid field parameter provided:', field); //
-        // Optionally throw an error or disable functionality if field is invalid
+        console.error('Autosuggest: Invalid field parameter provided:', field);
         return;
     }
 
-    // Close any existing autosuggest list for this input
+    // --- Accessibility: Set ARIA attributes on the input ---
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-controls', input.id + 'autocomplete-list');
+
+    // --- Remove any previously open suggestion lists for this input ---
     closeAllLists(input);
 
-    input.addEventListener("input", function (e) {
+    input.addEventListener("input", function () {
         const val = this.value;
-        closeAllLists(this); // Close any open lists before creating a new one
+        closeAllLists(this);
 
-        if (!val) {
-            return false; }
-
+        if (!val) return false;
         currentFocus = -1;
+
+        // Create suggestion list container
         const a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items card"); // Use card class for styling
-        // ACCESSIBILITY: Add ARIA attributes for listbox role
+        a.setAttribute("class", "autocomplete-items card");
         a.setAttribute('role', 'listbox');
-        a.setAttribute('aria-label', `Suggestions for ${input.id}`); // Dynamic label for context
+        a.setAttribute('aria-label', `Suggestions for ${input.id}`);
         this.parentNode.appendChild(a);
-        activeSuggestLists.set(this, a); // Store the list element
+        activeSuggestLists.set(this, a);
 
-        // Add a loading indicator
+        // Show loading indicator
         const loadingDiv = document.createElement("DIV");
         loadingDiv.textContent = "Loading...";
         loadingDiv.style.padding = "10px";
         loadingDiv.style.textAlign = "center";
         a.appendChild(loadingDiv);
 
-        // Ensure no extra spaces in the fetch URL
-        fetch(`get_autosuggest.php ? field = ${field} & query = ${encodeURIComponent(val)}`) // Removed spaces around ? and &
+        // Fetch suggestions from backend
+        fetch(`get_autosuggest.php?field=${field}&query=${encodeURIComponent(val)}`)
             .then(response => {
-                // Check if response is OK (status 200-299)
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                // Read response as text first for better error debugging
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.text();
             })
             .then(text => {
-                // Remove loading indicator
-                a.innerHTML = '';
+                a.innerHTML = ''; // Remove loading
                 try {
-                    const data = JSON.parse(text); // Try parsing as JSON
+                    const data = JSON.parse(text);
                     if (data.success && data.suggestions) {
                         if (data.suggestions.length === 0) {
                             const noResults = document.createElement("DIV");
@@ -81,37 +79,31 @@ function attachAutosuggest(input, field, onSelectCallback = null)
                             noResults.style.padding = "10px";
                             noResults.style.color = "var(--color-text-muted-light)";
                             a.appendChild(noResults);
-                            return; // Exit if no results
+                            return;
                         }
 
                         data.suggestions.forEach(item => {
                             const valToDisplay = field === 'skill_name' ? item.skill_name : item;
                             const b = document.createElement("DIV");
-                            // ACCESSIBILITY: Add ARIA attributes for option role
                             b.setAttribute('role', 'option');
-                            b.setAttribute('aria-selected', 'false'); // Will be toggled by addActive
+                            b.setAttribute('aria-selected', 'false');
 
-                            // CRITICAL SECURITY FIX 1: Use textContent and DOM methods to prevent XSS
-                            // Create <strong> for matched part
+                            // Display strong for matched part, safe from XSS
                             const strong = document.createElement('strong');
-                            strong.textContent = valToDisplay.substring(0, val.length); // Use textContent for safety
+                            strong.textContent = valToDisplay.substr(0, val.length);
                             b.appendChild(strong);
+                            b.appendChild(document.createTextNode(valToDisplay.substr(val.length)));
 
-                            // Add the rest of the text
-                            const restOfText = document.createTextNode(valToDisplay.substring(val.length));
-                            b.appendChild(restOfText);
-
-                            // Create hidden input
+                            // Hidden input for value
                             const hiddenInput = document.createElement('input');
                             hiddenInput.type = 'hidden';
-                            hiddenInput.value = valToDisplay; // This value is not rendered as HTML
+                            hiddenInput.value = valToDisplay;
                             b.appendChild(hiddenInput);
 
-
-                            b.addEventListener("click", function (e) {
+                            // Click handler
+                            b.addEventListener("click", function () {
                                 input.value = this.getElementsByTagName("input")[0].value;
                                 if (onSelectCallback) {
-                                    // If skill_name, pass the full item object
                                     const selectedItem = field === 'skill_name' ? item : valToDisplay;
                                     onSelectCallback(selectedItem);
                                 }
@@ -120,7 +112,7 @@ function attachAutosuggest(input, field, onSelectCallback = null)
                             a.appendChild(b);
                         });
                     } else {
-                        // Handle server-side errors reported in JSON
+                        // Handle errors from backend
                         console.error("Autosuggest server error:", data.error || "Unknown error from server.");
                         const errorDiv = document.createElement("DIV");
                         errorDiv.textContent = data.error || "Error fetching suggestions.";
@@ -138,7 +130,6 @@ function attachAutosuggest(input, field, onSelectCallback = null)
                 }
             })
             .catch(error => {
-                // Remove loading indicator
                 a.innerHTML = '';
                 console.error("Autosuggest fetch error:", error);
                 const errorDiv = document.createElement("DIV");
@@ -149,82 +140,65 @@ function attachAutosuggest(input, field, onSelectCallback = null)
             });
     });
 
-    // ACCESSIBILITY: Set ARIA attributes for the input itself
-    input.setAttribute('aria-autocomplete', 'list');
-    input.setAttribute('aria-controls', input.id + 'autocomplete-list');
-
-
     input.addEventListener("keydown", function (e) {
         let x = document.getElementById(this.id + "autocomplete-list");
-        if (x) {
-            x = x.getElementsByTagName("div");
-        }
-        // MODERN JS: Use e.key instead of keyCode
-        if (e.key === 'ArrowDown') { // DOWN arrow
+        if (x) x = x.getElementsByTagName("div");
+        // Accessibility: Modern JS key handling
+        if (e.key === 'ArrowDown') {
             currentFocus++;
             addActive(x);
-            e.preventDefault(); // Prevent cursor movement in input
-        } else if (e.key === 'ArrowUp') { // UP arrow
+            e.preventDefault();
+        } else if (e.key === 'ArrowUp') {
             currentFocus--;
             addActive(x);
-            e.preventDefault(); // Prevent cursor movement in input
-        } else if (e.key === 'Enter') { // ENTER key
             e.preventDefault();
-            if (currentFocus > -1) {
-                if (x && x[currentFocus]) {
-                    x[currentFocus].click();
-                }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (currentFocus > -1 && x && x[currentFocus]) {
+                x[currentFocus].click();
             }
         }
     });
 
-    function addActive(x)
-    {
-        if (!x) {
-            return false;
-        }
+    function addActive(x) {
+        if (!x) return false;
         removeActive(x);
-        if (currentFocus >= x.length) {
-            currentFocus = 0;
-        }
-        if (currentFocus < 0) {
-            currentFocus = (x.length - 1);
-        }
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = x.length - 1;
         x[currentFocus].classList.add("autocomplete-active");
-        // ACCESSIBILITY: Set aria-selected for the active option
         x[currentFocus].setAttribute('aria-selected', 'true');
-        // ACCESSIBILITY: Ensure active element is visually focused
-        x[currentFocus].focus(); // CRITICAL ACCESSIBILITY FIX: Focus the active element
-        // Scroll into view if out of bounds
+        x[currentFocus].focus();
         x[currentFocus].parentNode.scrollTop = x[currentFocus].offsetTop - x[currentFocus].parentNode.offsetTop;
     }
 
-    function removeActive(x)
-    {
+    function removeActive(x) {
         for (let i = 0; i < x.length; i++) {
             x[i].classList.remove("autocomplete-active");
-            // ACCESSIBILITY: Reset aria-selected
             x[i].setAttribute('aria-selected', 'false');
         }
     }
 
-    function closeAllLists(elmnt = null)
-    {
+    function closeAllLists(elmnt = null) {
         activeSuggestLists.forEach((listEl, inputEl) => {
-            if (elmnt !== inputEl) { // Only close lists not associated with the current input
-                listEl.parentNode.removeChild(listEl);
+            if (elmnt !== inputEl) {
+                if (listEl.parentNode) listEl.parentNode.removeChild(listEl);
                 activeSuggestLists.delete(inputEl);
             }
         });
     }
 
-    // Close on click outside
+    // When user clicks outside, close suggestion lists
     document.addEventListener("click", function (e) {
         activeSuggestLists.forEach((listEl, inputEl) => {
             if (e.target !== inputEl && e.target !== listEl && !listEl.contains(e.target)) {
-                closeAllLists(inputEl); // Pass the input to close only its associated list
+                closeAllLists(inputEl);
             }
-            // Ensure no stray output appears by trimming the result
         });
     });
 }
+
+// This file can be included in your main app. Attach autosuggest like:
+// attachAutosuggest(document.getElementById('modalName'), 'name');
+// attachAutosuggest(document.getElementById('modalRaceName'), 'race_name');
+// attachAutosuggest(document.getElementById('modalGoal'), 'goal');
+// attachAutosuggest(document.getElementById('skillNameInput'), 'skill_name', function(skillObj){ ... });

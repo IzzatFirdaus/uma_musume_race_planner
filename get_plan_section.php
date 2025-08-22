@@ -59,12 +59,12 @@ try {
     $stmt->execute([$plan_id]);
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode(['success' => true, $type => $data]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $log->error("Failed to fetch plan section: $type", [
         'plan_id' => $plan_id,
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine()
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
+        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
     ]);
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => "A database error occurred fetching $type."]);

@@ -15,8 +15,8 @@ try {
     // Clear any accidental whitespace or output
     ob_clean();
     echo json_encode(['success' => true, 'activities' => $activities]);
-} catch (PDOException $e) {
-    $log->error('Failed to fetch activities', ['message' => $e->getMessage()]);
+} catch (Exception $e) {
+    $log->error('Failed to fetch activities', ['message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e]);
     http_response_code(500);
     ob_clean();
     echo json_encode(['success' => false, 'error' => 'A database error occurred while fetching activities.']);

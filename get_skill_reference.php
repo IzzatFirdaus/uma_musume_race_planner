@@ -56,12 +56,12 @@ try {
         'success' => true,
         'skills' => $skills,
     ]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $log->error('Failed to fetch skill reference data', [
         'params' => $_GET,
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
+        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
     ]);
 
     http_response_code(500);

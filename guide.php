@@ -12,12 +12,9 @@
   <link rel="icon" href="uploads/app_logo/uma_musume_race_planner_logo_128.png" sizes="128x128">
   <link rel="icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png" sizes="256x256">
   <link rel="apple-touch-icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png">
-
 </head>
 <body>
-  <?php
-    require_once __DIR__ . '/components/navbar.php';
-    ?>
+  <?php require_once __DIR__ . '/components/navbar.php'; ?>
 
   <nav class="sticky-top py-2 guide-sticky-nav">
     <div class="container">
@@ -57,8 +54,8 @@
           <figure class="text-center mt-4">
             <?php
               $dashboardScreenshot = "Homepage.png";
-              $safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot)); // basename for path traversal, htmlspecialchars for XSS
-            ?>
+  $safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot));
+  ?>
             <img src="screenshot/<?= $safeDashboardScreenshot ?>" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy">
             <figcaption class="text-muted small mt-2">Dashboard layout example</figcaption>
           </figure>
@@ -85,16 +82,16 @@
           <div class="row mt-4">
             <div class="col-md-6 mb-3">
               <?php
-                $generalScreenshot = "001_GENERAL Edit Plan.png";
-                $safeGeneralScreenshot = htmlspecialchars(basename($generalScreenshot));
-                ?>
+      $generalScreenshot = "001_GENERAL Edit Plan.png";
+  $safeGeneralScreenshot = htmlspecialchars(basename($generalScreenshot));
+  ?>
               <img src="screenshot/<?= $safeGeneralScreenshot ?>" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy">
             </div>
             <div class="col-md-6 mb-3">
               <?php
-                $skillsScreenshot = "004_SKILLS Edit Plan.png";
-                $safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot));
-                ?>
+  $skillsScreenshot = "004_SKILLS Edit Plan.png";
+  $safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot));
+  ?>
               <img src="screenshot/<?= $safeSkillsScreenshot ?>" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy">
             </div>
           </div>
@@ -202,7 +199,8 @@
 
       </div>
     </div>
-  </main> <?php require_once __DIR__ . '/components/footer.php'; ?>
+  </main>
+  <?php require_once __DIR__ . '/components/footer.php'; ?>
 
   <script src="//cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -210,7 +208,7 @@
       const body = document.body;
       const darkModeToggle = document.getElementById('darkModeToggle');
 
-      // Function to set dark mode based on boolean and update local storage/checkbox
+      // Enable dark mode based on localStorage or system preference
       function setDarkMode(isDark) {
         body.classList.toggle('dark-mode', isDark);
         if (darkModeToggle) {
@@ -219,131 +217,103 @@
         }
       }
 
-      // Initial dark mode setup on page load
+      // Initial dark mode setup
       const savedDarkMode = localStorage.getItem('darkMode');
-      // RECOMMENDATION: Dark Mode System Preference - Enhanced detection
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; //
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (savedDarkMode === 'enabled') {
         setDarkMode(true);
       } else if (savedDarkMode === 'disabled') {
         setDarkMode(false);
-      } else if (savedDarkMode === null) { // If no preference saved, use system preference
-          setDarkMode(systemPrefersDark);
+      } else if (savedDarkMode === null) {
+        setDarkMode(systemPrefersDark);
       }
-      // If 'auto' or not set, default to light mode and let user toggle
-      // if (savedDarkMode === null || savedDarkMode === 'auto') { setDarkMode(false); }
 
-      // Event listener for dark mode toggle switch
       if (darkModeToggle) {
         darkModeToggle.addEventListener('change', () => {
           setDarkMode(darkModeToggle.checked);
         });
       }
 
-      // --- Calculate dynamic offset for sticky navbars ---
-      // Get CSS variables for navbar heights (set in style.css)
+      // Sticky nav offset calculation
       const rootStyles = getComputedStyle(document.documentElement);
       let mainNavbarHeight = parseFloat(rootStyles.getPropertyValue('--main-navbar-height')) || 0;
       let guideNavbarHeight = parseFloat(rootStyles.getPropertyValue('--guide-navbar-height')) || 0;
       let totalStickyHeight = mainNavbarHeight + guideNavbarHeight;
-
-      // Ensure that totalStickyHeight is correctly calculated based on rendered heights if possible
-      // Fallback to computed CSS variables, or directly get element heights if elements are always present
       const actualMainNavbar = document.querySelector('.navbar');
       const actualGuideNavbar = document.querySelector('.guide-sticky-nav');
 
       if (actualMainNavbar) {
-          mainNavbarHeight = actualMainNavbar.offsetHeight;
+        mainNavbarHeight = actualMainNavbar.offsetHeight;
       }
       if (actualGuideNavbar) {
-          guideNavbarHeight = actualGuideNavbar.offsetHeight;
+        guideNavbarHeight = actualGuideNavbar.offsetHeight;
       }
-      totalStickyHeight = actualMainNavbar.offsetHeight + actualGuideNavbar.offsetHeight; // Using actual rendered heights for accuracy
+      totalStickyHeight = mainNavbarHeight + guideNavbarHeight;
 
-
-      // Smooth scrolling for guide navigation
+      // Smooth scrolling for guide nav links
       document.querySelectorAll('.guide-sticky-nav .nav-link').forEach(anchor => {
-          anchor.addEventListener('click', function (e) {
-              e.preventDefault();
-
-              // Remove 'active' from all guide nav links
-              document.querySelectorAll('.guide-sticky-nav .nav-link').forEach(link => link.classList.remove('active'));
-              // Add 'active' to the clicked link
-              this.classList.add('active');
-
-              const targetId = this.getAttribute('href');
-              const targetElement = document.querySelector(targetId);
-
-              if (targetElement) {
-                  // Calculate the position to scroll to, accounting for the combined height of sticky navbars
-                  const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                  const offsetPosition = elementPosition - totalStickyHeight; // Subtract combined height
-
-                  window.scrollTo({
-                      top: offsetPosition,
-                      behavior: "smooth"
-                  });
-                   // ACCESSIBILITY: Focus Management - Set focus to the target section after scroll
-                  targetElement.focus({ preventScroll: true }); //
-              }
-          });
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          document.querySelectorAll('.guide-sticky-nav .nav-link').forEach(link => link.classList.remove('active'));
+          this.classList.add('active');
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - totalStickyHeight;
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth"
+            });
+            // Accessibility: Focus Management
+            targetElement.focus({ preventScroll: true });
+          }
+        });
       });
 
-      // Highlight active nav link on scroll
+      // Highlight active nav link on scroll (debounced)
       const sections = document.querySelectorAll('section[id]');
       const guideNavLinks = document.querySelectorAll('.guide-sticky-nav .nav-link');
-
-      // RECOMMENDATION: Sticky Nav Performance - Add debouncing to scroll handler
-      let scrollTimeout; //
+      let scrollTimeout;
       function highlightNavOnScroll() {
-          clearTimeout(scrollTimeout); //
-          scrollTimeout = setTimeout(() => { //
-              let currentActiveSectionId = null;
-              sections.forEach(section => {
-                  const sectionRect = section.getBoundingClientRect();
-                  // A section is considered "active" if its top is within the sticky navbars' height from the top,
-                  // plus a small buffer for better visual indication.
-                  if (sectionRect.top <= totalStickyHeight + 20 && sectionRect.bottom > totalStickyHeight + 20) {
-                      currentActiveSectionId = section.getAttribute('id');
-                  }
-              });
-
-              guideNavLinks.forEach(link => {
-                  link.classList.remove('active');
-                  if (link.getAttribute('href') === '#' + currentActiveSectionId) {
-                      link.classList.add('active');
-                  }
-              });
-          }, 100); // Debounce by 100ms
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          let currentActiveSectionId = null;
+          sections.forEach(section => {
+            const sectionRect = section.getBoundingClientRect();
+            if (sectionRect.top <= totalStickyHeight + 20 && sectionRect.bottom > totalStickyHeight + 20) {
+              currentActiveSectionId = section.getAttribute('id');
+            }
+          });
+          guideNavLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + currentActiveSectionId) {
+              link.classList.add('active');
+            }
+          });
+        }, 100);
       }
-
-      // Attach scroll event listener
       window.addEventListener('scroll', highlightNavOnScroll);
-      // Call once on load to set initial active state if page is loaded scrolled
       highlightNavOnScroll();
 
-
-      // ACCESSIBILITY: Accordion Keyboard Support - Add key handlers for FAQ accordion buttons
-      // Select all accordion buttons
-      const accordionButtons = document.querySelectorAll('#faqAccordion .accordion-button'); //
-      accordionButtons.forEach(button => { //
-          button.addEventListener('keydown', function(e) { //
-              // Check for Enter or Space key
-              if (e.key === 'Enter' || e.key === ' ') { //
-                  e.preventDefault(); // Prevent default action (e.g., scrolling for Space)
-                  this.click(); // Programmatically click the button to trigger Bootstrap's collapse
-              }
-              // Basic arrow key navigation for accordions (optional but good for accessibility)
-              if (e.key === 'ArrowDown') { //
-                  e.preventDefault(); //
-                  const nextButton = this.closest('.accordion-item').nextElementSibling?.querySelector('.accordion-button'); //
-                  if (nextButton) nextButton.focus(); //
-              } else if (e.key === 'ArrowUp') { //
-                  e.preventDefault(); //
-                  const prevButton = this.closest('.accordion-item').previousElementSibling?.querySelector('.accordion-button'); //
-                  if (prevButton) prevButton.focus(); //
-              }
-          });
+      // Accordion keyboard support for FAQ
+      const accordionButtons = document.querySelectorAll('#faqAccordion .accordion-button');
+      accordionButtons.forEach(button => {
+        button.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.click();
+          }
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextButton = this.closest('.accordion-item').nextElementSibling?.querySelector('.accordion-button');
+            if (nextButton) nextButton.focus();
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prevButton = this.closest('.accordion-item').previousElementSibling?.querySelector('.accordion-button');
+            if (prevButton) prevButton.focus();
+          }
+        });
       });
     });
   </script>

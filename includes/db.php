@@ -1,38 +1,42 @@
 <?php
 
-// includes/db.php — Centralized PDO database connector for Uma Musume Planner
+// Lean PDO connector.
+// Usage: $pdo = require __DIR__ . '/includes/db.php';
 
-require_once __DIR__ . '/env.php';
-load_env();
+// Load environment variables if loader is present.
+if (file_exists(__DIR__ . '/env.php')) {
+    require_once __DIR__ . '/env.php';
+    if (function_exists('load_env')) {
+        load_env();
+    }
+}
 
-// Fetch environment variables or use defaults
-$host = getenv('DB_HOST') ?: 'localhost';
-$db   = getenv('DB_NAME') ?: 'uma_musume_planner';
-$user = getenv('DB_USER') ?: 'root';
-$pass = getenv('DB_PASS') ?: '';
-$debugMode = getenv('APP_DEBUG') === 'true';
+// Read configuration from environment with sensible defaults.
+$dbHost = getenv('DB_HOST') !== false ? getenv('DB_HOST') : '127.0.0.1';
+$dbPort = getenv('DB_PORT') !== false ? getenv('DB_PORT') : '3306';
+$dbName = getenv('DB_DATABASE') ?: getenv('DB_NAME') ?: 'uma_musume_planner';
+$dbUser = getenv('DB_USERNAME') ?: getenv('DB_USER') ?: 'root';
+$dbPass = getenv('DB_PASSWORD') ?: getenv('DB_PASS') ?: '';
+
+$dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
 
 try {
-    // Return PDO instance configured for security and performance
-    return new PDO(
-        "mysql:host=$host;dbname=$db;charset=utf8mb4",
-        $user,
-        $pass,
-        [
-            PDO::ATTR_ERRMODE            => $debugMode ? PDO::ERRMODE_EXCEPTION : PDO::ERRMODE_SILENT,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-        ]
-    );
-} catch (PDOException $e) {
-    // Log the error (optional: inject logger here)
-    error_log('Database Connection Error: ' . $e->getMessage());
+    $pdo = new PDO($dsn, $dbUser, $dbPass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
 
-    // Send API-friendly JSON error response
-    http_response_code(500);
+    return $pdo;
+} catch (Exception $e) {
+    // Keep logging minimal but informative for local debugging.
+    $msg = method_exists($e, 'getMessage') ? $e->getMessage() : (string) $e;
+    error_log('Database connection failed: ' . $msg);
+    // Safe JSON response for consumers
+    http_response_code(200);
     echo json_encode([
         'success' => false,
         'error' => 'Database connection failed. Please check server logs.',
     ]);
-    exit;
+    // Ensure no further execution when required
+    exit(1);
 }

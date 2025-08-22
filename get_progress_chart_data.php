@@ -45,12 +45,12 @@ try {
         'success' => true,
         'data' => $data
     ]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $log->error('Failed to fetch progress chart data', [
         'plan_id' => $plan_id,
-        'message' => $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
+        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
     ]);
 
     http_response_code(500);

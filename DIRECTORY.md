@@ -1,87 +1,87 @@
-.vscode\settings.json
-.vscode\tasks.json
+# DIRECTORY (generated)
 
-~~components\create-panel.php~~
-components\copy_to_clipboard.php
-~~components\filter-panel.php~~
-components\footer.php
-components\header.php
-~~components\modal-import.php~~
-~~components\modal-plan.php~~
-components\navbar.php
-components\plan-inline-details.php
-~~components\plan-details.php~~
-components\plan-list.php
-components\recent-activity.php
-components\stats-panel.php
-components\trainee_image_handler.php
+This file lists the current project files and important subfolders (snapshot).
 
-~~css\print.css~~
-css\style.css
+## Top-level files
 
-~~js\constants.js~~
-~~js\formEvents.js~~
-~~js\modal.js~~
-~~js\renderHelpers.js~~
-~~js\script.js~~
-~~js\utils.js~~
-js\autosuggest.js
+- .env.example — example env file
+- .gitignore
+- .php-cs-fixer.php
+- composer.json
+- composer.lock
+- config.php
+- README.md
+- guide.php
+- index.php
+- index.main.backup
+- phpcs.xml
+- phpstan.neon
+- php_errors.log
+- sample_data.sql
+- uma_musume_planner.sql
+- test.md
 
-includes\db.php
-includes\logger.php
-includes\env.php
+## Top-level PHP endpoints / scripts
 
-screenshot\
-uploads\trainee_images\
+- export_plan_data.php
+- fetch_plan_details.php
+- get_activities.php
+- get_autosuggest.php
+- get_autosuggest_backup.php
+- get_plan_attributes.php
+- get_plan_distance_grades.php
+- get_plan_goals.php
+- get_plan_predictions.php
+- get_plan_section.php
+- get_plan_skills.php
+- get_plan_style_grades.php
+- get_plan_terrain_grades.php
+- get_plan_turns.php
+- get_plans.php
+- get_progress_chart_data.php
+- get_skill_reference.php
+- get_stats.php
+- handle_plan_crud.php
 
-\vendor
+## Key directories
 
-~~.env~~
-.env.example
-.gitignore
-.php-cs-fixer.cache
-.php-cs-fixer.php
-composer.json
-composer.lock
-config.php
-~~delete_plan.php~~
-~~export_plan.php~~
-export_plan_data.php
-fetch_plan_details.php
-get_activities.php
-get_autosuggest.php
-get_plan_attributes.php
-get_plan_distance_grades.php
-get_plan_goals.php
-get_plan_predictions.php
-get_plan_section.php
-get_plan_skills.php
-get_plan_style_grades.php
-get_plan_terrain_grades.php
-get_plan_turns.php
-~~get_plan_details.php~~
-get_plans.php
-get_progress_chart_data.php
-get_skill_reference.php
-~~get_recent_activity.php~~
-guide.php
-handle_plan_crud.php
-get_stats.php
-~~import_plan.php~~
-index.php
-php_errors.log
-phpcs.xml
-~~save_plan.php~~
-phpstan.neon
-plan_details_modal.php
-quick_create_plan_modal.php
-rector.php
+- components/ — reusable PHP UI components (header, footer, navbar, plan list, stats panel, etc.)
+  - copy_to_clipboard.php
+  - footer.php
+  - header.php
+  - navbar.php
+  - plan-inline-details.php
+  - plan-list.php
+  - recent-activity.php
+  - stats-panel.php
+  - trainee_image_handler.php
 
-uma_musume_planner.sql
-sample_data.sql
+- includes/ — app bootstrap and helpers
+  - db.php (PDO helper)
+  - env.php (.env loader)
+  - logger.php
 
-test.md
+- css/ — styles
+  - style.css
+  - style_glass.css
+  - style_og.css
 
-DIRECTORY.md
-README.md
-ARCHITECTURE_SPEC.md
+- js/ — client JS
+  - autosuggest.js
+  - autosuggest.backup.js
+
+- backup/unused/ — archived files (audit tools, rector config, tmp schema snapshots)
+  - rector.php (archived)
+  - move-manifest.json
+  - tmp_check_schema.php
+  - tmp_schema.json
+  - tmp_schema_full.json
+  - test_db.php
+  - tools/ (archived audit tools and reports)
+
+- vendor/ — Composer dependencies (libraries)
+
+## Notes
+
+- rector.php has been archived to backup/unused/rector.php and removed from the project root to avoid running Rector.
+- Audit and schema-check tools were archived under backup/unused/tools/.

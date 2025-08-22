@@ -4,10 +4,9 @@ A lightweight PHP + MySQL web application for planning and tracking turn-based t
 
 ---
 
-### Application Preview
+## Application Preview
 
-<details>
-<summary>Click to view Application Screenshots (v1.3.2)</summary>
+### Application Screenshots (v1.3.2)
 
 _Note: These screenshots showcase the core interface. The latest version (v1.4.0) adds the new Trainee Image and Progress Chart features._
 
@@ -26,7 +25,6 @@ _Note: These screenshots showcase the core interface. The latest version (v1.4.0
 |  ![Plan Editor - Skills](screenshot/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](screenshot/006_GOALS%20Edit%20Plan.png)            |
 
 </details>
-
 ---
 
 ## ✨ Features
@@ -69,7 +67,7 @@ _Note: These screenshots showcase the core interface. The latest version (v1.4.0
 ```bash
 git clone [https://github.com/IzzatFirdaus/uma_musume_race_planner.git](https://github.com/IzzatFirdaus/uma_musume_race_planner.git)
 cd uma_musume_race_planner
-```
+```bash
 
 ### 2\. Install Dependencies
 
@@ -81,15 +79,15 @@ composer install
 
 ### 3\. Database Setup
 
-1.  **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
+1. **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
 
-2.  **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
+2. **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
 
 ### 4\. Environment Configuration
 
-1.  In the root directory, create a file named `.env`.
+1. In the root directory, create a file named `.env`.
 
-2.  Copy the following configuration, adjusting the database credentials to match your local setup.
+2. Copy the following configuration, adjusting the database credentials to match your local setup.
 
     ```ini
     # .env - Local Development Configuration
@@ -114,7 +112,7 @@ Place the project folder inside your web server's root directory (e.g., `C:/xamp
 
 ## 📁 Folder Structure
 
-```
+```bash
 uma_musume_race_planner/
 │
 ├── .vscode/                  # VS Code editor settings & tasks

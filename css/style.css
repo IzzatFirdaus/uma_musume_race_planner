@@ -184,8 +184,9 @@ footer,
   box-shadow: var(--color-shadow-light); /* Use variable for shadow */
   border: 1px solid rgba(255, 255, 255, 0.4);
   background-color: var(--color-surface-light-glass);
-  backdrop-filter: blur(var(--backdrop-blur-strength));
   -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+  backdrop-filter: blur(var(--backdrop-blur-strength));
   border-radius: var(--border-radius-base); /* Use variable for radius */
   transition: background-color var(--transition-speed),
     box-shadow var(--transition-speed), border-color var(--transition-speed); /* Smooth transitions */
@@ -501,8 +502,8 @@ body.dark-mode .form-control::placeholder {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0 0 var(--border-radius-base) var(--border-radius-base); /* Match card radius at bottom */
   box-shadow: var(--color-shadow-light);
-  backdrop-filter: blur(var(--backdrop-blur-strength));
   -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+  backdrop-filter: blur(var(--backdrop-blur-strength));
 }
 body.dark-mode .autocomplete-items {
   background-color: var(--color-surface-dark-glass);
@@ -737,6 +738,7 @@ body.dark-mode .stat-bar {
   background-color: var(
     --color-surface-light-glass
   ); /* Consistent glass effect */
+  -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* Safari support */
   backdrop-filter: blur(var(--backdrop-blur-strength));
   color: var(--color-text-dark);
   padding: 0.75rem 1rem; /* More padding */
@@ -797,8 +799,8 @@ body.dark-mode .guide-sticky-nav {
   padding: 2.5rem; /* More generous padding */
   border-radius: var(--border-radius-base);
   box-shadow: var(--color-shadow-light);
-  backdrop-filter: blur(var(--backdrop-blur-strength));
   -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+  backdrop-filter: blur(var(--backdrop-blur-strength));
   margin-bottom: 2rem; /* Space between sections */
 }
 body.dark-mode .section-highlight {
@@ -888,8 +890,8 @@ body.dark-mode .table-hover thead th {
   background-color: var(
     --color-surface-light-glass
   ); /* Frosted glass background */
-  backdrop-filter: blur(var(--backdrop-blur-strength));
   -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+  backdrop-filter: blur(var(--backdrop-blur-strength));
   box-shadow: var(--color-shadow-light); /* Add subtle shadow */
   overflow: hidden; /* Ensures child elements respect radius */
 }
@@ -958,8 +960,8 @@ body.dark-mode .accordion-body {
   padding: 2.5rem;
   border-radius: var(--border-radius-base);
   box-shadow: var(--color-shadow-light);
-  backdrop-filter: blur(var(--backdrop-blur-strength));
   -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+  backdrop-filter: blur(var(--backdrop-blur-strength));
   margin-bottom: 2rem; /* Ensure space after it */
 }
 
@@ -1005,8 +1007,8 @@ body.dark-mode #glossary dd {
   padding: 2rem; /* Consistent padding */
   border-radius: var(--border-radius-base); /* Consistent radius */
   box-shadow: var(--color-shadow-light);
-  backdrop-filter: blur(var(--backdrop-blur-strength));
   -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+  backdrop-filter: blur(var(--backdrop-blur-strength));
   margin-top: 2rem !important; /* Ensure spacing from previous section */
   margin-bottom: 2rem !important; /* Ensure spacing before footer */
 }
