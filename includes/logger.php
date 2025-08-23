@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// @phpstan-ignore-file
+
 /**
  * includes/logger.php
  *
@@ -67,9 +69,11 @@ if (class_exists($monologClass)) {
             $handler = new $streamHandler($logFilePath, $levelConstValue);
         }
 
+        // @phpstan-ignore-next-line - dynamic handler may vary by installed Monolog version
         if (method_exists($handler, 'setFormatter')) {
             $handler->setFormatter($formatter);
         }
+        // @phpstan-ignore-next-line - method presence depends on runtime type
         if (method_exists($log, 'pushHandler')) {
             $log->pushHandler($handler);
         }

@@ -26,7 +26,8 @@
                 const data = Object.fromEntries(formData.entries());
 
                 try {
-                    const response = await fetch(`${window.APP_API_BASE}plan.php?action=create`, {
+                    const base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.APP_API_BASE || '/api';
+                    const response = await fetch(`${base}/plan.php?action=create`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

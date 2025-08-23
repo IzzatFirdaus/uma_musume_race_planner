@@ -40,7 +40,8 @@
                 Chart.defaults.font.family = getCssVariableValue('--bs-body-font-family');
                 Chart.defaults.color = getCssVariableValue('--bs-secondary-color');
 
-                const resp = await fetch(`${window.APP_API_BASE} / progress.php ? action = chart & plan_id = ${encodeURIComponent(planId)}`);
+                const base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.APP_API_BASE || '/api';
+                const resp = await fetch(`${base}/progress.php?action=chart&plan_id=${encodeURIComponent(planId)}`);
                 const result = await resp.json();
 
                 if (result.success && Array.isArray(result.data) && result.data.length > 0) {
@@ -128,7 +129,7 @@
                 const fileName = `${safeFileName}_${planId}.txt`;
 
                 const link = document.createElement('a');
-                link.href = `export_plan_data.php ? id = ${encodeURIComponent(planId)} & format = txt`;
+                link.href = `export_plan_data.php?id=${encodeURIComponent(planId)}&format=txt`;
                 link.download = fileName;
                 link.target = '_blank';
                 document.body.appendChild(link);
@@ -136,6 +137,41 @@
                 document.body.removeChild(link);
             });
         }
+        // Global cleanup: sometimes a leftover .modal-backdrop remains (e.g. when modals
+        // are shown/hidden using fallback code paths). Ensure backdrops are removed
+        // and the body state is restored when any modal finishes hiding.
+        document.addEventListener('hidden.bs.modal', function () {
+            try {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(b => b.parentNode && b.parentNode.removeChild(b));
+                // Remove modal-open in case it wasn't cleared
+                document.body.classList.remove('modal-open');
+                // Clear inline padding-right added by Bootstrap when scrollbar hidden
+                if (document.body.style && document.body.style.paddingRight) {
+                    document.body.style.paddingRight = '';
+                }
+            } catch (e) {
+                // Swallow errors - best-effort cleanup only
+                console.warn('Error cleaning up modal backdrop:', e);
+            }
+        });
+
+        // Fallback: if a modal close button is clicked but the Bootstrap event isn't emitted,
+        // run the same cleanup shortly after click to remove stray backdrops.
+        document.addEventListener('click', function (e) {
+            if (e.target.closest && e.target.closest('[data-bs-dismiss="modal"], .btn-close')) {
+                setTimeout(() => {
+                    try {
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(b => b.parentNode && b.parentNode.removeChild(b));
+                        document.body.classList.remove('modal-open');
+                        if (document.body.style && document.body.style.paddingRight) document.body.style.paddingRight = '';
+                    } catch (err) {
+                        // ignore
+                    }
+                }, 60);
+            }
+        });
     });
 
 })();

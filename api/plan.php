@@ -81,6 +81,12 @@ try {
     send_json(500, ['success' => false, 'error' => 'Failed to initialize dependencies.']);
 }
 
+if (!($pdo instanceof PDO)) {
+    throw new RuntimeException('Database not initialized.');
+}
+/** @var PDO $pdo */
+/** @var \Psr\Log\LoggerInterface|null $log */
+
 $action = $_GET['action'] ?? 'list';
 
 switch ($action) {

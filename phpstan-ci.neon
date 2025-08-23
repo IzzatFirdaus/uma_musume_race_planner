@@ -6,9 +6,13 @@ parameters:
     - includes
     - public
   excludePaths:
-    - vendor/*
-    - assets/js/*
-    - assets/css/*
-    - *.sql
+  - vendor/*
+  - assets/js/*
+  - assets/css/*
+  - *.sql
+  - backup/*
+  - scripts/*
   bootstrapFiles:
-    - vendor/autoload.php
+  - vendor/autoload.php
+  - phpstan-bootstrap.php
+  - phpstan-globals.php

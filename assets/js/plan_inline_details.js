@@ -29,7 +29,8 @@
             try {
                 Chart.defaults.font.family = getCssVariableValue('--bs-body-font-family') || Chart.defaults.font.family;
                 Chart.defaults.color = getCssVariableValue('--bs-secondary-color') || Chart.defaults.color;
-                const response = await fetch(`${window.APP_API_BASE} / progress.php ? action = chart & plan_id = ${encodeURIComponent(String(planId))}`, { headers : { 'Accept' : 'application/json' } });
+                const base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.APP_API_BASE || '/api';
+                const response = await fetch(`${base}/progress.php?action=chart&plan_id=${encodeURIComponent(String(planId))}`, { headers : { 'Accept' : 'application/json' } });
                 const result = await response.json();
                 if (result?.success && Array.isArray(result.data) && result.data.length > 0) {
                     chartCanvas.style.display = 'block';

@@ -53,10 +53,15 @@ require_method('GET');
 
 try {
     $pdo = require __DIR__ . '/../includes/db.php';
+    /** @var PDO|null $pdo */
     $log = require __DIR__ . '/../includes/logger.php';
+    /** @var \Psr\Log\LoggerInterface|null $log */
 } catch (Throwable $e) {
     send_json(500, ['success' => false, 'error' => 'Failed to initialize dependencies.']);
 }
+
+/** @var PDO $pdo */
+/** @var \Psr\Log\LoggerInterface $log */
 
 $action = $_GET['action'] ?? 'get';
 
