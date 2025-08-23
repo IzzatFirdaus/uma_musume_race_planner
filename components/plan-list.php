@@ -5,9 +5,9 @@
 
 <div class="card shadow-sm mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">
-      <i class="bi bi-card-checklist me-2"></i>
-      Your Race Plans
+    <h5 class="mb-0 font-semibold">
+      <i class="bi bi-card-checklist me-2" aria-hidden="true"></i>
+      <span class="h5">Your Race Plans</span>
     </h5>
     <button class="btn btn-primary btn-lg" id="createPlanBtn" aria-label="Create new plan" title="Create new plan">
       <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
@@ -28,14 +28,14 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table table-hover table-vcenter mb-0" id="planTable">
+  <table class="table table-hover table-vcenter mb-0" id="planTable">
         <thead class="table-light">
           <tr>
             <th style="width: 60px;"></th>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Next Race</th>
-            <th>Actions</th>
+    <th class="fw-semibold">Name</th>
+    <th class="fw-semibold">Status</th>
+    <th class="fw-semibold">Next Race</th>
+    <th class="fw-semibold">Actions</th>
           </tr>
         </thead>
         <tbody id="planListBody"></tbody>

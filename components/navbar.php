@@ -16,19 +16,19 @@ $isDarkModeChecked = ($darkModeSetting === 'enabled') ? 'checked' : '';
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+  <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link <?= $current_page === 'index.php' ? 'active' : '' ?>" href="index.php" <?= $current_page === 'index.php' ? 'aria-current="page"' : '' ?>>
+          <a class="nav-link font-medium <?= $current_page === 'index.php' ? 'active' : '' ?>" href="index.php" <?= $current_page === 'index.php' ? 'aria-current="page"' : '' ?>>
             <i class="bi bi-house-door me-1" aria-hidden="true"></i> Home
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" id="newPlanBtn" role="button">
+          <a class="nav-link font-medium" href="#" id="newPlanBtn" role="button">
             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> New Plan
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= $current_page === 'guide.php' ? 'active' : '' ?>" href="guide.php" <?= $current_page === 'guide.php' ? 'aria-current="page"' : '' ?>>
+          <a class="nav-link font-medium <?= $current_page === 'guide.php' ? 'active' : '' ?>" href="guide.php" <?= $current_page === 'guide.php' ? 'aria-current="page"' : '' ?>>
             <i class="bi bi-book me-1" aria-hidden="true"></i> Guide
           </a>
         </li>

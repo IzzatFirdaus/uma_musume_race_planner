@@ -12,7 +12,7 @@ $classOptions = $classOptions ?? [];
     <div class="modal-dialog">
         <div class="modal-content shadow-lg">
             <div class="modal-header">
-                <h5 class="modal-title" id="createPlanModalLabel">Quick Create Plan</h5>
+                <h5 class="modal-title font-semibold" id="createPlanModalLabel">Quick Create Plan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
