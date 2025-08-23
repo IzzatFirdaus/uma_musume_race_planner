@@ -1,0 +1,435 @@
+/* ---------------------------------------------------------------------
+  Uma Musume Planner - style.css (v2.5)
+  Description: Custom visual styles layered on top of Bootstrap 5.
+  Features: Theming, Dark Mode, Stat Visualization, Dynamic Backgrounds
+--------------------------------------------------------------------- */
+
+/* ------------------------------
+  Font Import: "Figtree" for modern clean UI
+------------------------------ */
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap");
+
+/* ------------------------------
+  Global Design Variables (Light + Dark Mode)
+------------------------------ */
+:root {
+  --primary-color: #f06292;
+  --secondary-color: #9575cd;
+
+  --bg: #f9f7fd;
+  --text: #212529;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 12px rgba(149, 117, 205, 0.15);
+  --light-bg: #ffffff;
+
+  /* Stat Colors */
+  --stat-speed-color: #007bff;
+  --stat-stamina-color: #dc3545;
+  --stat-power-color: #fd7e14;
+  --stat-guts-color: #e83e8c;
+  --stat-wit-color: #28a745;
+
+  /* Dark Mode Base */
+  --dark-mode-bg: #212121;
+  --dark-mode-card-bg: #2d2d2d;
+  --dark-mode-header-bg: #3a3a3a;
+  --dark-mode-border: rgba(255, 255, 255, 0.15);
+  --dark-mode-input-bg: #3a3a3a;
+  --dark-mode-input-text: #e0e0e0;
+  --dark-mode-table-header-bg: #4a4a4a;
+  --dark-mode-table-border: rgba(255, 255, 255, 0.1);
+  --dark-mode-box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  --dark-mode-badge-text: #ffffff;
+
+  /* Neon Theme for Dark Mode */
+  --dark-mode-text-neon: #e1d9ff; /* Light lavender for body text */
+  --neon-purple: #b373ff;      /* Bright, vibrant purple for links and highlights */
+  --dark-mode-list-item-bg: #3c354a; /* Grayish-purple for list items */
+  --dark-mode-muted-text: #9e95b3; /* Lighter muted text */
+  --dark-mode-link-color: #ffffff; /* General link color, e.g., plan names */
+}
+
+/* ------------------------------
+  Core Body & Background Setup
+------------------------------ */
+html, body {
+  height: 100%;
+}
+
+body {
+  position: relative;
+  background-color: transparent; /* Allow pseudo-element background to show */
+  color: var(--text);
+  font-family: "Figtree", sans-serif;
+  padding-bottom: 50px;
+  transition: color 0.3s ease;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("../assets/images/app_bg/uma_musume_race_planner_bg_light_1536x1028.png")
+              center/cover no-repeat;
+  opacity: 0.8;
+  transition: background 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+/* ------------------------------
+  Dark Mode Global Overrides
+------------------------------ */
+body.dark-mode {
+  --bg: var(--dark-mode-bg);
+  --text: var(--dark-mode-text-neon);
+  --card-bg: var(--dark-mode-card-bg);
+  --card-shadow: var(--dark-mode-box-shadow);
+  --light-bg: var(--dark-mode-card-bg);
+}
+
+body.dark-mode::before {
+  background: url("../assets/images/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png")
+              center/cover no-repeat;
+  opacity: 0.6;
+}
+
+/* General Dark Mode Typography */
+body.dark-mode a {
+  color: var(--dark-mode-link-color);
+}
+body.dark-mode a:hover {
+  color: #d1d1d1;
+}
+body.dark-mode .text-muted {
+  color: var(--dark-mode-muted-text) !important;
+}
+
+/* ------------------------------
+  Layout: Navbar + Header Banner
+------------------------------ */
+.header-banner,
+.navbar {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.navbar a.nav-link,
+.navbar-brand {
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
+body.dark-mode .header-banner h1,
+body.dark-mode .navbar a.nav-link,
+body.dark-mode .navbar-brand {
+  color: var(--dark-mode-text-neon) !important;
+}
+
+body.dark-mode .header-banner,
+body.dark-mode .navbar {
+  background: var(--dark-mode-header-bg);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* ------------------------------
+  Component: Cards
+------------------------------ */
+.card {
+  border: none;
+  border-radius: 1rem;
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 1.5rem; /* Standardized card margin */
+}
+
+.card-header {
+  background-color: #fff3f5;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+body.dark-mode .card-header {
+  background-color: var(--dark-mode-header-bg);
+  border-color: var(--dark-mode-border);
+  color: var(--dark-mode-text-neon);
+}
+
+/* ------------------------------
+  Component: Modals & Tabs
+------------------------------ */
+.modal-content {
+  border: none;
+  border-radius: 1rem;
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+  border-color: var(--dark-mode-border);
+}
+
+/* Active tabs in modals */
+body.dark-mode .nav-pills .nav-link.active,
+body.dark-mode .nav-tabs .nav-link.active {
+    background-color: var(--neon-purple);
+    color: #fff;
+}
+
+/* ------------------------------
+  Component: Logo & Icons
+------------------------------ */
+.header-banner .logo {
+  height: 80px;
+  margin-right: 15px;
+  vertical-align: middle;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.navbar-brand .logo {
+  height: 24px;
+  margin-right: 8px;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* ------------------------------
+  Component: Buttons & Badges
+------------------------------ */
+.btn-uma {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+}
+.btn-uma:hover {
+  background-color: #d84381;
+  color: white;
+}
+
+.bg-active {
+  background-color: #198754;
+  color: white;
+}
+.bg-finished {
+  background-color: #0d6efd;
+  color: white;
+}
+body.dark-mode .bg-active,
+body.dark-mode .bg-finished {
+  color: var(--dark-mode-badge-text);
+}
+
+
+/* ------------------------------
+  Component: Forms & Autocomplete
+------------------------------ */
+.form-control,
+.form-select {
+  border-radius: 0.5rem;
+  border-color: rgba(149, 117, 205, 0.2);
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.25rem rgba(149, 117, 205, 0.25);
+}
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: var(--dark-mode-input-bg);
+  color: var(--dark-mode-input-text);
+}
+
+.autocomplete-container {
+  position: relative;
+}
+.autocomplete-items {
+  position: absolute;
+  z-index: 1060;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--card-bg);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 0.5rem 0.5rem;
+  box-shadow: var(--card-shadow);
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+}
+.autocomplete-items div:hover,
+.autocomplete-active {
+  background-color: #e9e9e9;
+}
+body.dark-mode .autocomplete-items div:hover,
+body.dark-mode .autocomplete-active {
+  background-color: var(--dark-mode-table-header-bg);
+}
+
+/* ------------------------------
+  Component: Tables & Lists
+------------------------------ */
+.table thead th {
+  font-weight: 700;
+  background-color: #f8f9fa;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+body.dark-mode .table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.075);
+}
+body.dark-mode .table thead th,
+body.dark-mode .table {
+  background-color: var(--dark-mode-table-header-bg);
+  border-color: var(--dark-mode-table-border);
+  color: var(--dark-mode-text-neon);
+}
+
+/* Recent Activity List Items */
+body.dark-mode .recent-activity-card .list-group-item {
+    background-color: var(--dark-mode-list-item-bg);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+
+/* ------------------------------
+  Dashboard Panels: Stats & Activity
+------------------------------ */
+.quick-stats-number {
+    color: var(--text);
+}
+body.dark-mode .quick-stats-number {
+  color: var(--dark-mode-link-color); /* Use white for the numbers */
+}
+
+/* Override Bootstrap colors in dark mode for visibility */
+body.dark-mode .quick-stats-number.text-success,
+body.dark-mode .quick-stats-number.text-primary {
+  color: var(--dark-mode-link-color) !important;
+}
+
+
+/* ------------------------------
+  Data Visualization
+------------------------------ */
+.text-speed-blue { color: var(--stat-speed-color); }
+.text-stamina-red { color: var(--stat-stamina-color); }
+.text-power-orange { color: var(--stat-power-color); }
+.text-guts-magenta { color: var(--stat-guts-color); }
+.text-wit-green { color: var(--stat-wit-color); }
+
+.plan-stat-bars {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.5rem;
+  height: 6px;
+}
+.stat-bar {
+  flex-grow: 1;
+  border-radius: 3px;
+  background-color: #e9ecef;
+}
+.stat-bar > div {
+  height: 100%;
+  border-radius: 3px;
+}
+.stat-bar .bar-speed { background-color: var(--stat-speed-color); }
+.stat-bar .bar-stamina { background-color: var(--stat-stamina-color); }
+.stat-bar .bar-power { background-color: var(--stat-power-color); }
+.stat-bar .bar-guts { background-color: var(--stat-guts-color); }
+.stat-bar .bar-wit { background-color: var(--stat-wit-color); }
+
+body.dark-mode .stat-bar {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.skill-context-info {
+  font-size: 0.85rem;
+  background-color: var(--light-bg);
+  color: var(--text);
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--secondary-color);
+}
+
+/* ------------------------------
+  Utility & Miscellaneous
+------------------------------ */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 1rem;
+}
+body.dark-mode .loading-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.guide-sticky-nav {
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+footer, .guide-sticky-nav {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  border-top: 1px solid transparent;
+  padding: 1.5rem 0;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+footer a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
+
+body.dark-mode footer,
+body.dark-mode .guide-sticky-nav {
+  background-image: none;
+  background-color: var(--dark-mode-card-bg);
+  border-color: var(--dark-mode-border);
+}
+
+body.dark-mode footer a {
+  color: var(--neon-purple);
+}
+
+/* Guide Page Specifics */
+.section-highlight {
+  background: var(--light-bg);
+  color: var(--text);
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+}
+body.dark-mode .section-highlight {
+  background: var(--dark-mode-card-bg);
+  color: var(--dark-mode-text-neon);
+}

@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * Uma Musume Race Planner API — Plan Distance Grades
+ * GET action: returns distance grades for a given plan id.
+ */
+
+header('Content-Type: application/json');
+
+ob_start();
+
+try {
+    $pdo = require __DIR__ . '/../includes/db.php';
+    $log = require __DIR__ . '/../includes/logger.php';
+} catch (Throwable $e) {
+    http_response_code(500);
+    ob_clean();
+    echo json_encode(['success' => false, 'error' => 'Failed to initialize dependencies.']);
+    exit;
+}
+
+$action = $_GET['action'] ?? 'get';
+
+switch ($action) {
+    case 'get':
+        $plan_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        if ($plan_id <= 0) {
+            http_response_code(400);
+            ob_clean();
+            echo json_encode(['success' => false, 'error' => 'Invalid Plan ID.']);
+            break;
+        }
+        try {
+            $stmt = $pdo->prepare('SELECT distance, grade FROM distance_grades WHERE plan_id = ? ORDER BY id');
+            $stmt->execute([$plan_id]);
+            $distance_grades = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            ob_clean();
+            echo json_encode(['success' => true, 'distance_grades' => $distance_grades]);
+        } catch (Throwable $e) {
+            $log->error('Failed to fetch plan distance grades (api)', [
+                'plan_id' => $plan_id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            http_response_code(500);
+            ob_clean();
+            echo json_encode(['success' => false, 'error' => 'A database error occurred.']);
+        }
+        break;
+
+    default:
+        http_response_code(400);
+        ob_clean();
+        echo json_encode(['success' => false, 'error' => 'Unknown action.']);
+        break;
+}

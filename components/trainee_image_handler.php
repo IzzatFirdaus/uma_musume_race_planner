@@ -24,8 +24,8 @@ if (!function_exists('handleTraineeImageUpload')) {
      */
     function handleTraineeImageUpload(PDO $pdo, int $planId, array $fileData, ?string $oldImagePath, $log): ?string
     {
-        $uploadDir = __DIR__ . '/../uploads/trainee_images/';
-        $relativePath = 'uploads/trainee_images/';
+    $uploadDir = __DIR__ . '/../assets/images/trainee_images/';
+    $relativePath = 'assets/images/trainee_images/';
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);

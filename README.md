@@ -12,17 +12,17 @@ _Note: These screenshots showcase the core interface. The latest version (v1.4.0
 
 |             Light Mode Dashboard             |                     Dark Mode Dashboard                      |
 | :------------------------------------------: | :----------------------------------------------------------: |
-|     ![Homepage](screenshot/Homepage.png)     | ![Dark Mode Homepage](screenshot/Dark%20Mode%20Homepage.png) |
+|     ![Homepage](assets/screenshots/Homepage.png)     | ![Dark Mode Homepage](assets/screenshots/Dark%20Mode%20Homepage.png) |
 |            **Quick Create Modal**            |                       **In-App Guide**                       |
-| ![Create Plan](screenshot/Create%20Plan.png) |             ![Guide Page](screenshot/Guide.png)              |
+| ![Create Plan](assets/screenshots/Create%20Plan.png) |             ![Guide Page](assets/screenshots/Guide.png)              |
 
 **Plan Editor Tabs:**
 
 |                              General                               |                                       Attributes                                       |                                   Aptitude Grades                                    |
 | :----------------------------------------------------------------: | :------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
-| ![Plan Editor - General](screenshot/001_GENERAL%20Edit%20Plan.png) |        ![Plan Editor - Attributes](screenshot/002_ATTRIBUTES%20Edit%20Plan.png)        | ![Plan Editor - Aptitude Grades](screenshot/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
+| ![Plan Editor - General](assets/screenshots/001_GENERAL%20Edit%20Plan.png) |        ![Plan Editor - Attributes](assets/screenshots/002_ATTRIBUTES%20Edit%20Plan.png)        | ![Plan Editor - Aptitude Grades](assets/screenshots/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
 |                             **Skills**                             |                                  **Race Predictions**                                  |                                      **Goals**                                       |
-|  ![Plan Editor - Skills](screenshot/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](screenshot/006_GOALS%20Edit%20Plan.png)            |
+|  ![Plan Editor - Skills](assets/screenshots/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](assets/screenshots/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](assets/screenshots/006_GOALS%20Edit%20Plan.png)            |
 
 </details>
 ---
@@ -120,8 +120,8 @@ uma_musume_race_planner/
 ├── css/                      # Main application stylesheet (style.css)
 ├── includes/                 # Core backend scripts (DB connection, logger)
 ├── js/                       # Client-side JavaScript utilities (e.g., autosuggest.js)
-├── screenshot/               # Application screenshots for documentation
-├── uploads/                  # Directory for user-uploaded content
+├── assets/screenshots/               # Application screenshots for documentation
+├── assets/images/                  # Directory for user-uploaded content
 │   └── trainee_images/       # Stores uploaded trainee images
 ├── vendor/                   # Composer-managed PHP dependencies
 │

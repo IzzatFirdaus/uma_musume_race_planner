@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   async function loadPlans() {
     try {
-      const res = await fetch('get_plans.php');
+  const res = await fetch(`${window.APP_API_BASE}/plan.php?action=list`);
       const result = await res.json();
 
       if (result.success) {

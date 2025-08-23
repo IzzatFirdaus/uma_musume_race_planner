@@ -1,5 +1,5 @@
 <!-- Quick Stats Panel -->
-<div class="card mb-4 shadow-sm">
+<div class="card mb-4 shadow-sm" role="region" aria-label="Quick Stats">
   <div class="card-header fw-bold">Quick Stats</div>
   <div class="card-body">
     <div class="d-flex justify-content-around text-center flex-wrap gap-3">
@@ -28,6 +28,9 @@
         <div class="text-muted">Finished</div>
       </div>
 
+    </div>
+    <div class="mt-3">
+      <canvas id="statsChart" aria-label="Plans breakdown chart" role="img"></canvas>
     </div>
   </div>
 </div>
