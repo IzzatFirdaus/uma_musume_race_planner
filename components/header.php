@@ -1,4 +1,5 @@
 <?php
+
 $theme_color = getenv('APP_THEME_COLOR') ?: '#6f42c1';
 $isPublic = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/public/') !== false;
 $base = $isPublic ? '../' : '';

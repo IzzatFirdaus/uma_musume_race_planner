@@ -221,15 +221,17 @@ function validate_csrf_token(?string $token): bool
 
 /**
  * Validate numeric ID to prevent SQL injection and logical errors.
+ * Returns the validated integer or false on failure.
  */
-function validate_id($id): bool
+function validate_id($id)
 {
     // Only allow positive integers represented as strings or ints (no floats, no leading zeros mismatch)
     if (is_int($id)) {
-        return $id > 0;
+        return $id >= 0 ? $id : false;
     }
     if (is_string($id) && ctype_digit($id)) {
-        return (int) $id > 0;
+        $intVal = (int) $id;
+        return $intVal >= 0 ? $intVal : false;
     }
     return false;
 }

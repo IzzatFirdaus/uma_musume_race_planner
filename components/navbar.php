@@ -1,10 +1,10 @@
 <?php
+
 // Navbar component with active link highlighting and persistent dark mode toggle
 $current_page = basename($_SERVER['PHP_SELF'] ?? '');
 $isPublic = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/public/') !== false;
 $base = $isPublic ? '../' : '';
 $baseEsc = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
-
 // Maintain backward compatibility with cookie, but app.js uses localStorage.
 // Only used to set initial aria-checked state.
 $darkModeSetting = $_COOKIE['darkMode'] ?? 'auto';

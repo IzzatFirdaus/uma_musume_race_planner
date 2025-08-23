@@ -80,23 +80,23 @@
 /* Dark mode tokens (attribute-based) */
 [data-theme="dark"],
 .dark-mode {
-  --color-text: #e1d9ff; /* neon-like readable text */
-  --color-muted: #9e95b3;
-  --color-link: #ffffff;
-  --color-link-hover: #d1d1d1;
+  --color-text: #FFFFFF; /* MYDS txt-primary: pure white for max contrast */
+  --color-muted: #B0B0B0; /* MYDS txt-muted: light gray for secondary text */
+  --color-link: #90CAF9; /* MYDS txt-link: light blue for links */
+  --color-link-hover: #1976D2; /* MYDS txt-link-hover: MYDS blue */
 
-  --color-bg: #181a1b;
-  --color-surface: #222426;
-  --color-surface-muted: #23272b;
-  --color-border: rgba(255, 255, 255, 0.15);
+  --color-bg: #181A1B; /* MYDS bg-surface: deep gray, not pure black */
+  --color-surface: #23272B; /* MYDS bg-surface-muted: slightly lighter for cards */
+  --color-surface-muted: #2C3136; /* MYDS bg-surface-alt: for highlights */
+  --color-border: #424242; /* MYDS otl-primary: dark border for separation */
 
-  --focus-ring-color: #ad1457; /* darker brand focus for dark theme */
+  --focus-ring-color: #2563EB; /* MYDS fr-primary: blue focus ring */
 
-  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.6);
 
-  --btn-bg: #ad1457;
-  --btn-text: #ffffff;
-  --btn-bg-hover: #8f0f48;
+  --btn-bg: #2563EB; /* MYDS primary blue for buttons */
+  --btn-text: #FFFFFF;
+  --btn-bg-hover: #1976D2;
 }
 
 /* System-wide reduced motion */
@@ -534,12 +534,46 @@ footer a:hover {
 /* ------------------------------
    Section highlight blocks
    ------------------------------ */
+/* Guide section highlight: ensure high contrast in dark mode */
+
+.guide-section,
 .section-highlight {
   background: var(--color-surface);
   color: var(--color-text);
   padding: 2rem;
   border-radius: var(--card-radius);
   box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+}
+[data-theme="dark"] .guide-section,
+.dark-mode .guide-section,
+[data-theme="dark"] .section-highlight,
+.dark-mode .section-highlight {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+/* Ensure all headings, paragraphs, lists, and links inside guide sections are high contrast in dark mode */
+[data-theme="dark"] .guide-section h1,
+[data-theme="dark"] .guide-section h2,
+[data-theme="dark"] .guide-section h3,
+[data-theme="dark"] .guide-section h4,
+[data-theme="dark"] .guide-section h5,
+[data-theme="dark"] .guide-section h6,
+[data-theme="dark"] .guide-section p,
+[data-theme="dark"] .guide-section li,
+[data-theme="dark"] .guide-section ul,
+[data-theme="dark"] .guide-section ol,
+[data-theme="dark"] .guide-section dl,
+[data-theme="dark"] .guide-section dt,
+[data-theme="dark"] .guide-section dd,
+[data-theme="dark"] .guide-section a {
+  color: var(--color-text) !important;
+  background: transparent !important;
+}
+[data-theme="dark"] .guide-section a {
+  color: var(--color-link) !important;
 }
 
 /* ------------------------------

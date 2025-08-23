@@ -2,6 +2,24 @@
 
 declare(strict_types=1);
 
+const JSON_FLAGS = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE;
+function send_json(int $status, array $payload): void
+{
+    http_response_code($status);
+    if (!isset($payload['request_id'])) {
+        global $REQUEST_ID;
+        $payload['request_id'] = $REQUEST_ID;
+    }
+    ob_clean();
+    echo json_encode($payload, JSON_FLAGS);
+    exit;
+}
+// ...setup code...
+
+
+// ...existing setup code...
+
+
 /**
  * Uma Musume Race Planner API — Plan
  * Provides plan listing, fetching (with labels), and duplication (with child data).
@@ -24,19 +42,7 @@ ob_start();
 $REQUEST_ID = bin2hex(random_bytes(8));
 header('X-Request-Id: ' . $REQUEST_ID);
 
-const JSON_FLAGS = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE;
 
-function send_json(int $status, array $payload): void
-{
-    http_response_code($status);
-    if (!isset($payload['request_id'])) {
-        global $REQUEST_ID;
-        $payload['request_id'] = $REQUEST_ID;
-    }
-    ob_clean();
-    echo json_encode($payload, JSON_FLAGS);
-    exit;
-}
 
 function require_method(string $method): void
 {

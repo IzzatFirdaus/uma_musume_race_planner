@@ -17,7 +17,6 @@ $baseEsc = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
   </div>
 
   <div class="card-body p-0">
-
     <div class="plan-filters p-3 border-bottom">
       <div class="btn-group" role="group" id="plan-filter-buttons" aria-label="Filter plans by status">
         <button type="button" class="btn btn-sm btn-outline-secondary active" data-filter="all" aria-pressed="true">All</button>
@@ -26,7 +25,6 @@ $baseEsc = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
         <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Finished">Finished</button>
       </div>
     </div>
-
     <div class="table-responsive">
       <table class="table table-hover table-vcenter mb-0" id="planTable">
         <thead class="table-light">
@@ -43,4 +41,5 @@ $baseEsc = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
     </div>
   </div>
 </div>
+<!-- Only use plan_list.js (not plan-list.js) -->
 <script src="<?= $baseEsc ?>assets/js/plan_list.js" defer></script>

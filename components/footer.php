@@ -1,8 +1,8 @@
 <?php
+
 // components/footer.php — Displays app metadata, version, and attribution
 require_once __DIR__ . '/../includes/env.php';
 load_env();
-
 $appVersion = htmlspecialchars(getenv('APP_VERSION') ?: '1.4.0', ENT_QUOTES, 'UTF-8');
 $lastUpdated = htmlspecialchars(getenv('LAST_UPDATED') ?: date('Y'), ENT_QUOTES, 'UTF-8');
 ?>

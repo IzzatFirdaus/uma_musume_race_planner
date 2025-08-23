@@ -26,7 +26,7 @@ $conditionOptions = $conditionOptions ?? [];
                 </div>
             </div>
 
-            <form id="planDetailsForm" enctype="multipart/form-data" autocomplete="off" novalidate>
+            <form id="planDetailsForm" method="POST" enctype="multipart/form-data" autocomplete="off" novalidate>
                 <div class="modal-body">
                     <ul class="nav nav-tabs" id="planTabs" role="tablist">
                         <li class="nav-item" role="presentation">

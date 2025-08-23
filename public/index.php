@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // public/index.php
@@ -7,7 +8,7 @@ declare(strict_types=1);
 try {
     $log = require __DIR__ . '/../includes/logger.php';
 } catch (Throwable $e) {
-    // Fallback: minimal logger shim
+// Fallback: minimal logger shim
     $log = new class () {
         public function error($msg, array $context = []): void
         {
@@ -22,11 +23,11 @@ try {
 
 // Connect to database (db.php may throw; handle gracefully)
 try {
-    /** @var PDO $pdo */
+/** @var PDO $pdo */
     $pdo = require __DIR__ . '/../includes/db.php';
 } catch (Throwable $e) {
     $log->error('DB bootstrap failure', ['message' => $e->getMessage()]);
-    // Render a friendly error page while keeping 200 to avoid leaking infra details
+// Render a friendly error page while keeping 200 to avoid leaking infra details
     http_response_code(200);
     ?>
     <!DOCTYPE html>
@@ -69,7 +70,6 @@ $classOptions = [
 $attributeGradeOptions = ['S+', 'S', 'A+', 'A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'E+', 'E', 'F+', 'F', 'G+', 'G'];
 $timeOfDayOptions = ['Early', 'Late'];
 $monthOptions = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
 // Fetch dynamic options from the database using PDO with error handling
 try {
     $strategyOptions = $pdo->query('SELECT id, label FROM strategies ORDER BY label')->fetchAll(PDO::FETCH_ASSOC);
@@ -147,7 +147,6 @@ if ($baseWeb === '') {
     $baseWeb = '/';
 }
 $baseWeb = rtrim($baseWeb, '/') . '/';
-
 // Versioned CSS for cache-busting
 $cssFile = __DIR__ . '/../assets/css/style.css';
 $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();

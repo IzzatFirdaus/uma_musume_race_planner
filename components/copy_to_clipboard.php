@@ -1,4 +1,5 @@
 <?php
+
 /**
  * components/copy_to_clipboard.php
  *
@@ -17,6 +18,7 @@
  * Author: extremerazr
  * Updated: August 23, 2025
  */
+
 // Compute base path for assets whether included from /public or root
 $isPublic = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/public/') !== false;
 $base = $isPublic ? '../' : '';

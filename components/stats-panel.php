@@ -1,4 +1,5 @@
 <?php
+
 // components/stats-panel.php
 ?>
 <!-- Quick Stats Panel -->

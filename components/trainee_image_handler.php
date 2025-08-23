@@ -79,8 +79,8 @@ if (!function_exists('handleTraineeImageUpload')) {
 
         // Handle upload errors
         if (($fileData['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
-            if ($log && method_exists($log, 'warning')) {
-                $log->warning("Upload error: plan ID {$planId}, error code ".($fileData['error'] ?? 'unknown'));
+            if (isset($log) && method_exists($log, 'warning')) {
+                $log->warning("Upload error: plan ID {$planId}, error code " . ($fileData['error'] ?? 'unknown'));
             }
             throw new Exception('Image upload failed due to a file error.');
         }

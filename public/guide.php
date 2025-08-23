@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // pages/guide.php (location assumed). Compute a robust web base for assets and links.
@@ -9,7 +10,6 @@ if ($baseWeb === '') {
     $baseWeb = '/';
 }
 $baseWeb = rtrim($baseWeb, '/') . '/';
-
 // Versioned CSS for cache-busting
 $cssFile = __DIR__ . '/../assets/css/style.css';
 $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
@@ -84,8 +84,8 @@ $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
           <figure class="text-center mt-4">
             <?php
               $dashboardScreenshot = "Homepage.png";
-$safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot), ENT_QUOTES, 'UTF-8');
-?>
+            $safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot), ENT_QUOTES, 'UTF-8');
+            ?>
             <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/screenshots/<?= $safeDashboardScreenshot ?>" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy" decoding="async">
             <figcaption class="text-muted small mt-2">Dashboard layout example</figcaption>
           </figure>
@@ -112,16 +112,16 @@ $safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot), ENT_
           <div class="row mt-4">
             <div class="col-md-6 mb-3">
               <?php
-    $generalScreenshot = "001_GENERAL Edit Plan.png";
-$safeGeneralScreenshot = htmlspecialchars(basename($generalScreenshot), ENT_QUOTES, 'UTF-8');
-?>
+                $generalScreenshot = "001_GENERAL Edit Plan.png";
+                $safeGeneralScreenshot = htmlspecialchars(basename($generalScreenshot), ENT_QUOTES, 'UTF-8');
+                ?>
               <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/screenshots/<?= $safeGeneralScreenshot ?>" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy" decoding="async">
             </div>
             <div class="col-md-6 mb-3">
               <?php
-  $skillsScreenshot = "004_SKILLS Edit Plan.png";
-$safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot), ENT_QUOTES, 'UTF-8');
-?>
+                $skillsScreenshot = "004_SKILLS Edit Plan.png";
+                $safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot), ENT_QUOTES, 'UTF-8');
+                ?>
               <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/screenshots/<?= $safeSkillsScreenshot ?>" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy" decoding="async">
             </div>
           </div>
