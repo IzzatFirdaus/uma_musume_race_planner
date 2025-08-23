@@ -1,0 +1,739 @@
+/* MYDS Base Styles for Uma Musume Race Planner
+ * Phase 2 Implementation - Malaysian Government Design System
+ * Version: 2.0.0
+ */
+
+/* =============================================
+   1. TYPOGRAPHY SYSTEM (MYDS)
+   ============================================= */
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+/* Typography Variables */
+:root {
+  /* Font Families */
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  
+  /* Typography Scale - MYDS Standard */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+  --text-6xl: 3.75rem;    /* 60px */
+  
+  /* Line Heights */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 1.75;
+}
+
+/* Base Typography */
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: 400;
+}
+
+/* Heading Styles - Poppins */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: var(--leading-tight);
+  margin-bottom: 0.75rem;
+}
+
+h1 { font-size: var(--text-4xl); line-height: 2.75rem; } /* Heading Medium */
+h2 { font-size: var(--text-3xl); line-height: 2.375rem; } /* Heading Small */
+h3 { font-size: var(--text-2xl); line-height: 2rem; } /* Heading Extra Small */
+h4 { font-size: var(--text-xl); line-height: 1.75rem; } /* Heading 2X Small */
+h5 { font-size: var(--text-base); line-height: 1.5rem; } /* Heading 3X Small */
+h6 { font-size: var(--text-sm); line-height: 1.25rem; } /* Heading 4X Small */
+
+/* =============================================
+   2. COLOR SYSTEM (MYDS + Uma Musume)
+   ============================================= */
+
+:root {
+  /* Uma Musume Stat Colors (Primitive) */
+  --color-speed: #3399ff;
+  --color-stamina: #33cc99;
+  --color-power: #ff4d4d;
+  --color-guts: #ffa500;
+  --color-wit: #9933ff;
+  
+  /* MYDS Primary Colors */
+  --color-primary: #2563EB;
+  --color-success: #388E3C;
+  --color-warning: #FFA000;
+  --color-danger: #D32F2F;
+  
+  /* Light Mode Color Tokens */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FA;
+  --bg-tertiary: #E9ECEF;
+  --bg-muted: #F1F3F4;
+  
+  --txt-primary: #212529;
+  --txt-secondary: #6C757D;
+  --txt-tertiary: #ADB5BD;
+  --txt-muted: #868E96;
+  
+  --otl-primary: #DEE2E6;
+  --otl-secondary: #CED4DA;
+  --otl-focus: var(--color-primary);
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Color Tokens */
+body.dark-mode {
+  --bg-primary: #121212;
+  --bg-secondary: #1E1E1E;
+  --bg-tertiary: #2D2D2D;
+  --bg-muted: #242424;
+  
+  --txt-primary: #F1F1F1;
+  --txt-secondary: #B0B0B0;
+  --txt-tertiary: #808080;
+  --txt-muted: #6B6B6B;
+  
+  --otl-primary: #404040;
+  --otl-secondary: #555555;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* =============================================
+   3. GRID SYSTEM (MYDS 12-8-4)
+   ============================================= */
+
+/* Container */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+/* Grid Base */
+.grid {
+  display: grid;
+  gap: 24px;
+}
+
+/* Mobile First - 4 columns (≤767px) */
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+/* Tablet - 8 columns (768px-1023px) */
+@media (min-width: 768px) {
+  .container {
+    padding: 0 24px;
+  }
+  
+  .grid-8 {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 24px;
+  }
+}
+
+/* Desktop - 12 columns (≥1024px) */
+@media (min-width: 1024px) {
+  .grid-12 {
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+  }
+}
+
+/* Column Spans */
+.col-span-1 { grid-column: span 1; }
+.col-span-2 { grid-column: span 2; }
+.col-span-3 { grid-column: span 3; }
+.col-span-4 { grid-column: span 4; }
+.col-span-5 { grid-column: span 5; }
+.col-span-6 { grid-column: span 6; }
+.col-span-7 { grid-column: span 7; }
+.col-span-8 { grid-column: span 8; }
+.col-span-9 { grid-column: span 9; }
+.col-span-10 { grid-column: span 10; }
+.col-span-11 { grid-column: span 11; }
+.col-span-12 { grid-column: span 12; }
+.col-span-full { grid-column: 1 / -1; }
+
+/* =============================================
+   4. COMPONENT SYSTEM
+   ============================================= */
+
+/* 4.1 BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px; /* MYDS touch target */
+  padding: 12px 24px;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+.btn:focus {
+  outline: 3px solid var(--otl-focus);
+  outline-offset: 2px;
+}
+
+/* Button Variants */
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1D4ED8;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-success {
+  background: var(--color-success);
+  color: white;
+}
+
+.btn-warning {
+  background: var(--color-warning);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: white;
+}
+
+/* Stat-specific buttons */
+.btn-speed {
+  background: var(--color-speed);
+  color: white;
+}
+
+.btn-stamina {
+  background: var(--color-stamina);
+  color: white;
+}
+
+.btn-power {
+  background: var(--color-power);
+  color: white;
+}
+
+.btn-guts {
+  background: var(--color-guts);
+  color: white;
+}
+
+.btn-wit {
+  background: var(--color-wit);
+  color: white;
+}
+
+/* Button Sizes */
+.btn-sm {
+  min-height: 36px;
+  padding: 8px 16px;
+  font-size: var(--text-sm);
+}
+
+.btn-lg {
+  min-height: 56px;
+  padding: 16px 32px;
+  font-size: var(--text-lg);
+}
+
+/* 4.2 CARDS */
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--otl-primary);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--otl-secondary);
+}
+
+.card-body {
+  padding: 24px;
+}
+
+.card-footer {
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--otl-secondary);
+}
+
+/* 4.3 FORM CONTROLS */
+.form-control {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 2px solid var(--otl-primary);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--txt-primary);
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+.form-control:invalid {
+  border-color: var(--color-danger);
+}
+
+.form-control::placeholder {
+  color: var(--txt-tertiary);
+}
+
+.form-label {
+  display: block;
+  font-weight: 500;
+  color: var(--txt-primary);
+  margin-bottom: 8px;
+  font-size: var(--text-sm);
+}
+
+.form-help {
+  font-size: var(--text-sm);
+  color: var(--txt-secondary);
+  margin-top: 4px;
+}
+
+.form-error {
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+  margin-top: 4px;
+}
+
+/* Select Styling */
+.form-select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px 12px;
+  padding-right: 40px;
+}
+
+/* 4.4 MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--bg-primary);
+  border-radius: 16px;
+  box-shadow: var(--shadow-xl);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--otl-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-footer {
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--otl-secondary);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* =============================================
+   5. ACCESSIBILITY ENHANCEMENTS
+   ============================================= */
+
+/* Focus Management */
+.focus-visible:focus {
+  outline: 3px solid var(--otl-focus);
+  outline-offset: 2px;
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1001;
+  font-size: var(--text-sm);
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+  .btn {
+    border: 2px solid currentColor;
+  }
+  
+  .card {
+    border: 2px solid var(--otl-primary);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =============================================
+   6. MOTION SYSTEM (MYDS)
+   ============================================= */
+
+:root {
+  /* Easing Curves */
+  --ease-linear: cubic-bezier(0, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.58, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Duration */
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+}
+
+/* Transition Classes */
+.transition-smooth {
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.transition-bounce {
+  transition: transform var(--duration-normal) var(--ease-out-back);
+}
+
+.transition-fast {
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideInUp var(--duration-normal) var(--ease-out);
+}
+
+.animate-slide-down {
+  animation: slideInDown var(--duration-normal) var(--ease-out);
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--duration-normal) var(--ease-out);
+}
+
+/* =============================================
+   7. UTILITY CLASSES
+   ============================================= */
+
+/* Spacing */
+.m-0 { margin: 0; }
+.m-1 { margin: 0.25rem; }
+.m-2 { margin: 0.5rem; }
+.m-3 { margin: 0.75rem; }
+.m-4 { margin: 1rem; }
+.m-6 { margin: 1.5rem; }
+.m-8 { margin: 2rem; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.p-8 { padding: 2rem; }
+
+/* Text */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.text-primary { color: var(--color-primary); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-danger { color: var(--color-danger); }
+
+.text-speed { color: var(--color-speed); }
+.text-stamina { color: var(--color-stamina); }
+.text-power { color: var(--color-power); }
+.text-guts { color: var(--color-guts); }
+.text-wit { color: var(--color-wit); }
+
+/* =============================================
+   BRAND / SITE TITLE TYPOGRAPHY
+   ============================================= */
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.navbar-brand .brand-text,
+.site-title-text {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+  color: var(--txt-primary);
+}
+
+.site-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.site-description {
+  color: var(--txt-secondary);
+  font-size: var(--text-base);
+}
+
+.logo {
+  border-radius: 8px;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+}
+
+/* Display */
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+.flex { display: flex; }
+.grid { display: grid; }
+.hidden { display: none; }
+
+/* Flexbox */
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+
+.justify-center { justify-content: center; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+
+/* Responsive Design */
+@media (max-width: 767px) {
+  .container {
+    padding: 0 18px;
+  }
+  
+  .btn {
+    width: 100%;
+    min-height: 48px;
+  }
+  
+  .modal-content {
+    margin: 20px;
+    max-width: calc(100vw - 40px);
+  }
+}
+
+/* =============================================
+   8. COMPONENT OVERRIDES
+   ============================================= */
+
+/* Enhanced existing components */
+.plan-list-thumbnail-container {
+  border: 2px solid var(--otl-primary);
+  transition: var(--duration-fast);
+}
+
+.plan-list-thumbnail-container:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-bar {
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: var(--duration-normal);
+}
+
+.autocomplete-items {
+  background: var(--bg-primary);
+  border: 1px solid var(--otl-primary);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.autocomplete-items div {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--otl-secondary);
+  cursor: pointer;
+  transition: var(--duration-fast);
+}
+
+.autocomplete-items div:hover,
+.autocomplete-items div.autocomplete-active {
+  background: var(--bg-secondary);
+}
+
+/* Dark mode adjustments */
+body.dark-mode .plan-list-placeholder {
+  background-color: var(--bg-tertiary);
+  color: var(--txt-tertiary);
+}
+
+body.dark-mode .stat-bar {
+  background-color: var(--bg-tertiary);
+}

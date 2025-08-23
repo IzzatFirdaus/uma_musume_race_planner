@@ -107,43 +107,34 @@ try {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uma Musume Race Planner</title>
   
+  <!-- MYDS Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap (maintained for compatibility) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap" rel="stylesheet">
-  
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Asset paths adjusted for deployment in /uma_musume_race_planner/public/ -->
+  <!-- Favicons -->
   <link rel="icon" href="/uma_musume_race_planner/assets/favicon.ico" sizes="32x32">
   <link rel="icon" href="/uma_musume_race_planner/assets/images/app_logo/uma_musume_race_planner_logo_128.png" sizes="128x128">
   <link rel="icon" href="/uma_musume_race_planner/assets/images/app_logo/uma_musume_race_planner_logo_256.png" sizes="256x256">
   <link rel="apple-touch-icon" href="/uma_musume_race_planner/assets/images/app_logo/uma_musume_race_planner_logo_256.png">
 
+  <!-- MYDS Base Styles -->
+  <link rel="stylesheet" href="/uma_musume_race_planner/assets/css/myds-base.css">
+  <!-- Original styles (for compatibility) -->
   <link rel="stylesheet" href="/uma_musume_race_planner/assets/css/style.css">
 </head>
 <body>
-  <a class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-sm btn-outline-secondary" href="#mainContent">Skip to main content</a>
+  <?php require_once __DIR__ . '/../components/header.php'; ?>
   <?php require_once __DIR__ . '/../components/navbar.php'; ?>
 
-  <div class="container">
-    <div class="header-banner rounded-3 text-center mb-4">
-      <div class="container">
-        <h1 class="display-4 fw-bold d-flex align-items-center justify-content-center gap-2">
-          <img src="/uma_musume_race_planner/assets/images/app_logo/uma_musume_race_planner_logo_128.png"
-               alt="Uma Musume Race Planner Logo"
-               class="logo app-logo"
-               width="80"
-               height="80">
-          Uma Musume Race Planner
-        </h1>
-        <p class="lead">Plan, track, and optimize your umamusume's racing career</p>
-      </div>
-    </div>
-
-    <div id="mainContent" class="row">
+  <div class="container" id="mainContent">
       <div class="col-lg-8">
         <?php include __DIR__ . '/../components/plan-list.php'; ?>
       </div>
