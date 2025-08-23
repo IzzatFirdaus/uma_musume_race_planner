@@ -7,11 +7,11 @@ load_env();
 ?>
 
 <footer class="text-center small mt-5">
-  <div>
+  <div class="font-medium">
     <a href="https://github.com/IzzatFirdaus/uma_musume_race_planner" target="_blank" rel="noopener noreferrer">
-      <i class="bi bi-github me-1"></i> Uma Musume Planner <?= htmlspecialchars(getenv('APP_VERSION') ?: '1.4.0') ?>
+      <i class="bi bi-github me-1" aria-hidden="true"></i> Uma Musume Planner <?= htmlspecialchars(getenv('APP_VERSION') ?: '1.4.0') ?>
     </a>
-    | Last Updated: <?= htmlspecialchars(getenv('LAST_UPDATED') ?: '2025') ?>
+    <span class="text-muted small"> | Last Updated: <?= htmlspecialchars(getenv('LAST_UPDATED') ?: '2025') ?></span>
   </div>
 
   <div class="mt-2">
@@ -26,16 +26,16 @@ load_env();
   <div class="mt-2">
     <!-- Social icons -->
     <a href="https://x.com/umamusume_eng?lang=en" target="_blank" rel="noopener noreferrer" title="X / Twitter">
-      <i class="bi bi-twitter-x me-2"></i>
+      <i class="bi bi-twitter-x me-2" aria-hidden="true"></i>
     </a>
     <a href="https://www.facebook.com/umamusume.eng" target="_blank" rel="noopener noreferrer" title="Facebook">
-      <i class="bi bi-facebook me-2"></i>
+      <i class="bi bi-facebook me-2" aria-hidden="true"></i>
     </a>
     <a href="https://www.youtube.com/@umamusume_eng" target="_blank" rel="noopener noreferrer" title="YouTube">
-      <i class="bi bi-youtube me-2"></i>
+      <i class="bi bi-youtube me-2" aria-hidden="true"></i>
     </a>
     <a href="https://discord.com/invite/umamusume-eng" target="_blank" rel="noopener noreferrer" title="Discord">
-      <i class="bi bi-discord"></i>
+      <i class="bi bi-discord" aria-hidden="true"></i>
     </a>
   </div>
 
