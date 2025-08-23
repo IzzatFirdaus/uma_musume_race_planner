@@ -5,15 +5,20 @@ parameters:
         - . # Include the root directory
         - components # Include the components directory
     excludePaths:
-        - %rootDir%/vendor/* # This should correctly exclude all vendor directory analysis
-        - %rootDir%/js/*
-        - %rootDir%/css/*
-        - %rootDir%/*.sql
+        - vendor/*
+        - assets/js/*
+        - assets/css/*
+        - '*.sql'
+        - backup/*
+        - scripts/*
+        - includes/*
         # - %rootDir%/tests/* # Uncomment if you have tests and want to exclude them from analysis
 
     # Crucial for resolving vendor classes and interfaces
     bootstrapFiles:
-        - %rootDir%/vendor/autoload.php
+        - vendor/autoload.php
+        - phpstan-bootstrap.php
+        - phpstan-globals.php
 
     # Optional: Enable parallel processing for faster analysis on larger projects
     # You might need to install `php-parallel-lint/php-parallel-lint` for this to work
@@ -30,4 +35,4 @@ parameters:
     #     # But ideally, you want to fix the underlying autoloading.
 
     # Optional: Treat PHPDoc types as certain (can reduce some false positives related to PHPDoc mismatches)
-    # treatPhpDocTypesAsCertain: false # You already have this hint in your output, consider uncommenting if you get lots of false positives from PHPDocs
+    treatPhpDocTypesAsCertain: false
