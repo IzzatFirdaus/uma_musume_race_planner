@@ -1,12 +1,21 @@
-/* eslint-env browser */
-/**
- * Uma Musume Race Planner - Plan List Script
+/* Uma Musume Race Planner - Plan List Script
  * Handles loading, filtering, and interactions for the race plan list.
- * Only this script should be used for plan list functionality.
+ * Robust, canonical, and fully compatible with latest project and browser standards.
  */
 
 (() => {
     'use strict';
+
+    /**
+     * Returns the normalized API base URL for all API requests.
+     * Uses window.APP_CONFIG.API_BASE, window.APP_API_BASE, or defaults to '/api' if none are defined.
+     * @returns {string}
+     */
+    function getApiBase() {
+        if (window.APP_CONFIG && window.APP_CONFIG.API_BASE) return window.APP_CONFIG.API_BASE;
+        if (window.APP_API_BASE) return window.APP_API_BASE;
+        return '/api';
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         const planTableBody = document.getElementById('planListBody');
@@ -19,27 +28,30 @@
         // Inject CSS for thumbnails and stat bars
         const style = document.createElement('style');
         style.textContent = `
-        .table-vcenter td { vertical-align: middle; }
-        .plan-list-thumbnail-container {
-            width: 50px; height: 50px; border-radius: .375rem; overflow: hidden; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .plan-list-thumbnail { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .plan-list-placeholder {
-            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-            background-color: var(--color-surface-muted); border-radius: .375rem;
-            font-size: 1.5rem; color: var(--color-muted);
-        }
-        .plan-stat-bars { display: flex; gap: 6px; margin-top: 4px; height: 6px; align-items: center; }
-        .stat-bar { width: 100%; height: 6px; background: #dee2e6; border-radius: 3px; overflow: hidden; }
-        [data-theme="dark"] .stat-bar, .dark-mode .stat-bar { background-color: rgba(255, 255, 255, 0.18); }
+            .table-vcenter td { vertical-align: middle; }
+            .plan-list-thumbnail-container {
+                width: 50px; height: 50px; border-radius: .375rem; overflow: hidden; flex-shrink: 0;
+                display: flex; align-items: center; justify-content: center;
+            }
+            .plan-list-thumbnail { width: 100%; height: 100%; object-fit: cover; display: block; }
+            .plan-list-placeholder {
+                width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+                background-color: var(--color-surface-muted); border-radius: .375rem;
+                font-size: 1.5rem; color: var(--color-muted);
+            }
+            .plan-stat-bars { display: flex; gap: 6px; margin-top: 4px; height: 6px; align-items: center; }
+            .stat-bar { width: 100%; height: 6px; background: #dee2e6; border-radius: 3px; overflow: hidden; }
+            [data-theme="dark"] .stat-bar, .dark-mode .stat-bar { background-color: rgba(255, 255, 255, 0.18); }
         `;
         document.head.appendChild(style);
 
         // Escape HTML to prevent XSS
         const escapeHTML = (str) => String(str ?? '')
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
 
         // Render a mini stat bar for a stat value
         function createMiniStatBar(value, statName) {
@@ -54,10 +66,10 @@
             };
             const label = statName.charAt(0).toUpperCase() + statName.slice(1);
             return `
-            <span class="d-inline-block fw-bold text-muted" style="color: ${statColors[statName]} !important;" aria-hidden="true">${label.slice(0,3).toUpperCase()}</span>
-            <div class="stat-bar" title="${label}: ${v}">
-                <div style="width: ${percent}%; height: 100%; background-color: ${statColors[statName]};"></div>
-            </div>
+                <span class="d-inline-block fw-bold text-muted" style="color: ${statColors[statName]} !important;" aria-hidden="true">${label.slice(0,3).toUpperCase()}</span>
+                <div class="stat-bar" title="${label}: ${v}">
+                    <div style="width: ${percent}%; height: 100%; background-color: ${statColors[statName]};"></div>
+                </div>
             `;
         }
 
@@ -66,12 +78,11 @@
             planTableBody.innerHTML = '';
             if (!plansToRender.length) {
                 planTableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" class="text-center text-muted p-4">No matching plans found.</td>
-                </tr>`;
+                    <tr>
+                        <td colspan="5" class="text-center text-muted p-4">No matching plans found.</td>
+                    </tr>`;
                 return;
             }
-
             plansToRender.forEach(plan => {
                 const row = document.createElement('tr');
                 const title = escapeHTML(plan?.plan_title ?? 'Untitled Plan');
@@ -86,27 +97,27 @@
                     : `<div class="plan-list-thumbnail-container"><div class="plan-list-placeholder"><i class="bi bi-person-square" aria-hidden="true"></i><span class="visually-hidden">No image</span></div></div>`;
 
                 row.innerHTML = `
-                <td>${imageHtml}</td>
-                <td>
-                    <strong>${title}</strong>
-                    <div class="text-muted small">${name}</div>
-                    <div class="plan-stat-bars" aria-hidden="true">
-                        ${createMiniStatBar(stats.speed, 'speed')}
-                        ${createMiniStatBar(stats.stamina, 'stamina')}
-                        ${createMiniStatBar(stats.power, 'power')}
-                        ${createMiniStatBar(stats.guts, 'guts')}
-                        ${createMiniStatBar(stats.wit, 'wit')}
-                    </div>
-                </td>
-                <td>
-                    <span class="badge ${statusClass} rounded-pill">${status}</span>
-                </td>
-                <td>${raceName}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${escapeHTML(plan.id)}" aria-label="Edit plan"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
-                    <button class="btn btn-sm btn-outline-info view-inline-btn" data-id="${escapeHTML(plan.id)}" aria-label="View plan details inline"><i class="bi bi-eye" aria-hidden="true"></i></button>
-                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${escapeHTML(plan.id)}" aria-label="Delete plan"><i class="bi bi-trash" aria-hidden="true"></i></button>
-                </td>
+                    <td>${imageHtml}</td>
+                    <td>
+                        <strong>${title}</strong>
+                        <div class="text-muted small">${name}</div>
+                        <div class="plan-stat-bars" aria-hidden="true">
+                            ${createMiniStatBar(stats.speed, 'speed')}
+                            ${createMiniStatBar(stats.stamina, 'stamina')}
+                            ${createMiniStatBar(stats.power, 'power')}
+                            ${createMiniStatBar(stats.guts, 'guts')}
+                            ${createMiniStatBar(stats.wit, 'wit')}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge ${statusClass} rounded-pill">${status}</span>
+                    </td>
+                    <td>${raceName}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${escapeHTML(plan.id)}" aria-label="Edit plan"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+                        <button class="btn btn-sm btn-outline-info view-inline-btn" data-id="${escapeHTML(plan.id)}" aria-label="View plan details inline"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${escapeHTML(plan.id)}" aria-label="Delete plan"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                    </td>
                 `;
                 planTableBody.appendChild(row);
             });
@@ -115,8 +126,7 @@
         // Load plans from correct API endpoint
         async function loadPlans() {
             try {
-                // FIX: Use correct endpoint, NOT apiplan.php!
-                const res = await fetch(`${window.APP_API_BASE}plan.php?action=list`, { headers: { 'Accept': 'application/json' } });
+                const res = await fetch(`${getApiBase()}/plan.php?action=list`, { headers: { 'Accept': 'application/json' } });
                 const result = await res.json();
                 if (result?.success) {
                     allPlans = Array.isArray(result.plans) ? result.plans : [];
@@ -127,9 +137,9 @@
             } catch (error) {
                 console.error('Failed to load plans:', error);
                 planTableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" class="text-center text-danger p-4">Error loading plans.</td>
-                </tr>`;
+                    <tr>
+                        <td colspan="5" class="text-center text-danger p-4">Error loading plans.</td>
+                    </tr>`;
             }
         }
 
@@ -178,7 +188,7 @@
         // Fetch and load plan into modal for editing
         async function loadPlanForEdit(planId) {
             try {
-                const response = await fetch(`${window.APP_API_BASE}plan.php?action=get&id=${encodeURIComponent(planId)}`);
+                const response = await fetch(`${getApiBase()}/plan.php?action=get&id=${encodeURIComponent(planId)}`);
                 const result = await response.json();
                 if (result.success) {
                     document.getElementById('planId').value = result.plan.id;
@@ -193,7 +203,7 @@
         // Delete the given plan and reload the table
         async function deletePlan(planId) {
             try {
-                const response = await fetch(`${window.APP_API_BASE}plan.php?action=delete&id=${encodeURIComponent(planId)}`, {
+                const response = await fetch(`${getApiBase()}/plan.php?action=delete&id=${encodeURIComponent(planId)}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
