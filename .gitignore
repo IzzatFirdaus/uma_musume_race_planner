@@ -106,3 +106,5 @@ coverage/
 # Optional local test config
 phpunit.xml
 phpunit.xml.dist
+
+# API check logs\nlogs/\n
