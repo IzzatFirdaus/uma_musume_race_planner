@@ -1,0 +1,134 @@
+/* responsive.css
+   Uma Musume Race Planner - Responsive Stylesheet
+   Complements style.css, style_glass.css, style_og.css for enhanced mobile/tablet/desktop UX.
+   Follows UPDATE_INSTRUCTIONS.md: mobile-first, accessibility, touch-friendly controls, improved layouts.
+*/
+
+/* Mobile-first base adjustments */
+body,
+html {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.header-logo {
+  width: 48px;
+  height: auto;
+}
+
+/* Main container */
+.container,
+.main-content,
+#mainContent {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* Cards and plan lists */
+.plan-card {
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(80, 62, 90, 0.08);
+}
+
+/* Table responsiveness */
+.table-responsive {
+  max-width: 100vw;
+  overflow-x: auto;
+}
+
+.stat-table th,
+.stat-table td {
+  font-size: 0.95em;
+  padding: 0.5em;
+}
+
+/* Chart and canvas responsiveness */
+.chart-container,
+canvas {
+  width: 100% !important;
+  max-width: 100vw !important;
+  height: auto !important;
+}
+
+/* Modal tweaks for mobile */
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 0;
+    width: 100vw;
+    max-width: 100vw;
+  }
+  .modal-content {
+    border-radius: 0;
+  }
+}
+
+/* Plan details: vertical stacking on small screens */
+@media (max-width: 768px) {
+  .plan-details {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .plan-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .stat-icon {
+    font-size: 1.2rem;
+  }
+}
+
+/* Navbar collapse and accessibility */
+@media (max-width: 992px) {
+  .navbar-nav {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  .navbar-brand {
+    font-size: 1.2em;
+  }
+}
+
+/* Touch-friendly sliders */
+input[type="range"] {
+  height: 2.2rem;
+  margin: 0.7em 0;
+  touch-action: pan-y;
+}
+
+/* Accessibility: skip link visibility on mobile */
+.visually-hidden-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  left: auto;
+  background: #fff;
+  color: #222;
+  z-index: 9999;
+  outline: 2px solid #f06292;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+}
+
+/* Hide elements not needed on mobile */
+@media (max-width: 576px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* Footer responsiveness */
+.footer {
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: 2em;
+  padding: 1em 0;
+}
+
+/* Utility classes for spacing */
+.mt-xs { margin-top: 0.5em !important; }
+.mb-xs { margin-bottom: 0.5em !important; }
+.pt-xs { padding-top: 0.5em !important; }
+.pb-xs { padding-bottom: 0.5em !important; }
+
+/* End of responsive.css */

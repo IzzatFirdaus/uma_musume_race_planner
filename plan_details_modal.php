@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
             Chart.defaults.font.family = getCssVariableValue('--bs-body-font-family');
             Chart.defaults.color = getCssVariableValue('--bs-secondary-color');
 
-            const response = await fetch(`get_progress_chart_data.php?plan_id=${planId}`);
+            const response = await fetch(`${window.APP_API_BASE}/progress.php?action=chart&plan_id=${planId}`);
             const result = await response.json();
 
             // UPDATED: Robust check for data

@@ -1,0 +1,145 @@
+/* ...existing code from css/style.css... *//* Main Stylesheet for Uma Musume Race Planner
+   - Bootstrap 5 assumed loaded via CDN in HTML
+   - Follows UPDATE_INSTRUCTIONS.md guidelines
+   - Dark mode, accessibility, skip link, and theming support
+*/
+
+/* CSS Variables for Theming */
+:root {
+  --main-bg: #fff;
+  --main-text: #222;
+  --primary-accent: #f06292;
+  --navbar-bg: #f8f9fa;
+  --card-bg: #fff;
+  --card-border: #e5e5e5;
+  --btn-bg: #f06292;
+  --btn-text: #fff;
+  --link-color: #1976d2;
+  --focus-outline: 2px solid #f06292;
+}
+
+/* Dark Mode Theme */
+[data-theme="dark"] {
+  --main-bg: #181a1b;
+  --main-text: #fafafa;
+  --navbar-bg: #23272b;
+  --card-bg: #222426;
+  --card-border: #333;
+  --btn-bg: #ad1457;
+  --btn-text: #fff;
+  --link-color: #90caf9;
+  --focus-outline: 2px solid #ad1457;
+}
+
+body {
+  background: var(--main-bg);
+  color: var(--main-text);
+  font-family: 'M PLUS Rounded 1c', 'Segoe UI', Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+  background: var(--navbar-bg);
+  color: var(--main-text);
+}
+
+/* Card */
+.card {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+.btn-uma {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+}
+.btn-uma:hover, .btn-uma:focus {
+  background: #c2185b;
+  outline: var(--focus-outline);
+}
+
+/* Link Styling */
+a {
+  color: var(--link-color);
+}
+a:focus {
+  outline: var(--focus-outline);
+}
+
+/* Accessibility: Visually Hidden Helpers */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  border: 0 !important;
+}
+.visually-hidden-focusable {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.visually-hidden-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  left: auto;
+  background: #fff;
+  color: #222;
+  z-index: 9999;
+  outline: var(--focus-outline);
+  padding: 0.5em 1em;
+  border-radius: 4px;
+}
+
+/* Focus Outline for Keyboard Navigation */
+:focus-visible {
+  outline: var(--focus-outline);
+}
+
+/* Miscellaneous UI Elements */
+.spinner-border.text-uma {
+  color: var(--btn-bg);
+}
+
+/* Example media query for responsiveness */
+@media (max-width: 768px) {
+  .plan-card {
+    margin-bottom: 1.5rem;
+  }
+  .table-responsive {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+  }
+  .stat-icon {
+    font-size: 1.3rem;
+  }
+}
+
+/* Header logo sizing moved from public/index.php to central stylesheet */
+.logo.app-logo {
+  width: 80px;
+  height: 80px;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+@media (max-width: 576px) {
+  .logo.app-logo {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* Add additional custom styles below as needed */
+
+/* End of style.css */
