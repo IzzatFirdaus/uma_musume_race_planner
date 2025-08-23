@@ -9,19 +9,21 @@
       <i class="bi bi-card-checklist me-2"></i>
       Your Race Plans
     </h5>
-    <button class="btn btn-sm btn-uma" id="createPlanBtn">
-      <i class="bi bi-plus-circle me-1"></i> Create New
+    <button class="btn btn-primary btn-lg" id="createPlanBtn" aria-label="Create new plan" title="Create new plan">
+      <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+      <span class="visually-hidden">Create New</span>
+      <span aria-hidden="true">Create New</span>
     </button>
   </div>
 
   <div class="card-body p-0">
 
     <div class="plan-filters p-3 border-bottom">
-      <div class="btn-group" role="group" id="plan-filter-buttons">
-        <button type="button" class="btn btn-sm btn-outline-secondary active" data-filter="all">All</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Active">Active</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Planning">Planning</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Finished">Finished</button>
+      <div class="btn-group" role="tablist" aria-label="Plan filters" id="plan-filter-buttons">
+        <button type="button" role="tab" aria-pressed="true" class="btn btn-sm btn-outline-secondary active" data-filter="all">All</button>
+        <button type="button" role="tab" aria-pressed="false" class="btn btn-sm btn-outline-secondary" data-filter="Active">Active</button>
+        <button type="button" role="tab" aria-pressed="false" class="btn btn-sm btn-outline-secondary" data-filter="Planning">Planning</button>
+        <button type="button" role="tab" aria-pressed="false" class="btn btn-sm btn-outline-secondary" data-filter="Finished">Finished</button>
       </div>
     </div>
 
@@ -159,14 +161,17 @@ document.addEventListener('DOMContentLoaded', () => {
         </td>
         <td>${plan.race_name || ''}</td>
         <td>
-          <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}">
-            <i class="bi bi-pencil-square"></i>
+          <button class="btn btn-sm btn-primary edit-btn" data-id="${plan.id}" aria-label="${plan.plan_title ? `Edit ${plan.plan_title}` : 'Edit plan'}" title="Edit">
+            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+            <span class="visually-hidden">Edit</span>
           </button>
-          <button class="btn btn-sm btn-outline-info view-inline-btn" data-id="${plan.id}">
-            <i class="bi bi-eye"></i>
+          <button class="btn btn-sm btn-secondary view-inline-btn" data-id="${plan.id}" aria-label="${plan.plan_title ? `View ${plan.plan_title}` : 'View plan'}" title="View">
+            <i class="bi bi-eye" aria-hidden="true"></i>
+            <span class="visually-hidden">View</span>
           </button>
-          <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}">
-            <i class="bi bi-trash"></i>
+          <button class="btn btn-sm btn-danger delete-btn" data-id="${plan.id}" aria-label="${plan.plan_title ? `Delete ${plan.plan_title}` : 'Delete plan'}" title="Delete">
+            <i class="bi bi-trash" aria-hidden="true"></i>
+            <span class="visually-hidden">Delete</span>
           </button>
         </td>
       `;
