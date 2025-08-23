@@ -8,9 +8,9 @@ $isDarkModeChecked = ($darkModeSetting === 'enabled') ? 'checked' : '';
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top" role="navigation" aria-label="Main navigation">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="<?= $isPublic ? 'index.php' : 'index.php' ?>">
+    <a class="navbar-brand d-flex align-items-center" href="<?= $isPublic ? 'index.php' : 'index.php' ?>" aria-label="Uma Musume Planner home">
       <img src="<?= $base ?>assets/images/app_logo/uma_musume_race_planner_logo_64.ico" alt="Uma Musume Planner Logo" style="height: 24px; margin-right: 8px;">
-      <span>Uma Musume Planner</span>
+      <span class="brand-text">Uma Musume Planner</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -18,17 +18,17 @@ $isDarkModeChecked = ($darkModeSetting === 'enabled') ? 'checked' : '';
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link <?= $current_page === 'index.php' ? 'active' : '' ?>" href="index.php">
+          <a class="nav-link <?= $current_page === 'index.php' ? 'active' : '' ?>" href="index.php" <?= $current_page === 'index.php' ? 'aria-current="page"' : '' ?>>
             <i class="bi bi-house-door me-1" aria-hidden="true"></i> Home
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" id="newPlanBtn">
+          <a class="nav-link" href="#" id="newPlanBtn" role="button">
             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> New Plan
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= $current_page === 'guide.php' ? 'active' : '' ?>" href="guide.php">
+          <a class="nav-link <?= $current_page === 'guide.php' ? 'active' : '' ?>" href="guide.php" <?= $current_page === 'guide.php' ? 'aria-current="page"' : '' ?>>
             <i class="bi bi-book me-1" aria-hidden="true"></i> Guide
           </a>
         </li>
