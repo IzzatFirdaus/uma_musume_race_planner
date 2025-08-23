@@ -1,0 +1,14 @@
+parameters:
+  level: 5
+  paths:
+    - components
+    - api
+    - includes
+    - public
+  excludePaths:
+    - vendor/*
+    - assets/js/*
+    - assets/css/*
+    - *.sql
+  bootstrapFiles:
+    - vendor/autoload.php
