@@ -238,5 +238,36 @@
 
         // Initial load
         loadPlans();
+
+        // Fallback cleanup for stray modal-backdrop elements (covers manual show/hide fallbacks)
+        document.addEventListener('hidden.bs.modal', function () {
+            try {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(b => b.parentNode && b.parentNode.removeChild(b));
+                document.body.classList.remove('modal-open');
+                if (document.body.style && document.body.style.paddingRight) {
+                    document.body.style.paddingRight = '';
+                }
+            } catch (e) {
+                // best-effort
+                console.warn('Backdrop cleanup error:', e);
+            }
+        });
+
+        // Fallback cleanup triggered by clicking modal-dismiss controls (X or data-bs-dismiss)
+        document.addEventListener('click', function (e) {
+            if (e.target.closest && e.target.closest('[data-bs-dismiss="modal"], .btn-close')) {
+                setTimeout(() => {
+                    try {
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(b => b.parentNode && b.parentNode.removeChild(b));
+                        document.body.classList.remove('modal-open');
+                        if (document.body.style && document.body.style.paddingRight) document.body.style.paddingRight = '';
+                    } catch (err) {
+                        // ignore
+                    }
+                }, 60);
+            }
+        });
     });
 })();

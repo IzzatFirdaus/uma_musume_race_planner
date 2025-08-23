@@ -82,6 +82,7 @@
 .dark-mode {
   --color-text: #FFFFFF; /* MYDS txt-primary: pure white for max contrast */
   --color-muted: #B0B0B0; /* MYDS txt-muted: light gray for secondary text */
+  --color-text-muted: rgba(255, 255, 255, 0.92); /* stronger muted text for dark backgrounds */
   --color-link: #90CAF9; /* MYDS txt-link: light blue for links */
   --color-link-hover: #1976D2; /* MYDS txt-link-hover: MYDS blue */
 
@@ -436,12 +437,69 @@ a:hover {
   color: #ffffff;
 }
 
+
+/* Quick Stats MYDS Compliance */
 .quick-stats-number {
   color: var(--color-text);
+  font-family: 'Poppins', var(--font-sans);
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+  display: block;
 }
-[data-theme="dark"] .quick-stats-number,
-.dark-mode .quick-stats-number {
-  color: var(--color-link);
+
+/* Responsive font size for mobile */
+@media (max-width: 576px) {
+  .quick-stats-number {
+    font-size: 2rem;
+  }
+}
+
+/* Glass + dark theme: add text shadow for legibility */
+[data-theme="glass"][data-theme="dark"] .quick-stats-number,
+[data-theme="glass"] .dark-mode .quick-stats-number,
+.dark-mode [data-theme="glass"] .quick-stats-number {
+  text-shadow: 0 2px 6px rgba(0,0,0,0.65);
+}
+
+/* Colored variants for quick stats: vivid and readable in dark mode */
+[data-theme="dark"] .quick-stats-number.text-success,
+.dark-mode .quick-stats-number.text-success {
+  color: var(--stat-wit-color);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.55);
+}
+[data-theme="dark"] .quick-stats-number.text-primary,
+.dark-mode .quick-stats-number.text-primary {
+  color: var(--stat-speed-color);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.55);
+}
+
+/* Quick Stats label styling (MYDS compliant) */
+.quick-stats-label {
+  display: block;
+  font-family: 'Inter', var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  letter-spacing: 0.01em;
+  margin-top: 0.1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 576px) {
+  .quick-stats-label {
+    font-size: 0.95rem;
+  }
+}
+
+/* Ensure quick stats labels are readable in dark mode */
+[data-theme="dark"] .quick-stats-label,
+.dark-mode .quick-stats-label {
+  color: var(--color-text-muted);
+  opacity: 0.98;
+  font-weight: 600;
 }
 
 /* ------------------------------

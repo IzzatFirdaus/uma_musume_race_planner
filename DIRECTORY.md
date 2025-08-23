@@ -15,7 +15,7 @@ This file lists the current project files and important subfolders (snapshot).
 - index.php
 - index.main.backup
 - phpcs.xml
-- phpstan.neon
+
 - php_errors.log
 - sample_data.sql
 - uma_musume_planner.sql

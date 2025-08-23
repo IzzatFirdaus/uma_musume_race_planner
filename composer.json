@@ -1,7 +1,7 @@
 {
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.86",
-        "phpstan/phpstan": "^2.1",
+    "friendsofphp/php-cs-fixer": "^3.86",
+    "phpstan/phpstan": "^2.1",
         "squizlabs/php_codesniffer": "*",
         "symfony/console": "^6.0 || ^7.0",       
         "symfony/var-dumper": "^6.0 || ^7.0",    
@@ -22,8 +22,7 @@
     },
     "scripts": {
         "cs:fix": "php-cs-fixer fix --ansi --config=.php-cs-fixer.php",
-        "cs:check": "phpcs --standard=PSR12 . components/",
-        "analyse": "phpstan analyse --ansi --no-progress --configuration=phpstan.neon . components/"
+    "cs:check": "phpcs --standard=PSR12 . components/"
     },
     "config": {
         "allow-plugins": {
