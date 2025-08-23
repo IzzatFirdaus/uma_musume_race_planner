@@ -234,6 +234,12 @@ $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/app.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/autosuggest.js"></script>
-  <!-- Additional page-specific JS can be included below -->
+  <!-- Page-specific modules for dashboard functionality -->
+  <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/dashboard.js"></script>
+  <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/plan_list.js"></script>
+  <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/quick_create_modal.js"></script>
+  <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/plan_details_modal.js"></script>
+  <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/plan_inline_details.js"></script>
+  <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/main_dashboard.js"></script>
 </body>
 </html>

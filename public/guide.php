@@ -230,6 +230,7 @@ $safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot), ENT_QUOTES
   <?php require_once __DIR__ . '/../components/footer.php'; ?>
 
   <!-- JS (use defer to improve performance). Theme is handled centrally by assets/js/app.js -->
+  <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/app.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/guide.js"></script>

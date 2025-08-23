@@ -100,11 +100,16 @@
       if (!darkModeToggle.getAttribute('role')) {
         darkModeToggle.setAttribute('role', 'switch');
       }
-      on(darkModeToggle, 'change', () => {
+      // Handle both change events (for checkboxes) and click events (for buttons)
+      const handleToggle = () => {
         // If input[type=checkbox], use checked; if button, toggle aria-checked
         const isChecked = 'checked' in darkModeToggle ? darkModeToggle.checked : darkModeToggle.getAttribute('aria-checked') !== 'true';
         applyTheme(isChecked ? 'dark' : 'light');
-      });
+      };
+      
+      on(darkModeToggle, 'change', handleToggle);
+      on(darkModeToggle, 'click', handleToggle);
+      
       // Support Shift+T shortcut to toggle theme quickly (accessible)
       on(document, 'keydown', (e) => {
         if ((e.key === 'T' || e.key === 't') && e.shiftKey) {

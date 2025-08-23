@@ -141,7 +141,86 @@
       renderPlanTable(filtered);
     });
 
+    // Event delegation for dynamically created plan action buttons
+    planTableBody.addEventListener('click', e => {
+      const editBtn = e.target.closest('.edit-btn');
+      const viewBtn = e.target.closest('.view-inline-btn');
+      const deleteBtn = e.target.closest('.delete-btn');
+
+      if (editBtn) {
+        const planId = editBtn.dataset.id;
+        if (planId) {
+          // Trigger the plan details modal for editing
+          const modal = new bootstrap.Modal(document.getElementById('planDetailsModal'));
+          // Load plan data and show modal
+          loadPlanForEdit(planId).then(() => modal.show());
+        }
+      } else if (viewBtn) {
+        const planId = viewBtn.dataset.id;
+        if (planId) {
+          // Trigger inline details view
+          document.dispatchEvent(new CustomEvent('showPlanInline', { detail: { planId } }));
+        }
+      } else if (deleteBtn) {
+        const planId = deleteBtn.dataset.id;
+        if (planId && confirm('Are you sure you want to delete this plan?')) {
+          deletePlan(planId);
+        }
+      }
+    });
+
+    async function loadPlanForEdit(planId) {
+      try {
+        const response = await fetch(`${window.APP_API_BASE}/plan.php?action=get&id=${encodeURIComponent(planId)}`);
+        const result = await response.json();
+        if (result.success) {
+          // Populate modal form fields
+          document.getElementById('planId').value = result.plan.id;
+          document.getElementById('plan_title').value = result.plan.plan_title || '';
+          // Trigger modal content update event
+          document.dispatchEvent(new CustomEvent('planDataLoaded', { detail: result.plan }));
+        }
+      } catch (error) {
+        console.error('Failed to load plan for editing:', error);
+      }
+    }
+
+    async function deletePlan(planId) {
+      try {
+        const response = await fetch(`${window.APP_API_BASE}/plan.php?action=delete&id=${encodeURIComponent(planId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        if (result.success) {
+          // Reload plans list
+          loadPlans();
+          // Show success message
+          const messageBox = document.getElementById('messageBoxModal');
+          if (messageBox) {
+            document.getElementById('messageBoxBody').textContent = 'Plan deleted successfully';
+            new bootstrap.Modal(messageBox).show();
+          }
+        } else {
+          alert('Failed to delete plan: ' + (result.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Failed to delete plan:', error);
+        alert('Failed to delete plan. Please try again.');
+      }
+    }
+
     document.addEventListener('planUpdated', loadPlans);
+    
+    // Handle Create New Plan button
+    const createPlanBtn = document.getElementById('createPlanBtn');
+    if (createPlanBtn) {
+      createPlanBtn.addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('createPlanModal'));
+        modal.show();
+      });
+    }
+    
     loadPlans();
   });
 })();
