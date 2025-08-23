@@ -24,7 +24,8 @@ $conditionOptions = $conditionOptions ?? [];
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <form id="planDetailsFormInline" enctype="multipart/form-data">
+    <form id="planDetailsFormInline" enctype="multipart/form-data" role="form" aria-labelledby="planInlineDetailsLabel">
+        <div id="planInlineStatus" class="visually-hidden" role="status" aria-live="polite"></div>
         <div class="card-body">
             <!-- Tab navigation for plan sections -->
             <ul class="nav nav-tabs" id="planTabsInline" role="tablist">
@@ -85,7 +86,8 @@ $conditionOptions = $conditionOptions ?? [];
                         <div class="col-md-6">
                             <label for="modalName_inline" class="form-label">Trainee Name</label>
                             <input type="text" class="form-control" id="modalName_inline" name="modalName"
-                                required>
+                                required aria-required="true" aria-describedby="modalName_inline_help">
+                            <div id="modalName_inline_help" class="form-text">Enter a trainee name.</div>
                         </div>
                         <div class="col-md-6">
                             <label for="modalRaceName_inline" class="form-label">Next Race Name</label>
@@ -101,21 +103,23 @@ $conditionOptions = $conditionOptions ?? [];
                                 <div class="col-md-8">
                                     <label for="modalCareerStage_inline" class="form-label">Career Stage</label>
                                     <select class="form-select" id="modalCareerStage_inline" name="modalCareerStage"
-                                        required>
+                                        required aria-required="true" aria-describedby="modalCareerStage_inline_help">
                                         <?php foreach ($careerStageOptions as $option) : ?>
                                         <option value="<?= htmlspecialchars((string) $option['value']) ?>">
                                             <?= htmlspecialchars((string) $option['text']) ?></option>
                                         <?php endforeach; ?>
                                     </select>
+                                    <div id="modalCareerStage_inline_help" class="form-text">Select career stage.</div>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="modalClass_inline" class="form-label">Class</label>
-                                    <select class="form-select" id="modalClass_inline" name="modalClass" required>
+                                    <select class="form-select" id="modalClass_inline" name="modalClass" required aria-required="true" aria-describedby="modalClass_inline_help">
                                         <?php foreach ($classOptions as $option) : ?>
                                         <option value="<?= htmlspecialchars((string) $option['value']) ?>">
                                             <?= htmlspecialchars((string) $option['text']) ?></option>
                                         <?php endforeach; ?>
                                     </select>
+                                    <div id="modalClass_inline_help" class="form-text">Select trainee class.</div>
                                 </div>
                             </div>
                             <div class="row mt-3">
@@ -164,7 +168,8 @@ $conditionOptions = $conditionOptions ?? [];
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="modalGoal_inline" class="form-label">Goal</label>
-                            <input type="text" class="form-control" id="modalGoal_inline" name="modalGoal">
+                            <input type="text" class="form-control" id="modalGoal_inline" name="modalGoal" aria-describedby="modalGoal_inline_help">
+                            <div id="modalGoal_inline_help" class="form-text">Optional: enter plan goal.</div>
                         </div>
                         <div class="col-md-6">
                             <label for="modalSource_inline" class="form-label">Source</label>
@@ -274,7 +279,7 @@ $conditionOptions = $conditionOptions ?? [];
                             <tbody></tbody>
                         </table>
                     </div>
-                    <button type="button" class="btn btn-uma w-100 mt-2" id="addSkillBtnInline">Add Skill</button>
+                    <button type="button" class="btn btn-primary w-100 mt-2" id="addSkillBtnInline" aria-label="Add skill inline">Add Skill</button>
                 </div>
 
                 <!-- Predictions Tab -->
@@ -302,7 +307,7 @@ $conditionOptions = $conditionOptions ?? [];
                             <tbody></tbody>
                         </table>
                     </div>
-                    <button type="button" class="btn btn-uma w-100 mt-2" id="addPredictionBtnInline">Add
+                    <button type="button" class="btn btn-primary w-100 mt-2" id="addPredictionBtnInline" aria-label="Add prediction inline">Add
                         Prediction</button>
                 </div>
 
@@ -320,7 +325,7 @@ $conditionOptions = $conditionOptions ?? [];
                             <tbody></tbody>
                         </table>
                     </div>
-                    <button type="button" class="btn btn-uma w-100 mt-2" id="addGoalBtnInline">Add Goal</button>
+                    <button type="button" class="btn btn-primary w-100 mt-2" id="addGoalBtnInline" aria-label="Add goal inline">Add Goal</button>
                 </div>
                 
                 <!-- Progress Chart Tab -->
@@ -336,12 +341,12 @@ $conditionOptions = $conditionOptions ?? [];
             </div>
         </div>
         <!-- Footer actions -->
-        <div class="card-footer d-flex justify-content-end">
-            <button type="button" class="btn btn-outline-secondary me-2" id="downloadTxtInline">
-                <i class="bi bi-file-earmark-text"></i> Export as TXT
+            <div class="card-footer d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary me-2" id="downloadTxtInline" aria-label="Export as TXT">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i> Export as TXT
             </button>
-            <button type="button" class="btn btn-info me-2" id="exportPlanBtnInline">Copy to Clipboard</button>
-            <button type="submit" class="btn btn-uma">Save Changes</button>
+            <button type="button" class="btn btn-outline-secondary me-2" id="exportPlanBtnInline" aria-label="Copy plan to clipboard">Copy to Clipboard</button>
+            <button type="submit" class="btn btn-primary" id="savePlanInlineBtn" aria-label="Save changes inline">Save Changes</button>
         </div>
     </form>
 </div>
