@@ -8,7 +8,7 @@ $classOptions = $classOptions ?? [];
 
 ?>
 
-<div class="modal fade" id="createPlanModal" tabindex="-1" aria-labelledby="createPlanModalLabel" aria-hidden="true">
+<div class="modal fade" id="createPlanModal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="createPlanModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content shadow-lg">
             <div class="modal-header">
@@ -20,7 +20,7 @@ $classOptions = $classOptions ?? [];
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="quick_trainee_name" class="form-label">Trainee Name</label>
-                        <input type="text" class="form-control" id="quick_trainee_name" name="trainee_name" required aria-describedby="traineeNameFeedback">
+                        <input type="text" class="form-control" id="quick_trainee_name" name="trainee_name" required aria-describedby="traineeNameFeedback" aria-required="true">
                         <div class="invalid-feedback" id="traineeNameFeedback">
                             Trainee Name is required.
                         </div>
@@ -34,7 +34,7 @@ $classOptions = $classOptions ?? [];
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="quick_career_stage" class="form-label">Career Stage</label>
-                            <select class="form-select" id="quick_career_stage" name="career_stage" required aria-describedby="careerStageFeedback">
+                            <select class="form-select" id="quick_career_stage" name="career_stage" required aria-describedby="careerStageFeedback" aria-required="true">
                                 <option value="" selected disabled>Select Stage</option> <?php foreach ($careerStageOptions as $option) : ?>
                                     <option value="<?= htmlspecialchars((string) $option['value']) ?>">
                                         <?= htmlspecialchars((string) $option['text']) ?>
@@ -47,7 +47,7 @@ $classOptions = $classOptions ?? [];
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="quick_traineeClass" class="form-label">Class</label>
-                            <select class="form-select" id="quick_traineeClass" name="traineeClass" required aria-describedby="classFeedback">
+                            <select class="form-select" id="quick_traineeClass" name="traineeClass" required aria-describedby="classFeedback" aria-required="true">
                                 <option value="" selected disabled>Select Class</option> <?php foreach ($classOptions as $option) : ?>
                                     <option value="<?= htmlspecialchars((string) $option['value']) ?>">
                                         <?= htmlspecialchars((string) $option['text']) ?>
@@ -63,7 +63,7 @@ $classOptions = $classOptions ?? [];
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-uma" id="quickCreateSubmitBtn">Create Plan</button>
+                    <button type="submit" class="btn btn-primary" id="quickCreateSubmitBtn" aria-label="Create plan">Create Plan</button>
                 </div>
             </form>
         </div>

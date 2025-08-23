@@ -11,7 +11,7 @@ $moodOptions = $moodOptions ?? [];
 $conditionOptions = $conditionOptions ?? [];
 ?>
 
-<div class="modal fade" id="planDetailsModal" tabindex="-1" aria-labelledby="planDetailsModalLabel" aria-hidden="true">
+<div class="modal fade" id="planDetailsModal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="planDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -243,7 +243,7 @@ $conditionOptions = $conditionOptions ?? [];
                             <div class="row" id="aptitudeGradesContainer"></div>
                         </div>
 
-                        <div class="tab-pane fade" id="skills" role="tabpanel" aria-labelledby="skills-tab">
+                            <div class="tab-pane fade" id="skills" role="tabpanel" aria-labelledby="skills-tab">
                             <div class="table-responsive">
                                 <table class="table table-sm" id="skillsTable">
                                     <thead>
@@ -259,7 +259,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn btn-uma w-100 mt-2" id="addSkillBtn">Add Skill</button>
+                            <button type="button" class="btn btn-primary w-100 mt-2" id="addSkillBtn" aria-label="Add skill">Add Skill</button>
                         </div>
 
                         <div class="tab-pane fade" id="predictions" role="tabpanel"
@@ -286,7 +286,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn btn-uma w-100 mt-2" id="addPredictionBtn">Add
+                            <button type="button" class="btn btn-primary w-100 mt-2" id="addPredictionBtn" aria-label="Add prediction">Add
                                 Prediction</button>
                         </div>
 
@@ -303,7 +303,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn btn-uma w-100 mt-2" id="addGoalBtn">Add Goal</button>
+                            <button type="button" class="btn btn-primary w-100 mt-2" id="addGoalBtn" aria-label="Add goal">Add Goal</button>
                         </div>
 
                         <div class="tab-pane fade" id="progress-chart" role="tabpanel" aria-labelledby="progress-chart-tab">
@@ -318,10 +318,10 @@ $conditionOptions = $conditionOptions ?? [];
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-info" id="exportPlanBtn">Copy to Clipboard</button>
-                    <a href="#" id="downloadTxtLink" class="btn btn-outline-secondary">
-                        <i class="bi bi-file-earmark-text"></i> Export as TXT</a>
-                    <button type="submit" class="btn btn-uma">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" id="exportPlanBtn" aria-label="Copy plan to clipboard">Copy to Clipboard</button>
+                    <a href="#" id="downloadTxtLink" class="btn btn-outline-secondary" aria-label="Export plan as text">
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i> Export as TXT</a>
+                    <button type="submit" class="btn btn-primary" id="savePlanBtn">Save Changes</button>
                 </div>
             </form>
         </div>
