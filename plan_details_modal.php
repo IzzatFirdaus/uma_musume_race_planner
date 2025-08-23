@@ -491,3 +491,52 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+// Modal focus trap helper — ensures keyboard users stay within modal while open
+document.addEventListener('DOMContentLoaded', function () {
+    function setupModalFocusTrap(modalId) {
+        const modalEl = document.getElementById(modalId);
+        if (!modalEl) return;
+
+        let lastFocused = null;
+
+        modalEl.addEventListener('show.bs.modal', () => {
+            lastFocused = document.activeElement;
+        });
+
+        modalEl.addEventListener('shown.bs.modal', () => {
+            const focusable = Array.from(modalEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el => !el.hasAttribute('disabled'));
+            if (focusable.length) {
+                focusable[0].focus();
+            }
+            modalEl.addEventListener('keydown', trapHandler);
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            modalEl.removeEventListener('keydown', trapHandler);
+            if (lastFocused && lastFocused.focus) lastFocused.focus();
+        });
+
+        function trapHandler(e) {
+            if (e.key !== 'Tab') return;
+            const focusable = Array.from(modalEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el => !el.hasAttribute('disabled'));
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    last.focus();
+                    e.preventDefault();
+                }
+            } else {
+                if (document.activeElement === last) {
+                    first.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+    }
+
+    setupModalFocusTrap('planDetailsModal');
+});
+</script>
