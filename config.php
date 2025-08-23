@@ -1,33 +1,59 @@
 <?php
 
-// config.php - Pure configuration, no database connections or setup here.
+declare(strict_types=1);
 
-// Your application already uses getenv() which is loaded via db.php's load_env() function.
-// It's generally best to define/load these from .env and then fetch with getenv().
+/**
+ * config.php
+ *
+ * Centralized, side-effect-free configuration access.
+ * - Reads configuration from environment variables (loaded via includes/env.php elsewhere).
+ * - Defines simple constants used across the app.
+ * - Does NOT open DB connections or perform I/O.
+ *
+ * Best practices:
+ * - Avoid hardcoding secrets; use .env + getenv().
+ * - Keep config read-only; no die()/exit() here.
+ * - No closing PHP tag (prevents accidental output).
+ */
 
-// Example of fetching environment variables for use in the application.
-// Note: DB_HOST, DB_NAME, DB_USER, DB_PASS are primarily consumed by db.php.
-// This section is more for demonstrating how other app-level configs would be handled.
-
-// Database credentials are best handled directly in db.php using getenv()
-// and should not have empty string fallbacks here for security-critical values.
-// The primary fallback logic for DB credentials belongs in db.php.
-
-// For other application-specific configurations:
-define('APP_NAME', getenv('APP_NAME') ?: 'Uma Musume Planner');
-
-// CRITICAL IMPROVEMENT 2: Add validation for APP_THEME_COLOR
-$appThemeColor = getenv('APP_THEME_COLOR');
-if ($appThemeColor && preg_match('/^#[a-f0-9]{6}$/i', $appThemeColor)) {
-    // If it's a valid 6-digit hex color, use it.
-    define('THEME_COLOR', $appThemeColor);
-} else {
-    // Fallback to a safe default if not set or invalid.
-    define('THEME_COLOR', '#7d2b8b'); // A default primary color for the app
+/**
+ * Small helper to fetch env values with sane fallbacks.
+ * Mirrors getenv(), but also checks $_ENV/$_SERVER when getenv returns false.
+ */
+function env(string $key, ?string $default = null): ?string
+{
+    $val = getenv($key);
+    if ($val === false) {
+        $val = $_ENV[$key] ?? $_SERVER[$key] ?? null;
+    }
+    if ($val === null || $val === '') {
+        return $default;
+    }
+    return $val;
 }
 
+// Application identity and environment flags
+if (!defined('APP_NAME')) {
+    define('APP_NAME', env('APP_NAME', 'Uma Musume Planner'));
+}
+if (!defined('APP_ENV')) {
+    define('APP_ENV', env('APP_ENV', 'production'));
+}
+if (!defined('APP_DEBUG')) {
+    // Normalize boolean-like values from env
+    $debug = strtolower((string) env('APP_DEBUG', 'false')) === 'true';
+    define('APP_DEBUG', $debug);
+}
+if (!defined('APP_VERSION')) {
+    define('APP_VERSION', env('APP_VERSION', '1.0.0'));
+}
 
-// NO DATABASE CONNECTION, TABLE CREATION, DATA SEEDING, OR die()/exit() STATEMENTS.
-// These actions should be handled by dedicated setup/migration scripts or within db.php's PDO connection logic.
-
-// Always omit the closing PHP tag in files containing only PHP code.
+// THEME_COLOR: validate a 6-digit hex color, fallback to a safe default.
+$appThemeColor = env('APP_THEME_COLOR');
+if (!defined('THEME_COLOR')) {
+    if ($appThemeColor && preg_match('/^#[a-fA-F0-9]{6}$/', $appThemeColor)) {
+        define('THEME_COLOR', $appThemeColor);
+    } else {
+        define('THEME_COLOR', '#7d2b8b'); // default accent
+    }
+}

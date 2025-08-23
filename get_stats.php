@@ -1,22 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * get_stats.php
  *
- * Endpoint to fetch summary statistics for plans and trainees.
- *
- * Returns:
- * - total_plans: All undeleted plans
- * - active_plans: Count with status = 'Active'
- * - finished_plans: Count with status = 'Finished'
- * - planning_plans: Count with status = 'Planning'
- * - unique_trainees: Unique trainee names
+ * Returns summary statistics for plans and trainees.
+ * Method: GET
  */
 
-header('Content-Type: application/json');
+header('X-Content-Type-Options: nosniff');
 
-$pdo = require __DIR__ . '/includes/db.php';
-$log = require __DIR__ . '/includes/logger.php';
+$send_json = static function (array $payload, int $code = 200): void {
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($code);
+    }
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+};
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+    header('Allow: GET', true, 405);
+    $send_json(['success' => false, 'error' => 'Method not allowed.'], 405);
+}
+
+try {
+    /** @var PDO $pdo */
+    $pdo = require __DIR__ . '/includes/db.php';
+    $log = require __DIR__ . '/includes/logger.php';
+} catch (Throwable $e) {
+    $send_json(['success' => false, 'error' => 'Service unavailable.'], 503);
+}
 
 try {
     $sql = "
@@ -31,9 +46,8 @@ try {
     ";
 
     $stmt = $pdo->query($sql);
-    $stats = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stats = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
-    // Force values to be integers (null fallback = 0)
     $safeStats = [
         'total_plans'     => (int)($stats['total_plans'] ?? 0),
         'active_plans'    => (int)($stats['active_plans'] ?? 0),
@@ -42,20 +56,8 @@ try {
         'unique_trainees' => (int)($stats['unique_trainees'] ?? 0),
     ];
 
-    echo json_encode([
-        'success' => true,
-        'stats' => $safeStats
-    ]);
-} catch (Exception $e) {
-    $log->error('Failed to fetch stats', [
-        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
-        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
-        'line' => method_exists($e, 'getLine') ? $e->getLine() : ''
-    ]);
-
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => 'A database error occurred while fetching stats.'
-    ]);
+    $send_json(['success' => true, 'stats' => $safeStats]);
+} catch (Throwable $e) {
+    $log->error('Failed to fetch stats', ['message' => $e->getMessage()]);
+    $send_json(['success' => false, 'error' => 'A database error occurred while fetching stats.'], 500);
 }

@@ -1,72 +1,97 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * get_skill_reference.php
  *
- * API endpoint to fetch skill reference data with optional filters:
- * - 'search': Partial match against skill name
- * - 'stat_type': Exact match on stat_type
- * - 'tag': Exact match on tag
- *
- * Returns:
- * - JSON array of skill objects (name, tag, type, description)
- * - Or error JSON on database failure
+ * Fetches skill reference data with optional filters.
+ * Method: GET
+ * Params:
+ * - search (string, optional, partial match on skill_name)
+ * - stat_type (string, optional, exact)
+ * - tag (string, optional, exact)
+ * - limit (int, optional) default 100, max 200
  */
 
-header('Content-Type: application/json');
+header('X-Content-Type-Options: nosniff');
 
-$pdo = require __DIR__ . '/includes/db.php';
-$log = require __DIR__ . '/includes/logger.php';
+$send_json = static function (array $payload, int $code = 200): void {
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($code);
+    }
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+};
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+    header('Allow: GET', true, 405);
+    $send_json(['success' => false, 'error' => 'Method not allowed.'], 405);
+}
 
 try {
-    // Extract and sanitize input parameters
-    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-    $stat_type = isset($_GET['stat_type']) ? trim($_GET['stat_type']) : '';
-    $tag = isset($_GET['tag']) ? trim($_GET['tag']) : '';
+    /** @var PDO $pdo */
+    $pdo = require __DIR__ . '/includes/db.php';
+    $log = require __DIR__ . '/includes/logger.php';
+} catch (Throwable $e) {
+    $send_json(['success' => false, 'error' => 'Service unavailable.'], 503);
+}
+
+try {
+    $search = trim((string) ($_GET['search'] ?? ''));
+    $stat_type = trim((string) ($_GET['stat_type'] ?? ''));
+    $tag = trim((string) ($_GET['tag'] ?? ''));
+    $limit = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT) ?: 100;
+    $limit = max(1, min($limit, 200));
+
+    // Cap input sizes to avoid abuse
+    if (strlen($search) > 64) {
+        $search = substr($search, 0, 64);
+    }
+    if (strlen($stat_type) > 32) {
+        $stat_type = substr($stat_type, 0, 32);
+    }
+    if (strlen($tag) > 32) {
+        $tag = substr($tag, 0, 32);
+    }
 
     $where = [];
     $params = [];
 
     if ($search !== '') {
         $where[] = 'skill_name LIKE ?';
-        $params[] = "%$search%";
+        $params[] = '%' . $search . '%';
     }
-
     if ($stat_type !== '') {
         $where[] = 'stat_type = ?';
         $params[] = $stat_type;
     }
-
     if ($tag !== '') {
         $where[] = 'tag = ?';
         $params[] = $tag;
     }
 
     $sql = 'SELECT skill_name, tag, stat_type, description FROM skill_reference';
-    if (!empty($where)) {
+    if ($where !== []) {
         $sql .= ' WHERE ' . implode(' AND ', $where);
     }
-    $sql .= ' ORDER BY skill_name';
+    $sql .= ' ORDER BY skill_name ASC LIMIT ?';
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
+    $i = 1;
+    foreach ($params as $p) {
+        $stmt->bindValue($i++, $p, PDO::PARAM_STR);
+    }
+    $stmt->bindValue($i, $limit, PDO::PARAM_INT);
+    $stmt->execute();
     $skills = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode([
-        'success' => true,
-        'skills' => $skills,
-    ]);
-} catch (Exception $e) {
+    $send_json(['success' => true, 'skills' => $skills]);
+} catch (Throwable $e) {
     $log->error('Failed to fetch skill reference data', [
         'params' => $_GET,
-        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
-        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
-        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
+        'message' => $e->getMessage(),
     ]);
-
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => 'A database error occurred while fetching skill reference data.'
-    ]);
+    $send_json(['success' => false, 'error' => 'A database error occurred while fetching skill reference data.'], 500);
 }

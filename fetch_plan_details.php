@@ -1,30 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * fetch_plan_details.php
  *
  * API endpoint to fetch a single plan's primary metadata.
- * Includes mood/strategy labels, but no related sub-table data.
+ * Includes mood/strategy labels; excludes related sub-table data.
+ *
+ * Method: GET
+ * Params:
+ * - id (int, required)
  */
 
-header('Content-Type: application/json');
+header('X-Content-Type-Options: nosniff');
 
-$pdo = require __DIR__ . '/includes/db.php';
-$log = require __DIR__ . '/includes/logger.php';
-
-$planId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-if ($planId <= 0) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Invalid plan ID.'
-    ]);
+$send_json = static function (array $payload, int $code = 200): void {
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($code);
+    }
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
+};
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+    header('Allow: GET', true, 405);
+    $send_json(['success' => false, 'error' => 'Method not allowed.'], 405);
 }
 
 try {
-    // Join with mood and strategy to include human-readable labels
+    /** @var PDO $pdo */
+    $pdo = require __DIR__ . '/includes/db.php';
+    $log = require __DIR__ . '/includes/logger.php';
+} catch (Throwable $e) {
+    $send_json(['success' => false, 'error' => 'Service unavailable.'], 503);
+}
+
+$planId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?: 0;
+if ($planId <= 0) {
+    $send_json(['success' => false, 'error' => 'Invalid plan ID.'], 400);
+}
+
+try {
     $sql = '
         SELECT 
             p.*, 
@@ -34,35 +52,21 @@ try {
         LEFT JOIN moods m ON p.mood_id = m.id
         LEFT JOIN strategies s ON p.strategy_id = s.id
         WHERE p.id = ? AND p.deleted_at IS NULL
+        LIMIT 1
     ';
-
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$planId]);
     $plan = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($plan) {
-        echo json_encode([
-            'success' => true,
-            'plan' => $plan
-        ]);
+        $send_json(['success' => true, 'plan' => $plan]);
     } else {
-        http_response_code(404);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Plan not found.'
-        ]);
+        $send_json(['success' => false, 'error' => 'Plan not found.'], 404);
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     $log->error('Failed to fetch main plan details', [
         'plan_id' => $planId,
-        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
-        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
-        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
+        'message' => $e->getMessage(),
     ]);
-
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Database error while fetching main plan details.'
-    ]);
+    $send_json(['success' => false, 'error' => 'Database error while fetching main plan details.'], 500);
 }

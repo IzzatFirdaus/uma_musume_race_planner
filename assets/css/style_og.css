@@ -1,3 +1,10 @@
+/* Deprecated: This theme has been consolidated into style.css.
+   Keeping this file to maintain backward compatibility.
+   The default (OG) styles are included in style.css by default.
+   To use the frosted glass variant, set data-theme="glass" on the root element.
+*/
+@import url("./style.css");
+
 /* ---------------------------------------------------------------------
   Uma Musume Planner - style.css (v2.5)
   Description: Custom visual styles layered on top of Bootstrap 5.
@@ -70,7 +77,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: url("../assets/images/app_bg/uma_musume_race_planner_bg_light_1536x1028.png")
+  background: url("../images/app_bg/uma_musume_race_planner_bg_light_1536x1028.png")
               center/cover no-repeat;
   opacity: 0.8;
   transition: background 0.5s ease-in-out, opacity 0.5s ease-in-out;
@@ -88,7 +95,7 @@ body.dark-mode {
 }
 
 body.dark-mode::before {
-  background: url("../assets/images/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png")
+  background: url("../images/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png")
               center/cover no-repeat;
   opacity: 0.6;
 }

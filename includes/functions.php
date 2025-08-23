@@ -1,31 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 /**
+ * includes/functions.php
+ *
  * Uma Musume Race Planner - Core Functions
  *
  * Utilities for sanitization, validation, CSRF protection, and common helpers.
  * This file avoids direct calls to certain PHP functions that some static analyzers
- * (e.g., Intelephense) may not have stubs for by using wrapper helpers and call_user_func.
+ * may not have stubs for by using wrapper helpers and call_user_func.
  *
  * Use these helpers instead of direct built-ins in app code:
- * - ensure_session_started()  // instead of session_status()/session_start()/session_id()
- * - secure_random_bytes($n)   // instead of random_bytes()/openssl_random_pseudo_bytes()
- * - timing_safe_equals($a,$b) // instead of hash_equals()
- * - compute_hash($algo,$data,$raw=false) // instead of hash()/openssl_digest()
+ * - ensure_session_started()  // starts a session safely if needed
+ * - secure_random_bytes($n)   // secure random generator with fallbacks
+ * - timing_safe_equals($a,$b) // constant-time string compare
+ * - compute_hash($algo,$data,$raw=false) // hashing with fallbacks
+ * - get_env($key,$default=null) // environment accessor with fallbacks
  *
  * @author  Izzat
- * @updated 2025-08-22
+ * @updated 2025-08-23
  */
 
 /**
  * Sanitize input for safe HTML output.
- *
- * @param string $input
- * @return string
  */
-function sanitize_input($input)
+function sanitize_input(string $input): string
 {
-    return htmlspecialchars(trim((string)$input), ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
 }
 
 /**
@@ -33,9 +35,8 @@ function sanitize_input($input)
  *
  * @param mixed $input
  * @param array $allowed
- * @return bool
  */
-function validate_whitelist($input, $allowed)
+function validate_whitelist($input, array $allowed): bool
 {
     return in_array($input, $allowed, true);
 }
@@ -43,12 +44,9 @@ function validate_whitelist($input, $allowed)
 /**
  * Ensure a PHP session is available.
  * Uses defensive checks and call_user_func to avoid analyzer false-positives.
- *
- * @return void
  */
 function ensure_session_started(): void
 {
-    // If session_id function exists and is non-empty, a session is active.
     $hasSessionIdFn = function_exists('session_id');
     $currentSessionId = $hasSessionIdFn ? (string) @call_user_func('session_id') : '';
     if ($currentSessionId !== '') {
@@ -58,12 +56,19 @@ function ensure_session_started(): void
         return;
     }
 
-    // Attempt to start a session if possible and headers are not sent.
     if (function_exists('session_start') && !headers_sent()) {
         try {
+            // Harden session cookie settings if possible (use env or safe defaults)
+            $cookieParams = session_get_cookie_params();
+            $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+            $sameSite = $cookieParams['samesite'] ?? (ini_get('session.cookie_samesite') ?: 'Lax');
+
+            @ini_set('session.cookie_httponly', '1');
+            @ini_set('session.cookie_secure', $secure ? '1' : '0');
+            @ini_set('session.cookie_samesite', in_array($sameSite, ['Lax', 'Strict', 'None'], true) ? $sameSite : 'Lax');
+
             @call_user_func('session_start');
         } catch (Throwable $e) {
-            // As a fallback, ensure $_SESSION exists to avoid notices.
             if (!isset($_SESSION) || !is_array($_SESSION)) {
                 $_SESSION = [];
             }
@@ -71,7 +76,6 @@ function ensure_session_started(): void
         }
     }
 
-    // Final fallback when session APIs are not available (restricted env).
     if (!isset($_SESSION) || !is_array($_SESSION)) {
         $_SESSION = [];
     }
@@ -83,11 +87,9 @@ function ensure_session_started(): void
  * @param string $algo e.g., 'sha256', 'sha1', 'md5'
  * @param string $data
  * @param bool   $rawOutput If true, returns raw binary; otherwise hex string.
- * @return string
  */
 function compute_hash(string $algo, string $data, bool $rawOutput = false): string
 {
-    // Preferred: hash()
     if (function_exists('hash')) {
         try {
             return (string) call_user_func('hash', $algo, $data, $rawOutput);
@@ -96,7 +98,6 @@ function compute_hash(string $algo, string $data, bool $rawOutput = false): stri
         }
     }
 
-    // Fallback: openssl_digest (expects algo uppercase; raw output supported)
     if (function_exists('openssl_digest')) {
         try {
             return (string) call_user_func('openssl_digest', $data, strtoupper($algo), $rawOutput);
@@ -105,37 +106,31 @@ function compute_hash(string $algo, string $data, bool $rawOutput = false): stri
         }
     }
 
-    // Last resort: emulate with md5/sha1 combos (not cryptographically equivalent)
+    // Weak fallback: NOT cryptographically equivalent. Avoid in security-sensitive contexts.
     if ($algo === 'sha256') {
-        // Combine md5 and sha1 for entropy; return in requested format
         $mix = md5($data, true) . sha1($data, true);
-        $out = substr($mix, 0, 32); // 32 bytes to mimic sha256 raw length
+        $out = substr($mix, 0, 32);
         return $rawOutput ? $out : bin2hex($out);
     }
 
-    // Generic fallback: md5
-    $md = md5($data, $rawOutput);
-    return (string) $md;
+    return (string) md5($data, $rawOutput);
 }
 
 /**
  * Generate cryptographically secure random bytes with multiple fallbacks.
  *
- * @param int $length
  * @return string Raw bytes of requested length (not hex-encoded).
  */
 function secure_random_bytes(int $length): string
 {
-    // Preferred: random_bytes
     if (function_exists('random_bytes')) {
         try {
             return (string) call_user_func('random_bytes', $length);
         } catch (Throwable $e) {
-            // fall through to next method
+            // fall through
         }
     }
 
-    // Fallback: openssl_random_pseudo_bytes
     if (function_exists('openssl_random_pseudo_bytes')) {
         try {
             $strong = false;
@@ -148,48 +143,40 @@ function secure_random_bytes(int $length): string
         }
     }
 
-    // Fallback: /dev/urandom (Unix-like)
     $urandomPath = '/dev/urandom';
     if (stripos(PHP_OS, 'WIN') === false && is_readable($urandomPath)) {
         $h = @fopen($urandomPath, 'rb');
         if (is_resource($h)) {
             $bytes = @fread($h, $length);
             @fclose($h);
-            if ($bytes !== false && strlen((string)$bytes) === $length) {
+            if ($bytes !== false && strlen((string) $bytes) === $length) {
                 return (string) $bytes;
             }
         }
     }
 
-    // Last resort: deterministic filler based on repeated hashing (NOT crypto secure).
+    // Last resort: deterministic filler (NOT crypto secure)
     $result = '';
     while (strlen($result) < $length) {
         $entropy = microtime(true) . ':' . uniqid('', true) . ':' . getmypid();
-        $result .= compute_hash('sha256', $entropy, true);
+        $result .= compute_hash('sha256', (string) $entropy, true);
     }
     return substr($result, 0, $length);
 }
 
 /**
  * Constant-time string comparison to mitigate timing attacks.
- * Polyfill for hash_equals to avoid direct dependency.
- *
- * @param string $known Known-good string
- * @param string $user  User-provided string
- * @return bool
  */
 function timing_safe_equals(string $known, string $user): bool
 {
-    // If native hash_equals exists, prefer it via call_user_func
     if (function_exists('hash_equals')) {
         try {
             return (bool) call_user_func('hash_equals', $known, $user);
         } catch (Throwable $e) {
-            // fall through to manual implementation
+            // fall through
         }
     }
 
-    // Manual constant-time comparison
     if (strlen($known) !== strlen($user)) {
         return false;
     }
@@ -203,28 +190,21 @@ function timing_safe_equals(string $known, string $user): bool
 
 /**
  * Generate a CSRF token and store it in the session.
- *
  * @return string Hex-encoded CSRF token
  */
 function generate_csrf_token(): string
 {
     ensure_session_started();
-
     $token = bin2hex(secure_random_bytes(32));
-
     if (!isset($_SESSION) || !is_array($_SESSION)) {
         $_SESSION = [];
     }
     $_SESSION['csrf_token'] = $token;
-
     return $token;
 }
 
 /**
  * Validate a CSRF token from the request against the session.
- *
- * @param string|null $token
- * @return bool
  */
 function validate_csrf_token(?string $token): bool
 {
@@ -241,13 +221,17 @@ function validate_csrf_token(?string $token): bool
 
 /**
  * Validate numeric ID to prevent SQL injection and logical errors.
- *
- * @param mixed $id
- * @return bool
  */
 function validate_id($id): bool
 {
-    return is_numeric($id) && (int)$id > 0 && (string)(int)$id === (string)$id;
+    // Only allow positive integers represented as strings or ints (no floats, no leading zeros mismatch)
+    if (is_int($id)) {
+        return $id > 0;
+    }
+    if (is_string($id) && ctype_digit($id)) {
+        return (int) $id > 0;
+    }
+    return false;
 }
 
 /**
@@ -255,17 +239,35 @@ function validate_id($id): bool
  *
  * @param string|int $date  Date string/Unix timestamp
  * @param string     $format PHP date() format
- * @return string
  */
 function format_date($date, string $format = 'M d, Y'): string
 {
     if (is_numeric($date)) {
-        $ts = (int)$date;
+        $ts = (int) $date;
     } else {
-        $ts = strtotime((string)$date);
+        $ts = strtotime((string) $date);
         if ($ts === false) {
             return '';
         }
     }
     return date($format, $ts);
+}
+
+/**
+ * Retrieve environment variable value with safe default and superglobal fallbacks.
+ *
+ * @param string $key
+ * @param mixed $default
+ * @return mixed
+ */
+function get_env(string $key, $default = null)
+{
+    $v = getenv($key);
+    if ($v === false) {
+        $v = $_ENV[$key] ?? $_SERVER[$key] ?? null;
+    }
+    if ($v === null || $v === '') {
+        return $default;
+    }
+    return $v;
 }

@@ -1,3 +1,10 @@
+/* Deprecated: This theme has been consolidated into style.css.
+   Keeping this file to maintain backward compatibility.
+   If you were previously including style_glass.css, you can now include style.css only.
+   To enable the "glass" variant, set data-theme="glass" on the root element (e.g., <html data-theme="glass">).
+*/
+@import url("./style.css");
+
 /* ---------------------------------------------------------------------
   Uma Musume Planner - style.css (v2.6 - Frosted Glass Theme)
   Description: Custom visual styles layered on top of Bootstrap 5.
@@ -20,10 +27,10 @@
   --card-shadow: 0 4px 12px rgba(149, 117, 205, 0.15);
 
   /* Background Image URLs */
-  --bg-image-body-light: url("../assets/images/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
-  --bg-image-body-dark: url("../assets/images/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
-  --bg-image-component-light: url("../assets/images/app_bg/uma_musume_race_planner_bg_light_1028x1536.png");
-  --bg-image-component-dark: url("../assets/images/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png");
+  --bg-image-body-light: url("../images/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
+  --bg-image-body-dark: url("../images/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
+  --bg-image-component-light: url("../images/app_bg/uma_musume_race_planner_bg_light_1028x1536.png");
+  --bg-image-component-dark: url("../images/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png");
 
   /* Light Mode Surface Colors (Semi-Transparent) */
   --light-surface-bg: rgba(255, 255, 255, 0.75);

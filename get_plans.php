@@ -1,114 +1,101 @@
 <?php
 
+declare(strict_types=1);
+
 /**
- * get_plans.php
+ * get_plan_section.php
  *
- * This script retrieves a list of all non-deleted trainee plans from the database.
- * It also fetches associated mood and strategy labels, and importantly,
- * includes the main attribute (stats) values for each plan.
- *
- * Plans are ordered by a custom status priority (Active, Planning, Draft, Finished, Abandoned)
- * and then by their last update timestamp in descending order.
- *
- * Dependencies:
- * - includes/db.php: For establishing the PDO database connection.
- * - includes/logger.php: For logging any errors that occur during database operations.
- *
- * Output:
- * - JSON response containing 'success' status and an array of 'plans'.
- * - Each plan object in the 'plans' array will include top-level plan details
- * and a nested 'stats' object with 'speed', 'stamina', 'power', 'guts', 'wit' values.
+ * Returns a specific section of plan data.
+ * Method: GET
+ * Params:
+ * - id (int, required): plan_id
+ * - type (string, required): one of attributes|skills|distance_grades|style_grades|terrain_grades|goals|predictions|turns
  */
 
-header('Content-Type: application/json'); // Set Content-Type header for JSON response
-$pdo = require __DIR__ . '/includes/db.php'; // Include and execute the database connection script
-$log = require __DIR__ . '/includes/logger.php'; // Include and execute the logger script
+header('X-Content-Type-Options: nosniff');
+
+$send_json = static function (array $payload, int $code = 200): void {
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($code);
+    }
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+};
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+    header('Allow: GET', true, 405);
+    $send_json(['success' => false, 'error' => 'Method not allowed.'], 405);
+}
 
 try {
-    // SQL query to fetch plans, their associated mood and strategy,
-    // and all attributes.
-    // We LEFT JOIN with 'attributes' to ensure plans without attributes are still included.
-    // This will result in multiple rows per plan if a plan has multiple attributes.
-    $query = "
-        SELECT
-            p.*,                -- Select all columns from the plans table
-            m.label AS mood,    -- Select mood label from moods table, aliased as 'mood'
-            s.label AS strategy,-- Select strategy label from strategies table, aliased as 'strategy'
-            a.attribute_name,   -- Select attribute name (e.g., 'speed', 'stamina')
-            a.value AS attribute_value -- Select attribute value, aliased to avoid conflicts
-        FROM
-            plans p
-        LEFT JOIN
-            moods m ON p.mood_id = m.id
-        LEFT JOIN
-            strategies s ON p.strategy_id = s.id
-        LEFT JOIN
-            attributes a ON p.id = a.plan_id -- Join with attributes table on plan_id
-        WHERE
-            p.deleted_at IS NULL -- Only fetch plans that are not soft-deleted
-        ORDER BY
-            CASE p.status       -- Custom sorting based on plan status
-                WHEN 'Active' THEN 1
-                WHEN 'Planning' THEN 2
-                WHEN 'Draft' THEN 3
-                WHEN 'Finished' THEN 4
-                WHEN 'Abandoned' THEN 5
-                ELSE 6          -- Fallback for any other status
-            END,
-            p.updated_at DESC   -- Secondary sort by last update timestamp (most recent first)
-    ";
+    /** @var PDO $pdo */
+    $pdo = require __DIR__ . '/includes/db.php';
+    $log = require __DIR__ . '/includes/logger.php';
+} catch (Throwable $e) {
+    $send_json(['success' => false, 'error' => 'Service unavailable.'], 503);
+}
 
-    // Execute the query and fetch all results
-    // PDO::FETCH_ASSOC ensures results are returned as associative arrays (column_name => value)
-    $raw_plans = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
+$plan_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?: 0;
+$type = (string) ($_GET['type'] ?? '');
 
-    // Initialize an array to hold the processed plans with nested attributes
-    $plans_with_attributes = [];
+if ($plan_id <= 0 || $type === '') {
+    $send_json(['success' => false, 'error' => 'Missing or invalid parameters.'], 400);
+}
 
-    // Process the raw results to group attributes under a 'stats' key for each plan
-    foreach ($raw_plans as $row) {
-        $plan_id = $row['id'];
+$sectionMap = [
+    'attributes' => [
+        'sql' => 'SELECT attribute_name, value, grade FROM attributes WHERE plan_id = ? ORDER BY id',
+        'key' => 'attributes',
+    ],
+    'skills' => [
+        // Join with reference for name (the skills table stores skill_reference_id)
+        'sql' => 'SELECT COALESCE(sr.skill_name,"") AS skill_name, s.sp_cost, s.acquired, s.tag, s.notes
+                  FROM skills s
+                  LEFT JOIN skill_reference sr ON s.skill_reference_id = sr.id
+                  WHERE s.plan_id = ?
+                  ORDER BY s.id',
+        'key' => 'skills',
+    ],
+    'distance_grades' => [
+        'sql' => 'SELECT distance, grade FROM distance_grades WHERE plan_id = ? ORDER BY id',
+        'key'  => 'distance_grades',
+    ],
+    'style_grades' => [
+        'sql' => 'SELECT style, grade FROM style_grades WHERE plan_id = ? ORDER BY id',
+        'key' => 'style_grades',
+    ],
+    'terrain_grades' => [
+        'sql' => 'SELECT terrain, grade FROM terrain_grades WHERE plan_id = ? ORDER BY id',
+        'key' => 'terrain_grades',
+    ],
+    'goals' => [
+        'sql' => 'SELECT goal, result FROM goals WHERE plan_id = ? ORDER BY id',
+        'key' => 'goals',
+    ],
+    'predictions' => [
+        'sql' => 'SELECT * FROM race_predictions WHERE plan_id = ? ORDER BY id',
+        'key' => 'predictions',
+    ],
+    'turns' => [
+        'sql' => 'SELECT * FROM turns WHERE plan_id = ? ORDER BY id',
+        'key' => 'turns',
+    ],
+];
 
-        // If this is the first time we encounter this plan_id, initialize its structure
-        if (!isset($plans_with_attributes[$plan_id])) {
-            $plans_with_attributes[$plan_id] = $row; // Copy all top-level plan details
-            // Initialize the 'stats' object with default zero values for all attributes
-            $plans_with_attributes[$plan_id]['stats'] = [
-                'speed' => 0,
-                'stamina' => 0,
-                'power' => 0,
-                'guts' => 0,
-                'wit' => 0,
-            ];
-            // Remove the raw attribute columns from the top level, as they'll be nested
-            unset($plans_with_attributes[$plan_id]['attribute_name']);
-            unset($plans_with_attributes[$plan_id]['attribute_value']);
-        }
+if (!array_key_exists($type, $sectionMap)) {
+    $send_json(['success' => false, 'error' => 'Invalid type requested.'], 400);
+}
 
-        // If attribute data exists for this row, add it to the 'stats' object
-        if ($row['attribute_name']) {
-            $attr_name = strtolower((string) $row['attribute_name']); // Ensure attribute name is lowercase
-            // Check if the attribute name is one of the expected stats
-            if (isset($plans_with_attributes[$plan_id]['stats'][$attr_name])) {
-                $plans_with_attributes[$plan_id]['stats'][$attr_name] = (int)$row['attribute_value']; // Cast to int
-            }
-        }
-    }
-
-    // Convert the associative array (keyed by plan_id) to an indexed array for final JSON output
-    $final_plans = array_values($plans_with_attributes);
-
-    // Encode the final array of plans into a JSON response
-    echo json_encode(['success' => true, 'plans' => $final_plans]);
-} catch (Exception $e) {
-    // Log the database error for debugging purposes
-    $log->error('Failed to fetch plan list', [
-        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
-        'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
-        'line' => method_exists($e, 'getLine') ? $e->getLine() : '',
+try {
+    $stmt = $pdo->prepare($sectionMap[$type]['sql']);
+    $stmt->execute([$plan_id]);
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $send_json(['success' => true, $sectionMap[$type]['key'] => $data]);
+} catch (Throwable $e) {
+    $log->error("Failed to fetch plan section: {$type}", [
+        'plan_id' => $plan_id,
+        'message' => $e->getMessage(),
     ]);
-    // Set HTTP response code to 500 (Internal Server Error)
-    http_response_code(500);
-    // Return a JSON error message to the client
-    echo json_encode(['success' => false, 'error' => 'A database error occurred. Please try again later.']);
+    $send_json(['success' => false, 'error' => "A database error occurred fetching {$type}."], 500);
 }

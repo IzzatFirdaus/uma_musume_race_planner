@@ -1,54 +1,70 @@
 // assets/js/dashboard.js
-// Handles dashboard Chart.js integration for stats radar chart.
-// Dark mode is handled in app.js (do not duplicate logic).
+// Handles dashboard Chart.js integration for a Stats Radar chart.
+// - Uses a distinct canvas ID 'statsRadar' to avoid collisions with the doughnut chart in app.js
+// - Applies best practices: reduced motion, defensive DOM checks, CSS variable-driven theming.
 
-document.addEventListener('DOMContentLoaded', function () {
-  // Example Chart.js radar setup with dynamic data
+/* eslint-env browser */
+(() => {
+  'use strict';
 
-  const chartCanvas = document.getElementById('statsChart');
-  if (chartCanvas && window.Chart) {
-    // Try to fetch stats from HTML data attributes or API (fallback to hardcoded)
-    let stats = {
-      speed: 80,
-      stamina: 70,
-      power: 90,
-      guts: 60,
-      wisdom: 85
-    };
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('statsRadar');
+    if (!canvas || !window.Chart) return;
 
-    // Example: If stats are rendered server-side into elements
-    const statKeys = ['speed', 'stamina', 'power', 'guts', 'wisdom'];
-    statKeys.forEach(key => {
-      const el = document.getElementById('stats' + key.charAt(0).toUpperCase() + key.slice(1));
-      if (el) {
-        stats[key] = parseInt(el.textContent || '0', 10);
-      }
+    // Gather stats from DOM if available, else fallback to example values
+    const keys = ['speed', 'stamina', 'power', 'guts', 'wisdom'];
+    const defaults = { speed: 80, stamina: 70, power: 90, guts: 60, wisdom: 85 };
+    const stats = Object.fromEntries(keys.map((k) => {
+      const el = document.getElementById('stats' + k.charAt(0).toUpperCase() + k.slice(1));
+      const val = parseInt(el?.textContent || `${defaults[k]}`, 10);
+      return [k, Number.isFinite(val) ? val : defaults[k]];
+    }));
+
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+    // CSS-driven colors with sensible fallbacks. Defer reading CSS variables
+    // to the next animation frame to avoid forced layout before styles are applied.
+    const css = (v, fb) => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || fb;
+    let stroke = 'rgba(111, 66, 193, 1)';
+    let fill = 'transparent';
+    requestAnimationFrame(() => {
+      stroke = css('--color-secondary', 'rgba(111, 66, 193, 1)');
+      fill = 'color-mix(in oklab, ' + stroke + ' 25%, transparent)';
+      // Re-create chart or update dataset colors here if needed in future.
     });
 
-    new Chart(chartCanvas, {
+    // eslint-disable-next-line no-new
+    new Chart(canvas, {
       type: 'radar',
       data: {
-        labels: statKeys.map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+        labels: keys.map(k => k.charAt(0).toUpperCase() + k.slice(1)),
         datasets: [{
           label: 'Stats',
-          data: statKeys.map(k => stats[k]),
-          backgroundColor: 'rgba(111, 66, 193, 0.2)',
-          borderColor: 'rgba(111, 66, 193, 1)'
+          data: keys.map(k => stats[k]),
+          backgroundColor: fill,
+          borderColor: stroke,
+          pointBackgroundColor: stroke,
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: stroke,
         }]
       },
       options: {
         responsive: true,
+        animation: reducedMotion ? false : { duration: 500 },
         plugins: {
           legend: { position: 'top' }
         },
         scales: {
           r: {
             angleLines: { display: false },
+            grid: { color: 'rgba(0,0,0,0.1)' },
+            ticks: { display: false },
             suggestedMin: 0,
             suggestedMax: 120
           }
         }
       }
     });
-  }
-});
+  });
+})();

@@ -1,129 +1,245 @@
-/* ...existing code from css/style.css... *//* Main Stylesheet for Uma Musume Race Planner
-   - Bootstrap 5 assumed loaded via CDN in HTML
-   - Follows UPDATE_INSTRUCTIONS.md guidelines
-   - Dark mode, accessibility, skip link, and theming support
-*/
+/* ==========================================================================
+   Uma Musume Race Planner — Unified Stylesheet
+   Consolidates previous style.css, style_glass.css, and style_og.css
+   - Bootstrap 5 assumed
+   - Mobile-first, accessible, themeable
+   - Supports: default (OG), dark, and "glass" (frosted) theme variants
+   General Best Practices applied:
+   • Accessibility: strong focus rings, visible skip links, reduced motion support
+   • Consistency: design tokens via CSS custom properties, common spacing and shadows
+   • Performance: shared variables, selective backgrounds, reduced costly effects when disabled
+   • Scalability: theming via [data-theme] attributes, dark mode via [data-theme="dark"] or .dark-mode (back-compat)
+   ========================================================================== */
 
-/* CSS Variables for Theming */
+/* ------------------------------
+   Fonts (Performance-friendly)
+   ------------------------------ */
+/* Keep fonts minimal; provide robust system fallbacks */
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap");
+
+/* ------------------------------
+   Base tokens
+   ------------------------------ */
 :root {
-  --main-bg: #fff;
-  --main-text: #222;
-  --primary-accent: #f06292;
-  --navbar-bg: #f8f9fa;
-  --card-bg: #fff;
-  --card-border: #e5e5e5;
-  --btn-bg: #f06292;
-  --btn-text: #fff;
-  --link-color: #1976d2;
-  --focus-outline: 2px solid #f06292;
+  color-scheme: light dark;
+
+  /* Typography */
+  --font-sans: "M PLUS Rounded 1c", "Figtree", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+
+  /* Brand colors */
+  --color-primary: #f06292;  /* brand pink */
+  --color-secondary: #9575cd; /* soft purple */
+
+  /* Neutral palette */
+  --color-text: #212529;
+  --color-muted: #6c757d;
+  --color-link: #1976d2;
+  --color-link-hover: #125a9f;
+
+  /* Surfaces and borders */
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8f9fa;
+  --color-border: rgba(0, 0, 0, 0.12);
+
+  /* Focus & states */
+  --focus-ring-color: var(--color-primary);
+  --focus-ring: 2px solid var(--focus-ring-color);
+
+  /* Shadows */
+  --shadow-card: 0 4px 12px rgba(149, 117, 205, 0.15);
+  --shadow-elevated: 0 6px 16px rgba(0, 0, 0, 0.18);
+
+  /* Buttons */
+  --btn-bg: var(--color-primary);
+  --btn-text: #ffffff;
+  --btn-bg-hover: #d84381;
+
+  /* Stat colors */
+  --stat-speed-color: #007bff;
+  --stat-stamina-color: #dc3545;
+  --stat-power-color: #fd7e14;
+  --stat-guts-color: #e83e8c;
+  --stat-wit-color: #28a745;
+
+  /* Background imagery (used by themes) */
+  --bg-image-body-light: url("../images/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
+  --bg-image-body-dark: url("../images/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
+  --bg-image-component-light: url("../images/app_bg/uma_musume_race_planner_bg_light_1028x1536.png");
+  --bg-image-component-dark: url("../images/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png");
+
+  /* Glass overlays */
+  --glass-surface-bg: rgba(255, 255, 255, 0.75);
+  --glass-header-bg: rgba(240, 98, 146, 0.10);
+
+  /* Token shortcuts */
+  --card-radius: 16px;
+  --card-padding: 1rem;
 }
 
-/* Dark Mode Theme */
-[data-theme="dark"] {
-  --main-bg: #181a1b;
-  --main-text: #fafafa;
-  --navbar-bg: #23272b;
-  --card-bg: #222426;
-  --card-border: #333;
+/* Dark mode tokens (attribute-based) */
+[data-theme="dark"],
+.dark-mode {
+  --color-text: #e1d9ff; /* neon-like readable text */
+  --color-muted: #9e95b3;
+  --color-link: #ffffff;
+  --color-link-hover: #d1d1d1;
+
+  --color-bg: #181a1b;
+  --color-surface: #222426;
+  --color-surface-muted: #23272b;
+  --color-border: rgba(255, 255, 255, 0.15);
+
+  --focus-ring-color: #ad1457; /* darker brand focus for dark theme */
+
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.4);
+
   --btn-bg: #ad1457;
-  --btn-text: #fff;
-  --link-color: #90caf9;
-  --focus-outline: 2px solid #ad1457;
+  --btn-text: #ffffff;
+  --btn-bg-hover: #8f0f48;
+}
+
+/* System-wide reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+  * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ------------------------------
+   Global structure
+   ------------------------------ */
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--main-bg);
-  color: var(--main-text);
-  font-family: 'M PLUS Rounded 1c', 'Segoe UI', Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  padding-bottom: 50px;
+  transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-/* Navbar */
-.navbar {
-  background: var(--navbar-bg);
-  color: var(--main-text);
+/* Background image layer (used by default and glass themes) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--bg-image-body-light);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+  transition: background-image 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
-/* Card */
-.card {
-  background: var(--card-bg);
-  border-color: var(--card-border);
+/* Dark background image */
+[data-theme="dark"] body::before,
+.dark-mode body::before {
+  background-image: var(--bg-image-body-dark);
+  opacity: 0.65;
 }
 
-.btn-uma {
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  border: none;
-}
-.btn-uma:hover, .btn-uma:focus {
-  background: #c2185b;
-  outline: var(--focus-outline);
-}
-
-/* Link Styling */
+/* ------------------------------
+   Links & focus visibility
+   ------------------------------ */
 a {
-  color: var(--link-color);
+  color: var(--color-link);
+  text-decoration: none;
 }
-a:focus {
-  outline: var(--focus-outline);
+a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
 }
 
-/* Accessibility: Visually Hidden Helpers */
+/* Strong, accessible focus ring */
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ------------------------------
+   Accessibility helpers
+   ------------------------------ */
 .visually-hidden {
   position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
+  inline-size: 1px !important;
+  block-size: 1px !important;
   padding: 0 !important;
   margin: -1px !important;
   overflow: hidden !important;
-  clip: rect(0,0,0,0) !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* Skip link pattern — visibility styled in responsive.css for mobile */
 .visually-hidden-focusable {
   position: absolute;
   left: -9999px;
   top: auto;
-  width: 1px;
-  height: 1px;
+  inline-size: 1px;
+  block-size: 1px;
   overflow: hidden;
 }
-.visually-hidden-focusable:focus {
-  position: static;
-  width: auto;
-  height: auto;
-  left: auto;
-  background: #fff;
-  color: #222;
-  z-index: 9999;
-  outline: var(--focus-outline);
-  padding: 0.5em 1em;
-  border-radius: 4px;
+
+/* ------------------------------
+   Navbar & Header (Default / OG theme)
+   ------------------------------ */
+.header-banner,
+.navbar {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-/* Focus Outline for Keyboard Navigation */
-:focus-visible {
-  outline: var(--focus-outline);
+.navbar .nav-link,
+.navbar-brand {
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 1.05rem;
 }
 
-/* Miscellaneous UI Elements */
-.spinner-border.text-uma {
-  color: var(--btn-bg);
+/* Dark overrides */
+[data-theme="dark"] .header-banner,
+.dark-mode .header-banner,
+[data-theme="dark"] .navbar,
+.dark-mode .navbar {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
-/* Example media query for responsiveness */
-@media (max-width: 768px) {
-  .plan-card {
-    margin-bottom: 1.5rem;
-  }
-  .table-responsive {
-    max-height: calc(100vh - 300px);
-    overflow-y: auto;
-  }
-  .stat-icon {
-    font-size: 1.3rem;
-  }
+[data-theme="dark"] .navbar .nav-link,
+.dark-mode .navbar .nav-link,
+[data-theme="dark"] .navbar-brand,
+.dark-mode .navbar-brand {
+  color: var(--color-text) !important;
 }
 
-/* Header logo sizing moved from public/index.php to central stylesheet */
+/* Logos */
+.header-banner .logo {
+  height: 80px;
+  margin-right: 15px;
+  vertical-align: middle;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.navbar-brand .logo {
+  height: 24px;
+  margin-right: 8px;
+}
+
+/* Centralized app logo size helpers */
 .logo.app-logo {
   width: 80px;
   height: 80px;
@@ -140,6 +256,388 @@ a:focus {
   }
 }
 
-/* Add additional custom styles below as needed */
+/* ------------------------------
+   Cards & Modals
+   ------------------------------ */
+.card {
+  border: none;
+  border-radius: var(--card-radius);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #fff3f5;
+  font-weight: 700;
+  color: var(--color-primary);
+  border-bottom: 1px solid rgba(240, 98, 146, 0.2);
+}
+
+[data-theme="dark"] .card-header,
+.dark-mode .card-header {
+  background-color: var(--color-surface-muted);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.modal-content {
+  border: none;
+  border-radius: var(--card-radius);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+[data-theme="dark"] .modal-header,
+.dark-mode .modal-header,
+[data-theme="dark"] .modal-footer,
+.dark-mode .modal-footer {
+  border-color: var(--color-border);
+}
+
+/* Active tab styling (e.g., inside modals) */
+[data-theme="dark"] .nav-pills .nav-link.active,
+.dark-mode .nav-pills .nav-link.active,
+[data-theme="dark"] .nav-tabs .nav-link.active,
+.dark-mode .nav-tabs .nav-link.active {
+  background-color: #b373ff;
+  color: #ffffff;
+}
+
+/* ------------------------------
+   Buttons
+   ------------------------------ */
+.btn-uma {
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
+  font-weight: 600;
+  border: none;
+}
+.btn-uma:hover,
+.btn-uma:focus {
+  background-color: var(--btn-bg-hover);
+  color: var(--btn-text);
+}
+
+/* ------------------------------
+   Forms & Autocomplete
+   ------------------------------ */
+.form-control,
+.form-select {
+  border-radius: 0.5rem;
+  border: 1px solid rgba(149, 117, 205, 0.2);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 0.25rem rgba(149, 117, 205, 0.25);
+}
+
+[data-theme="dark"] .form-control,
+.dark-mode .form-control,
+[data-theme="dark"] .form-select,
+.dark-mode .form-select {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+  border-color: var(--color-border);
+}
+
+/* Autocomplete menu */
+.autocomplete-container {
+  position: relative;
+}
+.autocomplete-items {
+  position: absolute;
+  z-index: 1060;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0 0 0.5rem 0.5rem;
+  box-shadow: var(--shadow-card);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+}
+.autocomplete-items div:hover,
+.autocomplete-active {
+  background-color: rgba(233, 233, 233, 0.5);
+}
+[data-theme="dark"] .autocomplete-items div:hover,
+.dark-mode .autocomplete-items div:hover,
+[data-theme="dark"] .autocomplete-active,
+.dark-mode .autocomplete-active {
+  background-color: #4a4a4a;
+}
+
+/* ------------------------------
+   Tables & Lists
+   ------------------------------ */
+.table {
+  background-color: transparent;
+}
+.table thead th {
+  font-weight: 700;
+  background-color: rgba(248, 249, 250, 0.7);
+  border-color: var(--color-border);
+}
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+[data-theme="dark"] .table-hover tbody tr:hover,
+.dark-mode .table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.075);
+}
+[data-theme="dark"] .table thead th,
+.dark-mode .table thead th,
+[data-theme="dark"] .table,
+.dark-mode .table {
+  color: var(--color-text);
+}
+
+/* Recent Activity cards */
+.recent-activity-card .list-group {
+  background-color: transparent;
+}
+.recent-activity-card .list-group-item {
+  background-color: transparent;
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .recent-activity-card .list-group-item,
+.dark-mode .recent-activity-card .list-group-item {
+  background-color: rgba(60, 53, 74, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ------------------------------
+   Dashboard chips & statuses
+   ------------------------------ */
+.bg-active {
+  background-color: #198754;
+  color: #ffffff;
+}
+.bg-finished {
+  background-color: #0d6efd;
+  color: #ffffff;
+}
+[data-theme="dark"] .bg-active,
+.dark-mode .bg-active,
+[data-theme="dark"] .bg-finished,
+.dark-mode .bg-finished {
+  color: #ffffff;
+}
+
+.quick-stats-number {
+  color: var(--color-text);
+}
+[data-theme="dark"] .quick-stats-number,
+.dark-mode .quick-stats-number {
+  color: var(--color-link);
+}
+
+/* ------------------------------
+   Data Visualization helpers
+   ------------------------------ */
+.text-speed-blue { color: var(--stat-speed-color); }
+.text-stamina-red { color: var(--stat-stamina-color); }
+.text-power-orange { color: var(--stat-power-color); }
+.text-guts-magenta { color: var(--stat-guts-color); }
+.text-wit-green { color: var(--stat-wit-color); }
+
+.plan-stat-bars {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.5rem;
+  height: 6px;
+}
+.stat-bar {
+  flex-grow: 1;
+  border-radius: 3px;
+  background-color: #e9ecef;
+}
+.stat-bar > div {
+  height: 100%;
+  border-radius: 3px;
+}
+.stat-bar .bar-speed { background-color: var(--stat-speed-color); }
+.stat-bar .bar-stamina { background-color: var(--stat-stamina-color); }
+.stat-bar .bar-power { background-color: var(--stat-power-color); }
+.stat-bar .bar-guts { background-color: var(--stat-guts-color); }
+.stat-bar .bar-wit { background-color: var(--stat-wit-color); }
+
+[data-theme="dark"] .stat-bar,
+.dark-mode .stat-bar {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.skill-context-info {
+  font-size: 0.85rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--color-secondary);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* ------------------------------
+   Footer & Sticky guide
+   ------------------------------ */
+.guide-sticky-nav {
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+footer,
+.guide-sticky-nav {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #ffffff;
+  border-top: 1px solid transparent;
+  padding: 1.5rem 0;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+footer a {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
+
+[data-theme="dark"] footer,
+.dark-mode footer,
+[data-theme="dark"] .guide-sticky-nav,
+.dark-mode .guide-sticky-nav {
+  background-image: none;
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] footer a,
+.dark-mode footer a {
+  color: #b373ff;
+}
+
+/* ------------------------------
+   Section highlight blocks
+   ------------------------------ */
+.section-highlight {
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 2rem;
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-card);
+}
+
+/* ------------------------------
+   Loading overlays
+   ------------------------------ */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: var(--card-radius);
+}
+[data-theme="dark"] .loading-overlay,
+.dark-mode .loading-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ------------------------------
+   Icon sizing
+   ------------------------------ */
+.stat-icon {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* ==========================================================================
+   GLASS THEME VARIANT
+   Apply frosted glass surfaces when [data-theme="glass"] is present on <html> or <body> root.
+   Combines prior style_glass.css behavior into a controlled theme layer.
+   ========================================================================== */
+[data-theme="glass"] body::before {
+  /* Maintain background imagery */
+  background-image: var(--bg-image-body-light);
+  opacity: 0.85;
+}
+[data-theme="glass"][data-theme="dark"] body::before, /* unlikely double, kept for safety */
+[data-theme="glass"] [data-theme="dark"] body::before, /* nested */
+[data-theme="glass"].dark-mode body::before,
+[data-theme="glass"] .dark-mode body::before {
+  background-image: var(--bg-image-body-dark);
+}
+
+/* Frosted surfaces for key components when glass theme is active */
+[data-theme="glass"] .header-banner,
+[data-theme="glass"] .navbar,
+[data-theme="glass"] .card,
+[data-theme="glass"] .modal-content,
+[data-theme="glass"] footer,
+[data-theme="glass"] .guide-sticky-nav {
+  background-image: var(--bg-image-component-light);
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  background-color: var(--glass-surface-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Glass theme header treatment */
+[data-theme="glass"] .card-header {
+  background-color: var(--glass-header-bg);
+  color: var(--color-primary);
+  border-bottom: 1px solid rgba(240, 98, 146, 0.2);
+}
+
+/* Readability over textured background */
+[data-theme="glass"] .navbar a.nav-link,
+[data-theme="glass"] .navbar-brand,
+[data-theme="glass"] footer a,
+[data-theme="glass"] .header-banner h1,
+[data-theme="glass"] .header-banner p {
+  color: #333 !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+/* Dark overrides for glass */
+[data-theme="glass"][data-theme="dark"] .header-banner,
+[data-theme="glass"][data-theme="dark"] .navbar,
+[data-theme="glass"][data-theme="dark"] .card,
+[data-theme="glass"][data-theme="dark"] .modal-content,
+[data-theme="glass"][data-theme="dark"] footer,
+[data-theme="glass"][data-theme="dark"] .guide-sticky-nav,
+[data-theme="glass"] .dark-mode .header-banner,
+[data-theme="glass"] .dark-mode .navbar,
+[data-theme="glass"] .dark-mode .card,
+[data-theme="glass"] .dark-mode .modal-content,
+[data-theme="glass"] .dark-mode footer,
+[data-theme="glass"] .dark-mode .guide-sticky-nav {
+  background-image: var(--bg-image-component-dark);
+  background-color: rgba(45, 45, 45, 0.7);
+  border-color: var(--color-border);
+  text-shadow: none;
+}
 
 /* End of style.css */

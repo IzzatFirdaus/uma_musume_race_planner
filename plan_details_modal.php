@@ -1,29 +1,32 @@
 <?php
 // plan_details_modal.php
-// This file relies on PHP variables being available from index.php
+// Relies on PHP variables from index.php. Avoids closing PHP tag in includes to prevent stray output.
 require_once __DIR__ . '/includes/logger.php';
 
-// Ensure these variables are available from index.php, provide empty arrays as a fallback
+// Ensure variables exist
 $careerStageOptions = $careerStageOptions ?? [];
 $classOptions = $classOptions ?? [];
 $strategyOptions = $strategyOptions ?? [];
 $moodOptions = $moodOptions ?? [];
 $conditionOptions = $conditionOptions ?? [];
 ?>
-
 <div class="modal fade" id="planDetailsModal" tabindex="-1" aria-labelledby="planDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl" role="dialog" aria-modal="true" aria-describedby="planDetailsModalDesc">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="planDetailsModalLabel">Plan Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close dialog"></button>
             </div>
+
+            <div id="planDetailsModalDesc" class="visually-hidden">View and edit detailed information of a plan including attributes, grades, skills, and predictions.</div>
+
             <div class="loading-overlay" id="planDetailsLoadingOverlay" style="display: none;">
-                <div class="spinner-border text-uma" role="status">
+                <div class="spinner-border text-uma" role="status" aria-live="polite" aria-label="Loading plan details">
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <form id="planDetailsForm" enctype="multipart/form-data">
+
+            <form id="planDetailsForm" enctype="multipart/form-data" autocomplete="off" novalidate>
                 <div class="modal-body">
                     <ul class="nav nav-tabs" id="planTabs" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -68,29 +71,29 @@ $conditionOptions = $conditionOptions ?? [];
                             <div class="row mb-3">
                                 <div class="col-md-8">
                                     <label for="plan_title" class="form-label">Plan Title</label>
-                                    <input type="text" class="form-control" id="plan_title" name="plan_title">
+                                    <input type="text" class="form-control" id="plan_title" name="plan_title" maxlength="200" autocomplete="off" inputmode="text">
                                     <input type="hidden" id="planId" name="planId">
                                 </div>
                                 <div class="col-md-4">
                                     <label for="modalTurnBefore" class="form-label">Turn Before</label>
                                     <input type="number" class="form-control" id="modalTurnBefore"
-                                        name="modalTurnBefore">
+                                        name="modalTurnBefore" min="0" max="999" inputmode="numeric" autocomplete="off">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="modalName" class="form-label">Trainee Name</label>
                                     <input type="text" class="form-control" id="modalName" name="modalName"
-                                        required>
+                                        required maxlength="150" autocomplete="off">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="modalRaceName" class="form-label">Next Race Name</label>
                                     <input type="text" class="form-control" id="modalRaceName"
-                                        name="modalRaceName">
+                                        name="modalRaceName" maxlength="200" autocomplete="off">
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <?php $id_suffix = ''; // Use no suffix for the modal?>
+                                <?php $id_suffix = ''; ?>
                                 <?php include __DIR__ . '/components/trainee_image_handler.php'; ?>
                                 <div class="col-md-6">
                                     <div class="row">
@@ -155,37 +158,35 @@ $conditionOptions = $conditionOptions ?? [];
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="modalGoal" class="form-label">Goal</label>
-                                    <input type="text" class="form-control" id="modalGoal" name="modalGoal">
+                                    <input type="text" class="form-control" id="modalGoal" name="modalGoal" maxlength="200" autocomplete="off">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="modalSource" class="form-label">Source</label>
-                                    <input type="text" class="form-control" id="modalSource" name="modalSource">
+                                    <input type="text" class="form-control" id="modalSource" name="modalSource" maxlength="200" autocomplete="off">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="modalMonth" class="form-label">Month</label>
                                     <input type="text" class="form-control" id="modalMonth" name="modalMonth"
-                                        placeholder="e.g., July">
+                                        placeholder="e.g., July" maxlength="20" autocomplete="off">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="modalTimeOfDay" class="form-label">Time of Day</label>
                                     <input type="text" class="form-control" id="modalTimeOfDay"
-                                        name="modalTimeOfDay" placeholder="e.g., Early / Late">
+                                        name="modalTimeOfDay" placeholder="e.g., Early / Late" maxlength="20" autocomplete="off">
                                 </div>
                             </div>
-                            <div class="row mb-3">
+                            <div class="row mb-3 align-items-end">
                                 <div class="col-md-4">
                                     <label for="skillPoints" class="form-label">Total SP</label>
-                                    <input type="number" class="form-control" id="skillPoints" name="skillPoints"
-                                        value="0">
+                                    <input type="number" class="form-control" id="skillPoints" name="skillPoints" value="0" min="0" max="100000" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="col-md-4 d-flex align-items-center">
                                     <div class="form-check form-switch mt-4">
                                         <input class="form-check-input" type="checkbox" id="acquireSkillSwitch"
                                             name="acquireSkillSwitch" value="YES">
-                                        <label class="form-check-label" for="acquireSkillSwitch">Acquire
-                                            Skill?</label>
+                                        <label class="form-check-label" for="acquireSkillSwitch">Acquire Skill?</label>
                                     </div>
                                 </div>
                                 <div class="col-md-4 d-flex align-items-center">
@@ -198,10 +199,9 @@ $conditionOptions = $conditionOptions ?? [];
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-12">
-                                    <label for="energyRange" class="form-label">Energy (<span
-                                            id="energyValue">0</span>/100%)</label>
+                                    <label for="energyRange" class="form-label">Energy (<span id="energyValue">0</span>/100%)</label>
                                     <input type="range" class="form-range" min="0" max="100"
-                                        id="energyRange" name="energyRange">
+                                        id="energyRange" name="energyRange" aria-valuemin="0" aria-valuemax="100" aria-describedby="energyValue">
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -209,34 +209,33 @@ $conditionOptions = $conditionOptions ?? [];
                                 <div class="col">
                                     <label for="growthRateSpeed" class="form-label">Speed</label>
                                     <input type="number" class="form-control" id="growthRateSpeed"
-                                        name="growthRateSpeed" value="0">
+                                        name="growthRateSpeed" value="0" min="-100" max="100" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="col">
                                     <label for="growthRateStamina" class="form-label">Stamina</label>
                                     <input type="number" class="form-control" id="growthRateStamina"
-                                        name="growthRateStamina" value="0">
+                                        name="growthRateStamina" value="0" min="-100" max="100" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="col">
                                     <label for="growthRatePower" class="form-label">Power</label>
                                     <input type="number" class="form-control" id="growthRatePower"
-                                        name="growthRatePower" value="0">
+                                        name="growthRatePower" value="0" min="-100" max="100" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="col">
                                     <label for="growthRateGuts" class="form-label">Guts</label>
                                     <input type="number" class="form-control" id="growthRateGuts"
-                                        name="growthRateGuts" value="0">
+                                        name="growthRateGuts" value="0" min="-100" max="100" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="col">
                                     <label for="growthRateWit" class="form-label">Wit</label>
                                     <input type="number" class="form-control" id="growthRateWit"
-                                        name="growthRateWit" value="0">
+                                        name="growthRateWit" value="0" min="-100" max="100" inputmode="numeric" autocomplete="off">
                                 </div>
                             </div>
                         </div>
 
                         <div class="tab-pane fade" id="attributes" role="tabpanel" aria-labelledby="attributes-tab">
-                            <div id="attributeSlidersContainer">
-                            </div>
+                            <div id="attributeSlidersContainer"></div>
                         </div>
 
                         <div class="tab-pane fade" id="grades" role="tabpanel" aria-labelledby="grades-tab">
@@ -262,8 +261,7 @@ $conditionOptions = $conditionOptions ?? [];
                             <button type="button" class="btn btn-uma w-100 mt-2" id="addSkillBtn">Add Skill</button>
                         </div>
 
-                        <div class="tab-pane fade" id="predictions" role="tabpanel"
-                            aria-labelledby="predictions-tab">
+                        <div class="tab-pane fade" id="predictions" role="tabpanel" aria-labelledby="predictions-tab">
                             <div class="table-responsive">
                                 <table class="table table-sm" id="predictionsTable">
                                     <thead>
@@ -286,8 +284,7 @@ $conditionOptions = $conditionOptions ?? [];
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn btn-uma w-100 mt-2" id="addPredictionBtn">Add
-                                Prediction</button>
+                            <button type="button" class="btn btn-uma w-100 mt-2" id="addPredictionBtn">Add Prediction</button>
                         </div>
 
                         <div class="tab-pane fade" id="goals" role="tabpanel" aria-labelledby="goals-tab">
@@ -308,7 +305,7 @@ $conditionOptions = $conditionOptions ?? [];
 
                         <div class="tab-pane fade" id="progress-chart" role="tabpanel" aria-labelledby="progress-chart-tab">
                             <div class="chart-container" style="position: relative; height: 400px;">
-                                <canvas id="growthChart"></canvas>
+                                <canvas id="growthChart" aria-label="Growth chart over turns" role="img"></canvas>
                                 <div id="growthChartMessage" class="text-center p-5 h-100 d-flex justify-content-center align-items-center" style="display: none;">
                                     <p class="text-muted fs-5">No progression data available for this plan.</p>
                                 </div>
@@ -316,11 +313,14 @@ $conditionOptions = $conditionOptions ?? [];
                         </div>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-info" id="exportPlanBtn">Copy to Clipboard</button>
                     <a href="#" id="downloadTxtLink" class="btn btn-outline-secondary">
-                        <i class="bi bi-file-earmark-text"></i> Export as TXT</a>
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                        Export as TXT
+                    </a>
                     <button type="submit" class="btn btn-uma">Save Changes</button>
                 </div>
             </form>
@@ -328,166 +328,9 @@ $conditionOptions = $conditionOptions ?? [];
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const planDetailsModalElement = document.getElementById('planDetailsModal');
-    if (!planDetailsModalElement) return;
-
-    const chartTab = document.getElementById('progress-chart-tab');
-    let growthChartInstance = null;
-
-    // Helper function to get computed CSS variable values
-    function getCssVariableValue(variableName) {
-        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-    }
-
-    async function renderGrowthChart(planId) {
-        if (!planId) return;
-
-        const chartCanvas = document.getElementById('growthChart');
-        const messageContainer = document.getElementById('growthChartMessage');
-
-        // Always destroy the old instance to prevent stale charts or errors
-        if (growthChartInstance) {
-            growthChartInstance.destroy();
-            growthChartInstance = null;
-        }
-
-        try {
-            // Set chart-wide font styles to match your app's body styles
-            Chart.defaults.font.family = getCssVariableValue('--bs-body-font-family');
-            Chart.defaults.color = getCssVariableValue('--bs-secondary-color');
-
-            const response = await fetch(`${window.APP_API_BASE}/progress.php?action=chart&plan_id=${planId}`);
-            const result = await response.json();
-
-            // UPDATED: Robust check for data
-            if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-                // We have data: show canvas, hide message
-                chartCanvas.style.display = 'block';
-                messageContainer.style.display = 'none';
-                
-                const turns = result.data;
-                const ctx = chartCanvas.getContext('2d');
-
-                growthChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: turns.map(t => `Turn ${t.turn}`),
-                        datasets: [{
-                                label: 'Speed',
-                                data: turns.map(t => t.speed),
-                                borderColor: getCssVariableValue('--stat-speed-color'),
-                                pointBackgroundColor: getCssVariableValue('--stat-speed-color'),
-                                tension: 0.3
-                            },
-                            {
-                                label: 'Stamina',
-                                data: turns.map(t => t.stamina),
-                                borderColor: getCssVariableValue('--stat-stamina-color'),
-                                pointBackgroundColor: getCssVariableValue('--stat-stamina-color'),
-                                tension: 0.3
-                            },
-                            {
-                                label: 'Power',
-                                data: turns.map(t => t.power),
-                                borderColor: getCssVariableValue('--stat-power-color'),
-                                pointBackgroundColor: getCssVariableValue('--stat-power-color'),
-                                tension: 0.3
-                            },
-                            {
-                                label: 'Guts',
-                                data: turns.map(t => t.guts),
-                                borderColor: getCssVariableValue('--stat-guts-color'),
-                                pointBackgroundColor: getCssVariableValue('--stat-guts-color'),
-                                tension: 0.3
-                            },
-                            {
-                                label: 'Wit',
-                                data: turns.map(t => t.wit),
-                                borderColor: getCssVariableValue('--stat-wit-color'),
-                                pointBackgroundColor: getCssVariableValue('--stat-wit-color'),
-                                tension: 0.3
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    usePointStyle: true,
-                                    color: getCssVariableValue('--bs-body-color'),
-                                    padding: 20
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                                titleFont: { size: 14, weight: 'bold' },
-                                bodyFont: { size: 12 },
-                                padding: 12,
-                                cornerRadius: 4,
-                                displayColors: true
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: getCssVariableValue('--bs-border-color-translucent')
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    color: getCssVariableValue('--bs-border-color-translucent')
-                                }
-                            }
-                        }
-                    }
-                });
-            } else {
-                // No data: hide canvas, show message
-                chartCanvas.style.display = 'none';
-                messageContainer.style.display = 'block';
-                // Also reset the message text in case it was changed to an error
-                messageContainer.innerHTML = '<p class="text-muted fs-5">No progression data available for this plan.</p>';
-            }
-        } catch (error) {
-            // Error state: hide canvas, show an error message
-            chartCanvas.style.display = 'none';
-            messageContainer.style.display = 'block';
-            messageContainer.innerHTML = '<p class="text-danger">Could not load chart data. Please check the console for details.</p>';
-            console.error('Error loading chart:', error);
-        }
-    }
-
-    // Listen for when the chart tab is shown and render the chart
-    chartTab.addEventListener('shown.bs.tab', function() {
-        const currentPlanId = document.getElementById('planId').value;
-        renderGrowthChart(currentPlanId);
-    });
-
-    document.getElementById('downloadTxtLink').addEventListener('click', function(e) {
-        e.preventDefault();
-        const planId = document.getElementById('planId').value;
-        if (!planId) return;
-
-        const planTitle = document.getElementById('plan_title').value || 'plan';
-        const safeFileName = planTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        
-        const fileName = `${safeFileName}_${planId}.txt`;
-        const link = document.createElement('a');
-        link.href = `export_plan_data.php?id=${planId}&format=txt`;
-        link.download = fileName;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
-});
-</script>
+<!-- inline script moved to assets/js/plan_details_modal.js -->
+<?php
+// Externalize inline script for modal behaviors
+$scriptBase = rtrim(preg_replace('~/public/?$~', '/', rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/')), '/') . '/';
+?>
+<script defer src="<?= htmlspecialchars($scriptBase, ENT_QUOTES, 'UTF-8') ?>assets/js/plan_details_modal.js"></script>
