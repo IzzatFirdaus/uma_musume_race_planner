@@ -1,0 +1,221 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#mainContent"
+  - navigation "Main navigation" [ref=e3]:
+    - generic [ref=e4]:
+      - link "Uma Musume Planner Logo Uma Musume Planner" [ref=e5] [cursor=pointer]:
+        - /url: index.php
+        - img "Uma Musume Planner Logo" [ref=e6] [cursor=pointer]
+        - generic [ref=e7] [cursor=pointer]: Uma Musume Planner
+      - list [ref=e9]:
+        - listitem [ref=e10]:
+          - link "Home" [ref=e11] [cursor=pointer]:
+            - /url: index.php
+            - generic [ref=e12] [cursor=pointer]: 
+            - text: Home
+        - listitem [ref=e13]:
+          - link "Create a new plan" [ref=e14] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e15] [cursor=pointer]: 
+            - text: New Plan
+        - listitem [ref=e16]:
+          - link "Guide" [ref=e17] [cursor=pointer]:
+            - /url: guide.php
+            - generic [ref=e18] [cursor=pointer]: 
+            - text: Guide
+        - listitem [ref=e19]:
+          - switch "Toggle dark mode(currently light)" [ref=e20] [cursor=pointer]:
+            - generic [ref=e21] [cursor=pointer]: 🌙
+            - generic [ref=e22] [cursor=pointer]: Toggle dark mode
+  - generic [ref=e23]:
+    - banner "Application header" [ref=e24]:
+      - generic [ref=e25]:
+        - heading "Uma Musume Race Planner Logo Uma Musume Race Planner" [level=1] [ref=e26]:
+          - img "Uma Musume Race Planner Logo" [ref=e27]
+          - text: Uma Musume Race Planner
+        - paragraph [ref=e28]: Plan, track, and optimize your umamusume's racing career
+    - main [ref=e29]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - heading "Your Race Plans" [level=5] [ref=e33]:
+            - generic [ref=e34]: 
+            - text: Your Race Plans
+          - button "Create new plan" [ref=e35] [cursor=pointer]:
+            - generic [ref=e36] [cursor=pointer]: 
+            - text: Create New
+        - generic [ref=e37]:
+          - group "Filter plans by status" [ref=e39]:
+            - button "All" [pressed] [ref=e40] [cursor=pointer]
+            - button "Active" [ref=e41] [cursor=pointer]
+            - button "Planning" [ref=e42] [cursor=pointer]
+            - button "Finished" [ref=e43] [cursor=pointer]
+          - table [ref=e45]:
+            - rowgroup [ref=e46]:
+              - row "Name Status Next Race Actions" [ref=e47]:
+                - cell [ref=e48]
+                - cell "Name" [ref=e49]
+                - cell "Status" [ref=e50]
+                - cell "Next Race" [ref=e51]
+                - cell "Actions" [ref=e52]
+            - rowgroup [ref=e53]:
+              - row "No image [El☆Número 1] El Condor Pasa Plan [El☆Número 1] El Condor Pasa Active Kyodo News Hai Edit plan View plan details inline Delete plan" [ref=e54]:
+                - cell "No image" [ref=e55]:
+                  - generic [ref=e57]:
+                    - generic [ref=e58]: 
+                    - generic [ref=e59]: No image
+                - cell "[El☆Número 1] El Condor Pasa Plan [El☆Número 1] El Condor Pasa" [ref=e60]:
+                  - strong [ref=e61]: "[El☆Número 1] El Condor Pasa Plan"
+                  - generic [ref=e62]: "[El☆Número 1] El Condor Pasa"
+                  - generic [ref=e63]:
+                    - generic [ref=e64]: SPE
+                    - generic [ref=e66]: STA
+                    - generic [ref=e68]: POW
+                    - generic [ref=e70]: GUT
+                    - generic [ref=e72]: WIT
+                - cell "Active" [ref=e74]:
+                  - generic [ref=e75]: Active
+                - cell "Kyodo News Hai" [ref=e76]
+                - cell "Edit plan View plan details inline Delete plan" [ref=e77]:
+                  - button "Edit plan" [ref=e78] [cursor=pointer]:
+                    - generic [ref=e79] [cursor=pointer]: 
+                  - button "View plan details inline" [ref=e80] [cursor=pointer]:
+                    - generic [ref=e81] [cursor=pointer]: 
+                  - button "Delete plan" [ref=e82] [cursor=pointer]:
+                    - generic [ref=e83] [cursor=pointer]: 
+              - row "No image [Bestest Prize 𝆕] Haru Urara Plan [Bestest Prize 𝆕] Haru Urara Planning URA Finale Qualifier Edit plan View plan details inline Delete plan" [ref=e84]:
+                - cell "No image" [ref=e85]:
+                  - generic [ref=e87]:
+                    - generic [ref=e88]: 
+                    - generic [ref=e89]: No image
+                - cell "[Bestest Prize 𝆕] Haru Urara Plan [Bestest Prize 𝆕] Haru Urara" [ref=e90]:
+                  - strong [ref=e91]: "[Bestest Prize 𝆕] Haru Urara Plan"
+                  - generic [ref=e92]: "[Bestest Prize 𝆕] Haru Urara"
+                  - generic [ref=e93]:
+                    - generic [ref=e94]: SPE
+                    - generic [ref=e97]: STA
+                    - generic [ref=e100]: POW
+                    - generic [ref=e103]: GUT
+                    - generic [ref=e106]: WIT
+                - cell "Planning" [ref=e109]:
+                  - generic [ref=e110]: Planning
+                - cell "URA Finale Qualifier" [ref=e111]
+                - cell "Edit plan View plan details inline Delete plan" [ref=e112]:
+                  - button "Edit plan" [ref=e113] [cursor=pointer]:
+                    - generic [ref=e114] [cursor=pointer]: 
+                  - button "View plan details inline" [ref=e115] [cursor=pointer]:
+                    - generic [ref=e116] [cursor=pointer]: 
+                  - button "Delete plan" [ref=e117] [cursor=pointer]:
+                    - generic [ref=e118] [cursor=pointer]: 
+      - generic [ref=e119]:
+        - region "Quick Stats" [ref=e120]:
+          - generic [ref=e121]: Quick Stats
+          - generic [ref=e122]:
+            - list "Stats summary" [ref=e123]:
+              - listitem [ref=e124]:
+                - generic "Total plans" [ref=e125]: "2"
+                - generic "Plans label" [ref=e126]: Plans
+              - listitem [ref=e127]:
+                - generic "Active plans" [ref=e128]: "1"
+                - generic "Active label" [ref=e129]: Active
+              - listitem [ref=e130]:
+                - generic "Finished plans" [ref=e131]: "0"
+                - generic "Finished label" [ref=e132]: Finished
+            - img "Plans breakdown chart" [ref=e134]
+        - region "Recent Activity" [ref=e135]:
+          - generic [ref=e136]: Recent Activity
+          - list [ref=e138]:
+            - listitem [ref=e139]:
+              - generic [ref=e140]: 
+              - generic [ref=e141]: "New sample plan created: [Bestest Prize 𝆕] Haru Urara Plan"
+              - time [ref=e143]: Aug 05, 00:49
+            - listitem [ref=e144]:
+              - generic [ref=e145]: 
+              - generic [ref=e146]: "New sample plan created: [El☆Número 1] El Condor Pasa Plan"
+              - time [ref=e148]: Aug 05, 00:49
+            - listitem [ref=e149]:
+              - generic [ref=e150]: 
+              - generic [ref=e151]: "New sample plan created: [Beyond the Horizon] Tokai Teio Plan"
+              - time [ref=e153]: Aug 05, 00:49
+    - text:  
+  - dialog "Quick Create Plan" [ref=e154]:
+    - dialog:
+      - generic [ref=e155]:
+        - generic [ref=e156]:
+          - heading "Quick Create Plan" [level=5] [ref=e157]
+          - button "Close dialog" [ref=e158] [cursor=pointer]
+        - generic [ref=e159]: Create a new plan with minimum required details like trainee name, career stage, and class.
+        - generic [ref=e160]:
+          - generic [ref=e161]:
+            - generic [ref=e162]:
+              - generic [ref=e163]: Trainee Name
+              - textbox "Trainee Name" [ref=e164]: EditDeleteTest_1755991708681
+            - generic [ref=e165]:
+              - generic [ref=e166]: Next Race Name
+              - textbox "Next Race Name" [ref=e167]
+            - generic [ref=e168]:
+              - generic [ref=e169]:
+                - generic [ref=e170]: Career Stage
+                - combobox "Career Stage" [ref=e171]:
+                  - option "Select Stage" [disabled]
+                  - option "Pre-Debut" [selected]
+                  - option "Junior Year"
+                  - option "Classic Year"
+                  - option "Senior Year"
+                  - option "Finale Season"
+              - generic [ref=e172]:
+                - generic [ref=e173]: Class
+                - combobox "Class" [ref=e174]:
+                  - option "Select Class" [disabled]
+                  - option "Debut" [selected]
+                  - option "Maiden"
+                  - option "Beginner"
+                  - option "Bronze"
+                  - option "Silver"
+                  - option "Gold"
+                  - option "Platinum"
+                  - option "Star"
+                  - option "Legend"
+          - generic [ref=e175]:
+            - button "Close" [ref=e176] [cursor=pointer]
+            - button "Create Plan" [active] [ref=e177] [cursor=pointer]
+  - text: 
+  - contentinfo "Site footer" [ref=e178]:
+    - generic [ref=e179]:
+      - link "Open Uma Musume Planner repository on GitHub in a new tab" [ref=e180] [cursor=pointer]:
+        - /url: https://github.com/IzzatFirdaus/uma_musume_race_planner
+        - generic [ref=e181] [cursor=pointer]: 
+        - generic [ref=e182] [cursor=pointer]: "GitHub Repository:"
+        - text: Uma Musume Planner 1.4.0
+      - generic [ref=e183]: "|"
+      - generic [ref=e184]: "Last Updated: 2025-08-04"
+    - navigation "Official links" [ref=e185]:
+      - link "JP Official Site" [ref=e186] [cursor=pointer]:
+        - /url: https://umamusume.jp/
+      - generic [ref=e187]: "|"
+      - link "Global Site (EN)" [ref=e188] [cursor=pointer]:
+        - /url: https://umamusume.com/
+      - generic [ref=e189]: "|"
+      - link "Steam Page" [ref=e190] [cursor=pointer]:
+        - /url: https://store.steampowered.com/app/3224770/Umamusume_Pretty_Derby/
+    - generic "Social links" [ref=e191]:
+      - link "X / Twitter" [ref=e192] [cursor=pointer]:
+        - /url: https://x.com/umamusume_eng?lang=en
+        - generic [ref=e193] [cursor=pointer]: 
+        - generic [ref=e194] [cursor=pointer]: X / Twitter
+      - link "Facebook" [ref=e195] [cursor=pointer]:
+        - /url: https://www.facebook.com/umamusume.eng
+        - generic [ref=e196] [cursor=pointer]: 
+        - generic [ref=e197] [cursor=pointer]: Facebook
+      - link "YouTube" [ref=e198] [cursor=pointer]:
+        - /url: https://www.youtube.com/@umamusume_eng
+        - generic [ref=e199] [cursor=pointer]: 
+        - generic [ref=e200] [cursor=pointer]: YouTube
+      - link "Discord" [ref=e201] [cursor=pointer]:
+        - /url: https://discord.com/invite/umamusume-eng
+        - generic [ref=e202] [cursor=pointer]: 
+        - generic [ref=e203] [cursor=pointer]: Discord
+    - emphasis [ref=e205]: This fan-made planner is not affiliated with Cygames or the Uma Musume franchise. All trademarks and rights belong to their respective owners.
+```

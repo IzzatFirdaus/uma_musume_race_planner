@@ -105,7 +105,7 @@ function compute_hash(string $algo, string $data, bool $rawOutput = false): stri
 
     if (function_exists('openssl_digest')) {
         try {
-            return (string) call_user_func('openssl_digest', $data, strtoupper($algo), $rawOutput);
+            return (string) @call_user_func('openssl_digest', $data, strtoupper($algo), $rawOutput);
         } catch (Throwable $e) {
             // fall through
         }

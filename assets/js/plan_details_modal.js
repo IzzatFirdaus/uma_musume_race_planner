@@ -9,16 +9,16 @@
             return;
         }
 
+        const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.APP_API_BASE || '/api';
+
         const chartTab = document.getElementById('progress-chart-tab');
         let growthChartInstance = null;
 
-        function getCssVariableValue(name)
-        {
+        function getCssVariableValue(name) {
             return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
         }
 
-        async function renderGrowthChart(planId)
-        {
+        async function renderGrowthChart(planId) {
             if (!planId) {
                 return;
             }
@@ -31,16 +31,18 @@
 
             if (growthChartInstance) {
                 try {
-                    growthChartInstance.destroy(); } catch (e) {
-                                /* ignore */ }
-                    growthChartInstance = null;
+                    growthChartInstance.destroy();
+                } catch (e) {
+                    /* ignore */
+                }
+                growthChartInstance = null;
             }
 
             try {
                 Chart.defaults.font.family = getCssVariableValue('--bs-body-font-family');
                 Chart.defaults.color = getCssVariableValue('--bs-secondary-color');
 
-                const base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.APP_API_BASE || '/api';
+                const base = API_BASE;
                 const resp = await fetch(`${base}/progress.php?action=chart&plan_id=${encodeURIComponent(planId)}`);
                 const result = await resp.json();
 
@@ -51,18 +53,19 @@
                     const turns = result.data;
                     const ctx = chartCanvas.getContext('2d');
 
-                  // Defer chart construction to the next animation frame to avoid forcing layout during synchronous JS
+                    // Defer chart construction to the next animation frame to avoid forcing layout during synchronous JS
                     window.requestAnimationFrame(() => {
+                        // eslint-disable-next-line no-undef
                         growthChartInstance = new Chart(ctx, {
                             type: 'line',
                             data: {
                                 labels: turns.map(t => `Turn ${t.turn}`),
                                 datasets: [
-                                { label: 'Speed',   data: turns.map(t => t.speed),   borderColor: getCssVariableValue('--stat-speed-color'),   pointBackgroundColor: getCssVariableValue('--stat-speed-color'),   tension: 0.3 },
-                                { label: 'Stamina', data: turns.map(t => t.stamina), borderColor: getCssVariableValue('--stat-stamina-color'), pointBackgroundColor: getCssVariableValue('--stat-stamina-color'), tension: 0.3 },
-                                { label: 'Power',   data: turns.map(t => t.power),   borderColor: getCssVariableValue('--stat-power-color'),   pointBackgroundColor: getCssVariableValue('--stat-power-color'),   tension: 0.3 },
-                                { label: 'Guts',    data: turns.map(t => t.guts),    borderColor: getCssVariableValue('--stat-guts-color'),    pointBackgroundColor: getCssVariableValue('--stat-guts-color'),    tension: 0.3 },
-                                { label: 'Wit',     data: turns.map(t => t.wit),     borderColor: getCssVariableValue('--stat-wit-color'),     pointBackgroundColor: getCssVariableValue('--stat-wit-color'),     tension: 0.3 }
+                                    { label: 'Speed',   data: turns.map(t => t.speed),   borderColor: getCssVariableValue('--stat-speed-color'),   pointBackgroundColor: getCssVariableValue('--stat-speed-color'),   tension: 0.3 },
+                                    { label: 'Stamina', data: turns.map(t => t.stamina), borderColor: getCssVariableValue('--stat-stamina-color'), pointBackgroundColor: getCssVariableValue('--stat-stamina-color'), tension: 0.3 },
+                                    { label: 'Power',   data: turns.map(t => t.power),   borderColor: getCssVariableValue('--stat-power-color'),   pointBackgroundColor: getCssVariableValue('--stat-power-color'),   tension: 0.3 },
+                                    { label: 'Guts',    data: turns.map(t => t.guts),    borderColor: getCssVariableValue('--stat-guts-color'),    pointBackgroundColor: getCssVariableValue('--stat-guts-color'),    tension: 0.3 },
+                                    { label: 'Wit',     data: turns.map(t => t.wit),     borderColor: getCssVariableValue('--stat-wit-color'),     pointBackgroundColor: getCssVariableValue('--stat-wit-color'),     tension: 0.3 }
                                 ]
                             },
                             options: {
@@ -91,7 +94,7 @@
                                     x: { grid: { color: getCssVariableValue('--bs-border-color-translucent') } }
                                 }
                             }
-                            });
+                        });
                     });
                 } else {
                     chartCanvas.style.display = 'none';
@@ -102,7 +105,7 @@
                 chartCanvas.style.display = 'none';
                 messageContainer.style.display = 'block';
                 messageContainer.innerHTML = '<p class="text-danger">Could not load chart data. Please check the console for details.</p>';
-              // Log to console for debugging in browser
+                // Log to console for debugging in browser
                 console.error('Error loading chart:', error);
             }
         }
@@ -110,7 +113,7 @@
         if (chartTab) {
             chartTab.addEventListener('shown.bs.tab', function () {
                 const currentPlanId = document.getElementById('planId').value;
-              // Defer heavy layout/Chart reads slightly to allow CSS to be applied
+                // Defer heavy layout/Chart reads slightly to allow CSS to be applied
                 requestAnimationFrame(() => renderGrowthChart(currentPlanId));
             });
         }
@@ -172,6 +175,78 @@
                 }, 60);
             }
         });
+
+        // ---- Copy to Clipboard support for the modal ----
+        const btnCopyToClipboard = document.getElementById('exportPlanBtn');
+
+        async function fetchJson(url) {
+            const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            if (!data || data.success !== true) throw new Error(data?.error || 'Unexpected API error.');
+            return data;
+        }
+
+        async function fetchAllForClipboard(planId) {
+            const endpoints = {
+                plan: `${API_BASE}/plan.php?action=get&id=${encodeURIComponent(planId)}`,
+                attributes: `${API_BASE}/plan_section.php?type=attributes&id=${encodeURIComponent(planId)}`,
+                skills: `${API_BASE}/plan_section.php?type=skills&id=${encodeURIComponent(planId)}`,
+                terrain_grades: `${API_BASE}/plan_section.php?type=terrain_grades&id=${encodeURIComponent(planId)}`,
+                distance_grades: `${API_BASE}/plan_section.php?type=distance_grades&id=${encodeURIComponent(planId)}`,
+                style_grades: `${API_BASE}/plan_section.php?type=style_grades&id=${encodeURIComponent(planId)}`,
+                goals: `${API_BASE}/plan_section.php?type=goals&id=${encodeURIComponent(planId)}`,
+                predictions: `${API_BASE}/plan_section.php?type=predictions&id=${encodeURIComponent(planId)}`
+            };
+            const [
+                planRes,
+                attrsRes,
+                skillsRes,
+                terrRes,
+                distRes,
+                styleRes,
+                goalsRes,
+                predsRes
+            ] = await Promise.all([
+                fetchJson(endpoints.plan),
+                fetchJson(endpoints.attributes),
+                fetchJson(endpoints.skills),
+                fetchJson(endpoints.terrain_grades),
+                fetchJson(endpoints.distance_grades),
+                fetchJson(endpoints.style_grades),
+                fetchJson(endpoints.goals),
+                fetchJson(endpoints.predictions)
+            ]);
+
+            return {
+                plan: planRes.plan || {},
+                attributes: Array.isArray(attrsRes.attributes) ? attrsRes.attributes : [],
+                skills: Array.isArray(skillsRes.skills) ? skillsRes.skills : [],
+                terrain_grades: Array.isArray(terrRes.terrain_grades) ? terrRes.terrain_grades : [],
+                distance_grades: Array.isArray(distRes.distance_grades) ? distRes.distance_grades : [],
+                style_grades: Array.isArray(styleRes.style_grades) ? styleRes.style_grades : [],
+                goals: Array.isArray(goalsRes.goals) ? goalsRes.goals : [],
+                predictions: Array.isArray(predsRes.predictions) ? predsRes.predictions : []
+            };
+        }
+
+        if (btnCopyToClipboard) {
+            btnCopyToClipboard.addEventListener('click', async () => {
+                const planId = document.getElementById('planId')?.value;
+                if (!planId) return;
+                try {
+                    const allData = await fetchAllForClipboard(planId);
+                    if (typeof window.copyPlanDetailsToClipboard === 'function') {
+                        window.copyPlanDetailsToClipboard(allData);
+                    } else {
+                        alert('Copy module not loaded. Please try again.');
+                    }
+                } catch (err) {
+                    console.error('Failed to copy plan details (modal):', err);
+                    alert('Failed to prepare plan content for clipboard.');
+                }
+            });
+        }
     });
 
 })();

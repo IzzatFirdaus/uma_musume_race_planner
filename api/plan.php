@@ -37,6 +37,9 @@ header('Referrer-Policy: no-referrer');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
+
+/** @var PDO|null $pdo */
+$pdo = null;
 ob_start();
 
 $REQUEST_ID = bin2hex(random_bytes(8));
@@ -81,7 +84,7 @@ try {
     send_json(500, ['success' => false, 'error' => 'Failed to initialize dependencies.']);
 }
 
-if (!($pdo instanceof PDO)) {
+if ($pdo === null) {
     throw new RuntimeException('Database not initialized.');
 }
 /** @var PDO $pdo */

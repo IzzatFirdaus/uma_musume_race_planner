@@ -8,7 +8,7 @@ declare(strict_types=1);
 try {
     $log = require __DIR__ . '/../includes/logger.php';
 } catch (Throwable $e) {
-// Fallback: minimal logger shim
+    // Fallback: minimal logger shim
     $log = new class () {
         public function error($msg, array $context = []): void
         {
@@ -23,11 +23,11 @@ try {
 
 // Connect to database (db.php may throw; handle gracefully)
 try {
-/** @var PDO $pdo */
+    /** @var PDO $pdo */
     $pdo = require __DIR__ . '/../includes/db.php';
 } catch (Throwable $e) {
     $log->error('DB bootstrap failure', ['message' => $e->getMessage()]);
-// Render a friendly error page while keeping 200 to avoid leaking infra details
+    // Render a friendly error page while keeping 200 to avoid leaking infra details
     http_response_code(200);
     ?>
     <!DOCTYPE html>
@@ -227,6 +227,9 @@ $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
       </div>
     </div>
   </div>
+
+  <!-- Inject Copy-to-Clipboard utility and options so both modal and inline can copy summaries -->
+  <?php require __DIR__ . '/../components/copy_to_clipboard.php'; ?>
 
   <!-- JS (defer for performance); app.js centralizes theme + charts; config first -->
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/config.js"></script>

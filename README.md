@@ -10,21 +10,20 @@ A lightweight PHP + MySQL web application for planning and tracking turn-based t
 
 _Note: These screenshots showcase the core interface. The latest version (v1.4.0) adds the new Trainee Image and Progress Chart features._
 
-|             Light Mode Dashboard             |                     Dark Mode Dashboard                      |
-| :------------------------------------------: | :----------------------------------------------------------: |
-|     ![Homepage](assets/screenshots/Homepage.png)     | ![Dark Mode Homepage](assets/screenshots/Dark%20Mode%20Homepage.png) |
-|            **Quick Create Modal**            |                       **In-App Guide**                       |
-| ![Create Plan](assets/screenshots/Create%20Plan.png) |             ![Guide Page](assets/screenshots/Guide.png)              |
+| Light Mode Dashboard | Dark Mode Dashboard |
+| :-------------------: | :-----------------: |
+| ![Homepage](assets/screenshots/Homepage.png) | ![Dark Mode Homepage](assets/screenshots/Dark%20Mode%20Homepage.png) |
+| **Quick Create Modal** | **In-App Guide** |
+| ![Create Plan](assets/screenshots/Create%20Plan.png) | ![Guide Page](assets/screenshots/Guide.png) |
 
 **Plan Editor Tabs:**
 
-|                              General                               |                                       Attributes                                       |                                   Aptitude Grades                                    |
-| :----------------------------------------------------------------: | :------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
-| ![Plan Editor - General](assets/screenshots/001_GENERAL%20Edit%20Plan.png) |        ![Plan Editor - Attributes](assets/screenshots/002_ATTRIBUTES%20Edit%20Plan.png)        | ![Plan Editor - Aptitude Grades](assets/screenshots/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
-|                             **Skills**                             |                                  **Race Predictions**                                  |                                      **Goals**                                       |
-|  ![Plan Editor - Skills](assets/screenshots/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](assets/screenshots/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](assets/screenshots/006_GOALS%20Edit%20Plan.png)            |
+| General | Attributes | Aptitude Grades |
+| :-----: | :--------: | :-------------: |
+| ![Plan Editor - General](assets/screenshots/001_GENERAL%20Edit%20Plan.png) | ![Plan Editor - Attributes](assets/screenshots/002_ATTRIBUTES%20Edit%20Plan.png) | ![Plan Editor - Aptitude Grades](assets/screenshots/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
+| **Skills** | **Race Predictions** | **Goals** |
+| ![Plan Editor - Skills](assets/screenshots/004_SKILLS%20Edit%20Plan.png) | ![Plan Editor - Race Predictions](assets/screenshots/005_RACE%20PREDICTIONS%20Edit%20Plan.png) | ![Plan Editor - Goals](assets/screenshots/006_GOALS%20Edit%20Plan.png) |
 
-</details>
 ---
 
 ## ✨ Features
@@ -48,7 +47,7 @@ _Note: These screenshots showcase the core interface. The latest version (v1.4.0
 ## 🖥️ Tech Stack
 
 - **Frontend**: HTML, CSS (Bootstrap 5), Vanilla JavaScript
-- **Backend**: PHP 8.0+, Composer
+- **Backend**: PHP 8.1+, Composer
 - **Database**: MySQL / MariaDB
 
 ---
@@ -58,18 +57,18 @@ _Note: These screenshots showcase the core interface. The latest version (v1.4.0
 ### Prerequisites
 
 - A local web server environment (e.g., XAMPP, WAMP, MAMP).
-- PHP 8.0 or higher.
+- PHP 8.1 or higher.
 - MySQL or MariaDB database server.
 - [Composer](https://getcomposer.org/) for managing PHP dependencies.
 
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/IzzatFirdaus/uma_musume_race_planner.git](https://github.com/IzzatFirdaus/uma_musume_race_planner.git)
+git clone https://github.com/IzzatFirdaus/uma_musume_race_planner.git
 cd uma_musume_race_planner
-```bash
+```
 
-### 2\. Install Dependencies
+### 2. Install Dependencies
 
 The project uses Monolog for logging. Install it using Composer.
 
@@ -77,36 +76,38 @@ The project uses Monolog for logging. Install it using Composer.
 composer install
 ```
 
-### 3\. Database Setup
+### 3. Database Setup
 
 1. **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
 
 2. **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
 
-### 4\. Environment Configuration
+### 4. Environment Configuration
 
 1. In the root directory, create a file named `.env`.
 
 2. Copy the following configuration, adjusting the database credentials to match your local setup.
 
-    ```ini
-    # .env - Local Development Configuration
+```ini
+# .env - Local Development Configuration
 
-    # Database Configuration
-    DB_HOST=localhost
-    DB_NAME=uma_musume_planner
-    DB_USER=root
-    DB_PASS=
+# Database Configuration
+DB_HOST=localhost
+DB_NAME=uma_musume_planner
+DB_USER=root
+DB_PASS=
 
-    # Application Metadata & Theming
-    APP_VERSION=v1.4.0
-    APP_THEME_COLOR=#7d2b8b
-    LAST_UPDATED="July 29, 2025"
-    ```
+# Application Metadata & Theming
+APP_VERSION=v1.4.0
+APP_THEME_COLOR=#7d2b8b
+LAST_UPDATED="July 29, 2025"
+```
 
-### 5\. Running the Application
+### 5. Running the Application
 
 Place the project folder inside your web server's root directory (e.g., `C:/xampp/htdocs/`) and navigate to it in your browser (e.g., `http://localhost/uma_musume_race_planner/`).
+
+Note: Several legacy one-file endpoints have been archived into `backup/legacy_endpoints` and replaced by consolidated `/api/*.php` routes. If your frontend or integrations reference files such as `get_plan_attributes.php` or `get_progress_chart_data.php` restore them from that folder or update clients to use the `/api` endpoints (for example: `/api/plan.php`, `/api/progress.php`).
 
 ---
 
@@ -120,8 +121,8 @@ uma_musume_race_planner/
 ├── css/                      # Main application stylesheet (style.css)
 ├── includes/                 # Core backend scripts (DB connection, logger)
 ├── js/                       # Client-side JavaScript utilities (e.g., autosuggest.js)
-├── assets/screenshots/               # Application screenshots for documentation
-├── assets/images/                  # Directory for user-uploaded content
+├── assets/screenshots/       # Application screenshots for documentation
+├── assets/images/            # Directory for user-uploaded content
 │   └── trainee_images/       # Stores uploaded trainee images
 ├── vendor/                   # Composer-managed PHP dependencies
 │

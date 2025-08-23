@@ -17,6 +17,9 @@ header('Referrer-Policy: no-referrer');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
+
+/** @var PDO|null $pdo */
+$pdo = null;
 ob_start();
 
 $REQUEST_ID = bin2hex(random_bytes(8));

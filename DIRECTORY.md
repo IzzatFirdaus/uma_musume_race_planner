@@ -15,7 +15,6 @@ This file lists the current project files and important subfolders (snapshot).
 - index.php
 - index.main.backup
 - phpcs.xml
-
 - php_errors.log
 - sample_data.sql
 - uma_musume_planner.sql
@@ -27,21 +26,24 @@ This file lists the current project files and important subfolders (snapshot).
 - fetch_plan_details.php
 - get_activities.php
 - get_autosuggest.php
-- get_autosuggest_backup.php
+- get_plan_section.php
+- get_plans.php
+- get_skill_reference.php
+- get_stats.php
+- handle_plan_crud.php
+
+Note: Several legacy one-file endpoints have been archived to `backup/legacy_endpoints` and replaced by the consolidated `/api/*.php` routes. Archived files include (example):
+
 - get_plan_attributes.php
 - get_plan_distance_grades.php
 - get_plan_goals.php
 - get_plan_predictions.php
-- get_plan_section.php
 - get_plan_skills.php
 - get_plan_style_grades.php
 - get_plan_terrain_grades.php
 - get_plan_turns.php
-- get_plans.php
 - get_progress_chart_data.php
-- get_skill_reference.php
-- get_stats.php
-- handle_plan_crud.php
+- get_autosuggest_backup.php
 
 ## Key directories
 
@@ -70,18 +72,16 @@ This file lists the current project files and important subfolders (snapshot).
   - autosuggest.js
   - autosuggest.backup.js
 
-- backup/unused/ — archived files (audit tools, rector config, tmp schema snapshots)
-  - rector.php (archived)
-  - move-manifest.json
-  - tmp_check_schema.php
-  - tmp_schema.json
-  - tmp_schema_full.json
-  - test_db.php
-  - tools/ (archived audit tools and reports)
+- backup/ — archived files and backups
+  - config.backup
+  - db.backup
+  - delete_plan.backup
+  - export_plan.backup
+  - ...
 
 - vendor/ — Composer dependencies (libraries)
 
 ## Notes
 
-- rector.php has been archived to backup/unused/rector.php and removed from the project root to avoid running Rector.
-- Audit and schema-check tools were archived under backup/unused/tools/.
+- `backup/unused/rector.php` is archived to avoid running Rector on this working copy.
+- Audit and schema-check tools were archived under `backup/unused/tools/`.
