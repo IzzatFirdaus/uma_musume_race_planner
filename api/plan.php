@@ -210,6 +210,92 @@ switch ($action) {
         }
         break;
 
+    case 'delete':
+        // Soft-delete a plan (POST expected)
+        require_method('POST');
+        $id = get_int('id', null, 1, PHP_INT_MAX);
+        if ($id === null) {
+            send_json(400, ['success' => false, 'error' => 'Missing or invalid plan ID.']);
+        }
+        try {
+            $stmt = $pdo->prepare('UPDATE plans SET deleted_at = NOW() WHERE id = ?');
+            $stmt->execute([$id]);
+            send_json(200, ['success' => true]);
+        } catch (Throwable $e) {
+            if (isset($log)) {
+                $log->error('Failed to delete plan (api)', [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'plan_id' => $id,
+                ]);
+            }
+            send_json(500, ['success' => false, 'error' => 'A database error occurred while deleting plan.']);
+        }
+        break;
+
+    case 'update':
+        // Update plan fields (POST expected)
+        require_method('POST');
+        // Read input (support JSON body or form-encoded)
+        $input = [];
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'application/json') !== false) {
+            $raw = file_get_contents('php://input');
+            $data = json_decode($raw, true);
+            if (is_array($data)) $input = $data;
+        } else {
+            // fall back to $_POST
+            $input = $_POST;
+        }
+
+        $id = isset($input['id']) ? filter_var($input['id'], FILTER_VALIDATE_INT) : null;
+        if (!$id || $id <= 0) {
+            send_json(400, ['success' => false, 'error' => 'Missing or invalid plan ID.']);
+        }
+
+        // Whitelist of allowed updatable fields
+        $allowed = [
+            'plan_title', 'name', 'race_name', 'turn_before', 'career_stage', 'class', 'time_of_day', 'month',
+            'total_available_skill_points', 'acquire_skill', 'mood_id', 'condition_id', 'strategy_id',
+            'energy', 'race_day', 'goal', 'growth_rate_speed', 'growth_rate_stamina', 'growth_rate_power',
+            'growth_rate_guts', 'growth_rate_wit', 'status', 'source', 'trainee_image_path'
+        ];
+
+        $fields = [];
+        $values = [];
+        foreach ($allowed as $f) {
+            if (array_key_exists($f, $input)) {
+                $fields[] = "`$f` = ?";
+                $values[] = $input[$f];
+            }
+        }
+
+        if (empty($fields)) {
+            send_json(400, ['success' => false, 'error' => 'No valid fields provided to update.']);
+        }
+
+        $values[] = $id; // for WHERE
+        $sql = 'UPDATE plans SET ' . implode(', ', $fields) . ', updated_at = NOW() WHERE id = ? AND deleted_at IS NULL';
+
+        try {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($values);
+            // Notify listeners in-process if needed (frontend listens to planUpdated event client-side)
+            send_json(200, ['success' => true]);
+        } catch (Throwable $e) {
+            if (isset($log)) {
+                $log->error('Failed to update plan (api)', [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'plan_id' => $id,
+                ]);
+            }
+            send_json(500, ['success' => false, 'error' => 'A database error occurred while updating plan.']);
+        }
+        break;
+
     case 'duplicate':
         // Prefer POST for mutations; allow GET for backward compatibility but mark deprecated via header.
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
