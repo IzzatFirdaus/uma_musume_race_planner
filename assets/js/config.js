@@ -6,7 +6,8 @@
 (() => {
     'use strict';
 
-    const DEFAULT_API_BASE = '/uma_musume_race_planner/api';
+  // NOTE: must match project folder name under htdocs (uma_musume_race_planner)
+  const DEFAULT_API_BASE = '/uma_musume_race_planner/api';
 
   // If server-side sets window.APP_API_BASE, use it; otherwise use default
     const legacyBase = (typeof window.APP_API_BASE === 'string' && window.APP_API_BASE) || DEFAULT_API_BASE;
