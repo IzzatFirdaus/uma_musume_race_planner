@@ -1,3 +1,38 @@
+# Environment
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build / Dist
+dist/
+build/
+
+# Uploaded runtime files (keep repository lightweight). Allow app logo files to remain.
+uploads/
+!uploads/app_logo/
+!uploads/app_logo/*.png
+!uploads/app_logo/*.ico
+
+# Test / Coverage
+coverage/
+phpunit.result.cache
+
+# Composer: keep vendor if intentionally committed; uncomment to ignore vendor/
+# vendor/
 # Node and frontend build artifacts
 /node_modules/
 /dist/
