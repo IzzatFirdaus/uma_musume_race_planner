@@ -3,92 +3,64 @@
 // components/plan-list.php
 ?>
 
-<div class="card shadow-sm mb-4">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">
-      <i class="bi bi-card-checklist me-2"></i>
-      Your Race Plans
-    </h5>
-    <button class="btn btn-sm btn-uma" id="createPlanBtn">
-      <i class="bi bi-plus-circle me-1"></i> Create New
-    </button>
-  </div>
-
-  <div class="card-body p-0">
-
-    <div class="plan-filters p-3 border-bottom">
-      <div class="btn-group" role="group" id="plan-filter-buttons">
-        <button type="button" class="btn btn-sm btn-outline-secondary active" data-filter="all">All</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Active">Active</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Planning">Planning</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Finished">Finished</button>
-      </div>
+<div id="planListContainer">
+  <div class="card shadow-sm mb-4" aria-labelledby="plans-heading">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 id="plans-heading" class="mb-0">
+        <i class="bi bi-card-checklist me-2" aria-hidden="true"></i>
+        Your Race Plans
+      </h5>
+      <button class="btn btn-sm button-pill" id="createPlanBtn" aria-label="Create new plan">
+        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Create New
+      </button>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-hover table-vcenter mb-0" id="planTable">
-        <thead class="table-light">
-          <tr>
-            <th style="width: 60px;"></th>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Next Race</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="planListBody"></tbody>
-      </table>
+    <div class="card-body p-3">
+      <div class="plan-filters mb-3" role="tablist" aria-label="Plan filters">
+        <div id="plan-filter-buttons" class="d-flex" role="group">
+          <button type="button" class="tab-pill active" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="tab-pill" data-filter="Active" aria-pressed="false">Active</button>
+          <button type="button" class="tab-pill" data-filter="Planning" aria-pressed="false">Planning</button>
+          <button type="button" class="tab-pill" data-filter="Finished" aria-pressed="false">Finished</button>
+        </div>
+      </div>
+
+      <div id="planGrid" class="card-grid" aria-live="polite">
+        <!-- Plan cards will be injected here by JS -->
+      </div>
+
+      <div id="planListEmpty" class="text-center text-muted py-4" style="display:none;">
+        No matching plans found.
+      </div>
     </div>
   </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const planTableBody = document.getElementById('planListBody');
+  const planGrid = document.getElementById('planGrid');
+  const planListEmpty = document.getElementById('planListEmpty');
   const filterButtonGroup = document.getElementById('plan-filter-buttons');
   let allPlans = [];
 
   // Early exit if not present (fail-safe for reusability on other pages)
-  if (!planTableBody || !filterButtonGroup) return;
+  if (!planGrid || !filterButtonGroup) return;
 
   // Inject dynamic CSS styles for stat bars and thumbnails
   const style = document.createElement('style');
   style.textContent = `
-    .table-vcenter td { vertical-align: middle; }
-    .plan-list-thumbnail-container { /* New container for image resizing */
-      width: 50px;
-      height: 50px;
-      border-radius: .375rem; /* Match general border-radius */
-      overflow: hidden; /* Crop images to container */
-      flex-shrink: 0; /* Prevent container from shrinking */
-      display: flex; /* For centering placeholder */
-      align-items: center;
-      justify-content: center;
-    }
-    .plan-list-thumbnail {
-      width: 100%; /* Make image fill its container */
-      height: 100%;
-      object-fit: cover; /* Ensure image covers the area, cropping as necessary */
-      display: block; /* Remove extra space below image */
-    }
-    .plan-list-placeholder {
-      width: 100%; height: 100%; /* Fill container */
-      display: flex; align-items: center; justify-content: center;
-      background-color: #e9ecef; border-radius: .375rem;
-      font-size: 1.75rem; color: #adb5bd;
-    }
-    /* Dark mode adjustments for placeholder */
-    body.dark-mode .plan-list-placeholder {
-      background-color: var(--color-input-bg-dark); /* Use a dark mode appropriate background */
-      color: var(--color-text-muted-dark); /* Muted text color for the icon */
-    }
-
-    .plan-stat-bars { display: flex; gap: 2px; margin-top: 4px; height: 6px; }
-    .stat-bar { width: 100%; height: 6px; background: #dee2e6; border-radius: 3px; overflow: hidden; }
-    /* Dark mode adjustments for stat bar background */
-    body.dark-mode .stat-bar {
-        background-color: rgba(255, 255, 255, 0.18); /* Matches style.css */
-    }
+    .plan-list-thumbnail-container { width: 64px; height: 64px; border-radius: .5rem; overflow: hidden; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+    .plan-list-thumbnail { width:100%; height:100%; object-fit:cover; display:block; }
+    .plan-list-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#e9ecef; border-radius:.5rem; font-size:1.25rem; color:#adb5bd; }
+    body.dark-mode .plan-list-placeholder { background-color: rgba(255,255,255,0.04); color: var(--color-text-muted-dark); }
+    .plan-stat-bars { display:flex; gap:.5rem; margin-top:.5rem; align-items:center; }
+    .card-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
+    @media(min-width:768px){ .card-grid{ grid-template-columns:1fr 1fr; } }
+    .plan-card { padding:1rem; display:flex; gap:1rem; align-items:center; background: #fff; border-radius:.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .plan-card .meta { flex:1; }
+    .plan-card .actions { display:flex; gap:.5rem; }
+    .tab-pill { border-radius: 999px; background:#f6f6fa; color:#333; padding:.35rem .75rem; font-weight:500; margin-right:.5rem; border: none; }
+    .tab-pill[aria-pressed="true"]{ background: var(--color-stat-speed); color:#fff; }
   `;
   document.head.appendChild(style);
 
@@ -109,8 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
       wit: 'var(--color-stat-wit)'        // Updated to --color-stat-wit
     };
     return `
-      <div class="stat-bar" title="${statName.charAt(0).toUpperCase() + statName.slice(1)}: ${value}">
-        <div style="width: ${percent}%; height: 100%; background-color: ${statColors[statName]};"></div>
+      <div class="stat-mini" title="${statName.charAt(0).toUpperCase() + statName.slice(1)}: ${value}" style="flex:1;">
+        <div style="width:100%; height:8px; background:#eee; border-radius:6px; overflow:hidden;"><div style="width:${percent}%; height:100%; background:${statColors[statName]}; transition:width 260ms ease;"></div></div>
       </div>
     `;
   }
@@ -119,61 +91,50 @@ document.addEventListener('DOMContentLoaded', () => {
    * Render plans into the table
    * @param {Array<Object>} plansToRender Array of plan objects.
    */
-  function renderPlanTable(plansToRender) {
-    planTableBody.innerHTML = ''; // Clear existing
-
+  function renderPlanCards(plansToRender) {
+    planGrid.innerHTML = '';
     if (!plansToRender.length) {
-      planTableBody.innerHTML = `
-        <tr>
-          <td colspan="5" class="text-center text-muted p-4">
-            No matching plans found.
-          </td>
-        </tr>`;
+      planListEmpty.style.display = 'block';
       return;
     }
+    planListEmpty.style.display = 'none';
 
     plansToRender.forEach(plan => {
-      const row = document.createElement('tr');
-      // Ensure stats object is available, default to 0 if not present
       const stats = plan.stats || { speed: 0, stamina: 0, power: 0, guts: 0, wit: 0 };
-      const statusClass = `bg-${(plan.status || '').toLowerCase()}`;
+      const card = document.createElement('article');
+      card.className = 'plan-card';
+      card.setAttribute('role', 'article');
+      card.setAttribute('aria-labelledby', `plan-title-${plan.id}`);
+
       const imageHtml = plan.trainee_image_path
         ? `<div class="plan-list-thumbnail-container"><img src="${plan.trainee_image_path}" class="plan-list-thumbnail" alt="Trainee"></div>`
-        : `<div class="plan-list-thumbnail-container"><div class="plan-list-placeholder"><i class="bi bi-person-square"></i></div></div>`;
+        : `<div class="plan-list-thumbnail-container"><div class="plan-list-placeholder"><i class="bi bi-person-square" aria-hidden="true"></i></div></div>`;
 
-      row.innerHTML = `
-        <td>${imageHtml}</td>
-        <td>
-          <strong>${plan.plan_title || 'Untitled Plan'}</strong>
+      card.innerHTML = `
+        ${imageHtml}
+        <div class="meta">
+          <h4 id="plan-title-${plan.id}" class="mb-1" style="font-weight:700; font-size:1.05rem;">🏇 ${plan.plan_title || 'Untitled Plan'}</h4>
           <div class="text-muted small">${plan.name || ''}</div>
-          <div class="plan-stat-bars">
-            <span class="d-inline-block fw-bold text-muted" style="color: var(--color-stat-speed) !important;">SPD</span> ${createMiniStatBar(stats.speed, 'speed')}
-            <span class="d-inline-block fw-bold text-muted" style="color: var(--color-stat-stamina) !important;">STM</span> ${createMiniStatBar(stats.stamina, 'stamina')}
-            <span class="d-inline-block fw-bold text-muted" style="color: var(--color-stat-power) !important;">PWR</span> ${createMiniStatBar(stats.power, 'power')}
-            <span class="d-inline-block fw-bold text-muted" style="color: var(--color-stat-guts) !important;">GTS</span> ${createMiniStatBar(stats.guts, 'guts')}
-            <span class="d-inline-block fw-bold text-muted" style="color: var(--color-stat-wit) !important;">WIT</span> ${createMiniStatBar(stats.wit, 'wit')}
+          <div class="plan-stat-bars" aria-hidden="true">
+            <div style="min-width:36px; font-size:11px; color:var(--color-stat-speed);">SPD</div> ${createMiniStatBar(stats.speed, 'speed')}
+            <div style="min-width:36px; font-size:11px; color:var(--color-stat-stamina);">STM</div> ${createMiniStatBar(stats.stamina, 'stamina')}
+            <div style="min-width:36px; font-size:11px; color:var(--color-stat-power);">PWR</div> ${createMiniStatBar(stats.power, 'power')}
+            <div style="min-width:36px; font-size:11px; color:var(--color-stat-guts);">GTS</div> ${createMiniStatBar(stats.guts, 'guts')}
+            <div style="min-width:36px; font-size:11px; color:var(--color-stat-wit);">WIT</div> ${createMiniStatBar(stats.wit, 'wit')}
           </div>
-        </td>
-        <td>
-          <span class="badge ${statusClass} rounded-pill">${plan.status || ''}</span>
-        </td>
-        <td>${plan.race_name || ''}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}" title="Edit plan ${plan.plan_title}">
-            <i class="bi bi-pencil-square" aria-hidden="true"></i>
-            <span class="visually-hidden">Edit</span>
-          </button>
-          <button class="btn btn-sm btn-outline-info view-inline-btn" data-id="${plan.id}" title="View plan ${plan.plan_title}">
-            <i class="bi bi-eye" aria-hidden="true"></i>
-            <span class="visually-hidden">View</span>
-          </button>
-          <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}" title="Delete plan ${plan.plan_title}">
-            <i class="bi bi-trash" aria-hidden="true"></i>
-            <span class="visually-hidden">Delete</span>
-          </button>
-        </td>
+          <div class="mt-2 small text-muted">${plan.race_name || ''}</div>
+        </div>
+        <div class="actions" style="margin-left:auto;">
+          <div class="mb-2 small text-muted text-end">${plan.status || ''}</div>
+          <div>
+            <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}" title="Edit plan ${plan.plan_title}"><i class="bi bi-pencil-square" aria-hidden="true"></i><span class="visually-hidden">Edit</span></button>
+            <button class="btn btn-sm btn-outline-info view-inline-btn" data-id="${plan.id}" title="View plan ${plan.plan_title}"><i class="bi bi-eye" aria-hidden="true"></i><span class="visually-hidden">View</span></button>
+            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}" title="Delete plan ${plan.plan_title}"><i class="bi bi-trash" aria-hidden="true"></i><span class="visually-hidden">Delete</span></button>
+          </div>
+        </div>
       `;
-      planTableBody.appendChild(row);
+
+      planGrid.appendChild(card);
     });
   }
 
@@ -187,18 +148,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (result.success) {
         allPlans = result.plans;
-        renderPlanTable(allPlans);
+        renderPlanCards(allPlans);
       } else {
         throw new Error(result.message || 'Unknown error');
       }
     } catch (error) {
       console.error("Failed to load plans:", error);
-      planTableBody.innerHTML = `
-        <tr>
-          <td colspan="5" class="text-center text-danger p-4">
-            Error loading plans.
-          </td>
-        </tr>`;
+      planGrid.innerHTML = '';
+      planListEmpty.style.display = 'block';
+      planListEmpty.textContent = 'Error loading plans.';
     }
   }
 
@@ -208,14 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
   filterButtonGroup.addEventListener('click', e => {
     if (e.target.matches('button[data-filter]')) {
       const filter = e.target.dataset.filter;
-      filterButtonGroup.querySelector('.active')?.classList.remove('active');
+      // toggle aria-pressed for accessibility
+      filterButtonGroup.querySelectorAll('button[data-filter]').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
       e.target.classList.add('active');
+      e.target.setAttribute('aria-pressed','true');
 
-      const filtered = filter === 'all'
-        ? allPlans
-        : allPlans.filter(p => p.status === filter);
-
-      renderPlanTable(filtered);
+      const filtered = filter === 'all' ? allPlans : allPlans.filter(p => p.status === filter);
+      renderPlanCards(filtered);
     }
   });
 

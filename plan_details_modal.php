@@ -15,7 +15,7 @@ $conditionOptions = $conditionOptions ?? [];
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="planDetailsModalLabel">Plan Details</h5>
+                <h5 class="modal-title" id="planDetailsModalLabel">🏇 Plan Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="loading-overlay" id="planDetailsLoadingOverlay" style="display: none;">
@@ -63,6 +63,14 @@ $conditionOptions = $conditionOptions ?? [];
                     </ul>
 
                     <div class="tab-content pt-3">
+                        <!-- Version-6: compact plan summary strip (populated by existing JS) -->
+                        <div id="planSummaryStrip" class="mb-3" aria-hidden="false">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="small text-muted">Turn: <strong id="summaryTurn">-</strong></div>
+                                <div class="small text-muted">SP: <strong id="summarySP">-</strong></div>
+                                <div class="ms-auto small text-muted" id="summaryRace">&nbsp;</div>
+                            </div>
+                        </div>
                         <div class="tab-pane fade show active" id="general" role="tabpanel"
                             aria-labelledby="general-tab">
                             <div class="row mb-3">
@@ -320,18 +328,18 @@ $conditionOptions = $conditionOptions ?? [];
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-info" id="exportPlanBtn">Copy to Clipboard</button>
-                    <a href="#" id="downloadTxtLink" class="btn btn-outline-secondary" title="Download plan as TXT">
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close modal">Close</button>
+                    <button type="button" class="button-pill" id="exportPlanBtn" aria-label="Copy plan to clipboard">Copy to Clipboard</button>
+                    <a href="#" id="downloadTxtLink" class="tab-pill" title="Download plan as TXT" aria-label="Download plan as TXT">
                         <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
                         <span class="visually-hidden">Export as TXT</span>
                     </a>
-                    <a href="#" id="downloadCsvLink" class="btn btn-outline-secondary" title="Download plan as CSV">
+                    <a href="#" id="downloadCsvLink" class="tab-pill" title="Download plan as CSV" aria-label="Download plan as CSV">
                         <i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i>
                         <span class="visually-hidden">Export as CSV</span>
                     </a>
-                    <button type="submit" class="btn btn-uma">Save Changes</button>
+                    <button type="submit" class="button-pill" aria-label="Save changes to plan">Save Changes</button>
                 </div>
             </form>
         </div>
