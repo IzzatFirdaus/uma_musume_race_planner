@@ -118,12 +118,25 @@ try {
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <!-- VERSION 4: Use system-native font stack for crisp cross-platform look -->
-    <style>
-        body, .header-banner, .card, .table, .btn, .form-control, .form-select {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-    </style>
+        <!-- VERSION 5: Prefer Figtree (fallback to system) for headings/UI -->
+        <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+        <style>
+                body, .header-banner, .card, .table, .btn, .form-control, .form-select {
+                        font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                }
+        </style>
+        <!-- Inline SVG sprite will be loaded into the document for stat icons -->
+        <script>
+            (function(){
+                // Fetch SVG sprite and inline it for easy use with <use xlink:href="#icon-speed"> etc.
+                fetch('assets/icons.svg').then(r => r.text()).then(svg => {
+                    const div = document.createElement('div');
+                    div.style.display = 'none';
+                    div.innerHTML = svg;
+                    document.body ? document.body.insertBefore(div, document.body.firstChild) : document.documentElement.appendChild(div);
+                }).catch(()=>{/* silent fail, icons fallback to bootstrap icons */});
+            })();
+        </script>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -133,6 +146,7 @@ try {
   <link rel="apple-touch-icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png">
 
   <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme_v6.css">
 </head>
 
 <body>
@@ -175,12 +189,13 @@ try {
     // --- V3.0: GLOBAL HELPERS AND VARIABLES ---
     let messageBoxModalInstance;
 
+    // VERSION 5: Prefer inline SVG stat icons (assets/icons.svg) and keep a color helper class
     const statIcons = {
-        speed:   { class: 'bi bi-lightning-charge-fill', colorClass: 'text-speed-blue' },
-        stamina: { class: 'bi bi-heart-fill', colorClass: 'text-stamina-red' },
-        power:   { class: 'bi bi-arm-flex', colorClass: 'text-power-orange' },
-        guts:    { class: 'bi bi-fire', colorClass: 'text-guts-magenta' },
-        wit:     { class: 'bi bi-mortarboard-fill', colorClass: 'text-wit-green' }
+        speed:   { symbol: '#icon-speed', colorClass: 'text-speed-blue' },
+        stamina: { symbol: '#icon-stamina', colorClass: 'text-stamina-red' },
+        power:   { symbol: '#icon-power', colorClass: 'text-power-orange' },
+        guts:    { symbol: '#icon-guts', colorClass: 'text-guts-magenta' },
+        wit:     { symbol: '#icon-wit', colorClass: 'text-wit-green' }
     };
 
     function showMessageBox(message, type = 'success') {
@@ -192,7 +207,69 @@ try {
         setTimeout(() => messageBoxModalInstance.hide(), 3000);
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('DOMContentLoaded', function() {
+                // Wait for all stylesheets to load before running layout JS to prevent FOUC
+                const stylesheets = Array.from(document.styleSheets);
+                let loaded = 0;
+                function checkAllLoaded() {
+                    loaded++;
+                    if (loaded >= stylesheets.length) {
+                        runLayoutInit();
+                    }
+                }
+                function runLayoutInit() {
+                    // --- UI REFRESH LISTENER ---
+                    document.addEventListener('planUpdated', function() {
+                        fetch('components/plan-list.php')
+                            .then(response => response.text())
+                            .then(html => {
+                                const planListContainer = document.getElementById('planListContainer');
+                                if(planListContainer) planListContainer.innerHTML = html;
+                            })
+                            .catch(error => console.error('Failed to refresh plan list:', error));
+                        updateStats();
+                        updateRecentActivity();
+                    });
+
+                    // Preload skill reference for richer local autosuggest (used by attachAutosuggest)
+                    (async function preloadSkillReference() {
+                        try {
+                            const res = await fetch('get_skill_reference.php');
+                            const data = await res.json();
+                            if (data.success && Array.isArray(data.skills)) {
+                                window.skillReference = data.skills; // array of {skill_name, tag, stat_type, description}
+                            } else {
+                                window.skillReference = [];
+                            }
+                        } catch (e) {
+                            window.skillReference = [];
+                            console.warn('Failed to preload skill reference:', e);
+                        }
+                    })();
+
+                    updateStats();
+                    updateRecentActivity();
+                }
+                if (stylesheets.length === 0) {
+                    runLayoutInit();
+                } else {
+                    stylesheets.forEach(sheet => {
+                        if (sheet.href) {
+                            const link = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).find(l => l.href === sheet.href);
+                            if (link && !link.sheet) {
+                                link.addEventListener('load', checkAllLoaded);
+                            } else {
+                                loaded++;
+                            }
+                        } else {
+                            loaded++;
+                        }
+                    });
+                    if (loaded >= stylesheets.length) {
+                        runLayoutInit();
+                    }
+                }
+            });
       // --- MODAL AND GLOBAL ELEMENT INITIALIZATION ---
       const body = document.body;
       const darkModeToggle = document.getElementById('darkModeToggle');
@@ -297,14 +374,31 @@ try {
 
             const iconInfo = statIcons[attrName];
 
+            // Render slider + numeric input with inline SVG icon
             div.innerHTML = `
                 <div class="d-flex align-items-center mb-1">
-                    <i class="${iconInfo.class} stat-icon ${iconInfo.colorClass} me-2"></i>
+                    <svg class="icon ${iconInfo.colorClass} me-2" aria-hidden="true"><use xlink:href="${iconInfo.symbol}"></use></svg>
                     <label class="form-label mb-0">${attrName.charAt(0).toUpperCase() + attrName.slice(1)}</label>
                 </div>
-                <input type="number" class="form-control" min="0" max="1200" value="${attr.value}" data-stat="${attrName}">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="range" class="form-range stat-slider flex-grow-1" min="0" max="1200" value="${attr.value}" data-stat="${attrName}">
+                    <input type="number" class="form-control form-control-sm stat-number-input" style="width:90px;" min="0" max="1200" value="${attr.value}" data-stat="${attrName}">
+                </div>
             `;
             container.appendChild(div);
+            // Attach sync listeners between slider and number input
+            const slider = div.querySelector('.stat-slider');
+            const number = div.querySelector('.stat-number-input');
+            if (slider && number) {
+                slider.addEventListener('input', () => { number.value = slider.value; });
+                number.addEventListener('input', () => { 
+                    let v = parseInt(number.value, 10);
+                    if (isNaN(v)) v = 0;
+                    v = Math.max(0, Math.min(1200, v));
+                    number.value = v;
+                    slider.value = v;
+                });
+            }
         });
         container.classList.add('row', 'g-3', 'justify-content-center');
     }
@@ -685,8 +779,9 @@ try {
                   });
                   return items;
               };
-              const attributesData = gatherDataForSubmission(`#attributeSlidersContainer${isInline ? 'Inline' : ''} input[type="number"]`, el => ({
-                  attribute_name: el.dataset.stat.toUpperCase(), value: el.value, grade: 'G'
+              // Collect attribute sliders and number inputs (range or number) using data-stat attribute
+              const attributesData = gatherDataForSubmission(`#attributeSlidersContainer${isInline ? 'Inline' : ''} [data-stat]`, el => ({
+                  attribute_name: (el.dataset.stat || '').toUpperCase(), value: parseInt(el.value, 10) || 0, grade: 'G'
               }));
               formData.append('attributes', JSON.stringify(attributesData));
               const terrainGrades = gatherDataForSubmission(`#aptitudeGradesContainer${isInline ? 'Inline' : ''} select[data-grade-type="terrain"]`, el => ({ terrain: el.dataset.itemKey, grade: el.value }));
@@ -763,9 +858,24 @@ try {
       });
 
       // Initial load
-      updateStats();
-      updateRecentActivity();
-    });
+            // Preload skill reference for richer local autosuggest (used by attachAutosuggest)
+            (async function preloadSkillReference() {
+                try {
+                    const res = await fetch('get_skill_reference.php');
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.skills)) {
+                        window.skillReference = data.skills; // array of {skill_name, tag, stat_type, description}
+                    } else {
+                        window.skillReference = [];
+                    }
+                } catch (e) {
+                    window.skillReference = [];
+                    console.warn('Failed to preload skill reference:', e);
+                }
+            })();
++
+            updateStats();
+            updateRecentActivity();
 </script>
 </body>
 </html>
