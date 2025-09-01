@@ -70,7 +70,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: url("../uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png")
+  background: url("../uploads/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png")
               center/cover no-repeat;
   opacity: 0.8;
   transition: background 0.5s ease-in-out, opacity 0.5s ease-in-out;

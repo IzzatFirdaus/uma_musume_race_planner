@@ -20,7 +20,7 @@
   --card-shadow: 0 4px 12px rgba(149, 117, 205, 0.15);
 
   /* Background Image URLs */
-  --bg-image-body-light: url("../uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
+  --bg-image-body-light: url("../uploads/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
   --bg-image-body-dark: url("../uploads/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
   --bg-image-component-light: url("../uploads/app_bg/uma_musume_race_planner_bg_light_1028x1536.png");
   --bg-image-component-dark: url("../uploads/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png");
