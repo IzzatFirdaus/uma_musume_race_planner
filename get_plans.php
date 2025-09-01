@@ -104,7 +104,7 @@ try {
 
     // Encode the final array of plans into a JSON response
     $json = json_encode(['success' => true, 'plans' => $final_plans]);
-    // Capture and clear any accidental output produced earlier
+    // Capture and clear any accidental output produced earlier, expose limited debug headers
     $accidental = ob_get_contents();
     header('X-Debug-Output-Length: ' . strlen($accidental));
     if ($accidental) {
@@ -121,7 +121,7 @@ try {
     ]);
     // Set HTTP response code to 500 (Internal Server Error)
     http_response_code(500);
-    // Return a JSON error message to the client (while preserving debug headers)
+    // Return a JSON error message to the client (preserve limited debug headers)
     $json = json_encode(['success' => false, 'error' => 'A database error occurred. Please try again later.']);
     $accidental = ob_get_contents();
     header('X-Debug-Output-Length: ' . strlen($accidental));

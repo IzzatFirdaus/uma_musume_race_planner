@@ -49,7 +49,7 @@ try {
         'success' => true,
         'stats' => $safeStats
     ]);
-    // Clear accidental output and send JSON
+    // Attach limited debug headers if any accidental output occurred
     $accidental = ob_get_contents();
     header('X-Debug-Output-Length: ' . strlen($accidental));
     if ($accidental) {
