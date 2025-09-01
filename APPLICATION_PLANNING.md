@@ -234,7 +234,52 @@ This file records the iterative design and implementation planning for Uma-Track
 
 # UMA MUSUME RACE PLANNER: Design & Implementation Planning (Iteration) (VERSION 3)
 
-## 1. Purpose & Audience
+
+---
+
+# UMA MUSUME RACE PLANNER: As-Built Design & Implementation Planning (VERSION 7)
+
+## 1. Overview
+This milestone documents the current "As-Built" frontend (see SPEC-06-UMA-MUSUME-UI-AS-BUILT):
+- Bootstrap 5, vanilla JS, custom CSS variables, system-native font stack
+- Responsive dashboard, plan editor with tabs, dynamic skill/goal/prediction rows
+- Stat color system standardized via CSS variables (`--color-speed`, etc.)
+- Dark mode toggle with smooth transitions
+- Export as styled text (inline and modal)
+- Accessibility: ARIA labels, keyboard navigation, touch targets
+- Avatar upload/preview in plan forms
+- Growth stat calculators in plan details
+- Enhanced iconography (Bootstrap Icons, custom SVGs)
+- Sticky mobile footer for Save/Export actions
+
+## 2. Changelog
+- Standardized stat color system and applied to all components
+- Refactored dark mode for smooth transitions and accessibility
+- Skill/goal/prediction row builders updated for markup and JS consistency
+- Export logic verified and enhanced for styled text output
+- Accessibility audit performed (ARIA, keyboard, touch)
+- Avatar upload/preview added to plan forms
+- Growth stat calculators implemented in plan details
+- Iconography enhanced with custom SVGs
+- Sticky mobile footer refined for Save/Export actions
+
+## 3. Next Iteration Plan
+- Refine accessibility and dark mode
+- Expand stat overview panel
+- Integrate AI SP optimization suggestions
+- Add game-style modal previews with transitions
+- Run UI and accessibility tests (Playwright, Lighthouse)
+
+## 4. Validation Checklist
+- [x] Stat color system standardized and applied
+- [x] Dark mode transitions smooth and accessible
+- [x] Skill/goal/prediction row builders consistent
+- [x] Export logic works inline and modal
+- [x] Accessibility audit complete
+- [x] Avatar upload/preview functional
+- [x] Growth stat calculators present
+- [x] Iconography enhanced
+- [x] Sticky mobile footer refined
 **Target Users:** Uma Musume: Pretty Derby players  
 **Core Goals:**
 - Streamlined logging of turn-by-turn stat development
@@ -373,6 +418,48 @@ By combining Uma Musume’s design hallmarks (persistent gauges, color-coded sta
 
 **This planning document should be updated as features are designed, prototyped, and deployed. Track progress and adjust priorities as needed.**
 
+---
+
+
+# VERSION 6 — Frontend Redesign Milestone (2025-09-02)
+
+Status: In-progress — major UI overhaul, accessibility, and component refactors implemented; documentation updated.
+
+Overview:
+- Goal: Redesign UI to match Uma Musume style (no direct copyright), maximize engagement and accessibility.
+- Key focuses: "M PLUS Rounded 1c" font, pastel stat palette, pill-shaped buttons/tabs, card-based dashboard/plan list, ARIA attributes, keyboard navigation, WCAG AA contrast.
+
+Completed/implemented so far:
+- Created: `css/theme_v6.css` (font import, stat palette, card/pill styles).
+- Updated: `index.php` (theme link), `components/plan-list.php`, `x-stat-bar.php`, `x-skill-card.php`, `x-card.php`, `plan_details_modal.php`, `plan-inline-details.php`.
+- Card-based dashboard and plan list: responsive grid, soft shadows, emoji headers.
+- Accessibility: ARIA attributes, visible focus, keyboard navigation, WCAG AA contrast.
+- Component refactors:
+	- `x-stat-bar.php`: stat color via CSS variable, emoji icon, animated fill.
+	- `x-skill-card.php`: pastel card, colored border by skill tag, pill action button.
+	- `x-plan-card.php`: plan card with emoji, badges, summary strip, pill Open button.
+	- `plan-list.php`: replaced table with card grid, pill filters, accessible tablist.
+	- `plan_details_modal.php` & `plan-inline-details.php`: emoji title, summary strip, pill footer buttons.
+
+Next steps / backlog:
+- JS lint/test: run linters and unit tests (requires fixing `package.json` / installing Node deps) — optional but recommended.
+- Performance: If skill reference grows large, switch autosuggest to server-side incremental queries.
+- UX polish: add tooltips, per-stat slider color segments, and keyboard shortcut improvements.
+- Accessibility audit (Lighthouse), Playwright UI tests.
+
+Validation checklist:
+- [x] Theme and font applied globally
+- [x] Card/pill UI in dashboard and plan list
+- [x] Accessibility improvements (ARIA, keyboard, contrast)
+- [x] Component refactors (stat bar, skill card, plan card)
+- [x] No PHP/JS errors in updated files
+- [x] Smoke test output matches new card/pill UI
+
+Notes:
+- All changes tracked in SPEC-05-UMA-MUSUME-UI-DESIGN and referenced in README and docs/components.md.
+- Progressive enhancement: features fail gracefully if JS or Chart.js is unavailable.
+
+
 
 # UMA MUSUME RACE PLANNER: As-Built Design & Implementation Planning (Iteration) (VERSION 4)
 
@@ -489,3 +576,90 @@ The UMA MUSUME RACE PLANNER delivers a user-friendly and authentic-feeling caree
 ---
 
 **Iterate and update as new features are designed, developed, or deployed.** (This file preserves versions 1–4 for traceability.)
+
+---
+
+## UMA MUSUME RACE PLANNER: Iterative UI Planning – Official Game Style Alignment (VERSION 8)
+
+This section defines the next UX/UI milestone to align the app’s visuals and interactions more closely with the official game’s look and feel while maintaining originality and accessibility.
+
+### 1. Visual Style Inspiration (Screenshots Referenced)
+
+- Use a predominantly white base (~70%), green main (~25%), and orange/pink accent (~5%) for a polished, game-like appearance.
+- UI color schemes dynamically adapt to match each Uma Musume’s motif, reflecting character personalization.
+- Text elements use gradients, outlines, and glowing effects for "NEW" badges and special emphasis.
+- Stat bars and badges leverage iconic colors: blue for Speed, green for Stamina, red for Power, orange for Guts, purple for Wit.
+
+### 2. Layout & Structure
+
+- Header/Footer: Persistent info (current turn, goals, energy) in a fixed header; actionable elements (skip, menu) in a thumb-friendly footer.
+- Main Content: Rigid placement of primary info (stats, buttons, dialog) for consistency across screens.
+- Cards & Dialogs: Consistent vertical sizing, drop shadow, rounded corners. Buttons use white-to-green gradients and subtle shadows.
+- Menu/Sidebar: Use icon-labeled navigation with clear grouping and sectioning.
+
+### 3. Interaction & Feedback
+
+- Tap and button feedback use horseshoe/star/colored dot animations to distinguish interaction types.
+- Navigation icons and actionable elements include continuous animation for feedback and UI liveliness.
+- Scene and lighting colors adapt to time, weather, and location for context awareness.
+- Stat and energy bars animate smoothly on change; respect `prefers-reduced-motion`.
+
+### 4. Typography
+
+- Use "M PLUS Rounded 1c" from Google Fonts for main UI font, supporting Japanese text where needed; fallback to "Figtree" or system sans-serif.
+- Text layouts prioritize readable line breaks and allow dynamic breaking for names as appropriate.
+
+### 5. Component Blueprints
+
+- Stat Bar: Colored, gradient progress bar with stat icon and bold label.
+- Button: Large, pill-shaped with drop shadow, icon/emoji label.
+- Skill Card: Colored border/tag for rarity/type, game-style layout.
+- Plan Card: Mimic race/training card with left-aligned stats and right-aligned goals.
+- Dialog: Two vertical size variants, drop shadow, consistent padding.
+- Menu/Sidebar: Large icons, grouped sections, pastel backgrounds.
+
+### 6. Responsive & Accessibility
+
+- Mobile-first grid: main actions and navigation within thumb reach.
+- All touch targets ≥ 44px.
+- WCAG AA contrast for text/backgrounds.
+- Keyboard navigation and ARIA labels for modals, tabs, and skill rows.
+
+### 7. Animation & Effects
+
+- Smooth transitions for tab changes, modal open/close, stat bar updates.
+- Tap feedback and animated icons for interactive elements.
+- Optional: Add toggleable sound effects for actions like save/delete.
+
+### 8. Implementation Steps
+
+1. Add Google Fonts import for "M PLUS Rounded 1c" in HTML head.
+2. Define base color palette with CSS variables for stat, accent, and character-motif colors.
+3. Build reusable components: stat bar, skill card, plan card, dialog/modal, sidebar menu.
+4. Apply gradient backgrounds, drop shadows, rounded corners, and animated transitions.
+5. Integrate tap feedback and animation logic in JS.
+6. Ensure accessibility (contrast, keyboard, ARIA, reduced-motion).
+7. Optionally add audio cues for key actions.
+8. Use a data-first approach: group/categorize information before UI layout.
+9. Test for mobile usability and thumb reach.
+
+### 9. Milestones
+
+| Milestone                | Target Date | Status |
+|--------------------------|-------------|--------|
+| Core palette & font setup| Sep 5       | ⏳     |
+| Stat bars & components   | Sep 7       | ⏳     |
+| Button/dialog redesign   | Sep 8       | ⏳     |
+| Menu/sidebar UI          | Sep 10      | ⏳     |
+| Animation/tap feedback   | Sep 12      | ⏳     |
+| Accessibility audit      | Sep 14      | ⏳     |
+| Scene-based color adapts | Sep 16      | ⏳     |
+
+### 10. Validation & Metrics
+
+- Consistent color, typography, and layout across screens.
+- Stat bars, buttons, and dialogs match game visual style without copying assets.
+- Mobile users complete planning tasks quickly and easily (thumb reach tests).
+- Accessibility audits pass (contrast, navigation, focus management).
+- Session recordings and user feedback indicate higher engagement.
+

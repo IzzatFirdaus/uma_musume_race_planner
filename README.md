@@ -38,14 +38,61 @@ Screenshots will be added to this repository soon. The UI includes a dashboard w
 ## 🎨 Design & Mobile Guidance (VERSION 3)
 
 - Stat color mapping (used in UI and charts):
-  - Speed: blue (`--color-stat-speed`)
-  - Stamina: green (`--color-stat-stamina`)
-  - Power: red (`--color-stat-power`)
-  - Guts: orange (`--color-stat-guts`)
-  - Wit: purple (`--color-stat-wit`)
+  - Speed: blue (`--color-stat-speed` or alias `--color-speed`)
+  - Stamina: green (`--color-stat-stamina` or alias `--color-stamina`)
+  - Power: red (`--color-stat-power` or alias `--color-power`)
+  - Guts: orange (`--color-stat-guts` or alias `--color-guts`)
+  - Wit: purple (`--color-stat-wit` or alias `--color-wit`)
 
 - The UI is mobile-first. Touch targets are sized >=44px and components use responsive stacking. The default font is `Figtree` with a rounded fallback.
 
+
+## 🎯 VERSION 6 — Frontend Redesign (2025-09-02)
+
+This release delivers a major UI overhaul to match Uma Musume style (no direct copyright):
+
+**What's new:**
+- Theme: "M PLUS Rounded 1c" font, pastel stat palette, pill-shaped buttons/tabs.
+- Card-based dashboard and plan list: responsive grid, soft shadows, emoji headers.
+- Accessibility: ARIA attributes, visible focus, keyboard navigation, WCAG AA contrast.
+- Component refactors:
+  - `x-stat-bar.php`: stat color via CSS variable, emoji icon, animated fill.
+  - `x-skill-card.php`: pastel card, colored border by skill tag, pill action button.
+  - `x-plan-card.php`: plan card with emoji, badges, summary strip, pill Open button.
+  - `plan-list.php`: replaced table with card grid, pill filters, accessible tablist.
+  - `plan_details_modal.php` & `plan-inline-details.php`: emoji title, summary strip, pill footer buttons.
+- Created: `css/theme_v6.css` (font import, stat palette, card/pill styles).
+- Improved: accessibility, keyboard navigation, ARIA labels.
+
+**Validation:**
+- No PHP/JS errors in updated files.
+- Smoke test output matches new card/pill UI.
+
+For full roadmap and design history, see `APPLICATION_PLANNING.md`.
+
+
+## 📖 VERSION 7 — As-Built Frontend & Future Iteration (2025-09-02)
+
+This milestone documents the "As-Built" frontend (see SPEC-06-UMA-MUSUME-UI-AS-BUILT):
+- Bootstrap 5, vanilla JS, custom CSS variables, system-native font stack
+- Responsive dashboard, plan editor with tabs, dynamic skill/goal/prediction rows
+- Stat color system standardized via CSS variables (`--color-speed`, etc.)
+- Dark mode toggle with smooth transitions
+- Export as styled text (inline and modal)
+- Accessibility: ARIA labels, keyboard navigation, touch targets
+- Avatar upload/preview in plan forms
+- Growth stat calculators in plan details
+- Enhanced iconography (Bootstrap Icons, custom SVGs)
+- Sticky mobile footer for Save/Export actions
+
+**Next Iteration Plan:**
+- Refine accessibility and dark mode
+- Expand stat overview panel
+- Integrate AI SP optimization suggestions
+- Add game-style modal previews with transitions
+- Run UI and accessibility tests (Playwright, Lighthouse)
+
+All changes and planning are tracked in `APPLICATION_PLANNING.md` and `docs/components.md`.
 
 ## 🚀 Getting Started
 
@@ -209,4 +256,6 @@ MIT License © 2025
 
 ## Planning & Versions
 
-This repository tracks design and implementation history in `APPLICATION_PLANNING.md`. The file contains versioned design iterations (VERSION 1 → VERSION 4) and a recommended implementation roadmap. Use it to review decisions, proposed tasks, and next steps as the project evolves.
+This repository tracks design and implementation history in `APPLICATION_PLANNING.md`. The file contains versioned design iterations (VERSION 1 → VERSION 7) and the next milestone plan (VERSION 8 – Official Game Style Alignment). Use it to review decisions, proposed tasks, and next steps as the project evolves.
+
+See also `docs/components.md` for component-level notes and the VERSION 6/7/8 changelogs.
