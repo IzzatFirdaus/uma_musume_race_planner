@@ -9,6 +9,7 @@
    Rationale: Aligns with official Uma Musume aesthetic for familiarity and engagement.
 ------------------------------ */
 @import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap");
 
 /* ------------------------------
    Global Design Variables (Light + Dark Mode)
@@ -49,11 +50,19 @@
   --color-shadow-light: 0 4px 12px rgba(149, 117, 205, 0.15); /* Soft shadow */
 
   /* Stat Colors - Consistent and clearly named, aligned with SPEC-05 */
-  --color-stat-speed: #3399ff; /* Blue */
-  --color-stat-stamina: #dc3545; /* Red */
-  --color-stat-power: #fd7e14; /* Orange */
-  --color-stat-guts: #e83e8c; /* Magenta */
-  --color-stat-wit: #28a745; /* Green */
+    /* Stat Colors - VERSION 3 palette: Speed, Stamina, Power, Guts, Wit */
+    --color-stat-speed: #3399ff; /* Blue */
+    --color-stat-stamina: #28a745; /* Green */
+    --color-stat-power: #dc3545; /* Red */
+    --color-stat-guts: #fd7e14; /* Orange */
+    --color-stat-wit: #6f42c1; /* Purple */
+
+  /* JS-friendly aliases used in components/chart rendering */
+  --stat-speed-color: var(--color-stat-speed);
+  --stat-stamina-color: var(--color-stat-stamina);
+  --stat-power-color: var(--color-stat-power);
+  --stat-guts-color: var(--color-stat-guts);
+  --stat-wit-color: var(--color-stat-wit);
 
   /* Background Image URLs - Defined here for easy switching */
   --bg-image-body-light: url("../uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
@@ -115,12 +124,14 @@ body {
     --color-bg-light
   ); /* Fallback color, now using variable */
   color: var(--color-text-dark); /* Default text color for light mode */
-  font-family: "M PLUS Rounded 1c", sans-serif; /* Applied new font */
+    /* System-native sans-serif stack for VERSION 4 (Segoe UI, Tahoma, Verdana, etc.) */
+    font-family: "Segoe UI", Tahoma, Verdana, "Helvetica Neue", Arial, system-ui, -apple-system, "Segoe UI Emoji", "Segoe UI Symbol";
   padding-bottom: 50px; /* Ensure space for fixed footer */
   transition: color var(--transition-speed),
     background-color var(--transition-speed); /* Smooth transitions */
   line-height: 1.6; /* Improved readability */
 }
+  .btn-uma { min-height: 44px; }
 
 body::before {
   content: "";
@@ -457,6 +468,7 @@ body.dark-mode .bg-finished {
   font-size: 1rem; /* Ensure standard font size */
   transition: border-color var(--transition-speed),
     box-shadow var(--transition-speed), background-color var(--transition-speed);
+  min-height: 44px; /* Ensure touch-target minimum height */
 }
 
 .form-control::placeholder {
@@ -772,6 +784,32 @@ body.dark-mode .skill-context-info {
   transition: background var(--transition-speed);
 }
 body.dark-mode .loading-overlay {
+
+  /* Visually hidden utility for accessibility (VERSION 4) */
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  /* Focus outlines for interactive elements (buttons, inputs, tabs) */
+  button:focus, .btn:focus, .form-control:focus, .form-select:focus, .nav-link:focus, .tab-pane:focus {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.25);
+    transition: outline var(--transition-speed), box-shadow var(--transition-speed);
+  }
+  body.dark-mode button:focus, body.dark-mode .btn:focus, body.dark-mode .form-control:focus, body.dark-mode .form-select:focus, body.dark-mode .nav-link:focus, body.dark-mode .tab-pane:focus {
+    outline: 2px solid var(--color-neon-purple);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0.2rem rgba(179,115,255,0.35);
+  }
   background: rgba(0, 0, 0, 0.75); /* Darker overlay for dark mode */
 }
 
@@ -1067,6 +1105,17 @@ body.dark-mode .container > .text-center.text-muted.small a:hover {
 .navbar {
   z-index: 1050; /* Higher than Bootstrap's default modal, ensures it stays on top */
 }
+
+/* Skill card left border by skill type - used by x-skill-card or x-skill-row wrappers */
+.skill-card { border-left-width: 6px; border-left-style: solid; }
+.skill-type-speed { border-left-color: var(--color-stat-speed) !important; }
+.skill-type-stamina { border-left-color: var(--color-stat-stamina) !important; }
+.skill-type-power { border-left-color: var(--color-stat-power) !important; }
+.skill-type-guts { border-left-color: var(--color-stat-guts) !important; }
+.skill-type-wit { border-left-color: var(--color-stat-wit) !important; }
+
+/* Small helper to ensure skill-row controls meet touch targets */
+.skill-row .form-control { min-height: 44px; }
 
 /* Add a CSS variable for navbar height for better consistency */
 /* This can be set dynamically by JS if needed, but a fixed value is a good start */

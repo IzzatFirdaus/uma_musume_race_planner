@@ -159,14 +159,17 @@ document.addEventListener('DOMContentLoaded', () => {
         </td>
         <td>${plan.race_name || ''}</td>
         <td>
-          <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}">
-            <i class="bi bi-pencil-square"></i>
+          <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${plan.id}" title="Edit plan ${plan.plan_title}">
+            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+            <span class="visually-hidden">Edit</span>
           </button>
-          <button class="btn btn-sm btn-outline-info view-inline-btn" data-id="${plan.id}">
-            <i class="bi bi-eye"></i>
+          <button class="btn btn-sm btn-outline-info view-inline-btn" data-id="${plan.id}" title="View plan ${plan.plan_title}">
+            <i class="bi bi-eye" aria-hidden="true"></i>
+            <span class="visually-hidden">View</span>
           </button>
-          <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}">
-            <i class="bi bi-trash"></i>
+          <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${plan.id}" title="Delete plan ${plan.plan_title}">
+            <i class="bi bi-trash" aria-hidden="true"></i>
+            <span class="visually-hidden">Delete</span>
           </button>
         </td>
       `;

@@ -244,7 +244,7 @@ $conditionOptions = $conditionOptions ?? [];
                         </div>
 
                         <div class="tab-pane fade" id="skills" role="tabpanel" aria-labelledby="skills-tab">
-                            <div class="table-responsive">
+                            <div class="table-responsive" data-skill-manager>
                                 <table class="table table-sm" id="skillsTable">
                                     <thead>
                                         <tr>
@@ -256,10 +256,14 @@ $conditionOptions = $conditionOptions ?? [];
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody data-skill-list></tbody>
                                 </table>
+                                <!-- Hidden template (cloned by js/skill-rows.js) -->
+                                <div data-skill-template style="display:none;">
+                                    <?php $index = 0; $skill_name=''; $sp = 0; $acquired = false; include __DIR__ . '/components/x-skill-row.php'; ?>
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-uma w-100 mt-2" id="addSkillBtn">Add Skill</button>
+                            <button type="button" class="btn btn-uma w-100 mt-2" id="addSkillBtn" data-skill-add>Add Skill</button>
                         </div>
 
                         <div class="tab-pane fade" id="predictions" role="tabpanel"
@@ -319,8 +323,14 @@ $conditionOptions = $conditionOptions ?? [];
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-info" id="exportPlanBtn">Copy to Clipboard</button>
-                    <a href="#" id="downloadTxtLink" class="btn btn-outline-secondary">
-                        <i class="bi bi-file-earmark-text"></i> Export as TXT</a>
+                    <a href="#" id="downloadTxtLink" class="btn btn-outline-secondary" title="Download plan as TXT">
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                        <span class="visually-hidden">Export as TXT</span>
+                    </a>
+                    <a href="#" id="downloadCsvLink" class="btn btn-outline-secondary" title="Download plan as CSV">
+                        <i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i>
+                        <span class="visually-hidden">Export as CSV</span>
+                    </a>
                     <button type="submit" class="btn btn-uma">Save Changes</button>
                 </div>
             </form>
@@ -333,8 +343,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const planDetailsModalElement = document.getElementById('planDetailsModal');
     if (!planDetailsModalElement) return;
 
-    const chartTab = document.getElementById('progress-chart-tab');
-    let growthChartInstance = null;
+        const chartTab = document.getElementById('progress-chart-tab');
+        let growthChartInstance = null;
+        // Attach reusable progress chart helper
+        const progressChart = window.ProgressChart ? window.ProgressChart.attach({
+            canvasSelector: '#growthChart',
+            messageSelector: '#growthChartMessage',
+            tabSelector: '#progress-chart-tab',
+            planIdSelector: '#planId'
+        }) : null;
 
     // Helper function to get computed CSS variable values
     function getCssVariableValue(variableName) {
@@ -466,11 +483,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Listen for when the chart tab is shown and render the chart
-    chartTab.addEventListener('shown.bs.tab', function() {
-        const currentPlanId = document.getElementById('planId').value;
-        renderGrowthChart(currentPlanId);
-    });
+        // Use ProgressChart if available; otherwise keep legacy function
+        if (progressChart && typeof progressChart.loadAndRender === 'function') {
+            // ProgressChart handles tab events internally
+        } else {
+            // Listen for when the chart tab is shown and render the chart (legacy fallback)
+            chartTab.addEventListener('shown.bs.tab', function() {
+                    const currentPlanId = document.getElementById('planId').value;
+                    renderGrowthChart(currentPlanId);
+            });
+        }
+
+        // Auto-add an initial skill row when modal opens for better UX
+        const planModalEl = document.getElementById('planDetailsModal');
+        planModalEl.addEventListener('show.bs.modal', function () {
+            const manager = document.querySelector('[data-skill-manager]');
+            if (manager) {
+                const list = manager.querySelector('[data-skill-list]');
+                if (list && list.children.length === 0) {
+                    const addBtn = manager.querySelector('[data-skill-add]');
+                    if (addBtn) addBtn.click();
+                }
+            }
+        });
 
     document.getElementById('downloadTxtLink').addEventListener('click', function(e) {
         e.preventDefault();
@@ -488,6 +523,32 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    });
+
+    document.getElementById('downloadCsvLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        const planId = document.getElementById('planId').value;
+        if (!planId) return;
+        const planTitle = document.getElementById('plan_title').value || 'plan';
+        const safeFileName = planTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        const link = document.createElement('a');
+        link.href = `export_plan_data.php?id=${planId}&format=csv`;
+        link.download = `${safeFileName}_${planId}.csv`;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // Serialize skills before form submit
+    const form = document.getElementById('planDetailsForm');
+    form.addEventListener('submit', function (ev) {
+        // ensure skill rows are serialized into skills_json hidden input
+        const managerContainer = document.querySelector('[data-skill-manager]');
+        if (managerContainer && window.SkillRows && typeof window.SkillRows.serialize === 'function') {
+            window.SkillRows.serialize(managerContainer);
+        }
+        // proceed with normal submit (handled elsewhere via AJAX possibly)
     });
 });
 </script>

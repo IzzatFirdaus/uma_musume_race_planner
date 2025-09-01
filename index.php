@@ -117,11 +117,13 @@ try {
   <title>Uma Musume Race Planner</title>
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- VERSION 4: Use system-native font stack for crisp cross-platform look -->
+    <style>
+        body, .header-banner, .card, .table, .btn, .form-control, .form-select {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+    </style>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -136,30 +138,21 @@ try {
 <body>
   <?php require_once __DIR__ . '/components/navbar.php'; ?>
 
-  <div class="container">
-    <div class="header-banner rounded-3 text-center mb-4">
-      <div class="container">
-        <h1 class="display-4 fw-bold">
-          <img src="uploads/app_logo/uma_musume_race_planner_logo_128.png" alt="Uma Musume Race Planner Logo" class="logo">
-          Uma Musume Race Planner
-        </h1>
-        <p class="lead">Plan, track, and optimize your umamusume's racing career</p>
-      </div>
+    <div class="container">
+        <?php require_once __DIR__ . '/components/header.php'; ?>
+
+        <div id="mainContent" class="row g-4">
+            <div class="col-lg-8">
+                <?php include __DIR__ . '/components/plan-list.php'; ?>
+            </div>
+            <div class="col-lg-4">
+                <?php include __DIR__ . '/components/stats-panel.php'; ?>
+                <?php include __DIR__ . '/components/recent-activity.php'; ?>
+            </div>
+        </div>
+
+        <?php require_once __DIR__ . '/components/plan-inline-details.php'; ?>
     </div>
-
-    <div id="mainContent" class="row">
-      <div class="col-lg-8">
-        <?php include __DIR__ . '/components/plan-list.php'; ?>
-      </div>
-      <div class="col-lg-4">
-        <?php include __DIR__ . '/components/stats-panel.php'; ?>
-        <?php include __DIR__ . '/components/recent-activity.php'; ?>
-      </div>
-    </div>
-
-    <?php require_once __DIR__ . '/components/plan-inline-details.php'; ?>
-
-  </div>
 
   <?php require_once __DIR__ . '/quick_create_plan_modal.php'; ?>
   <?php require_once __DIR__ . '/plan_details_modal.php'; ?>

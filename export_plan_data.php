@@ -66,7 +66,40 @@ try {
         FROM race_predictions WHERE plan_id = ?');
     $plan['goals'] = $fetch('SELECT goal, result FROM goals WHERE plan_id = ?');
 
-    if ($isTxt) {
+    $isCsv = isset($_GET['format']) && $_GET['format'] === 'csv';
+    if ($isCsv) {
+        // Produce a minimal CSV: one section for plan, then skills table
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $plan['plan_title'] ?? 'uma_plan') . '.csv"');
+
+        $out = fopen('php://output', 'w');
+        // Plan main info
+        fputcsv($out, ['Plan ID', $plan['id']]);
+        fputcsv($out, ['Plan Title', $plan['plan_title']]);
+        fputcsv($out, ['Trainee Name', $plan['name']]);
+        fputcsv($out, ['Career Stage', $plan['career_stage']]);
+        fputcsv($out, ['Class', $plan['class']]);
+        fputcsv($out, ['Turn Before', $plan['turn_before']]);
+        fputcsv($out, []);
+
+        // Attributes
+        fputcsv($out, ['Attributes']);
+        fputcsv($out, ['Attribute', 'Value', 'Grade']);
+        foreach ($plan['attributes'] as $a) {
+            fputcsv($out, [$a['attribute_name'], $a['value'], $a['grade']]);
+        }
+        fputcsv($out, []);
+
+        // Skills
+        fputcsv($out, ['Skills']);
+        fputcsv($out, ['Skill Name', 'SP Cost', 'Acquired', 'Notes', 'Tag']);
+        foreach ($plan['skills'] as $s) {
+            fputcsv($out, [$s['skill_name'], $s['sp_cost'] ?? '', $s['acquired'] ?? '', $s['notes'] ?? '', $s['tag'] ?? '']);
+        }
+
+        fclose($out);
+        exit();
+    } elseif ($isTxt) {
         header('Content-Type: text/plain');
         header('Content-Disposition: attachment; filename="' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $plan['plan_title'] ?? 'uma_plan') . '.txt"');
 
@@ -198,7 +231,7 @@ try {
             $out .= "No race predictions available.\n";
         }
 
-        echo $out;
+    echo $out;
     } else {
         echo json_encode($plan);
     }

@@ -6,27 +6,9 @@ A lightweight PHP + MySQL web application for planning and tracking turn-based t
 
 ## Application Preview
 
-### Application Screenshots (v1.3.2)
+### Application Screenshots
 
-_Note: These screenshots showcase the core interface. The latest version (v1.4.0) adds the new Trainee Image and Progress Chart features._
-
-|             Light Mode Dashboard             |                     Dark Mode Dashboard                      |
-| :------------------------------------------: | :----------------------------------------------------------: |
-|     ![Homepage](screenshot/Homepage.png)     | ![Dark Mode Homepage](screenshot/Dark%20Mode%20Homepage.png) |
-|            **Quick Create Modal**            |                       **In-App Guide**                       |
-| ![Create Plan](screenshot/Create%20Plan.png) |             ![Guide Page](screenshot/Guide.png)              |
-
-**Plan Editor Tabs:**
-
-|                              General                               |                                       Attributes                                       |                                   Aptitude Grades                                    |
-| :----------------------------------------------------------------: | :------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
-| ![Plan Editor - General](screenshot/001_GENERAL%20Edit%20Plan.png) |        ![Plan Editor - Attributes](screenshot/002_ATTRIBUTES%20Edit%20Plan.png)        | ![Plan Editor - Aptitude Grades](screenshot/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
-|                             **Skills**                             |                                  **Race Predictions**                                  |                                      **Goals**                                       |
-|  ![Plan Editor - Skills](screenshot/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](screenshot/006_GOALS%20Edit%20Plan.png)            |
-
-</details>
----
-
+Screenshots will be added to this repository soon. The UI includes a dashboard with plan list and stats, a full-screen plan editor with tabs (General, Attributes, Aptitudes, Skills, Race Predictions, Goals), a quick-create modal, dark mode, and an in-app guide.
 ## ✨ Features
 
 - **Visual Enhancements (New in v1.4.0)**
@@ -48,26 +30,38 @@ _Note: These screenshots showcase the core interface. The latest version (v1.4.0
 ## 🖥️ Tech Stack
 
 - **Frontend**: HTML, CSS (Bootstrap 5), Vanilla JavaScript
-- **Backend**: PHP 8.0+, Composer
+- **Backend**: PHP 8.1+ (Monolog 3.x), Composer
 - **Database**: MySQL / MariaDB
 
 ---
+
+## 🎨 Design & Mobile Guidance (VERSION 3)
+
+- Stat color mapping (used in UI and charts):
+  - Speed: blue (`--color-stat-speed`)
+  - Stamina: green (`--color-stat-stamina`)
+  - Power: red (`--color-stat-power`)
+  - Guts: orange (`--color-stat-guts`)
+  - Wit: purple (`--color-stat-wit`)
+
+- The UI is mobile-first. Touch targets are sized >=44px and components use responsive stacking. The default font is `Figtree` with a rounded fallback.
+
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- A local web server environment (e.g., XAMPP, WAMP, MAMP).
-- PHP 8.0 or higher.
+- A local web server environment (e.g., Laragon, XAMPP, WAMP, MAMP).
+- PHP 8.1 or higher.
 - MySQL or MariaDB database server.
 - [Composer](https://getcomposer.org/) for managing PHP dependencies.
 
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/IzzatFirdaus/uma_musume_race_planner.git](https://github.com/IzzatFirdaus/uma_musume_race_planner.git)
+git clone https://github.com/IzzatFirdaus/uma_musume_race_planner.git
 cd uma_musume_race_planner
-```bash
+```
 
 ### 2\. Install Dependencies
 
@@ -77,36 +71,46 @@ The project uses Monolog for logging. Install it using Composer.
 composer install
 ```
 
-### 3\. Database Setup
+### 3. Database Setup
 
 1. **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
 
 2. **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
 
-### 4\. Environment Configuration
+3. **(Optional) Load Sample Data:** You can populate the database with example plans and reference data by importing `sample_data.sql`.
 
-1. In the root directory, create a file named `.env`.
+### 4. Environment Configuration
 
-2. Copy the following configuration, adjusting the database credentials to match your local setup.
+1. Copy the example file and then edit it:
 
-    ```ini
-    # .env - Local Development Configuration
+  - Copy `.env.example` to `.env`.
+  - Open `.env` and adjust values to your local setup.
 
-    # Database Configuration
-    DB_HOST=localhost
-    DB_NAME=uma_musume_planner
-    DB_USER=root
-    DB_PASS=
+2. The application supports either DB_NAME/DB_USER/DB_PASS or DB_DATABASE/DB_USERNAME/DB_PASSWORD. A typical configuration looks like this:
 
-    # Application Metadata & Theming
-    APP_VERSION=v1.4.0
-    APP_THEME_COLOR=#7d2b8b
-    LAST_UPDATED="July 29, 2025"
-    ```
+   ```ini
+   # .env - Local Development Configuration
 
-### 5\. Running the Application
+   # Database Configuration
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=uma_musume_planner
+   DB_USERNAME=root
+   DB_PASSWORD=
 
-Place the project folder inside your web server's root directory (e.g., `C:/xampp/htdocs/`) and navigate to it in your browser (e.g., `http://localhost/uma_musume_race_planner/`).
+   # Application Settings
+   APP_DEBUG=false
+   APP_THEME_COLOR=#6f42c1
+   APP_VERSION=2025.09.01
+   LAST_UPDATED="2025-09-01"
+   ```
+
+### 5. Running the Application
+
+Place the project folder inside your web server's root directory and navigate to it in your browser.
+
+- Laragon: `C:/laragon/www/uma_musume_race_planner` → http://localhost/uma_musume_race_planner/
+- XAMPP: `C:/xampp/htdocs/uma_musume_race_planner` → http://localhost/uma_musume_race_planner/
 
 ---
 
@@ -115,32 +119,35 @@ Place the project folder inside your web server's root directory (e.g., `C:/xamp
 ```bash
 uma_musume_race_planner/
 │
-├── .vscode/                  # VS Code editor settings & tasks
 ├── components/               # Reusable UI partials (navbar, footer, plan list, etc.)
-├── css/                      # Main application stylesheet (style.css)
-├── includes/                 # Core backend scripts (DB connection, logger)
+├── css/                      # Main application stylesheets
+├── includes/                 # Core backend scripts (env loader, DB connection, logger)
 ├── js/                       # Client-side JavaScript utilities (e.g., autosuggest.js)
-├── screenshot/               # Application screenshots for documentation
+├── tests/                    # UI tests (Playwright) and future test assets
+├── tools/                    # Dev tools and scripts (SQL audits, smoke tests)
 ├── uploads/                  # Directory for user-uploaded content
-│   └── trainee_images/       # Stores uploaded trainee images
+│   ├── trainee_images/       # Uploaded trainee images
+│   ├── app_bg/               # App background assets (optional)
+│   └── app_logo/             # App logo assets (optional)
 ├── vendor/                   # Composer-managed PHP dependencies
 │
 ├── index.php                 # Main application entry point and dashboard UI
 ├── guide.php                 # The in-app user guide page
 ├── handle_plan_crud.php      # Primary API endpoint for Create, Update, & Delete operations
 │
-├── get_*.php                 # Various API endpoints for fetching data (e.g., get_plans.php)
+├── get_*.php                 # Various API endpoints (e.g., get_plans.php, get_progress_chart_data.php)
 ├── plan_details_modal.php    # UI for the full-screen plan editor
 ├── quick_create_plan_modal.php # UI for the quick create plan modal
 │
 ├── .env                      # Environment configuration (DB credentials, app settings)
+├── .env.example              # Example environment configuration
 ├── composer.json             # PHP project dependencies
 ├── uma_musume_planner.sql    # The complete database schema
 ├── sample_data.sql           # Optional data for populating the database
 │
-├── ARCHITECTURE_SPEC.md      # Technical documentation for the application's design
 ├── DIRECTORY.md              # Auto-generated detailed file and directory listing
 ├── README.md                 # This file
+├── UMAMUSUME PLANS/          # Reference plan write-ups (docs)
 └── ...                       # Other development and config files (.gitignore, phpcs.xml, etc.)
 ```
 
@@ -154,6 +161,8 @@ uma_musume_race_planner/
 - `terrain_grades`, `distance_grades`, `style_grades`: Aptitude grades.
 - `turns`: Stores turn-by-turn stat progression for the Progress Chart.
 - `activity_log`: Tracks recent user actions.
+
+Tip: The `get_progress_chart_data.php` endpoint aggregates turn data to feed the chart in the plan editor.
 
 ---
 
@@ -180,3 +189,24 @@ uma_musume_race_planner/
 ## 📜 License
 
 MIT License © 2025
+
+---
+
+## 🔧 Troubleshooting
+
+- Database connection errors: verify DB host/port, database name, and credentials in `.env`. Both `DB_*` and `DB_*NAME/DB_*USER` styles are supported.
+- Blank page or PHP errors: set `APP_DEBUG=true` in `.env` to increase log verbosity; check your PHP error log.
+- Uploads not saving: ensure the `uploads/` subfolders are writable by your web server user.
+- Charts not rendering: confirm you have turn data for the selected plan; the chart uses `get_progress_chart_data.php`.
+
+## 🧪 Tests & QA (optional)
+
+- Static analysis: run the Composer script for PHPStan: `composer analyse`.
+- Coding standards: `composer cs:check` and auto-fix with `composer cs:fix`.
+- UI tests: Playwright config exists (`tests/ui.spec.js`), but Node dependencies are not wired in this repo yet.
+
+---
+
+## Planning & Versions
+
+This repository tracks design and implementation history in `APPLICATION_PLANNING.md`. The file contains versioned design iterations (VERSION 1 → VERSION 4) and a recommended implementation roadmap. Use it to review decisions, proposed tasks, and next steps as the project evolves.

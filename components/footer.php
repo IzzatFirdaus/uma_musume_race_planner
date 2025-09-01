@@ -9,9 +9,9 @@ load_env();
 <footer class="text-center small mt-5">
   <div>
     <a href="https://github.com/IzzatFirdaus/uma_musume_race_planner" target="_blank" rel="noopener noreferrer">
-      <i class="bi bi-github me-1"></i> Uma Musume Planner <?= htmlspecialchars(getenv('APP_VERSION') ?: '1.4.0') ?>
+      <i class="bi bi-github me-1"></i> Uma Musume Planner <?= htmlspecialchars(getenv('APP_VERSION') ?: '2025.09.01') ?>
     </a>
-    | Last Updated: <?= htmlspecialchars(getenv('LAST_UPDATED') ?: '2025') ?>
+    | Last Updated: <?= htmlspecialchars(getenv('LAST_UPDATED') ?: '2025-09-01') ?>
   </div>
 
   <div class="mt-2">
