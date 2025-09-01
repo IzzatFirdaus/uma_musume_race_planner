@@ -4,16 +4,16 @@
 if (!isset($name)) $name = '';
 if (!isset($sp)) $sp = 0;
 if (!isset($acquired)) $acquired = false;
-if (!isset($type_color)) $type_color = '#0d6efd';
+if (!isset($type_color)) $type_color = null; // allow CSS var fallback
 ?>
-<div class="skill-card card mb-2" style="border-left: 4px solid <?= htmlspecialchars($type_color) ?>;">
-  <div class="card-body d-flex align-items-center justify-content-between p-2">
-    <div>
-      <div class="fw-bold small"><?= htmlspecialchars($name) ?></div>
-      <div class="text-muted small">SP: <?= intval($sp) ?> <?= $acquired ? '<span class="text-success">(Acquired)</span>' : '' ?></div>
+<div class="skill-card mb-2" role="group" aria-label="Skill: <?= htmlspecialchars($name) ?>">
+  <div class="d-flex align-items-center p-2" style="border-left: 4px solid <?= $type_color ? htmlspecialchars($type_color) : 'var(--color-stat-speed)' ?>; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9)); border-radius: .5rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+    <div class="me-3">
+      <div class="fw-bold small mb-0 text-truncate" style="max-width:12rem"><?= htmlspecialchars($name) ?></div>
+      <div class="text-muted small"><?= intval($sp) ?> SP <?= $acquired ? '<span class="text-success">• Acquired</span>' : '' ?></div>
     </div>
-    <div>
-      <button type="button" class="btn btn-sm btn-outline-secondary btn-skill-card-action">View</button>
+    <div class="ms-auto d-flex gap-2 align-items-center">
+      <button type="button" class="btn btn-sm button-pill btn-view-skill" aria-label="View <?= htmlspecialchars($name) ?>">View</button>
     </div>
   </div>
 </div>

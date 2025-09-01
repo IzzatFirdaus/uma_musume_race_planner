@@ -13,9 +13,9 @@ $conditionOptions = $conditionOptions ?? [];
 
 <div id="planInlineDetails" class="card mb-4" style="display: none;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0" id="planInlineDetailsLabel">Plan Details</h5>
-        <button type="button" class="btn btn-sm btn-outline-secondary" id="closeInlineDetailsBtn">
-            <i class="bi bi-x"></i> Close
+        <h5 class="mb-0" id="planInlineDetailsLabel">🏇 Plan Details</h5>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="closeInlineDetailsBtn" aria-label="Close inline details">
+            <i class="bi bi-x" aria-hidden="true"></i> Close
         </button>
     </div>
     <!-- Loading overlay for AJAX fetches -->
@@ -66,6 +66,14 @@ $conditionOptions = $conditionOptions ?? [];
 
             <!-- Tab content panels -->
             <div class="tab-content pt-3">
+                <!-- Version-6: compact inline summary strip -->
+                <div id="planSummaryStripInline" class="mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="small text-muted">Turn: <strong id="summaryTurnInline">-</strong></div>
+                        <div class="small text-muted">SP: <strong id="summarySPInline">-</strong></div>
+                        <div class="ms-auto small text-muted" id="summaryRaceInline">&nbsp;</div>
+                    </div>
+                </div>
                 <!-- General Plan Info -->
                 <div class="tab-pane fade show active" id="general-inline" role="tabpanel"
                     aria-labelledby="general-tab-inline">
