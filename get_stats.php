@@ -1,4 +1,7 @@
+
 <?php
+// Start output buffering to prevent accidental output
+ob_start();
 
 /**
  * get_stats.php
@@ -42,20 +45,35 @@ try {
         'unique_trainees' => (int)($stats['unique_trainees'] ?? 0),
     ];
 
-    echo json_encode([
+    $json = json_encode([
         'success' => true,
         'stats' => $safeStats
     ]);
-} catch (Exception $e) {
+    // Clear accidental output and send JSON
+    $accidental = ob_get_contents();
+    header('X-Debug-Output-Length: ' . strlen($accidental));
+    if ($accidental) {
+        header('X-Debug-Output: ' . substr(str_replace(["\r", "\n"], [' ', ' '], $accidental), 0, 100));
+    }
+    ob_clean();
+    echo $json;
+} catch (PDOException $e) {
     $log->error('Failed to fetch stats', [
-        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : $e,
+        'message' => method_exists($e, 'getMessage') ? $e->getMessage() : (string)$e,
         'file' => method_exists($e, 'getFile') ? $e->getFile() : '',
         'line' => method_exists($e, 'getLine') ? $e->getLine() : ''
     ]);
 
     http_response_code(500);
-    echo json_encode([
+    $json = json_encode([
         'success' => false,
         'error' => 'A database error occurred while fetching stats.'
     ]);
+    $accidental = ob_get_contents();
+    header('X-Debug-Output-Length: ' . strlen($accidental));
+    if ($accidental) {
+        header('X-Debug-Output: ' . substr(str_replace(["\r", "\n"], [' ', ' '], $accidental), 0, 100));
+    }
+    ob_clean();
+    echo $json;
 }

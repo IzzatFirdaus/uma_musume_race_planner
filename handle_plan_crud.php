@@ -467,6 +467,7 @@ try {
     $response = ['success' => false, 'error' => 'An error occurred.'];
 }
 
+// Retrieve and attach any accidental output for debugging, then send JSON
 $stray_output = ob_get_clean();
 if (!empty(trim($stray_output))) {
     $response['debug_output'] = $stray_output;
