@@ -56,7 +56,7 @@
               $dashboardScreenshot = "Homepage.png";
   $safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot));
   ?>
-            <img src="screenshot/<?= $safeDashboardScreenshot ?>" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy">
+            <img src="assets/screenshots/<?= $safeDashboardScreenshot ?>" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy">
             <figcaption class="text-muted small mt-2">Dashboard layout example</figcaption>
           </figure>
         </section>
@@ -86,6 +86,7 @@
   $safeGeneralScreenshot = htmlspecialchars(basename($generalScreenshot));
   ?>
               <img src="screenshot/<?= $safeGeneralScreenshot ?>" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy">
+              <img src="assets/screenshots/<?= $safeGeneralScreenshot ?>" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy">
             </div>
             <div class="col-md-6 mb-3">
               <?php
@@ -93,6 +94,7 @@
   $safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot));
   ?>
               <img src="screenshot/<?= $safeSkillsScreenshot ?>" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy">
+              <img src="assets/screenshots/<?= $safeSkillsScreenshot ?>" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy">
             </div>
           </div>
 
