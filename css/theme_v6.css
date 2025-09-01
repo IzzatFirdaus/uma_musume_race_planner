@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
+
+:root {
+  --font-primary: 'M PLUS Rounded 1c', 'Figtree', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --color-stat-speed: #3399ff;
+  --color-stat-stamina: #33cc99;
+  --color-stat-power: #ff3333;
+  --color-stat-guts: #ff9900;
+  --color-stat-wit: #9933ff;
+  /* Short aliases (SPEC-06) */
+  --color-speed: var(--color-stat-speed);
+  --color-stamina: var(--color-stat-stamina);
+  --color-power: var(--color-stat-power);
+  --color-guts: var(--color-stat-guts);
+  --color-wit: var(--color-stat-wit);
+  /* JS-friendly aliases */
+  --stat-speed-color: var(--color-stat-speed);
+  --stat-stamina-color: var(--color-stat-stamina);
+  --stat-power-color: var(--color-stat-power);
+  --stat-guts-color: var(--color-stat-guts);
+  --stat-wit-color: var(--color-stat-wit);
+}
+
+body {
+  font-family: var(--font-primary);
+}
+
+/* Example stat bar gradient */
+.stat-bar {
+  height: 1rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.button-pill {
+  border-radius: 999px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, var(--color-stat-speed), var(--color-stat-stamina));
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.button-pill:hover {
+  background: linear-gradient(90deg, var(--color-stat-power), var(--color-stat-guts));
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.tab-pill {
+  border-radius: 999px;
+  background: #f6f6fa;
+  color: #333;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  transition: background 0.2s;
+}
+.tab-pill.active {
+  background: var(--color-stat-speed);
+  color: #fff;
+}
+
+/* Accessibility: focus outline */
+:focus {
+  outline: 2px solid var(--color-stat-speed);
+  outline-offset: 2px;
+}
+
+/* Responsive card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .card-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (min-width: 1200px) {
+  .card-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

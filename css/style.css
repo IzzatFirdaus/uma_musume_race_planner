@@ -56,6 +56,12 @@
     --color-stat-power: #dc3545; /* Red */
     --color-stat-guts: #fd7e14; /* Orange */
     --color-stat-wit: #6f42c1; /* Purple */
+  /* SPEC-06 aliases: provide shorter names used in design docs and templates */
+  --color-speed: var(--color-stat-speed);
+  --color-stamina: var(--color-stat-stamina);
+  --color-power: var(--color-stat-power);
+  --color-guts: var(--color-stat-guts);
+  --color-wit: var(--color-stat-wit);
 
   /* JS-friendly aliases used in components/chart rendering */
   --stat-speed-color: var(--color-stat-speed);
@@ -124,8 +130,8 @@ body {
     --color-bg-light
   ); /* Fallback color, now using variable */
   color: var(--color-text-dark); /* Default text color for light mode */
-    /* System-native sans-serif stack for VERSION 4 (Segoe UI, Tahoma, Verdana, etc.) */
-    font-family: "Segoe UI", Tahoma, Verdana, "Helvetica Neue", Arial, system-ui, -apple-system, "Segoe UI Emoji", "Segoe UI Symbol";
+  /* Prefer Figtree then system-native sans-serif stack for VERSION 5 */
+  font-family: 'Figtree', "Segoe UI", Tahoma, Verdana, "Helvetica Neue", Arial, system-ui, -apple-system, "Segoe UI Emoji", "Segoe UI Symbol";
   padding-bottom: 50px; /* Ensure space for fixed footer */
   transition: color var(--transition-speed),
     background-color var(--transition-speed); /* Smooth transitions */
@@ -154,53 +160,47 @@ body.dark-mode {
   color: var(--color-text-neon-dark); /* Neon text for dark mode */
   --color-shadow-light: var(--color-shadow-dark); /* Apply dark shadow */
   --color-text-muted-light: var(
-    --color-text-muted-dark
-  ); /* Apply dark muted text */
-}
 
-body.dark-mode::before {
-  background-image: var(--bg-image-body-dark);
-  opacity: 0.7; /* Slightly higher opacity for dark background image */
-}
+.stat-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
+  border-radius: 6px;
+  body.dark-mode {
+    background-color: var(--color-bg-dark); /* Base dark background */
+    color: var(--color-text-neon-dark); /* Neon text for dark mode */
+    --color-shadow-light: var(--color-shadow-dark); /* Apply dark shadow */
+    --color-text-muted-light: var(--color-text-muted-dark);
+  }
 
-/* General Dark Mode Typography */
-body.dark-mode a {
-  color: var(--color-link-dark);
-  text-decoration: none; /* Default for links in dark mode unless hovered */
-}
-body.dark-mode a:hover {
-  color: var(--color-neon-purple); /* Highlight with neon purple on hover */
-  text-decoration: underline; /* Standard underline for hover */
-}
-body.dark-mode .text-muted {
-  color: var(
-    --color-text-muted-dark
-  ) !important; /* Specific muted text for dark mode */
-}
+  /* Attribute slider styles (VERSION 5) - single, clean definition */
+  .stat-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 10px;
+    background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
+    border-radius: 6px;
+    outline: none;
+  }
 
-/* ----------------------------------------------------
-   THEMED SURFACES (Frosted Glass Effect)
-   Rationale: Consistent application of the core design aesthetic.
-   Elements like cards, modals, navbars, and footers share this style.
----------------------------------------------------- */
-.header-banner,
-.navbar,
-.card,
-.modal-content,
-footer,
-.guide-sticky-nav {
-  background-image: var(--bg-image-component-light);
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--color-shadow-light); /* Use variable for shadow */
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background-color: var(--color-surface-light-glass);
-  -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
-  -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
-  backdrop-filter: blur(var(--backdrop-blur-strength));
-  border-radius: var(--border-radius-base); /* Use variable for radius */
-  transition: background-color var(--transition-speed),
-    box-shadow var(--transition-speed), border-color var(--transition-speed); /* Smooth transitions */
+  .stat-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    border: 2px solid rgba(0,0,0,0.12);
+  }
+
+  .stat-slider:focus { box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.18); }
+
+  .stat-number-input { text-align: center; }
+
+  /* Make the icon slightly larger in attribute rows */
+  .attribute-row .icon { width: 1.4em; height: 1.4em; }
 }
 
 /* Backdrop-filter fallback for unsupported browsers */
@@ -399,6 +399,39 @@ body.dark-mode .nav-link:hover {
   vertical-align: middle;
 }
 
+/* SVG icon helper - use like: <svg class="icon"><use xlink:href="#icon-speed"></use></svg> */
+.icon { width: 1.2em; height: 1.2em; vertical-align: middle; fill: currentColor; }
+
+/* Attribute slider styles (VERSION 5) */
+.stat-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
++  border-radius: 6px;
++  outline: none;
++}
++
+.stat-slider::-webkit-slider-thumb {
++  -webkit-appearance: none;
++  appearance: none;
++  width: 18px;
++  height: 18px;
++  background: white;
++  border-radius: 50%;
++  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
++  border: 2px solid rgba(0,0,0,0.12);
++}
++
+.stat-slider:focus { box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.18); }
++
+.stat-number-input { text-align: center; }
++
+
+/* Make the icon slightly larger in attribute rows */
++.attribute-row .icon { width: 1.4em; height: 1.4em; }
++
+
 /* ------------------------------
    Component: Buttons & Badges
    Rationale: Clear call-to-actions, consistent states.
@@ -557,6 +590,33 @@ body.dark-mode .autocomplete-active {
   border-collapse: separate; /* Allows for border-radius on cells in some cases */
   border-spacing: 0; /* Remove default spacing */
 }
+
+.stat-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
+  border-radius: 6px;
+  outline: none;
+}
+
+.stat-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border: 2px solid rgba(0,0,0,0.12);
+}
+
+.stat-slider:focus { box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.18); }
+
+.stat-number-input { text-align: center; }
+
+/* Make the icon slightly larger in attribute rows */
+.attribute-row .icon { width: 1.4em; height: 1.4em; }
 
 .table thead th {
   font-weight: 700;
