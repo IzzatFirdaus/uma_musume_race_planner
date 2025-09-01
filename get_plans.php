@@ -1,4 +1,7 @@
+
 <?php
+// Start output buffering to prevent accidental output
+ob_start();
 
 /**
  * get_plans.php
@@ -20,6 +23,7 @@
  * and a nested 'stats' object with 'speed', 'stamina', 'power', 'guts', 'wit' values.
  */
 
+$buffered = true;
 header('Content-Type: application/json'); // Set Content-Type header for JSON response
 $pdo = require __DIR__ . '/includes/db.php'; // Include and execute the database connection script
 $log = require __DIR__ . '/includes/logger.php'; // Include and execute the logger script
@@ -99,7 +103,14 @@ try {
     $final_plans = array_values($plans_with_attributes);
 
     // Encode the final array of plans into a JSON response
-    echo json_encode(['success' => true, 'plans' => $final_plans]);
+    $json = json_encode(['success' => true, 'plans' => $final_plans]);
+    $accidental = ob_get_contents();
+    header('X-Debug-Output-Length: ' . strlen($accidental));
+    if ($accidental) {
+        header('X-Debug-Output: ' . substr(str_replace(["\r", "\n"], [' ', ' '], $accidental), 0, 100));
+    }
+    ob_clean(); // Remove any accidental output
+    echo $json;
 } catch (PDOException $e) {
     // Log the database error for debugging purposes
     $log->error('Failed to fetch plan list', [
@@ -110,5 +121,12 @@ try {
     // Set HTTP response code to 500 (Internal Server Error)
     http_response_code(500);
     // Return a JSON error message to the client
-    echo json_encode(['success' => false, 'error' => 'A database error occurred. Please try again later.']);
+    $json = json_encode(['success' => false, 'error' => 'A database error occurred. Please try again later.']);
+    $accidental = ob_get_contents();
+    header('X-Debug-Output-Length: ' . strlen($accidental));
+    if ($accidental) {
+        header('X-Debug-Output: ' . substr(str_replace(["\r", "\n"], [' ', ' '], $accidental), 0, 100));
+    }
+    ob_clean();
+    echo $json;
 }

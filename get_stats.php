@@ -1,4 +1,7 @@
+
 <?php
+// Start output buffering to prevent accidental output
+ob_start();
 
 /**
  * get_stats.php
@@ -42,10 +45,12 @@ try {
         'unique_trainees' => (int)($stats['unique_trainees'] ?? 0),
     ];
 
-    echo json_encode([
+    $json = json_encode([
         'success' => true,
         'stats' => $safeStats
     ]);
+    ob_clean(); // Remove any accidental output
+    echo $json;
 } catch (PDOException $e) {
     $log->error('Failed to fetch stats', [
         'message' => $e->getMessage(),
@@ -54,8 +59,10 @@ try {
     ]);
 
     http_response_code(500);
-    echo json_encode([
+    $json = json_encode([
         'success' => false,
         'error' => 'A database error occurred while fetching stats.'
     ]);
+    ob_clean();
+    echo $json;
 }//

@@ -7,11 +7,12 @@ require_once __DIR__ . '/env.php';
 load_env();
 
 use Monolog\Logger;
+use Monolog\Level;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
 
 $debugMode = getenv('APP_DEBUG') === 'true';
-$logLevel = $debugMode ? Logger::DEBUG : Logger::INFO;
+$logLevel = $debugMode ? Level::Debug : Level::Info;
 
 // Create new logger instance
 $log = new Logger('app');
