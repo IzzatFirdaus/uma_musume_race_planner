@@ -62,8 +62,42 @@ function attachAutosuggest(input, field, onSelectCallback = null) {
         loadingDiv.style.textAlign = "center";
         a.appendChild(loadingDiv);
 
-        // Fetch suggestions from backend
-        fetch(`get_autosuggest.php?field=${field}&query=${encodeURIComponent(val)}`)
+        // Fetch suggestions from local cache if available (skill reference), otherwise backend
+        if (field === 'skill_name' && window.skillReference && Array.isArray(window.skillReference)) {
+            // Filter local reference by name
+            const suggestions = window.skillReference.filter(s => s.skill_name.toLowerCase().includes(val.toLowerCase())).slice(0, 10);
+            a.innerHTML = '';
+            if (suggestions.length === 0) {
+                const noResults = document.createElement('DIV');
+                noResults.textContent = "No results found.";
+                noResults.style.padding = "10px";
+                noResults.style.color = "var(--color-text-muted-light)";
+                a.appendChild(noResults);
+            } else {
+                suggestions.forEach(item => {
+                    const valToDisplay = item.skill_name;
+                    const b = document.createElement("DIV");
+                    b.setAttribute('role', 'option');
+                    b.setAttribute('aria-selected', 'false');
+                    const strong = document.createElement('strong');
+                    strong.textContent = valToDisplay.substr(0, val.length);
+                    b.appendChild(strong);
+                    b.appendChild(document.createTextNode(valToDisplay.substr(val.length)));
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.value = valToDisplay;
+                    b.appendChild(hiddenInput);
+                    b.addEventListener("click", function () {
+                        input.value = this.getElementsByTagName("input")[0].value;
+                        if (onSelectCallback) onSelectCallback(item);
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                });
+            }
+        } else {
+            // Fetch suggestions from backend
+            fetch(`get_autosuggest.php?field=${field}&query=${encodeURIComponent(val)}`)
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.text();
@@ -138,6 +172,7 @@ function attachAutosuggest(input, field, onSelectCallback = null) {
                 errorDiv.style.color = "red";
                 a.appendChild(errorDiv);
             });
+    }
     });
 
     input.addEventListener("keydown", function (e) {
