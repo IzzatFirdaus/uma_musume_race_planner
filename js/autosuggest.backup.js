@@ -8,18 +8,20 @@ const activeSuggestLists = new Map(); // Stores active suggestion lists for easy
  * @param {function(Object): void} [onSelectCallback] Optional callback function when a suggestion is selected.
  * For skill_name, this will receive the full skill object.
  */
-function attachAutosuggest(input, field, onSelectCallback = null) {
+function attachAutosuggest(input, field, onSelectCallback = null)
+{
     let currentFocus = -1;
     let currentInput = input; // Store reference for closure
 
     // Close any existing autosuggest list for this input
     closeAllLists(input);
 
-    input.addEventListener("input", function(e) {
+    input.addEventListener("input", function (e) {
         const val = this.value;
         closeAllLists(this); // Close any open lists before creating a new one
 
-        if (!val) { return false; }
+        if (!val) {
+            return false; }
 
         currentFocus = -1;
         const a = document.createElement("DIV");
@@ -35,7 +37,7 @@ function attachAutosuggest(input, field, onSelectCallback = null) {
         loadingDiv.style.textAlign = "center";
         a.appendChild(loadingDiv);
 
-        fetch(`get_autosuggest.php?field=${field}&query=${encodeURIComponent(val)}`)
+        fetch(`get_autosuggest.php ? field = ${field} & query = ${encodeURIComponent(val)}`)
             .then(response => {
                 // Check if response is OK (status 200-299)
                 if (!response.ok) {
@@ -56,7 +58,7 @@ function attachAutosuggest(input, field, onSelectCallback = null) {
                             b.innerHTML = "<strong>" + valToDisplay.substr(0, val.length) + "</strong>";
                             b.innerHTML += valToDisplay.substr(val.length);
                             b.innerHTML += "<input type='hidden' value='" + valToDisplay + "'>";
-                            b.addEventListener("click", function(e) {
+                            b.addEventListener("click", function (e) {
                                 input.value = this.getElementsByTagName("input")[0].value;
                                 if (onSelectCallback) {
                                     // If skill_name, pass the full item object
@@ -104,9 +106,11 @@ function attachAutosuggest(input, field, onSelectCallback = null) {
             });
     });
 
-    input.addEventListener("keydown", function(e) {
+    input.addEventListener("keydown", function (e) {
         let x = document.getElementById(this.id + "autocomplete-list");
-        if (x) x = x.getElementsByTagName("div");
+        if (x) {
+            x = x.getElementsByTagName("div");
+        }
         if (e.keyCode == 40) { // DOWN arrow
             currentFocus++;
             addActive(x);
@@ -116,28 +120,39 @@ function attachAutosuggest(input, field, onSelectCallback = null) {
         } else if (e.keyCode == 13) { // ENTER key
             e.preventDefault();
             if (currentFocus > -1) {
-                if (x) x[currentFocus].click();
+                if (x) {
+                    x[currentFocus].click();
+                }
             }
         }
     });
 
-    function addActive(x) {
-        if (!x) return false;
+    function addActive(x)
+    {
+        if (!x) {
+            return false;
+        }
         removeActive(x);
-        if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (x.length - 1);
+        if (currentFocus >= x.length) {
+            currentFocus = 0;
+        }
+        if (currentFocus < 0) {
+            currentFocus = (x.length - 1);
+        }
         x[currentFocus].classList.add("autocomplete-active");
         // Scroll into view if out of bounds
         x[currentFocus].parentNode.scrollTop = x[currentFocus].offsetTop - x[currentFocus].parentNode.offsetTop;
     }
 
-    function removeActive(x) {
+    function removeActive(x)
+    {
         for (let i = 0; i < x.length; i++) {
             x[i].classList.remove("autocomplete-active");
         }
     }
 
-    function closeAllLists(elmnt = null) {
+    function closeAllLists(elmnt = null)
+    {
         activeSuggestLists.forEach((listEl, inputEl) => {
             if (elmnt !== inputEl) { // Only close lists not associated with the current input
                 listEl.parentNode.removeChild(listEl);
