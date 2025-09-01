@@ -1,31 +1,42 @@
 # Uma Musume Race Planner - Git ignore
 
+# Environment and secrets
+.env
+.env.local
+includes/env.php
+
 # Runtime logs and error files
 /logs/
-php_errors.log
+*.log
 
-# Uploaded assets
-/uploads/
+# Uploaded assets (ignore runtime uploads but keep app logo files tracked)
+uploads/
+!uploads/app_logo/
+!uploads/app_logo/*.png
+!uploads/app_logo/*.ico
 
 # Temporary files
 /tmp/
 tmp/
 
-# Environment and secrets
-.env
-includes/env.php
-
-# Composer dependencies (recommended to be installed via composer install)
-# If you intentionally track vendor/ for deployment, remove this line
+# Composer dependencies and cache
 /vendor/
+composer.lock
 
-# Editor & OS files
-/.idea/
-/.vscode/
-*.sublime-project
-*.sublime-workspace
+# Node and frontend build artifacts
+/node_modules/
+/dist/
+/build/
+npm-debug.log*
+package-lock.json
+
+# OS / Editor
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
 
 # Database dumps / backups
 *.sql
@@ -33,58 +44,12 @@ Thumbs.db
 *.backup
 backup/
 
-# Node
-node_modules/
-
-# Test/coverage
-/coverage/
+# Test / Coverage
+coverage/
+phpunit.result.cache
 phpunit.xml.cache
 
-# Build artifacts
-/dist/
-/build/
-# Node and frontend build artifacts
-/node_modules/
-/dist/
-/build/
-
-# Environment configuration
-.env
-
-# PHP Composer dependencies and cache
-/vendor/
-composer.lock
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE / Editor files
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# Log and cache files
-*.log
-*.cache
-
-# Database dumps
-*.sql
-*.sqlite
-
-# Uploaded files (if stored locally)
-uploads/
-screenshot/
-backup/
-
-# Coverage reports
-coverage/
-
-# PHPUnit result cache
-.phpunit.result.cache
-
-# Temp files
+# Temp and swap files
 *.tmp
 *.bak
 *.swp
@@ -99,9 +64,6 @@ coverage/
 
 # PHPStorm specific
 *.iml
-
-# PHPUnit cache
-.phpunit.cache
 
 # Optional local test config
 phpunit.xml
