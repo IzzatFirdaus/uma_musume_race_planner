@@ -1,3 +1,4 @@
+>>>>>>> chore/git-setup
 # Uma Musume Race Planner - Git ignore
 
 # Environment and secrets
@@ -9,7 +10,22 @@ includes/env.php
 /logs/
 *.log
 
-# Uploaded assets (ignore runtime uploads but keep app logo files tracked)
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build / Dist
+dist/
+build/
+
+# Uploaded assets: ignore runtime uploads but keep app logo files tracked
 uploads/
 !uploads/app_logo/
 !uploads/app_logo/*.png
@@ -19,10 +35,59 @@ uploads/
 /tmp/
 tmp/
 
-# Composer dependencies and cache
-/vendor/
+# Composer dependencies and cache (uncomment /vendor/ if you want to ignore vendor)
+# vendor/
 composer.lock
 
+# Test / Coverage
+coverage/
+phpunit.result.cache
+
+# Node and frontend build artifacts
+/node_modules/
+/dist/
+/build/
+npm-debug.log*
+package-lock.json
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Database dumps / backups
+*.sql
+*.sql.gz
+*.backup
+backup/
+
+# Test / Coverage
+coverage/
+phpunit.result.cache
+phpunit.xml.cache
+
+# Temp and swap files
+*.tmp
+*.bak
+*.swp
+
+# Ignore generated JS bundles or minified scripts
+*.min.js
+*.bundle.js
+
+# Backup archives
+*.zip
+*.tar.gz
+
+# PHPStorm specific
+*.iml
+
+# Optional local test config
+phpunit.xml
+phpunit.xml.dist
 # Node and frontend build artifacts
 /node_modules/
 /dist/
