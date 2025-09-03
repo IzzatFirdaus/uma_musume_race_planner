@@ -677,3 +677,24 @@ This section defines the next UX/UI milestone to align the app’s visuals and i
 - Accessibility: ARIA, keyboard navigation, WCAG AA contrast, touch targets ≥44px.
 - Milestone status: Core palette, font, stat bars, pill buttons, modals, sidebar, tap feedback, and accessibility audit in progress.
 
+---
+
+# UMA MUSUME RACE PLANNER: Design & Implementation Planning (VERSION 9)
+
+## Mechanics-Driven Color and Layout Integration (2025-09-03)
+
+- Color-coded action bubbles for training mechanics
+- Status bar and event countdown with animated gradients
+- Stat panels with color-coded stats and bonus overlays
+- Skill cards with type color differentiation and bonus badges
+- Energy/motivation gauge with animated transitions
+- Responsive, thumb-friendly layout for mobile
+- Animation logic for tap feedback, status changes, continuous icon movement
+- Accessibility: ARIA labels, keyboard navigation, WCAG AA contrast, 44px+ touch targets
+
+**Validation:**
+- All components use mechanics-driven color system
+- Animations respect reduced motion
+- Accessibility audit complete
+- Mobile layout and touch targets validated
+
