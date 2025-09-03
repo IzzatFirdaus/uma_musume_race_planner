@@ -146,7 +146,6 @@ try {
   <link rel="apple-touch-icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png">
 
   <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/theme_v6.css">
 </head>
 
 <body>
@@ -173,6 +172,8 @@ try {
 
   <?php require_once __DIR__ . '/components/footer.php'; ?>
 
+    <?php require_once __DIR__ . '/components/v9-action-row.php'; ?>
+
     <div class="modal fade" id="messageBoxModal" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="messageBoxLabel">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -189,6 +190,7 @@ try {
     <script src="js/a11y.js"></script>
   <?php require_once __DIR__ . '/components/copy_to_clipboard.php'; ?>
   <script src="js/autosuggest.js"></script>
+    <script src="js/v8-ux.js"></script>
 
 <script>
     // --- V3.0: GLOBAL HELPERS AND VARIABLES ---
@@ -860,6 +862,36 @@ try {
               .catch(error => console.error('Failed to refresh plan list:', error));
           updateStats();
           updateRecentActivity();
+      });
+
+      // V9 actions: open Attributes tab and focus relevant control
+      document.addEventListener('v9:action', function(e){
+          try {
+              // Ensure modal is open
+              const modalEl = document.getElementById('planDetailsModal');
+              const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+              if (modalEl && modalEl.classList.contains('show') === false) {
+                  bsModal.show();
+              }
+              // Switch to Attributes tab
+              const tabBtn = document.getElementById('attributes-tab');
+              if (tabBtn) {
+                  new bootstrap.Tab(tabBtn).show();
+              }
+              // Focus corresponding slider by data-stat
+              const type = (e.detail && e.detail.type) || '';
+              const map = { speed: 'speed', stamina: 'stamina', power: 'power', guts: 'guts', wit: 'wit' };
+              const stat = map[type];
+              if (stat) {
+                  // Wait a tick for tab to render
+                  setTimeout(function(){
+                      const slider = document.querySelector('#attributeSlidersContainer [data-stat="' + stat + '"]');
+                      if (slider) slider.focus();
+                  }, 150);
+              }
+          } catch(err) {
+              console.warn('Failed to handle v9:action', err);
+          }
       });
 
       // Initial load

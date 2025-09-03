@@ -1,0 +1,14 @@
+{
+	"name": "uma-musume-race-planner",
+	"private": true,
+	"version": "0.0.0",
+	"description": "UI tests and tooling for Uma Musume Race Planner",
+	"scripts": {
+		"test:ui": "playwright test",
+		"test:ui:headed": "PWDEBUG=1 playwright test --headed",
+		"test:install": "playwright install --with-deps"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.55.0"
+	}
+}
