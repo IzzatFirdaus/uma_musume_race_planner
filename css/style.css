@@ -2,7 +2,81 @@
    Uma Musume Planner - style.css (v3.6 - UI/UX Thematic Update)
    Description: Custom visual styles layered on top of Bootstrap 5, optimized for UI/UX.
    Features: Theming, Dark Mode, Stat Visualization, Dynamic Backgrounds, Frosted Glass Effect
---------------------------------------------------------------------- */
+/* ------------------------------
+   VERSION 8: Plan Card & Modal Polish
+------------------------------ */
+.v8-plan-card {
+  background: var(--gradient-card);
+  box-shadow: var(--shadow-card);
+  border-radius: 1.25rem;
+  border-left: 8px solid var(--motif-primary);
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.v8-plan-card:focus, .v8-plan-card:hover {
+  box-shadow: 0 8px 32px rgba(40,167,69,0.18);
+  transform: translateY(-2px) scale(1.01);
+  outline: 2px solid var(--motif-accent);
+}
+.v8-gradient-text {
+  background: var(--gradient-button);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.v8-motif-badge {
+  background: var(--motif-bg);
+  color: var(--motif-primary);
+  border: 1px solid var(--motif-accent);
+  box-shadow: 0 0 8px 0 var(--motif-accent);
+}
+.v8-animated-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: var(--gradient-button, linear-gradient(90deg,#2f9d46,#7bd389));
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(47,157,70,0.12);
+  border: none;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+.v8-animated-pill:focus { outline: 3px solid rgba(127, 201, 153, 0.3); }
+.v8-animated-pill:active { transform: translateY(1px) scale(0.996); }
+.v8-animated-pill .bi { opacity: 0.95; }
+.v8-modal {
+  transition: opacity 0.3s, transform 0.3s;
+}
+.v8-modal-content {
+  box-shadow: 0 8px 32px rgba(40,167,69,0.18);
+  border-radius: 1.25rem;
+  background: var(--gradient-card);
+  animation: v8ModalIn 0.4s cubic-bezier(.23,1.01,.32,1) both;
+}
+@keyframes v8ModalIn {
+  0% { opacity: 0; transform: translateY(40px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.v8-gradient-header {
+  background: var(--gradient-button);
+  color: #fff;
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+  box-shadow: 0 2px 8px rgba(40,167,69,0.08);
+}
+.v8-gradient-footer {
+  background: var(--motif-bg);
+  border-bottom-left-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+  box-shadow: 0 -2px 8px rgba(253,126,20,0.08);
+}
+.v8-tap-feedback:active {
+  filter: brightness(0.92) drop-shadow(0 0 8px var(--motif-accent));
+  transform: scale(0.97);
+}
 
 /* ------------------------------
    Font Import: "M PLUS Rounded 1c" for rounded, playful UI
@@ -69,6 +143,23 @@
   --stat-power-color: var(--color-stat-power);
   --stat-guts-color: var(--color-stat-guts);
   --stat-wit-color: var(--color-stat-wit);
+
+  /* VERSION 8: Motif variables for per-character theming */
+  --motif-primary: #28a745; /* Default: green, override per plan */
+  --motif-accent: #fd7e14; /* Default: orange, override per plan */
+  --motif-bg: #fff5e6;     /* Default: pastel background, override per plan */
+
+  /* VERSION 8: Gradient utilities for stat bars/buttons */
+  --gradient-stat-bar: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
+  --gradient-button: linear-gradient(90deg, var(--motif-primary), var(--motif-accent));
+  --gradient-card: linear-gradient(180deg, #fff 60%, var(--motif-bg) 100%);
+
+  /* VERSION 8: Glow for NEW badges and emphasis */
+  --glow-new: 0 0 8px 2px #ffb347, 0 0 16px 4px #fff;
+
+  /* VERSION 8: Drop shadow for cards/buttons */
+  --shadow-card: 0 4px 16px rgba(40, 167, 69, 0.08);
+  --shadow-button: 0 2px 8px rgba(253, 126, 20, 0.12);
 
   /* Background Image URLs - Defined here for easy switching */
   --bg-image-body-light: url("../uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
@@ -159,48 +250,7 @@ body.dark-mode {
   background-color: var(--color-bg-dark); /* Base dark background */
   color: var(--color-text-neon-dark); /* Neon text for dark mode */
   --color-shadow-light: var(--color-shadow-dark); /* Apply dark shadow */
-  --color-text-muted-light: var(
-
-.stat-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 10px;
-  background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
-  border-radius: 6px;
-  body.dark-mode {
-    background-color: var(--color-bg-dark); /* Base dark background */
-    color: var(--color-text-neon-dark); /* Neon text for dark mode */
-    --color-shadow-light: var(--color-shadow-dark); /* Apply dark shadow */
-    --color-text-muted-light: var(--color-text-muted-dark);
-  }
-
-  /* Attribute slider styles (VERSION 5) - single, clean definition */
-  .stat-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 10px;
-    background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
-    border-radius: 6px;
-    outline: none;
-  }
-
-  .stat-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: white;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    border: 2px solid rgba(0,0,0,0.12);
-  }
-
-  .stat-slider:focus { box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.18); }
-
-  .stat-number-input { text-align: center; }
-
-  /* Make the icon slightly larger in attribute rows */
-  .attribute-row .icon { width: 1.4em; height: 1.4em; }
+  --color-text-muted-light: var(--color-text-muted-dark);
 }
 
 /* Backdrop-filter fallback for unsupported browsers */
@@ -238,9 +288,7 @@ body.dark-mode {
   font-weight: 700;
   color: var(--color-primary);
   border-bottom: 1px solid rgba(240, 98, 146, 0.3); /* Slightly stronger border */
-  border-top-left-radius: var(
-    --border-radius-base
-  ); /* Match card border radius */
+  border-top-left-radius: var(--border-radius-base); /* Match card border radius */
   border-top-right-radius: var(--border-radius-base);
   padding: 1rem 1.25rem; /* Standard padding */
 }
@@ -408,29 +456,26 @@ body.dark-mode .nav-link:hover {
   appearance: none;
   height: 10px;
   background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
-+  border-radius: 6px;
-+  outline: none;
-+}
-+
+}
+
 .stat-slider::-webkit-slider-thumb {
-+  -webkit-appearance: none;
-+  appearance: none;
-+  width: 18px;
-+  height: 18px;
-+  background: white;
-+  border-radius: 50%;
-+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-+  border: 2px solid rgba(0,0,0,0.12);
-+}
-+
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border: 2px solid rgba(0,0,0,0.12);
+}
+
 .stat-slider:focus { box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.18); }
-+
+
 .stat-number-input { text-align: center; }
-+
 
 /* Make the icon slightly larger in attribute rows */
-+.attribute-row .icon { width: 1.4em; height: 1.4em; }
-+
+.attribute-row .icon { width: 1.4em; height: 1.4em; }
+
 
 /* ------------------------------
    Component: Buttons & Badges
@@ -591,33 +636,6 @@ body.dark-mode .autocomplete-active {
   border-spacing: 0; /* Remove default spacing */
 }
 
-.stat-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 10px;
-  background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
-  border-radius: 6px;
-  outline: none;
-}
-
-.stat-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  border: 2px solid rgba(0,0,0,0.12);
-}
-
-.stat-slider:focus { box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.18); }
-
-.stat-number-input { text-align: center; }
-
-/* Make the icon slightly larger in attribute rows */
-.attribute-row .icon { width: 1.4em; height: 1.4em; }
-
 .table thead th {
   font-weight: 700;
   background-color: rgba(
@@ -637,7 +655,7 @@ body.dark-mode .autocomplete-active {
 body.dark-mode .table thead th {
   background-color: var(--color-table-header-dark);
   border-color: var(--color-table-border-dark);
-  color: var(--color-text-neon-dark); /* Neon text on dark header */
+  color: var(--color-text-neon-dark); /* Neon text for dark header */
 }
 
 .table tbody tr {
@@ -773,36 +791,31 @@ body.dark-mode .quick-stats-number.text-primary {
   border-radius: 4px; /* Slightly larger radius for individual bars */
   background-color: #e9ecef; /* Neutral background for empty portion */
 }
-.stat-bar > div {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease-out; /* Smooth animation for stat changes */
-}
-/* Individual stat bar colors - now using variable names */
-.stat-bar .bar-speed {
-  background-color: var(--color-stat-speed);
-}
-.stat-bar .bar-stamina {
-  background-color: var(--color-stat-stamina);
-}
-.stat-bar .bar-power {
-  background-color: var(--color-stat-power);
-}
-.stat-bar .bar-guts {
-  background-color: var(--color-stat-guts);
-}
-.stat-bar .bar-wit {
-  background-color: var(--color-stat-wit);
+.stat-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  background: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
 }
 
-body.dark-mode .stat-bar {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.18
-  ); /* Slightly lighter background for dark mode bars, more visible */
+.stat-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border: 2px solid rgba(0,0,0,0.12);
 }
+
+.stat-slider:focus { box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.18); }
+
+.stat-number-input { text-align: center; }
+
+/* Make the icon slightly larger in attribute rows */
+.attribute-row .icon { width: 1.4em; height: 1.4em; }
+
 
 /* Contextual info for skills - clear, distinct, but not overwhelming */
 .skill-context-info {
@@ -843,34 +856,32 @@ body.dark-mode .skill-context-info {
   border-radius: var(--border-radius-base);
   transition: background var(--transition-speed);
 }
-body.dark-mode .loading-overlay {
+body.dark-mode .loading-overlay { background: rgba(0, 0, 0, 0.75); }
 
-  /* Visually hidden utility for accessibility (VERSION 4) */
-  .visually-hidden {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-  }
+/* Visually hidden utility for accessibility (VERSION 4) */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
 
-  /* Focus outlines for interactive elements (buttons, inputs, tabs) */
-  button:focus, .btn:focus, .form-control:focus, .form-select:focus, .nav-link:focus, .tab-pane:focus {
-    outline: 2px solid var(--color-secondary);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.25);
-    transition: outline var(--transition-speed), box-shadow var(--transition-speed);
-  }
-  body.dark-mode button:focus, body.dark-mode .btn:focus, body.dark-mode .form-control:focus, body.dark-mode .form-select:focus, body.dark-mode .nav-link:focus, body.dark-mode .tab-pane:focus {
-    outline: 2px solid var(--color-neon-purple);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 0.2rem rgba(179,115,255,0.35);
-  }
-  background: rgba(0, 0, 0, 0.75); /* Darker overlay for dark mode */
+/* Focus outlines for interactive elements (buttons, inputs, tabs) */
+button:focus, .btn:focus, .form-control:focus, .form-select:focus, .nav-link:focus, .tab-pane:focus {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 0.2rem rgba(149,117,205,0.25);
+  transition: outline var(--transition-speed), box-shadow var(--transition-speed);
+}
+body.dark-mode button:focus, body.dark-mode .btn:focus, body.dark-mode .form-control:focus, body.dark-mode .form-select:focus, body.dark-mode .nav-link:focus, body.dark-mode .tab-pane:focus {
+  outline: 2px solid var(--color-neon-purple);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 0.2rem rgba(179,115,255,0.35);
 }
 
 .guide-sticky-nav {
@@ -1188,3 +1199,22 @@ body {
     --navbar-height: 56px; /* Keep consistent or adjust if navbar grows */
   }
 }
+
+/* V8 ripple effect (used by js/v8-ux.js) */
+.v8-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+  transform: scale(0);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: v8Ripple 600ms ease-out forwards;
+  box-shadow: 0 6px 16px rgba(47, 157, 70, 0.08);
+}
+
+@keyframes v8Ripple {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* Ensure elements with tap-feedback have a subtle pressed state */
+.v8-tap-feedback:active { transform: translateY(1px) scale(0.995); }
