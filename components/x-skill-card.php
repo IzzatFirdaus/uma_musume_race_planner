@@ -6,14 +6,17 @@ if (!isset($sp)) $sp = 0;
 if (!isset($acquired)) $acquired = false;
 if (!isset($type_color)) $type_color = null; // allow CSS var fallback
 ?>
-<div class="skill-card mb-2" role="group" aria-label="Skill: <?= htmlspecialchars($name) ?>">
-  <div class="d-flex align-items-center p-2" style="border-left: 4px solid <?= $type_color ? htmlspecialchars($type_color) : 'var(--color-stat-speed)' ?>; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9)); border-radius: .5rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+<div class="skill-card mb-2 v8-skill-card" role="group" aria-label="Skill: <?= htmlspecialchars($name) ?>" tabindex="0">
+  <div class="d-flex align-items-center p-2 v8-gradient-skill" style="border-left: 6px solid <?= $type_color ? htmlspecialchars($type_color) : 'var(--motif-primary, #28a745)' ?>; border-radius: .75rem; box-shadow: 0 4px 16px rgba(40,167,69,0.08); transition: box-shadow 0.3s, transform 0.2s;">
     <div class="me-3">
-      <div class="fw-bold small mb-0 text-truncate" style="max-width:12rem"><?= htmlspecialchars($name) ?></div>
+      <div class="fw-bold small mb-0 text-truncate v8-gradient-text" style="max-width:12rem;">
+        <?= htmlspecialchars($name) ?>
+        <?php if ($acquired): ?><span class="new-badge" aria-label="Acquired">NEW</span><?php endif; ?>
+      </div>
       <div class="text-muted small"><?= intval($sp) ?> SP <?= $acquired ? '<span class="text-success">• Acquired</span>' : '' ?></div>
     </div>
     <div class="ms-auto d-flex gap-2 align-items-center">
-      <button type="button" class="btn btn-sm button-pill btn-view-skill" aria-label="View <?= htmlspecialchars($name) ?>">View</button>
+      <button type="button" class="btn btn-sm button-pill v8-animated-pill v8-tap-feedback btn-view-skill" aria-label="View <?= htmlspecialchars($name) ?>">View</button>
     </div>
   </div>
 </div>

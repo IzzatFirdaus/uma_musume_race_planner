@@ -198,35 +198,54 @@ function copyPlanDetailsToClipboard(allFetchedData) {
 
     // --- COPY TO CLIPBOARD ---
     // Uses Clipboard API if available, otherwise fallback to execCommand method for older browsers.
-    try {
-        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-            navigator.clipboard.writeText(output.trim()).then(() => {
-                showMessageBox('Formatted plan copied to clipboard!', 'success');
-            }).catch(err => {
-                console.error('Clipboard API Error:', err);
-                showMessageBox('Failed to copy to clipboard. Check browser permissions.', 'danger');
-            });
-        } else {
-            // Fallback for older browsers (not recommended, but available)
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = output.trim();
-            tempTextArea.setAttribute('readonly', '');
-            tempTextArea.style.position = 'absolute';
-            tempTextArea.style.left = '-9999px';
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            try {
-                document.execCommand('copy');
-                showMessageBox('Formatted plan copied to clipboard!', 'success');
-            } catch (e) {
+        try {
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                        navigator.clipboard.writeText(output.trim()).then(() => {
+                                showMessageBox('Formatted plan copied to clipboard!', 'success');
+                        }).catch(err => {
+                                console.error('Clipboard API Error:', err);
+                                showMessageBox('Failed to copy to clipboard. Check browser permissions.', 'danger');
+                        });
+                } else {
+                        // Fallback for older browsers (not recommended, but available)
+                        const tempTextArea = document.createElement('textarea');
+                        tempTextArea.value = output.trim();
+                        tempTextArea.setAttribute('readonly', '');
+                        tempTextArea.style.position = 'absolute';
+                        tempTextArea.style.left = '-9999px';
+                        document.body.appendChild(tempTextArea);
+                        tempTextArea.select();
+                        try {
+                                document.execCommand('copy');
+                                showMessageBox('Formatted plan copied to clipboard!', 'success');
+                        } catch (e) {
+                                console.error('Unexpected copy error:', e);
+                                showMessageBox('Unexpected error occurred during copy.', 'danger');
+                        }
+                        document.body.removeChild(tempTextArea);
+                }
+        } catch (e) {
                 console.error('Unexpected copy error:', e);
                 showMessageBox('Unexpected error occurred during copy.', 'danger');
-            }
-            document.body.removeChild(tempTextArea);
         }
-    } catch (e) {
-        console.error('Unexpected copy error:', e);
-        showMessageBox('Unexpected error occurred during copy.', 'danger');
-    }
 }
 </script>
+
+<!-- UI helper: provide a styled pill button for inline export actions if this component is included on a page -->
+<div class="d-flex gap-2 mt-2">
+    <button type="button" class="v8-animated-pill v8-tap-feedback" onclick="(function(){
+            // gather minimal context and call copyPlanDetailsToClipboard if available
+            try {
+                const planId = document.getElementById('planId') ? document.getElementById('planId').value : null;
+                // if a page-level fetch is available, prefer it
+                if (typeof window.fetch === 'function' && planId) {
+                    fetch(`get_plan_details.php?id=${planId}`).then(r => r.json()).then(data => {
+                        copyPlanDetailsToClipboard(data);
+                    }).catch(err => { console.error(err); showMessageBox('Could not fetch plan for export', 'danger'); });
+                } else {
+                    // fallback: call copyPlanDetailsToClipboard with empty/partial context
+                    if (typeof copyPlanDetailsToClipboard === 'function') copyPlanDetailsToClipboard({});
+                }
+            } catch (e) { console.error(e); }
+    })();">📋 Copy Plan</button>
+</div>
