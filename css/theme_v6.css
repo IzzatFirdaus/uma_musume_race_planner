@@ -19,6 +19,23 @@
   --stat-power-color: var(--color-stat-power);
   --stat-guts-color: var(--color-stat-guts);
   --stat-wit-color: var(--color-stat-wit);
+
+  /* VERSION 8: Motif variables for per-character theming */
+  --motif-primary: #33cc99; /* Default: green, override per plan */
+  --motif-accent: #ff9900; /* Default: orange, override per plan */
+  --motif-bg: #fff5e6;     /* Default: pastel background, override per plan */
+
+  /* VERSION 8: Gradient utilities for stat bars/buttons */
+  --gradient-stat-bar: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);
+  --gradient-button: linear-gradient(90deg, var(--motif-primary), var(--motif-accent));
+  --gradient-card: linear-gradient(180deg, #fff 60%, var(--motif-bg) 100%);
+
+  /* VERSION 8: Glow for NEW badges and emphasis */
+  --glow-new: 0 0 8px 2px #ffb347, 0 0 16px 4px #fff;
+
+  /* VERSION 8: Drop shadow for cards/buttons */
+  --shadow-card: 0 4px 16px rgba(51, 204, 153, 0.08);
+  --shadow-button: 0 2px 8px rgba(255, 153, 0, 0.12);
 }
 
 body {
