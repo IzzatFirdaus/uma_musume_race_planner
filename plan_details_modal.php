@@ -11,7 +11,7 @@ $moodOptions = $moodOptions ?? [];
 $conditionOptions = $conditionOptions ?? [];
 ?>
 
-<div class="modal fade" id="planDetailsModal" tabindex="-1" aria-labelledby="planDetailsModalLabel" aria-hidden="true">
+<div class="modal fade" id="planDetailsModal" tabindex="-1" aria-labelledby="planDetailsModalLabel" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -25,6 +25,17 @@ $conditionOptions = $conditionOptions ?? [];
             </div>
             <form id="planDetailsForm" enctype="multipart/form-data">
                 <div class="modal-body">
+                    <div class="v8-modal-content">
+                        <div class="modal-header v8-gradient-header">
+                            <h5 class="modal-title v8-gradient-text" id="planDetailsModalLabel">🏇 Plan Details</h5>
+                            <button type="button" class="btn-close v8-tap-feedback" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="loading-overlay" id="planDetailsLoadingOverlay" style="display: none;">
+                            <div class="spinner-border text-uma" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    
                     <ul class="nav nav-tabs" id="planTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="general-tab" data-bs-toggle="tab"
