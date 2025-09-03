@@ -8,7 +8,7 @@ $classOptions = $classOptions ?? [];
 
 ?>
 
-<div class="modal fade" id="createPlanModal" tabindex="-1" aria-labelledby="createPlanModalLabel" aria-hidden="true">
+<div class="modal fade" id="createPlanModal" tabindex="-1" aria-labelledby="createPlanModalLabel" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-dialog">
         <div class="modal-content shadow-lg">
             <div class="modal-header">
