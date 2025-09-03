@@ -7,11 +7,13 @@ load_env();
 ?>
 
 <footer class="text-center small mt-5 v8-footer" role="contentinfo" aria-label="Site footer">
-  <div>
-    <a href="https://github.com/IzzatFirdaus/uma_musume_race_planner" target="_blank" rel="noopener noreferrer" class="v8-animated-pill v8-tap-feedback">
-      <i class="bi bi-github me-1" aria-hidden="true"></i> Uma Musume Planner <?= htmlspecialchars(getenv('APP_VERSION') ?: '2025.09.01') ?>
+  <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 mb-2 v9-footer-actions">
+    <a href="https://github.com/IzzatFirdaus/uma_musume_race_planner" target="_blank" rel="noopener noreferrer" class="v9-action-bubble stamina" style="min-width:44px; min-height:44px;" aria-label="GitHub">
+      <i class="bi bi-github v9-action-icon" aria-hidden="true"></i>
+      <span class="v9-action-label d-none d-md-block">GitHub</span>
     </a>
-    | Last Updated: <?= htmlspecialchars(getenv('LAST_UPDATED') ?: '2025-09-01') ?>
+    <span class="d-none d-md-inline">|</span>
+    <span class="v9-action-label">Last Updated: <?= htmlspecialchars(getenv('LAST_UPDATED') ?: '2025-09-01') ?></span>
   </div>
 
   <div class="mt-2">

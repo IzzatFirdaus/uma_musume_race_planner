@@ -52,6 +52,18 @@ $theme_color = getenv('APP_THEME_COLOR') ?: '#6f42c1'; // Fallback to default pu
       Uma Musume Race Planner
     </h1>
     <p class="lead">Plan, track, and optimize your umamusume's racing career</p>
+      <!-- VERSION 9: Energy/Motivation Gauge -->
+      <?php $energy = $energy ?? 80; // Example value, replace with actual data ?>
+  <div class="v9-energy-gauge mt-3" role="progressbar" aria-label="Energy/Motivation" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= max(0,min(100,$energy)) ?>" tabindex="0">
+        <div class="fw-bold mb-1" style="color:var(--color-text-dark)">Energy</div>
+        <div class="v9-energy-bar" style="width: 100%; height: 18px; border-radius: 12px; background: var(--gradient-energy-full); box-shadow: 0 2px 8px rgba(253,126,20,0.08); position: relative;">
+          <div class="v9-energy-fill" style="width:<?= max(0,min(100,$energy)) ?>%; height: 100%; border-radius: 12px; background: var(--gradient-energy-full); transition: width 0.6s cubic-bezier(.4,0,.2,1); position: absolute; left: 0; top: 0;" aria-hidden="true"></div>
+          <div class="v9-energy-label fw-bold" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); color: #fff; text-shadow: 0 1px 4px #fd7e14; font-size: 1rem;" aria-hidden="false">
+            <span aria-hidden="true"><?= max(0,min(100,$energy)) ?>%</span>
+            <span class="visually-hidden">Energy level <?= max(0,min(100,$energy)) ?> percent</span>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 
@@ -69,7 +81,7 @@ $theme_color = getenv('APP_THEME_COLOR') ?: '#6f42c1'; // Fallback to default pu
 }
 body { font-family: 'M PLUS Rounded 1c', Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
 </style>
-<script src="js/v8-ux.js" defer></script>
+<!-- v8-ux.js is loaded once in index.php -->
 
 <!-- Load skill rows manager (lightweight) -->
 <script src="js/skill-rows.js"></script>
