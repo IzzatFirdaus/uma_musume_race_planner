@@ -2,13 +2,12 @@
 
 A lightweight PHP + MySQL web application for planning and tracking turn-based training strategies, stat development, skill acquisition, and race goals inspired by Uma Musume. Built for fast manual data entry with autosuggestions, clean interfaces, and no login — ideal for offline strategy planners.
 
----
-
 ## Application Preview
 
 ### Application Screenshots
 
 Screenshots will be added to this repository soon. The UI includes a dashboard with plan list and stats, a full-screen plan editor with tabs (General, Attributes, Aptitudes, Skills, Race Predictions, Goals), a quick-create modal, dark mode, and an in-app guide.
+
 ## ✨ Features
 
 - **Visual Enhancements (New in v1.4.0)**
@@ -25,15 +24,11 @@ Screenshots will be added to this repository soon. The UI includes a dashboard w
   - **Plain Text Export:** A "Copy to Clipboard" feature generates a clean summary of any plan, perfect for sharing.
   - **Active Navbar Links:** The navbar now highlights the active page for better navigation.
 
----
-
 ## 🖥️ Tech Stack
 
 - **Frontend**: HTML, CSS (Bootstrap 5), Vanilla JavaScript
 - **Backend**: PHP 8.1+ (Monolog 3.x), Composer
 - **Database**: MySQL / MariaDB
-
----
 
 ## 🎨 Design & Mobile Guidance (VERSION 3)
 
@@ -46,12 +41,12 @@ Screenshots will be added to this repository soon. The UI includes a dashboard w
 
 - The UI is mobile-first. Touch targets are sized >=44px and components use responsive stacking. The default font is `Figtree` with a rounded fallback.
 
-
 ## 🎯 VERSION 6 — Frontend Redesign (2025-09-02)
 
 This release delivers a major UI overhaul to match Uma Musume style (no direct copyright):
 
 **What's new:**
+
 - Theme: "M PLUS Rounded 1c" font, pastel stat palette, pill-shaped buttons/tabs.
 - Card-based dashboard and plan list: responsive grid, soft shadows, emoji headers.
 - Accessibility: ARIA attributes, visible focus, keyboard navigation, WCAG AA contrast.
@@ -65,15 +60,16 @@ This release delivers a major UI overhaul to match Uma Musume style (no direct c
 - Improved: accessibility, keyboard navigation, ARIA labels.
 
 **Validation:**
+
 - No PHP/JS errors in updated files.
 - Smoke test output matches new card/pill UI.
 
 For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 
-
 ## 📖 VERSION 7 — As-Built Frontend & Future Iteration (2025-09-02)
 
 This milestone documents the "As-Built" frontend (see SPEC-06-UMA-MUSUME-UI-AS-BUILT):
+
 - Bootstrap 5, vanilla JS, custom CSS variables, system-native font stack
 - Responsive dashboard, plan editor with tabs, dynamic skill/goal/prediction rows
 - Stat color system standardized via CSS variables (`--color-speed`, etc.)
@@ -86,6 +82,7 @@ This milestone documents the "As-Built" frontend (see SPEC-06-UMA-MUSUME-UI-AS-B
 - Sticky mobile footer for Save/Export actions
 
 **Next Iteration Plan:**
+
 - Refine accessibility and dark mode
 - Expand stat overview panel
 - Integrate AI SP optimization suggestions
@@ -122,18 +119,18 @@ composer install
 
 1. **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
 
-2. **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
+1. **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
 
-3. **(Optional) Load Sample Data:** You can populate the database with example plans and reference data by importing `sample_data.sql`.
+1. **(Optional) Load Sample Data:** You can populate the database with example plans and reference data by importing `sample_data.sql`.
 
 ### 4. Environment Configuration
 
 1. Copy the example file and then edit it:
 
-  - Copy `.env.example` to `.env`.
-  - Open `.env` and adjust values to your local setup.
+- Copy `.env.example` to `.env`.
+- Open `.env` and adjust values to your local setup.
 
-2. The application supports either DB_NAME/DB_USER/DB_PASS or DB_DATABASE/DB_USERNAME/DB_PASSWORD. A typical configuration looks like this:
+1. The application supports either DB_NAME/DB_USER/DB_PASS or DB_DATABASE/DB_USERNAME/DB_PASSWORD. A typical configuration looks like this:
 
    ```ini
    # .env - Local Development Configuration
@@ -156,10 +153,8 @@ composer install
 
 Place the project folder inside your web server's root directory and navigate to it in your browser.
 
-- Laragon: `C:/laragon/www/uma_musume_race_planner` → http://localhost/uma_musume_race_planner/
-- XAMPP: `C:/xampp/htdocs/uma_musume_race_planner` → http://localhost/uma_musume_race_planner/
-
----
+- Laragon: `C:/laragon/www/uma_musume_race_planner` → <http://localhost/uma_musume_race_planner/>
+- XAMPP: `C:/xampp/htdocs/uma_musume_race_planner` → <http://localhost/uma_musume_race_planner/>
 
 ## 📁 Folder Structure
 
@@ -198,8 +193,6 @@ uma_musume_race_planner/
 └── ...                       # Other development and config files (.gitignore, phpcs.xml, etc.)
 ```
 
----
-
 ## 🗃️ Database Overview
 
 - `plans`: The core table storing general plan info, including the `trainee_image_path`.
@@ -211,16 +204,12 @@ uma_musume_race_planner/
 
 Tip: The `get_progress_chart_data.php` endpoint aggregates turn data to feed the chart in the plan editor.
 
----
-
 ## 📌 Notes
 
 - ✅ Built for single-user, local/offline use
 - 🔒 No authentication required
 - 🐣 Inspired by Uma Musume: Pretty Derby
 - 🧪 Ideal for simulation planning and strategy testing
-
----
 
 ## 🧩 To-Do
 
@@ -231,13 +220,9 @@ Tip: The `get_progress_chart_data.php` endpoint aggregates turn data to feed the
 - [ ] Optional login & cloud sync support
 - [ ] Advanced search/filtering (by stats, skills, etc.)
 
----
-
 ## 📜 License
 
 MIT License © 2025
-
----
 
 ## 🔧 Troubleshooting
 
@@ -252,19 +237,16 @@ MIT License © 2025
 - Coding standards: `composer cs:check` and auto-fix with `composer cs:fix`.
 - UI tests: Playwright config exists (`tests/ui.spec.js`), but Node dependencies are not wired in this repo yet.
 
----
-
 ## Planning & Versions
 
 This repository tracks design and implementation history in `APPLICATION_PLANNING.md`. The file contains versioned design iterations (VERSION 1 → VERSION 7) and the next milestone plan (VERSION 8 – Official Game Style Alignment). Use it to review decisions, proposed tasks, and next steps as the project evolves.
 
 See also `docs/components.md` for component-level notes and the VERSION 6/7/8 changelogs.
 
----
-
 ## 🏁 VERSION 8 — Official Game Style Alignment (2025-09-03)
 
 **What's new:**
+
 - Visual style: white base, green main, orange/pink accent, game-inspired gradients and drop shadows.
 - Motif theming: CSS variables for per-character accent colors (`--motif-primary`, `--motif-accent`, `--motif-bg`).
 - Typography: "M PLUS Rounded 1c" font imported globally.
@@ -274,19 +256,108 @@ See also `docs/components.md` for component-level notes and the VERSION 6/7/8 ch
 - Accessibility: ARIA, keyboard navigation, WCAG AA contrast, touch targets ≥44px.
 - Milestone status: Core palette, font, stat bars, pill buttons, modals, sidebar, tap feedback, and accessibility audit in progress.
 
----
+## UMA MUSUME RACE PLANNER: UI Planning – Mechanics-Driven Color and Layout Integration (VERSION 9)
 
-## VERSION 9 — Mechanics-Driven Color and Layout Integration (2025-09-03)
+## 1. Strategic Color and Interface Integration (Image5, Image1)
 
-**What's new:**
-- Color-coded action bubbles for training mechanics
-- Animated status bar and energy/motivation gauge
-- Stat panels with color-coded stats and bonus overlays
-- Skill cards with type color differentiation and bonus badges
-- Responsive, thumb-friendly layout for mobile
-- Animation logic for tap feedback, status changes, continuous icon movement
-- Accessibility: ARIA labels, keyboard navigation, WCAG AA contrast, 44px+ touch targets
+- **Color-Coded Action Bubbles:**  
+  Menu actions use distinct color-coded circular icons at the bottom:
+  - Green: Stamina/Rest
+  - Blue: Speed/Training
+  - Red: Power
+  - Orange: Guts
+  - Purple: Wit/Intelligence  
+  This segmentation supports rapid decision-making by visually grouping mechanics (see image5).
 
-**Milestone status:**
-- Core palette, stat panels, action bubbles, skill cards, energy gauge, animation, accessibility: complete
-- Documentation updated
+- **Status Bar and Event Countdown:**  
+  - Turns left until goal appear in a yellow calendar with green border, reinforcing planning.
+  - Energy/motivation bar uses a smooth orange-to-blue gradient, visually communicating resource status and urgency.
+  - "Normal" status and failure rates are color-coded (yellow for normal, blue for failure).
+
+- **Stat Panels:**  
+  - Stats are presented in a clear horizontal panel, each stat using its color and icon:  
+    - Speed (Blue, ⚡), Stamina (Green, 🛡️), Power (Red, 🔥), Guts (Orange, 💪), Wit (Purple, 🧠).
+  - Stat values and bonuses (+11, +6, etc.) are also color-highlighted for at-a-glance assessment.
+
+- **Support Card & Buff Feedback:**  
+  - In-game, bond progress and synergy bonuses are shown with glowing color overlays or rainbow effects, reinforcing reward loops.
+
+- **UI Consistency:**  
+  - Persistent header (goal, turns, energy) and footer (action buttons) ensure thumb-friendly, mobile-first usability.
+  - Button shapes are rounded, with gradient fills and drop shadows to emphasize interactivity (image5).
+
+## 2. Mechanics-Driven Color Associations
+
+- **Skill Type Colors:**  
+  - Yellow: Corner abilities  
+  - Red: Debuffs  
+  - Blue: Recovery  
+  - Green: Context buffs  
+  Skill cards and overlays use these colors for differentiation, aiding selection and recall under pressure.
+
+- **Stat and Mood Multipliers:**  
+  - Motivation/mood is indicated by colored bars, directly impacting training efficiency and gameplay pacing.
+
+- **Character-Themed UI:**  
+  - UI motifs and accent colors are influenced by character design heritage (racing silks/jockey kits), supporting player attachment.
+
+## 3. Layout Blueprint
+
+- **Header:**  
+  - Goal, event countdown, energy bar, status indicator
+- **Main Content:**  
+  - Character display, stat panels, failure rate, bonuses
+  - Training options: large, colored circular icons
+- **Footer:**  
+  - Back, Skip, Quick actions, rounded pill buttons
+- **Dialog/Overlay:**  
+  - Consistent vertical sizing, drop shadow, padding
+
+## 4. Component Design
+
+- **Stat Bar:**  
+  - Horizontal, colored bar with stat icon and value, bonus overlays
+- **Action Bubble:**  
+  - Large, color-coded, circular with icon and label
+- **Skill Card:**  
+  - Colored border/type, effect icon, bonus, rarity indicator
+- **Energy Gauge:**  
+  - Gradient bar with numeric overlay
+- **Button:**  
+  - Pill-shaped, gradient, drop shadow, icon
+
+## 5. Responsive & Accessibility
+
+- Mobile-first grid layout
+- Thumb-reachable main actions (bottom row)
+- 44px+ touch targets
+- WCAG AA contrast
+- ARIA labels and keyboard navigation for forms, modals
+
+## 6. Animation & Feedback
+
+- Tap effects: horseshoe/star/dot animations for action types
+- Smooth transitions for stat bar changes, training gains
+- Continuous icon animation for active/inactive states
+
+## 7. Implementation Steps
+
+1. Define color palette in CSS variables (stat, accent, character theme).
+1. Add Google Fonts import for "M PLUS Rounded 1c".
+1. Refactor action bubbles and buttons to use gradients, icons, and rounded shapes.
+1. Build stat panel as a horizontal, color-coded component.
+1. Integrate energy/motivation gauge with animated transitions.
+1. Implement skill cards with color/type differentiation and bonus overlays.
+1. Ensure responsive, thumb-friendly layout for mobile.
+1. Add animation logic for tap feedback, status changes, and continuous icon movement.
+1. Validate accessibility (contrast, navigation, ARIA).
+1. Test for rapid, low-cognitive-load interactions.
+
+## 8. Validation
+
+- UI elements and colors match referenced game screens (image5, image1)
+- Stat and skill color coding supports rapid gameplay decisions
+- Mobile layout and animation enhance engagement and clarity
+- Accessibility and usability confirmed via audit and real-world testing
+
+**This planning document is updated iteratively as UI features and mechanics-driven color strategies evolve. Reference images and game UI best practices for continued alignment.**

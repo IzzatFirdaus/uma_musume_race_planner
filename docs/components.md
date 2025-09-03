@@ -3,11 +3,13 @@
 This file documents the lightweight partial components added to the project.
 
 ## x-stat-bar.php
+
 - Location: `components/x-stat-bar.php`
 - Purpose: Small, accessible stat bar to display numeric stats (e.g., Speed, Stamina) with a progress bar.
 - Inputs: $label, $value, $max, $color
 
 ### Design notes (VERSION 3)
+
 - Stat colors are defined in `css/style.css` as CSS variables:
   - `--color-stat-speed` (Speed) — canonical
   - `--color-stat-stamina` (Stamina) — canonical
@@ -17,18 +19,20 @@ This file documents the lightweight partial components added to the project.
 
 Recommendation: use the short aliases introduced in SPEC-06 when authoring new components for brevity and clarity; both sets are available for compatibility:
 
-  - `--color-speed`, `--color-stamina`, `--color-power`, `--color-guts`, `--color-wit`
+- `--color-speed`, `--color-stamina`, `--color-power`, `--color-guts`, `--color-wit`
 
 Components should reference CSS variables (not hard-coded colors). Example: `background: var(--color-speed)` or `border-left-color: var(--color-stat-speed)`.
 
 Use `$color` or the CSS variable when rendering the progress bar to ensure consistent palette.
 
 ## x-skill-row.php
+
 - Location: `components/x-skill-row.php`
 - Purpose: A single skill row used in plan forms/modals. Contains inputs for skill name, SP cost, and an acquired toggle.
 - Usage: Place inside a container with `data-skill-list`. Use a hidden template element with `data-skill-template` and a button with `data-skill-add` to add rows.
 
 ### Sample markup (mobile-first)
+
 ```html
 <div class="skill-row skill-card skill-type-speed p-2">
   <input type="hidden" name="skills[0][skill_name]" class="skill-name-hidden" />
@@ -52,6 +56,7 @@ Use `$color` or the CSS variable when rendering the progress bar to ensure consi
 ```
 
 ## js/skill-rows.js
+
 - Location: `js/skill-rows.js`
 - Purpose: Manages adding/removing skill rows, serializing them into a hidden `skills_json` input, and integrating with an existing `autosuggest` if present.
 - Auto-initializes containers with `data-skill-manager` on DOMContentLoaded. You can manually call `SkillRows.init(containerElement)`.
@@ -60,6 +65,7 @@ Use `$color` or the CSS variable when rendering the progress bar to ensure consi
 
 HTML structure inside a form:
 
+```html
 <form data-skill-manager>
   <div data-skill-list>
     <div data-skill-template style="display:none;">
@@ -69,13 +75,14 @@ HTML structure inside a form:
   <button type="button" data-skill-add>Add skill</button>
   <input type="submit" value="Save">
 </form>
+```
 
 ---
-
 
 ## VERSION 6 — Frontend Redesign Progress (2025-09-02)
 
 **Summary:**
+
 - Major UI overhaul to match Uma Musume style (no direct copyright).
 - New theme: "M PLUS Rounded 1c" font, pastel stat palette, pill-shaped buttons/tabs.
 - Card-based dashboard and plan list: responsive grid, soft shadows, emoji headers.
@@ -88,12 +95,14 @@ HTML structure inside a form:
   - `plan_details_modal.php` & `plan-inline-details.php`: emoji title, summary strip, pill footer buttons.
 
 **Changelog:**
+
 - Created: `css/theme_v6.css` (font import, stat palette, card/pill styles).
 - Updated: `index.php` (theme link), `components/plan-list.php`, `x-stat-bar.php`, `x-skill-card.php`, `x-card.php`, `plan_details_modal.php`, `plan-inline-details.php`.
 - Added: summary strips for Turn/SP/Race in plan editor views.
 - Improved: accessibility, keyboard navigation, ARIA labels.
 
 **Validation:**
+
 - No PHP/JS errors in updated files.
 - Smoke test output matches new card/pill UI.
 
@@ -104,6 +113,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 ## VERSION 7 — As-Built Frontend & Future Iteration (2025-09-02)
 
 **Summary:**
+
 - Bootstrap 5, vanilla JS, custom CSS variables, system-native font stack
 - Responsive dashboard, plan editor with tabs, dynamic skill/goal/prediction rows
 - Stat color system standardized via CSS variables (`--color-speed`, etc.)
@@ -116,6 +126,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 - Sticky mobile footer for Save/Export actions
 
 **Changelog:**
+
 - Standardized stat color system and applied to all components
 - Refactored dark mode for smooth transitions and accessibility
 - Skill/goal/prediction row builders updated for markup and JS consistency
@@ -127,6 +138,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 - Sticky mobile footer refined for Save/Export actions
 
 **Validation:**
+
 - All components use standardized stat color system
 - Dark mode transitions are smooth and accessible
 - Skill/goal/prediction row builders are consistent
@@ -142,6 +154,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 ## VERSION 8 — Official Game Style Alignment (2025-09-03)
 
 **Summary:**
+
 - Adopted predominantly white base, green main, orange/pink accent for game-like appearance.
 - UI color schemes now adapt to each Uma Musume’s motif using CSS variables (`--motif-primary`, `--motif-accent`, `--motif-bg`).
 - Added gradient text, outlines, glowing effects for badges and emphasis.
@@ -152,6 +165,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 - Milestone status: Core palette, font, stat bars, pill buttons, modals, sidebar, tap feedback, and accessibility audit in progress.
 
 **Changelog:**
+
 - `css/style.css`: updated with new color variables, gradient utilities, and soft shadow effects.
 - `css/theme_v6.css`: deprecated; merged into `css/style.css`.
 - `index.php`/`header.php`: Google Font import for "M PLUS Rounded 1c"; removed old font imports.
@@ -163,6 +177,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
   - Sidebar/Menu (navbar.php): icon-labeled sections, pastel group panels.
 
 **Validation:**
+
 - Thumb reach on mobile, WCAG AA contrast, keyboard navigation across dialogs/tabs.
 - No reliance on copyrighted assets; only inspired shapes/colors/styles.
 
@@ -171,6 +186,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 ## VERSION 9 — Mechanics-Driven Color and Layout Integration (2025-09-03)
 
 **Summary:**
+
 - Color-coded action bubbles for training mechanics (stamina, speed, power, guts, wit)
 - Status bar and event countdown with animated gradients
 - Stat panels with color-coded stats and bonus overlays
@@ -181,6 +197,7 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 - Accessibility: ARIA labels, keyboard navigation, WCAG AA contrast, 44px+ touch targets
 
 **Changelog:**
+
 - `css/style.css`: added V9 color variables, gradients, and action bubble/button classes
 - `components/stats-panel.php`: horizontal stat panel with color and bonus overlays
 - `components/x-skill-card.php`: skill type color and bonus overlays
@@ -189,7 +206,118 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 - `js/v8-ux.js`: V9 animation logic for tap feedback, status, icons
 
 **Validation:**
+
 - All components use mechanics-driven color system
 - Animations respect reduced motion
 - Accessibility audit complete
 - Mobile layout and touch targets validated
+
+---
+
+## UMA MUSUME RACE PLANNER: UI Planning – Mechanics-Driven Color and Layout Integration (VERSION 9)
+
+## 1. Strategic Color and Interface Integration (Image5, Image1)
+
+- **Color-Coded Action Bubbles:**  
+  Menu actions use distinct color-coded circular icons at the bottom:
+  - Green: Stamina/Rest
+  - Blue: Speed/Training
+  - Red: Power
+  - Orange: Guts
+  - Purple: Wit/Intelligence  
+  This segmentation supports rapid decision-making by visually grouping mechanics (see image5).
+
+- **Status Bar and Event Countdown:**  
+  - Turns left until goal appear in a yellow calendar with green border, reinforcing planning.
+  - Energy/motivation bar uses a smooth orange-to-blue gradient, visually communicating resource status and urgency.
+  - "Normal" status and failure rates are color-coded (yellow for normal, blue for failure).
+
+- **Stat Panels:**  
+  - Stats are presented in a clear horizontal panel, each stat using its color and icon:  
+    - Speed (Blue, ⚡), Stamina (Green, 🛡️), Power (Red, 🔥), Guts (Orange, 💪), Wit (Purple, 🧠).
+  - Stat values and bonuses (+11, +6, etc.) are also color-highlighted for at-a-glance assessment.
+
+- **Support Card & Buff Feedback:**  
+  - In-game, bond progress and synergy bonuses are shown with glowing color overlays or rainbow effects, reinforcing reward loops.
+
+- **UI Consistency:**  
+  - Persistent header (goal, turns, energy) and footer (action buttons) ensure thumb-friendly, mobile-first usability.
+  - Button shapes are rounded, with gradient fills and drop shadows to emphasize interactivity (image5).
+
+## 2. Mechanics-Driven Color Associations
+
+- **Skill Type Colors:**  
+  - Yellow: Corner abilities  
+  - Red: Debuffs  
+  - Blue: Recovery  
+  - Green: Context buffs  
+  Skill cards and overlays use these colors for differentiation, aiding selection and recall under pressure.
+
+- **Stat and Mood Multipliers:**  
+  - Motivation/mood is indicated by colored bars, directly impacting training efficiency and gameplay pacing.
+
+- **Character-Themed UI:**  
+  - UI motifs and accent colors are influenced by character design heritage (racing silks/jockey kits), supporting player attachment.
+
+## 3. Layout Blueprint
+
+- **Header:**  
+  - Goal, event countdown, energy bar, status indicator
+- **Main Content:**  
+  - Character display, stat panels, failure rate, bonuses
+  - Training options: large, colored circular icons
+- **Footer:**  
+  - Back, Skip, Quick actions, rounded pill buttons
+- **Dialog/Overlay:**  
+  - Consistent vertical sizing, drop shadow, padding
+
+## 4. Component Design
+
+- **Stat Bar:**  
+  - Horizontal, colored bar with stat icon and value, bonus overlays
+- **Action Bubble:**  
+  - Large, color-coded, circular with icon and label
+- **Skill Card:**  
+  - Colored border/type, effect icon, bonus, rarity indicator
+- **Energy Gauge:**  
+  - Gradient bar with numeric overlay
+- **Button:**  
+  - Pill-shaped, gradient, drop shadow, icon
+
+## 5. Responsive & Accessibility
+
+- Mobile-first grid layout
+- Thumb-reachable main actions (bottom row)
+- 44px+ touch targets
+- WCAG AA contrast
+- ARIA labels and keyboard navigation for forms, modals
+
+## 6. Animation & Feedback
+
+- Tap effects: horseshoe/star/dot animations for action types
+- Smooth transitions for stat bar changes, training gains
+- Continuous icon animation for active/inactive states
+
+## 7. Implementation Steps
+
+1. Define color palette in CSS variables (stat, accent, character theme).
+2. Add Google Fonts import for "M PLUS Rounded 1c".
+3. Refactor action bubbles and buttons to use gradients, icons, and rounded shapes.
+4. Build stat panel as a horizontal, color-coded component.
+5. Integrate energy/motivation gauge with animated transitions.
+6. Implement skill cards with color/type differentiation and bonus overlays.
+7. Ensure responsive, thumb-friendly layout for mobile.
+8. Add animation logic for tap feedback, status changes, and continuous icon movement.
+9. Validate accessibility (contrast, navigation, ARIA).
+10. Test for rapid, low-cognitive-load interactions.
+
+## 8. Validation
+
+- UI elements and colors match referenced game screens (image5, image1)
+- Stat and skill color coding supports rapid gameplay decisions
+- Mobile layout and animation enhance engagement and clarity
+- Accessibility and usability confirmed via audit and real-world testing
+
+---
+
+**This planning document is updated iteratively as UI features and mechanics-driven color strategies evolve. Reference images and game UI best practices for continued alignment.**

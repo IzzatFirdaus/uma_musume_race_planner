@@ -16,7 +16,8 @@ test('home loads and shows sticky action row and energy gauge', async ({ page })
   // Click speed action and expect modal to open and attributes tab visible
   // If the sticky actions are hidden in the test environment, dispatch the v9:action event directly
   await page.evaluate(() => {
-    const el = document.querySelector('.v9-sticky-actions .v9-action-bubble.speed');
+    /** @type {HTMLElement|null} */
+    const el = /** @type {HTMLElement|null} */ (document.querySelector('.v9-sticky-actions .v9-action-bubble.speed'));
     if (el) {
       // Try a programmatic click first
       try { el.click(); } catch(e) { /* ignore */ }

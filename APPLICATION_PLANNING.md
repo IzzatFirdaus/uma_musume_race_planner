@@ -4,176 +4,136 @@ This file records the iterative design and implementation planning for Uma-Track
 
 ---
 
-# Uma-Tracker System: Design & Implementation Planning (VERSION 1)
+## Uma-Tracker System: Design & Implementation Planning (VERSION 1)
 
-## 1. Purpose & Scope
+## 1. Purpose & Scope (VERSION 1)
 
 - **Audience:** Players of Uma Musume: Pretty Derby who wish to log and analyze career runs.
-- **Goals:** 
-	- Intuitive turn-by-turn stat and skill logging
-	- Skill planning and SP management
-	- Data export (Excel/spreadsheet)
-	- Game-inspired, responsive UI
-	- Accessibility, mobile-first
+- **Goals:**
+  - Intuitive turn-by-turn stat and skill logging
+  - Skill planning and SP management
+  - Data export (Excel/spreadsheet)
+  - Game-inspired, responsive UI
+  - Accessibility, mobile-first
 
-## 2. Core Visual & UX Inspirations
+## 2. Core Visual & UX Inspirations (VERSION 1)
 
 - Bright character cards; stat bars with color coding
 - Tabbed/segmented layouts for modes/screens
 - Portrait-first mobile grid, responsive up to desktop
 - Vibrant Uma Musume palette: Speed (blue), Stamina (green), Power (red), Guts (orange), Wit (purple)
 
-## 3. Key Screens & Components
+## 3. Key Screens & Components (VERSION 1)
 
-### Dashboard
+### Dashboard (VERSION 1)
+
 - **Header:** Personalized greeting
 - **Quick Cards:** Uma List, Export, New Run
 - **Grid:** 1 column mobile, 3 columns desktop
 - **Styling:** Cygames-style hues, hover shadows, rounded corners
 
-### Uma List
+### Uma List (VERSION 1)
+
 - **Title:** 🎴 Uma Musume List
 - **Cards:** Name, aptitudes, career links
 - **Buttons:** Preview, Export
 - **Grid:** Responsive, hover transitions
 
-### Career Run Form
+### Career Run Form (VERSION 1)
+
 - **Sections:**
-	- Character info
-	- Stats (inputs + color mini-bars)
-	- Suitability (grade icons)
-	- Skills (dynamic rows, autocomplete)
+  - Character info
+  - Stats (inputs + color mini-bars)
+  - Suitability (grade icons)
+  - Skills (dynamic rows, autocomplete)
 - **Interactivity:** Alpine.js for skill row add/remove, inline validation
 - **Layout:** Collapsible/tabs for long forms, mobile stacking
 
-## 4. Branding & Style
+## 4. Branding & Style (VERSION 1)
 
 - **Color System:** Stat mapping to palette
-- **Icons:** Game-style (⚡🛡️🔥💪🧠)
-- **Font:** Figtree for body, Inter/Montserrat for headers
-- **Buttons:** Rounded pills, accent backgrounds, drop-shadow
-- **Transitions:** Subtle on buttons, cards, toggles
 
-## 5. Responsiveness & Accessibility
+## 3. Next Iteration Plan (VERSION 7)
 
 - Mobile-first grid, adaptive columns
-- Button/input min height: 44px
-- Collapsible/accordion skill section on mobile
-- Fixed mobile footer for "Save" CTA
-- WCAG AA color contrast
-- ARIA labels, keyboard navigation
 
-## 6. Blade Component Blueprint
+## 4. Component Blueprint (VERSION 4)
 
 - `x-card.blade.php`: Uma card (name, badges, link)
-- `x-stat-bar.blade.php`: Colored stat bar
-- `x-skill-row.blade.php`: Skill input row (name, cost, toggle, notes)
-- `x-responsive-grid.blade.php`: Adaptive grid
-- Tailwind utility layout wrappers
 
-## 7. API & Data Flow
+## 5. Branding & Aesthetic (VERSION 4)
 
-- **Endpoints:**
-	- `/api/uma` (GET/POST): List/create Uma Musume
-	- `/api/uma/{id}` (GET): Details
-	- `/api/career` (POST): Start career
-	- `/api/career/{id}/stats` (POST): Log turn stats
-	- `/api/career/{id}/skills` (POST): Manage skills
-	- `/api/export/career/{id}` (GET): Export career run
-	- `/api/export/skills` (GET): Export skills
+- `/api/uma` (GET/POST): List/create Uma Musume
+- `/api/uma/{id}` (GET): Details
 
-## 8. Implementation Sequence
+## 6. Responsive Strategy (VERSION 4)
 
 ### Design Mockups (Figma)
-- Dashboard
-- Uma List grid
+
 - Career Run form (dynamic skill rows)
 
-### Frontend Prototyping
-- Blade components for stat bars, skill cards, responsive grid
-- Alpine.js for dynamic form rows, validation
+## 9. Mobile-First Layout (Example) (VERSION 4)
 
-### Backend
-- Model & migration for UmaMusume, CareerRun, StatProgress, Skill, SkillCareerRun
-- Controller logic for CRUD, export, validation
-- API routes and resource formatting
+```text
 
-### Accessibility Review
-- ARIA-labels, contrast, tab indexes
+ARIA-labels, contrast, tab indexes
 
+### Dashboard (VERSION 1)
 ### Testing
-- Feature tests for API endpoints, form logic, export functionality
-
-## 9. Roadmap & Milestones
+## 11. Summary (VERSION 4)
 
 - **v1.2:** Dark mode, mobile optimization, basic stat charts
-- **v1.3:** AI training suggestions, race simulation, multi-language
+
+### Career Run Form (VERSION 1)
+
 - **v2.0:** Team management, scenario builder, community sharing
 
-## 10. Next Steps
+## 10. Next Steps (VERSION 1)
 
-- [ ] Finalize Figma mockups for all key screens/components
-- [ ] Scaffold Blade components per blueprint
-- [ ] Develop backend models/controllers/routes
-- [ ] Prototype dynamic form logic with Alpine.js
-- [ ] Implement accessibility features
-- [ ] Prepare documentation for API/component usage
+- [x] Prototype dynamic form logic with Alpine.js
+
+### Dashboard (VERSION 2)
+
+- [x] Prepare documentation for API/component usage
 - [ ] Add actual screenshots and logo assets
 
----
-
-**This planning file is a living document. Update regularly as implementation proceeds and feature priorities shift.**
-
-
-# Uma‑Tracker Design & Implementation Planning (Iteration) (VERSION 2)
+## Uma‑Tracker Design & Implementation Planning (Iteration) (VERSION 2)
 
 ... (VERSION 2 content follows below)
 
-## 1. Purpose & Audience
-**Target Users:** Uma Musume: Pretty Derby players  
+
+### Career Run Form (VERSION 2)
 **Core Goals:**
+
 - Log turn-by-turn stat growth and skill decisions
 - Plan/tracking for SP usage and match strategies
-- Export career progression to Excel for analysis/sharing
-- Deliver a visually polished, game-inspired UI
 
-## 2. Inspirations from Game Design
+## 2. Inspirations from Game Design (VERSION 2)
+
+### Dashboard (VERSION 4)
+
 - **Top-screen stamina bars**: Numeric overlays, gradient fill, persistent visibility.
-- **Stat color coding:** 
-	- ⚡ Speed = blue
-	- 🛡️ Stamina = green
-	- 🔥 Power = red
-	- 💪 Guts = orange
-	- 🧠 Wit = purple
-- **Skill cards:** Modal overlays, colored borders by skill type, iconography.
+- **Stat color coding:**
+  - 🧠 Wit = purple
+
+### Plan List (VERSION 4)
+
 - **Mobile-first, portrait grid:** Adaptive to desktop, responsive spacing.
 - **Animated feedback:** Bar shakes, stat flashes, Alpine.js transitions.
 
-## 3. Key Screens & Layouts
+**Skill Row Example:**
 
-### Dashboard
-- Welcome banner
-- Responsive grid of action cards (Uma List, Export, New Run)
-- Vibrant Tailwind color palette, shadow/hovers
-
-### Uma List
-- Emoji title, preview & export buttons
-- Uma cards: name, aptitudes, tags, navigation
-- Responsive grid, soft transitions
-
-### Career Run Form
-- **Header:** Avatar, name, turn/stamina bar
-- **Stats:** Inline colored bars, circular progress indicators
-- **Grade Inputs:** Dropdowns for suitability (A–G)
+```html
+<!-- skill row example placeholder -->
 - **Growth/Condition:** Text + icons
 - **Skills Section:**
-	- Alpine.js dynamic skill rows
-	- Colored border cards (type-based)
-	- Inputs: skill name, SP, acquired, notes
-	- Floating "Add Skill" button
+## 2. Visual & UX Inspirations (VERSION 4)
+  - Colored border cards (type-based)
+```text
+  - Floating "Add Skill" button
 - **Total SP/Submit:** Fixed mobile footer
 
-## 4. Visual & Interactive Blueprint
+## 4. Visual & Interactive Blueprint (VERSION 2)
 
 - **Stamina/Turn Bars:** Persistent, animated, numeric overlays
 - **Colored Stat Indicators:** SVG or ASCII progress, grade overlays
@@ -181,7 +141,7 @@ This file records the iterative design and implementation planning for Uma-Track
 - **Responsive Layout:** Grid expands/collapses, mobile stacking
 - **Animated Feedback:** Stat bar shake, color flashes, Alpine.js transitions
 
-## 5. Component Library (Blade)
+## 5. Component Library (Blade) (VERSION 2)
 
 - `x-card` — Uma card for lists/dashboards
 - `x-stat-bar` — Stat meter with icon/color
@@ -189,13 +149,13 @@ This file records the iterative design and implementation planning for Uma-Track
 - `x-progress-gauge` — Circular/radial progress
 - `x-modal-preview` — Export preview modal
 
-## 6. Accessibility & Branding
+## 6. Accessibility & Branding (VERSION 2)
 
 - **Contrast/Fonts:** Figtree font, WCAG AA color contrast, clear labels
 - **Icons:** Emoji/SVG for stats, intuitive navigation
 - **Palette:** Bright, upbeat, Cygames-inspired colors
 
-## 7. Roadmap & Feature Milestones
+## 7. Roadmap & Feature Milestones (VERSION 2)
 
 | Feature                | Benefit                       | Status   |
 |------------------------|------------------------------|----------|
@@ -206,7 +166,7 @@ This file records the iterative design and implementation planning for Uma-Track
 | Animated interactions  | Dynamic feedback/polish      | [x] Base |
 | Excel export           | Data sharing/analysis        | [x]      |
 
-## 8. Implementation Steps
+## 8. Implementation Steps (VERSION 2)
 
 1. **Finalize Figma wireframes** for all major screens/components.
 2. **Scaffold Blade components** (`x-stat-bar`, `x-skill-row`, etc.) per design.
@@ -218,7 +178,7 @@ This file records the iterative design and implementation planning for Uma-Track
 8. **Documentation:** Update README and code comments per new features.
 9. **Update roadmap** as features ship.
 
-## 9. Validation Criteria
+## 9. Validation Criteria (VERSION 2)
 
 - All UI elements match game-inspired design and are mobile-first.
 - Skill cards, stat bars, and progress gauges are animated and color-coded.
@@ -231,16 +191,16 @@ This file records the iterative design and implementation planning for Uma-Track
 
 **This planning doc is iterative—review and expand as features are designed, prototyped, and shipped.**
 
-
-# UMA MUSUME RACE PLANNER: Design & Implementation Planning (Iteration) (VERSION 3)
-
+## UMA MUSUME RACE PLANNER: Design & Implementation Planning (Iteration) (VERSION 3)
 
 ---
 
-# UMA MUSUME RACE PLANNER: As-Built Design & Implementation Planning (VERSION 7)
+## UMA MUSUME RACE PLANNER: As-Built Design & Implementation Planning (VERSION 7)
 
-## 1. Overview
+## 1. Overview (VERSION 7)
+
 This milestone documents the current "As-Built" frontend (see SPEC-06-UMA-MUSUME-UI-AS-BUILT):
+
 - Bootstrap 5, vanilla JS, custom CSS variables, system-native font stack
 - Responsive dashboard, plan editor with tabs, dynamic skill/goal/prediction rows
 - Stat color system standardized via CSS variables (`--color-speed`, etc.)
@@ -252,7 +212,8 @@ This milestone documents the current "As-Built" frontend (see SPEC-06-UMA-MUSUME
 - Enhanced iconography (Bootstrap Icons, custom SVGs)
 - Sticky mobile footer for Save/Export actions
 
-## 2. Changelog
+## 2. Changelog (VERSION 7)
+
 - Standardized stat color system and applied to all components
 - Refactored dark mode for smooth transitions and accessibility
 - Skill/goal/prediction row builders updated for markup and JS consistency
@@ -264,13 +225,15 @@ This milestone documents the current "As-Built" frontend (see SPEC-06-UMA-MUSUME
 - Sticky mobile footer refined for Save/Export actions
 
 ## 3. Next Iteration Plan
+
 - Refine accessibility and dark mode
 - Expand stat overview panel
 - Integrate AI SP optimization suggestions
 - Add game-style modal previews with transitions
 - Run UI and accessibility tests (Playwright, Lighthouse)
 
-## 4. Validation Checklist
+## 4. Validation Checklist (VERSION 7)
+
 - [x] Stat color system standardized and applied
 - [x] Dark mode transitions smooth and accessible
 - [x] Skill/goal/prediction row builders consistent
@@ -287,33 +250,36 @@ This milestone documents the current "As-Built" frontend (see SPEC-06-UMA-MUSUME
 - Export career data for analysis and sharing (spreadsheet formats)
 - Visually enriched, game-inspired, mobile-first UI
 
-## 2. Visual & UX Inspirations
+## 2. Visual & UX Inspirations (VERSION 4)
 
 - **Persistent Gauges:** Top-screen stamina and turn bars, numeric overlays for clarity
 - **Stat Color Coding:**
-	- ⚡ Speed = blue
-	- 🛡️ Stamina = green
-	- 🔥 Power = red
-	- 💪 Guts = orange
-	- 🧠 Wit = purple
+  - ⚡ Speed = blue
+  - 🛡️ Stamina = green
+  - 🔥 Power = red
+  - 💪 Guts = orange
+  - 🧠 Wit = purple
 - **Skill Card Design:** Tailwind-styled cards, colored left borders by type, icons
 - **Mobile-first Layout:** Portrait grid, adaptive to desktop, clear spacing
 - **Animated Feedback:** Bar shakes, stat flashes, Alpine.js transitions
 
-## 3. Layout & Component Designs
+## 3. Layout & Component Designs (VERSION 4)
 
 ### Dashboard
+
 - Welcome banner / personalized greeting
 - Responsive grid of quick-action cards for Plan List, Export, Create Form
 - Colored button cards, hover shadows
 
 ### Plan List
+
 - Prominent title ("🎴 Uma Musume Plan List")
 - Preview & Export buttons (styled per data type)
 - Plan cards: name, style/track tags, navigation to detail
 - Responsive grid, soft transitions
 
 ### Career Run Form
+
 - **Header:** Avatar/name section, "Turn X/Y" label, stamina gauge
 - **Stats Grid:** Inputs, inline progress bars or circular indicators (x/1200)
 - **Aptitude Grades:** Dropdowns for Turf/Dirt/Sprint/Mile/etc. (A–G)
@@ -328,40 +294,42 @@ This milestone documents the current "As-Built" frontend (see SPEC-06-UMA-MUSUME
 - `x-modal-preview` – Modal for export preview
 
 **Examples:**
+
 ```html
 <!-- x-stat-bar -->
 <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
-	<div class="h-full bg-green-500 transition-all" style="width: {{ $turnPercent }}%"></div>
+ <div class="h-full bg-green-500 transition-all" style="width: {{ $turnPercent }}%"></div>
 </div>
 <p class="text-sm text-gray-600 mt-1">Turn {{ $currentTurn }}/{{ $maxTurns }}</p>
 
 <!-- x-skill-row -->
 <div class="bg-white shadow rounded-lg p-4 flex items-center space-x-4 border-l-4 border-blue-500">
-	<input name="skills[0][name]" class="flex-1" placeholder="Skill Name"/>
-	<input name="skills[0][sp_cost]" class="w-16 text-center"/>
-	<label class="flex items-center space-x-1">
-		<input type="checkbox" name="skills[0][acquired]" />
-		<span class="text-sm text-gray-700">Acquired</span>
-	</label>
-	<input name="skills[0][notes]" class="flex-1" placeholder="Notes"/>
+ <input name="skills[0][name]" class="flex-1" placeholder="Skill Name"/>
+ <input name="skills[0][sp_cost]" class="w-16 text-center"/>
+ <label class="flex items-center space-x-1">
+  <input type="checkbox" name="skills[0][acquired]" />
+  <span class="text-sm text-gray-700">Acquired</span>
+ </label>
+ <input name="skills[0][notes]" class="flex-1" placeholder="Notes"/>
 </div>
-```
+```text
+
 (*Border color changes based on skill type*)
 
-## 5. Branding & Aesthetic
+## 5. Branding & Aesthetic (VERSION 3)
 
 - **Color System:** Stat palette matches game
 - **Icons:** ⚡, 🛡️, 🔥, 💪, 🧠 for stats
 - **Typography:** Figtree (modern sans-serif)
 - **Animations:** Subtle hover transitions, feedback on stat changes
 
-## 6. Responsive Strategy
+## 6. Responsive Strategy (VERSION 3)
 
 - Mobile-first flexible grid (single → multi-column)
 - Touch targets ≥ 44px
 - Fixed mobile footer for "Save" CTA
 
-## 7. Accessibility & UX
+## 7. Accessibility & UX (VERSION 3)
 
 - WCAG AA color contrast
 - Text labels for all color-coded elements
@@ -374,9 +342,9 @@ This milestone documents the current "As-Built" frontend (see SPEC-06-UMA-MUSUME
 2. **Prototypes:** Interactive components (skill repeater, stat bars) in Alpine.js/React
 3. **UI Review:** Consistency and intuitiveness on all devices before full build
 
-## 9. Mobile-First Layout (Example)
+## 9. Mobile-First Layout (Example) (VERSION 3)
 
-```
+```text
 [ Header: UMA MUSUME PLANNER ]   [ Turn 12/70 ]
 -----------------------------------------------
 Stamina ▶■■■■■□□□□□ (60%)
@@ -397,7 +365,7 @@ Skills [ + Add Skill ]
 -----------------------------------------------
 Total SP: 340
 [ Submit Career Run ]
-```
+```text
 
 ## 10. Roadmap & Enhancements
 
@@ -420,34 +388,37 @@ By combining Uma Musume’s design hallmarks (persistent gauges, color-coded sta
 
 ---
 
-
-# VERSION 6 — Frontend Redesign Milestone (2025-09-02)
+## VERSION 6 — Frontend Redesign Milestone (2025-09-02)
 
 Status: In-progress — major UI overhaul, accessibility, and component refactors implemented; documentation updated.
 
 Overview:
+
 - Goal: Redesign UI to match Uma Musume style (no direct copyright), maximize engagement and accessibility.
 - Key focuses: "M PLUS Rounded 1c" font, pastel stat palette, pill-shaped buttons/tabs, card-based dashboard/plan list, ARIA attributes, keyboard navigation, WCAG AA contrast.
 
 Completed/implemented so far:
+
 - Created: `css/theme_v6.css` (font import, stat palette, card/pill styles).
 - Updated: `index.php` (theme link), `components/plan-list.php`, `x-stat-bar.php`, `x-skill-card.php`, `x-card.php`, `plan_details_modal.php`, `plan-inline-details.php`.
 - Card-based dashboard and plan list: responsive grid, soft shadows, emoji headers.
 - Accessibility: ARIA attributes, visible focus, keyboard navigation, WCAG AA contrast.
 - Component refactors:
-	- `x-stat-bar.php`: stat color via CSS variable, emoji icon, animated fill.
-	- `x-skill-card.php`: pastel card, colored border by skill tag, pill action button.
-	- `x-plan-card.php`: plan card with emoji, badges, summary strip, pill Open button.
-	- `plan-list.php`: replaced table with card grid, pill filters, accessible tablist.
-	- `plan_details_modal.php` & `plan-inline-details.php`: emoji title, summary strip, pill footer buttons.
+  - `x-stat-bar.php`: stat color via CSS variable, emoji icon, animated fill.
+  - `x-skill-card.php`: pastel card, colored border by skill tag, pill action button.
+  - `x-plan-card.php`: plan card with emoji, badges, summary strip, pill Open button.
+  - `plan-list.php`: replaced table with card grid, pill filters, accessible tablist.
+  - `plan_details_modal.php` & `plan-inline-details.php`: emoji title, summary strip, pill footer buttons.
 
 Next steps / backlog:
+
 - JS lint/test: run linters and unit tests (requires fixing `package.json` / installing Node deps) — optional but recommended.
 - Performance: If skill reference grows large, switch autosuggest to server-side incremental queries.
 - UX polish: add tooltips, per-stat slider color segments, and keyboard shortcut improvements.
 - Accessibility audit (Lighthouse), Playwright UI tests.
 
 Validation checklist:
+
 - [x] Theme and font applied globally
 - [x] Card/pill UI in dashboard and plan list
 - [x] Accessibility improvements (ARIA, keyboard, contrast)
@@ -456,53 +427,58 @@ Validation checklist:
 - [x] Smoke test output matches new card/pill UI
 
 Notes:
+
 - All changes tracked in SPEC-05-UMA-MUSUME-UI-DESIGN and referenced in README and docs/components.md.
 - Progressive enhancement: features fail gracefully if JS or Chart.js is unavailable.
 
+## UMA MUSUME RACE PLANNER: As-Built Design & Implementation Planning (Iteration) (VERSION 4)
 
+## 1. Purpose & Audience (VERSION 4)
 
-# UMA MUSUME RACE PLANNER: As-Built Design & Implementation Planning (Iteration) (VERSION 4)
-
-## 1. Purpose & Audience
 **Target Users:** Uma Musume: Pretty Derby players  
 **Goals:**
+
 - Streamlined stat development logging
 - Intuitive SP usage and skill acquisition planning
 - Export career data as formatted plain-text summaries
 - Game-inspired, visually engaging, and mobile-friendly UI
 
-## 2. Visual & UX Inspirations
+## 2. Visual & UX Inspirations (VERSION 4)
 
 - **Persistent Gauges:** Energy slider (`<input type="range">`) for stamina, numeric overlays for clarity
 - **Stat Color Coding & Badges:** Custom CSS palette and Bootstrap Badges for stats/grades
 - **Component Styling:** Bootstrap 5 Cards with custom CSS to recreate layered, organized menus
 - **Bootstrap Icons:** Used for intuitive, game-like visual cues
 
-## 3. Layout & Component Designs
+## 3. Layout & Component Designs (VERSION 4)
 
 ### Dashboard
+
 - Header banner
 - Responsive Bootstrap grid: left (plan list), right (stats, activity)
 - All components update dynamically (no page reloads)
 
 ### Plan List
+
 - Card with Bootstrap Table listing all plans
 - Action buttons: Edit, View Details, Delete (Bootstrap Icons)
 - Table populated via JS from backend API
 
 ### Career Run Form
+
 - Presented in Bootstrap Modal or inline details view
 - Tabbed interface (General, Attributes, Skills, etc.)
 - Dynamic skill/prediction/goal rows managed by vanilla JS
 - Standard Bootstrap Form Controls for inputs
 
-## 4. Component Implementation
+## 4. Component Implementation (VERSION 4)
 
 - **plan-list.php:** Renders plan table structure for JS population
 - **plan_details_modal.php:** HTML for the editing modal, tabs, and form sections
 - **JavaScript:** Functions (e.g., `createModalSkillRow()`) generate dynamic skill rows using Bootstrap classes
 
 **Skill Row Example:**
+
 ```html
 <td><input type="text" class="form-control form-control-sm skill-name-input"></td>
 <td><input type="number" class="form-control form-control-sm skill-sp-cost-input"></td>
@@ -510,55 +486,55 @@ Notes:
 <td><select class="form-select form-select-sm skill-tag-select">...</select></td>
 <td><input type="text" class="form-control form-control-sm skill-notes-input"></td>
 <td><button class="btn btn-danger btn-sm remove-skill-btn">...</button></td>
-```
+```text
 
-## 5. Branding & Aesthetic
+## 5. Branding & Aesthetic (VERSION 4)
 
 - **Color System:** CSS variables for palette, stat-based backgrounds
 - **Icons:** Bootstrap Icons for all actionable UI elements
 - **Typography:** System-native sans-serif stack ("Segoe UI", Tahoma, Verdana, etc.)
 - **Animations:** CSS transitions for dark mode and hover/active states
 
-## 6. Responsive Strategy
+## 6. Responsive Strategy (VERSION 4)
 
 - Mobile-first Bootstrap 5 grid
 - Buttons/inputs sized for touch targets
 - Modals and panels stack vertically on small screens
 
-## 7. Accessibility & UX
+## 7. Accessibility & UX (VERSION 4)
 
 - High color contrast
 - Always-visible `<label>` for inputs
 - Bootstrap ensures keyboard navigation and ARIA support
 
-## 8. Implementation Flow
+## 8. Implementation Flow (VERSION 4)
 
 1. **Backend API:** PHP scripts serving secure JSON endpoints
 2. **Frontend:** `index.php` assembles UI from PHP includes
 3. **JavaScript:** Handles API calls, DOM updates, form submission
 
-## 9. Mobile-First Layout (Example)
+## 9. Mobile-First Layout (Example) (VERSION 4)
 
-```
+```text
 [ Header: UMA MUSUME PLANNER ]
 -----------------------------------------------
 [ Plan List Card ]
-	Plan 1        [ Edit ] [ View ] [ Del ]
-	Plan 2        [ Edit ] [ View ] [ Del ]
-	...
+ Plan 1        [ Edit ] [ View ] [ Del ]
+ Plan 2        [ Edit ] [ View ] [ Del ]
+ ...
 -----------------------------------------------
 [ Stats Card ]
-	Total Plans: 5
-	Active: 2
+ Total Plans: 5
+ Active: 2
 -----------------------------------------------
 [ Recent Activity Card ]
-	- Plan created...
-	- Plan updated...
+ - Plan created...
+ - Plan updated...
 -----------------------------------------------
 [ Footer ]
-```
+```text
 
-## 10. Roadmap & Enhancements
+## 10. Roadmap & Enhancements (VERSION 4)
 
 | Feature                | Benefit                       | Status   |
 |------------------------|------------------------------|----------|
@@ -569,7 +545,7 @@ Notes:
 | Animated Interactions  | Feedback and polish          | [x] Base |
 | Text Export            | Data sharing/analysis        | [x]      |
 
-## 11. Summary
+## 11. Summary (VERSION 4)
 
 The UMA MUSUME RACE PLANNER delivers a user-friendly and authentic-feeling career planning experience by combining Bootstrap 5, custom CSS, and dynamic vanilla JavaScript. The platform maintains organizational clarity and responsiveness, providing powerful tools for stat tracking, skill planning, and data export.
 
@@ -665,9 +641,10 @@ This section defines the next UX/UI milestone to align the app’s visuals and i
 
 ---
 
-# VERSION 8 — Official Game Style Alignment (2025-09-03)
+## VERSION 8 — Official Game Style Alignment (2025-09-03)
 
 ## Visual Style & Component Refactor
+
 - White base (~70%), green main (~25%), orange/pink accent (~5%) for game-like appearance.
 - Motif theming: CSS variables for per-character accent colors (`--motif-primary`, `--motif-accent`, `--motif-bg`).
 - Typography: "M PLUS Rounded 1c" font imported globally.
@@ -679,7 +656,7 @@ This section defines the next UX/UI milestone to align the app’s visuals and i
 
 ---
 
-# UMA MUSUME RACE PLANNER: Design & Implementation Planning (VERSION 9)
+## UMA MUSUME RACE PLANNER: Design & Implementation Planning (VERSION 9)
 
 ## Mechanics-Driven Color and Layout Integration (2025-09-03)
 
@@ -693,8 +670,8 @@ This section defines the next UX/UI milestone to align the app’s visuals and i
 - Accessibility: ARIA labels, keyboard navigation, WCAG AA contrast, 44px+ touch targets
 
 **Validation:**
+
 - All components use mechanics-driven color system
 - Animations respect reduced motion
 - Accessibility audit complete
 - Mobile layout and touch targets validated
-

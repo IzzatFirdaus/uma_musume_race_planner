@@ -30,7 +30,12 @@ if (!isset($bonus)) $bonus = null; // optional bonus display
             'recovery' => '💧',
             'context' => '🔄'
           ];
-          echo $typeIcons[$type] ?? '';
+          // Only index the array when $type is a valid scalar key
+          if (is_scalar($type) && array_key_exists((string)$type, $typeIcons)) {
+            echo $typeIcons[(string)$type];
+          } else {
+            echo '';
+          }
         ?>
       </span>
       <button type="button" class="btn btn-sm button-pill v8-animated-pill v8-tap-feedback btn-view-skill" aria-label="View <?= htmlspecialchars($name) ?>">View</button>
