@@ -1,62 +1,56 @@
->>>>>>> chore/git-setup
-# Uma Musume Race Planner - Git ignore
+# Uma Musume Race Planner - cleaned .gitignore
 
-# Environment and secrets
+# Environment and local secrets
 .env
 .env.local
 includes/env.php
 
-# Runtime logs and error files
+# Logs and runtime
 /logs/
 *.log
+
+# Uploads: ignore runtime uploads but keep app logo assets tracked
+/uploads/
+!uploads/app_logo/
+!uploads/app_logo/*.png
+!uploads/app_logo/*.ico
+
+# Temporary and cache
+/tmp/
+tmp/
+*.tmp
+*.bak
+*.swp
 
 # Node
 node_modules/
 npm-debug.log*
 package-lock.json
-
-# OS / Editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
+yarn.lock
 
 # Build / Dist
-dist/
-build/
-
-# Uploaded assets: ignore runtime uploads but keep app logo files tracked
-uploads/
-!uploads/app_logo/
-!uploads/app_logo/*.png
-!uploads/app_logo/*.ico
-
-# Temporary files
-/tmp/
-tmp/
-
-# Composer dependencies and cache (uncomment /vendor/ if you want to ignore vendor)
-# vendor/
-composer.lock
-
-# Test / Coverage
-coverage/
-phpunit.result.cache
-
-# Node and frontend build artifacts
-/node_modules/
 /dist/
 /build/
-npm-debug.log*
-package-lock.json
 
-# OS / Editor
+# Composer dependencies (optional - if you vendor dependencies, uncomment)
+# /vendor/
+# Keep composer.lock tracked
+
+# OS / Editor files
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
+*.iml
+
+# Test / Coverage
+/coverage/
+phpunit.result.cache
+phpunit.xml
+phpunit.xml.dist
+phpunit.xml.cache
 
 # Database dumps / backups
 *.sql
@@ -64,72 +58,16 @@ Thumbs.db
 *.backup
 backup/
 
-# Test / Coverage
-coverage/
-phpunit.result.cache
-phpunit.xml.cache
-
-# Temp and swap files
-*.tmp
-*.bak
-*.swp
-
-# Ignore generated JS bundles or minified scripts
+# Generated assets
 *.min.js
 *.bundle.js
+*.map
 
-# Backup archives
+# Archives
 *.zip
 *.tar.gz
+*.7z
 
-# PHPStorm specific
-*.iml
+# Composer dependencies (vendor directory should generally be ignored when using composer install)
+/vendor/
 
-# Optional local test config
-phpunit.xml
-phpunit.xml.dist
-# Node and frontend build artifacts
-/node_modules/
-/dist/
-/build/
-npm-debug.log*
-package-lock.json
-
-# OS / Editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# Database dumps / backups
-*.sql
-*.sql.gz
-*.backup
-backup/
-
-# Test / Coverage
-coverage/
-phpunit.result.cache
-phpunit.xml.cache
-
-# Temp and swap files
-*.tmp
-*.bak
-*.swp
-
-# Ignore generated JS bundles or minified scripts
-*.min.js
-*.bundle.js
-
-# Backup archives
-*.zip
-*.tar.gz
-
-# PHPStorm specific
-*.iml
-
-# Optional local test config
-phpunit.xml
-phpunit.xml.dist
