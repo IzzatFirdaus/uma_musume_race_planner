@@ -173,15 +173,20 @@ try {
 
   <?php require_once __DIR__ . '/components/footer.php'; ?>
 
-  <div class="modal fade" id="messageBoxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="messageBoxModal" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="messageBoxLabel">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-body text-center alert alert-success mb-0" id="messageBoxBody"></div>
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="messageBoxLabel">Message</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center alert alert-success mb-0" id="messageBoxBody" aria-live="polite"></div>
       </div>
     </div>
   </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/a11y.js"></script>
   <?php require_once __DIR__ . '/components/copy_to_clipboard.php'; ?>
   <script src="js/autosuggest.js"></script>
 
@@ -873,7 +878,6 @@ try {
                     console.warn('Failed to preload skill reference:', e);
                 }
             })();
-+
             updateStats();
             updateRecentActivity();
 </script>
