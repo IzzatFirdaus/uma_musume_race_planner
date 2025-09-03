@@ -31,12 +31,11 @@ try {
     // Keep logging minimal but informative for local debugging.
     $msg = method_exists($e, 'getMessage') ? $e->getMessage() : (string) $e;
     error_log('Database connection failed: ' . $msg);
-    // Safe JSON response for consumers
-    http_response_code(200);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Database connection failed. Please check server logs.',
-    ]);
-    // Ensure no further execution when required
-    exit(1);
+
+    // Return a dummy PDO-like object so callers that wrap queries in try/catch can handle gracefully.
+    // This avoids hard exits in pages like index.php during UI tests or offline development.
+    return new class {
+        public function query($sql) { throw new Exception('Database unavailable'); }
+        public function prepare($sql) { throw new Exception('Database unavailable'); }
+    };
 }

@@ -75,13 +75,22 @@ $conditionOptions = $conditionOptions ?? [];
 
                     <div class="tab-content pt-3">
                         <!-- Version-6: compact plan summary strip (populated by existing JS) -->
-                        <div id="planSummaryStrip" class="mb-3" aria-hidden="false">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="small text-muted">Turn: <strong id="summaryTurn">-</strong></div>
-                                <div class="small text-muted">SP: <strong id="summarySP">-</strong></div>
-                                <div class="ms-auto small text-muted" id="summaryRace">&nbsp;</div>
-                            </div>
-                        </div>
+                                                <div id="planSummaryStrip" class="mb-3" aria-hidden="false">
+                                                        <div class="d-flex align-items-center gap-3 flex-wrap" aria-live="polite">
+                                                                        <div class="small text-muted">Turn: <strong id="summaryTurn">-</strong></div>
+                                                                        <div class="small text-muted">SP: <strong id="summarySP">-</strong></div>
+                                                                        <div class="small">
+                                                                            <span class="v9-status-pill" id="summaryCountdown" title="Turns before next race" role="status">
+                                                                                <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>
+                                                                                <span>T-<b id="summaryTurns">0</b></span>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="small">
+                                                                            <span class="badge" id="summaryRisk" title="Estimated training failure risk" role="status">Risk: <b id="summaryRiskLevel">Low</b></span>
+                                                                        </div>
+                                                                        <div class="ms-auto small text-muted" id="summaryRace" aria-hidden="false">&nbsp;</div>
+                                                                </div>
+                                                </div>
                         <div class="tab-pane fade show active" id="general" role="tabpanel"
                             aria-labelledby="general-tab">
                             <div class="row mb-3">
@@ -569,5 +578,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // proceed with normal submit (handled elsewhere via AJAX possibly)
     });
+
+    // V9: Live update countdown and risk
+    function updateSummaryPills() {
+        const turns = parseInt(document.getElementById('modalTurnBefore').value || '0', 10);
+        const energy = parseInt(document.getElementById('energyRange').value || '0', 10);
+        document.getElementById('summaryTurns').textContent = isNaN(turns) ? '0' : String(turns);
+        // Risk level based on energy (simplified heuristic)
+        let risk = 'Low';
+        let riskClass = 'bg-success';
+        if (energy < 35) { risk = 'High'; riskClass = 'bg-danger'; }
+        else if (energy < 65) { risk = 'Med'; riskClass = 'bg-warning text-dark'; }
+        const riskBadge = document.getElementById('summaryRisk');
+        const riskLevel = document.getElementById('summaryRiskLevel');
+        riskBadge.className = 'badge ' + riskClass;
+        riskLevel.textContent = risk;
+    }
+    document.getElementById('modalTurnBefore').addEventListener('input', updateSummaryPills);
+    document.getElementById('energyRange').addEventListener('input', function(e){
+        document.getElementById('energyValue').textContent = e.target.value;
+        updateSummaryPills();
+    });
+    updateSummaryPills();
 });
 </script>
