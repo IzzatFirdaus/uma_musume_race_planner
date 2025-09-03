@@ -407,7 +407,7 @@ Total SP: 340
 | Turn History Timeline  | Career progression replay       | [ ]      |
 | Avatars/Support Icons  | Game-like personalization       | [ ]      |
 | AI Skill Suggestions   | SP/training optimization        | [ ]      |
-| Animated Interactions  | Feedback and polish             | [x] Base |
+| Animated Interactions  | Feedback and polish            | [x] Base |
 | Excel Export           | Data sharing/analysis           | [x]      |
 
 ## 11. Summary
@@ -662,4 +662,18 @@ This section defines the next UX/UI milestone to align the app’s visuals and i
 - Mobile users complete planning tasks quickly and easily (thumb reach tests).
 - Accessibility audits pass (contrast, navigation, focus management).
 - Session recordings and user feedback indicate higher engagement.
+
+---
+
+# VERSION 8 — Official Game Style Alignment (2025-09-03)
+
+## Visual Style & Component Refactor
+- White base (~70%), green main (~25%), orange/pink accent (~5%) for game-like appearance.
+- Motif theming: CSS variables for per-character accent colors (`--motif-primary`, `--motif-accent`, `--motif-bg`).
+- Typography: "M PLUS Rounded 1c" font imported globally.
+- Components refactored: stat bar, skill card, plan card, modal, sidebar, export UI, trainee image widget, navbar, footer, recent activity, skill row, copy-to-clipboard.
+- New V8 classes: `.v8-plan-card`, `.v8-gradient-text`, `.v8-animated-pill`, `.v8-modal-content`, `.v8-tap-feedback`, `.v8-stat-bar`, `.v8-skill-card`.
+- Tap feedback: animated ripple effect for buttons, respects reduced motion.
+- Accessibility: ARIA, keyboard navigation, WCAG AA contrast, touch targets ≥44px.
+- Milestone status: Core palette, font, stat bars, pill buttons, modals, sidebar, tap feedback, and accessibility audit in progress.
 

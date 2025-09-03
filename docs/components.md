@@ -139,25 +139,29 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 
 ---
 
-## VERSION 8 — Official Game Style Alignment (Planning)
+## VERSION 8 — Official Game Style Alignment (2025-09-03)
 
-Goals:
-- Adopt rounded typography (M PLUS Rounded 1c) and increase white space with green primary and orange/pink accents.
-- Prepare character motif theming via CSS variables for per-plan accent colors.
-- Upgrade components to use gradient fills, soft shadows, and pill shapes while preserving accessibility.
+**Summary:**
+- Adopted predominantly white base, green main, orange/pink accent for game-like appearance.
+- UI color schemes now adapt to each Uma Musume’s motif using CSS variables (`--motif-primary`, `--motif-accent`, `--motif-bg`).
+- Added gradient text, outlines, glowing effects for badges and emphasis.
+- Stat bars and badges use iconic colors: blue (Speed), green (Stamina), red (Power), orange (Guts), purple (Wit).
+- Refactored components to use V8 classes: `.v8-plan-card`, `.v8-gradient-text`, `.v8-animated-pill`, `.v8-modal-content`, `.v8-tap-feedback`, `.v8-stat-bar`, `.v8-skill-card`.
+- Tap feedback and animated icons added for interactive elements; ripple effect respects reduced motion.
+- Accessibility: ARIA labels, keyboard navigation, WCAG AA contrast, touch targets ≥44px.
+- Milestone status: Core palette, font, stat bars, pill buttons, modals, sidebar, tap feedback, and accessibility audit in progress.
 
-Component targets:
-- `x-stat-bar.php`: gradient progress (tint→solid), numeric overlay, bold label; `prefers-reduced-motion` fallback.
-- `x-skill-card.php`: rarity/type badge with colored tag; consistent paddings and compact mobile layout.
-- `x-card.php` (Plan Card): thumbnail slot, left stats/right goals layout, motif-accent border.
-- `x-modal-preview.php` (Dialog): two vertical sizes, consistent paddings, focus traps and ARIA.
-- Sidebar/Menu (navbar.php): icon-labeled sections, pastel group panels.
+**Changelog:**
+- `css/style.css`: updated with new color variables, gradient utilities, and soft shadow effects.
+- `css/theme_v6.css`: deprecated; merged into `css/style.css`.
+- `index.php`/`header.php`: Google Font import for "M PLUS Rounded 1c"; removed old font imports.
+- Components:
+  - `x-stat-bar.php`: gradient progress (tint→solid), numeric overlay, bold label; `prefers-reduced-motion` fallback.
+  - `x-skill-card.php`: rarity/type badge with colored tag; consistent paddings and compact mobile layout.
+  - `x-card.php` (Plan Card): thumbnail slot, left stats/right goals layout, motif-accent border.
+  - `x-modal-preview.php` (Dialog): two vertical sizes, consistent paddings, focus traps and ARIA.
+  - Sidebar/Menu (navbar.php): icon-labeled sections, pastel group panels.
 
-Implementation notes:
-- Add Google Font import for "M PLUS Rounded 1c" in `index.php`/`header.php`.
-- Extend `css/style.css` and/or `css/theme_v6.css` with gradient utilities and motif variables: `--motif-primary`, `--motif-accent`, `--motif-bg`.
-- JS: add tap feedback ripple class and micro-animation utilities; respect reduced motion.
-
-Validation:
+**Validation:**
 - Thumb reach on mobile, WCAG AA contrast, keyboard navigation across dialogs/tabs.
 - No reliance on copyrighted assets; only inspired shapes/colors/styles.

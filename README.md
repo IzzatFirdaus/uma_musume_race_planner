@@ -259,3 +259,17 @@ MIT License © 2025
 This repository tracks design and implementation history in `APPLICATION_PLANNING.md`. The file contains versioned design iterations (VERSION 1 → VERSION 7) and the next milestone plan (VERSION 8 – Official Game Style Alignment). Use it to review decisions, proposed tasks, and next steps as the project evolves.
 
 See also `docs/components.md` for component-level notes and the VERSION 6/7/8 changelogs.
+
+---
+
+## 🏁 VERSION 8 — Official Game Style Alignment (2025-09-03)
+
+**What's new:**
+- Visual style: white base, green main, orange/pink accent, game-inspired gradients and drop shadows.
+- Motif theming: CSS variables for per-character accent colors (`--motif-primary`, `--motif-accent`, `--motif-bg`).
+- Typography: "M PLUS Rounded 1c" font imported globally.
+- Components refactored: stat bar, skill card, plan card, modal, sidebar, export UI, trainee image widget, navbar, footer, recent activity, skill row, copy-to-clipboard.
+- New V8 classes: `.v8-plan-card`, `.v8-gradient-text`, `.v8-animated-pill`, `.v8-modal-content`, `.v8-tap-feedback`, `.v8-stat-bar`, `.v8-skill-card`.
+- Tap feedback: animated ripple effect for buttons, respects reduced motion.
+- Accessibility: ARIA, keyboard navigation, WCAG AA contrast, touch targets ≥44px.
+- Milestone status: Core palette, font, stat bars, pill buttons, modals, sidebar, tap feedback, and accessibility audit in progress.
