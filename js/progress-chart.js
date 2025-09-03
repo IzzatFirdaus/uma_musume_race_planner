@@ -1,3 +1,37 @@
+// Tiny wrapper for plan detail charts, providing a stable API used by plan_details_modal.php
+(function(){
+  'use strict';
+  if (!window.ProgressChart) {
+    window.ProgressChart = {
+      attach(opts) {
+        const cfg = Object.assign({
+          canvasSelector: '#growthChart',
+          messageSelector: '#growthChartMessage',
+          tabSelector: '#progress-chart-tab',
+          planIdSelector: '#planId'
+        }, opts || {});
+
+        function getEl(sel) { return document.querySelector(sel); }
+        function render() {
+          const planIdEl = getEl(cfg.planIdSelector);
+          const id = planIdEl && planIdEl.value;
+          if (!id || !window.Chart) return;
+          // The heavy lifting is implemented inline in plan_details_modal; this wrapper exists for API parity.
+          const event = new Event('render-progress-chart');
+          (getEl(cfg.tabSelector) || document).dispatchEvent(event);
+        }
+
+        // Render when tab is shown
+        const tab = getEl(cfg.tabSelector);
+        if (tab) {
+          tab.addEventListener('shown.bs.tab', render);
+        }
+
+        return { loadAndRender: render };
+      }
+    };
+  }
+})();
 // js/progress-chart.js
 // Lightweight chart initializer that renders growth chart using Chart.js
 (function () {

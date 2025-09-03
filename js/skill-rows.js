@@ -1,3 +1,36 @@
+// Minimal SkillRows helper to avoid console errors and provide serialization hook.
+// If a richer implementation is needed later, this can be expanded safely.
+(function(){
+  'use strict';
+  if (!window.SkillRows) {
+    window.SkillRows = {
+      serialize(container) {
+        // Find table within container and build JSON array of rows
+        try {
+          const rows = Array.from(container.querySelectorAll('tbody tr'))
+            .filter(tr => !tr.classList.contains('skill-context-row'))
+            .map(tr => ({
+              skill_name: tr.querySelector('.skill-name-input')?.value?.trim() || '',
+              sp_cost: tr.querySelector('.skill-sp-cost-input')?.value || '0',
+              acquired: tr.querySelector('.skill-acquired-checkbox')?.checked ? 'yes' : 'no',
+              tag: tr.querySelector('.skill-tag-select')?.value || '',
+              notes: tr.querySelector('.skill-notes-input')?.value?.trim() || ''
+            }));
+          let hidden = container.querySelector('input[name="skills_json"]');
+          if (!hidden) {
+            hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'skills_json';
+            container.appendChild(hidden);
+          }
+          hidden.value = JSON.stringify(rows);
+        } catch (e) {
+          // Graceful no-op on error
+        }
+      }
+    };
+  }
+})();
 // js/skill-rows.js
 // Minimal manager for skill rows: add, remove, and serialize into a hidden input.
 (function () {
