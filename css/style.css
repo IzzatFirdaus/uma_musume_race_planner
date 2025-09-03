@@ -4,7 +4,6 @@
    Features: Theming, Dark Mode, Stat Visualization, Dynamic Backgrounds, Frosted Glass Effect
 /* ------------------------------
    VERSION 8: Plan Card & Modal Polish
------------------------------- */
 .v8-plan-card {
   background: var(--gradient-card);
   box-shadow: var(--shadow-card);
@@ -77,6 +76,115 @@
   filter: brightness(0.92) drop-shadow(0 0 8px var(--motif-accent));
   transform: scale(0.97);
 }
+/* V9: Horizontal stat panel and stat item utilities */
+.stat-panel {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.25rem;
+}
+.stat-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0; /* allow flex shrink */
+}
+.stat-item .stat-value { font-weight: 700; }
+.stat-item .stat-bonus {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  padding: 0.08rem 0.4rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+/* ------------------------------
+   VERSION 9: Action Bubble/Button Mechanics
+------------------------------ */
+.v9-action-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(47,157,70,0.12), 0 2px 8px rgba(0,0,0,0.08);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--action-bubble-gradient, linear-gradient(135deg, #28a745 0%, #3399ff 100%));
+  border: none;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+  outline: none;
+  position: relative;
+}
+.v9-action-bubble:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 8px rgba(47,157,70,0.18);
+}
+.v9-action-bubble .v9-action-icon {
+  font-size: 2.2rem;
+  margin-right: 0.1em;
+  filter: drop-shadow(0 0 4px #fff5e6);
+}
+.v9-action-bubble .v9-action-label {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.25em;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 4px #28a745;
+}
+.v9-action-bubble.stamina { background: var(--action-stamina-rest); }
+.v9-action-bubble.speed { background: var(--action-speed-training); }
+.v9-action-bubble.power { background: var(--action-power); }
+.v9-action-bubble.guts { background: var(--action-guts); }
+.v9-action-bubble.wit { background: var(--action-wit); }
+
+/* Sticky action bar for mobile */
+.v9-sticky-actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.96);
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+  z-index: 1045;
+  -webkit-backdrop-filter: saturate(140%) blur(6px);
+  backdrop-filter: saturate(140%) blur(6px);
+}
+body.dark-mode .v9-sticky-actions { background: rgba(25,25,25,0.9); }
+@media (min-width: 768px) {
+  .v9-sticky-actions { display: none; }
+}
+
+/* V9: Status pill and countdown badge */
+.v9-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--gradient-countdown);
+  color: #1b4d2b;
+  border: 2px solid #28a745;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(40,167,69,0.15);
+}
+.v9-countdown-badge {
+  display: inline-block;
+  min-width: 32px;
+  text-align: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  background: #ffc107;
+  color: #1b4d2b;
+  font-weight: 800;
+  border: 1px solid #28a745;
+}
 
 /* ------------------------------
    Font Import: "M PLUS Rounded 1c" for rounded, playful UI
@@ -148,6 +256,39 @@
   --motif-primary: #28a745; /* Default: green, override per plan */
   --motif-accent: #fd7e14; /* Default: orange, override per plan */
   --motif-bg: #fff5e6;     /* Default: pastel background, override per plan */
+
+    /* VERSION 9: Mechanics-driven color palette */
+    /* Action Bubble Colors */
+    --action-stamina-rest: #28a745;     /* Green: Stamina/Rest training */
+    --action-speed-training: #3399ff;   /* Blue: Speed training */
+    --action-power: #dc3545;            /* Red: Power training */
+    --action-guts: #fd7e14;             /* Orange: Guts training */
+    --action-wit: #6f42c1;              /* Purple: Wit/Intelligence training */
+
+    /* Skill Type Colors */
+    --skill-corner: #ffc107;            /* Yellow: Corner abilities */
+    --skill-debuff: #dc3545;            /* Red: Debuff skills */
+    --skill-recovery: #17a2b8;          /* Blue: Recovery skills */
+    --skill-context: #28a745;           /* Green: Context buff skills */
+
+    /* Status & Energy Gradients */
+    --gradient-energy-full: linear-gradient(90deg, #fd7e14, #3399ff);
+    --gradient-energy-low: linear-gradient(90deg, #dc3545, #ffc107);
+    --gradient-motivation: linear-gradient(90deg, #6f42c1, #28a745);
+    --gradient-countdown: linear-gradient(90deg, #ffc107, #28a745);
+
+    /* Status Colors */
+    --status-normal: #ffc107; /* Yellow for normal */
+    --status-failure: #3399ff; /* Blue for failure */
+
+    /* Buff/Support Effects */
+    --buff-glow: 0 0 12px 2px #7bd389, 0 0 24px 4px #ffc107;
+    --buff-rainbow: linear-gradient(90deg, #ffc107, #28a745, #3399ff, #fd7e14, #dc3545, #6f42c1);
+
+    /* V9 Motif: character heritage, racing silks */
+    --motif-heritage: #e0e7ff;
+    --motif-accent-heritage: #b4aaff;
+    --motif-bg-heritage: #f5faff;
 
   /* VERSION 8: Gradient utilities for stat bars/buttons */
   --gradient-stat-bar: linear-gradient(90deg, var(--color-stat-speed) 0%, var(--color-stat-stamina) 25%, var(--color-stat-power) 50%, var(--color-stat-guts) 75%, var(--color-stat-wit) 100%);

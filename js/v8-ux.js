@@ -15,6 +15,38 @@
     window.setTimeout(function(){ ripple.remove(); }, 600);
   }
 
+  // V9: Continuous icon animation for action bubbles
+  function animateActionIcons() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.v9-action-bubble .v9-action-icon').forEach(function(icon) {
+      icon.animate([
+        { transform: 'scale(1) rotate(0deg)' },
+        { transform: 'scale(1.08) rotate(8deg)' },
+        { transform: 'scale(1) rotate(0deg)' }
+      ], {
+        duration: 1800,
+        iterations: Infinity,
+        easing: 'ease-in-out'
+      });
+    });
+  }
+
+  // V9: Status change animation (e.g., energy bar pulse)
+  function animateStatusChanges() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.v9-energy-fill').forEach(function(bar) {
+      bar.animate([
+        { boxShadow: '0 0 0 0 #fd7e14' },
+        { boxShadow: '0 0 12px 2px #fd7e14' },
+        { boxShadow: '0 0 0 0 #fd7e14' }
+      ], {
+        duration: 1200,
+        iterations: Infinity,
+        easing: 'ease-in-out'
+      });
+    });
+  }
+
   function bindTapFeedback(root){
     root = root || document;
     var elems = root.querySelectorAll('.v8-tap-feedback');
@@ -35,8 +67,24 @@
     });
   }
 
+  // Apply a training action: expose for other scripts to call
+  function applyTrainingAction(type){
+    try {
+      // Dispatch the same custom event used by v9-action-row
+      document.dispatchEvent(new CustomEvent('v9:action', { detail: { type } }));
+    } catch(e){ console.warn('applyTrainingAction failed', e); }
+  }
+
+  // Make available globally for simple programmatic activation
+  window.UX = window.UX || {};
+  window.UX.applyTrainingAction = applyTrainingAction;
+
   document.addEventListener('DOMContentLoaded', function(){
     bindTapFeedback(document);
+
+    // V9: Animate action icons and status changes
+    animateActionIcons();
+    animateStatusChanges();
 
     // Auto-enhance common export/copy controls so they get tap feedback
     ['#exportPlanBtn', '#downloadTxtLink', '#downloadCsvLink', '#addSkillBtn', '#addPredictionBtn', '#addGoalBtn'].forEach(function(sel){
