@@ -1,4 +1,3 @@
-
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -94,13 +93,13 @@ if (!function_exists('handleTraineeImageUpload')) {
 $id_suffix = $id_suffix ?? '';
 ?>
 
-<div class="col-md-6 mb-3 trainee-image-component">
+<div class="col-md-6 mb-3 trainee-image-component v8-image-component">
     <label for="traineeImageUpload<?php echo $id_suffix; ?>" class="form-label">Trainee Image</label>
     <div class="input-group">
-        <input type="file" class="form-control" id="traineeImageUpload<?php echo $id_suffix; ?>" name="traineeImageUpload" accept="image/jpeg,image/png,image/gif,image/webp">
-        <button class="btn btn-outline-danger" type="button" id="clearTraineeImageBtn<?php echo $id_suffix; ?>" style="display:none;">Clear</button>
+        <input type="file" class="form-control v8-input" id="traineeImageUpload<?php echo $id_suffix; ?>" name="traineeImageUpload" accept="image/jpeg,image/png,image/gif,image/webp">
+        <button class="btn btn-outline-danger v8-animated-pill v8-tap-feedback" type="button" id="clearTraineeImageBtn<?php echo $id_suffix; ?>" style="display:none;">Clear</button>
     </div>
-    <div class="mt-2 text-center border p-2 rounded" id="traineeImagePreviewContainer<?php echo $id_suffix; ?>" style="display: none;">
+    <div class="mt-2 text-center border p-2 rounded v8-image-preview" id="traineeImagePreviewContainer<?php echo $id_suffix; ?>" style="display: none;">
         <img id="traineeImagePreview<?php echo $id_suffix; ?>" src="#" alt="Image Preview" class="img-fluid rounded" style="max-height: 200px; object-fit: contain;">
         <p class="text-muted small mt-1">Max 5MB (JPG, PNG, GIF, WEBP)</p>
     </div>

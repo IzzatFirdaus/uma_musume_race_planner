@@ -11,10 +11,10 @@ $moodOptions = $moodOptions ?? [];
 $conditionOptions = $conditionOptions ?? [];
 ?>
 
-<div id="planInlineDetails" class="card mb-4" style="display: none;">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0" id="planInlineDetailsLabel">🏇 Plan Details</h5>
-        <button type="button" class="btn btn-sm btn-outline-secondary" id="closeInlineDetailsBtn" aria-label="Close inline details">
+<div id="planInlineDetails" class="card mb-4 v8-plan-card" style="display: none;">
+    <div class="card-header d-flex justify-content-between align-items-center v8-gradient-header">
+        <h5 class="mb-0 v8-gradient-text" id="planInlineDetailsLabel">🏇 Plan Details</h5>
+        <button type="button" class="btn btn-sm btn-outline-secondary v8-animated-pill v8-tap-feedback" id="closeInlineDetailsBtn" aria-label="Close inline details">
             <i class="bi bi-x" aria-hidden="true"></i> Close
         </button>
     </div>
@@ -29,36 +29,36 @@ $conditionOptions = $conditionOptions ?? [];
             <!-- Tab navigation for plan sections -->
             <ul class="nav nav-tabs" id="planTabsInline" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="general-tab-inline" data-bs-toggle="tab"
+                    <button class="nav-link active v8-animated-pill v8-tap-feedback" id="general-tab-inline" data-bs-toggle="tab"
                         data-bs-target="#general-inline" type="button" role="tab" aria-controls="general-inline"
                         aria-selected="true">General</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="attributes-tab-inline" data-bs-toggle="tab"
+                    <button class="nav-link v8-animated-pill v8-tap-feedback" id="attributes-tab-inline" data-bs-toggle="tab"
                         data-bs-target="#attributes-inline" type="button" role="tab"
                         aria-controls="attributes-inline" aria-selected="false">Attributes</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="grades-tab-inline" data-bs-toggle="tab" data-bs-target="#grades-inline"
+                    <button class="nav-link v8-animated-pill v8-tap-feedback" id="grades-tab-inline" data-bs-toggle="tab" data-bs-target="#grades-inline"
                         type="button" role="tab" aria-controls="grades-inline" aria-selected="false">Aptitude
                         Grades</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="skills-tab-inline" data-bs-toggle="tab" data-bs-target="#skills-inline"
+                    <button class="nav-link v8-animated-pill v8-tap-feedback" id="skills-tab-inline" data-bs-toggle="tab" data-bs-target="#skills-inline"
                         type="button" role="tab" aria-controls="skills-inline"
                         aria-selected="false">Skills</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="predictions-tab-inline" data-bs-toggle="tab"
+                    <button class="nav-link v8-animated-pill v8-tap-feedback" id="predictions-tab-inline" data-bs-toggle="tab"
                         data-bs-target="#predictions-inline" type="button" role="tab"
                         aria-controls="predictions-inline" aria-selected="false">Race Predictions</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="goals-tab-inline" data-bs-toggle="tab" data-bs-target="#goals-inline"
+                    <button class="nav-link v8-animated-pill v8-tap-feedback" id="goals-tab-inline" data-bs-toggle="tab" data-bs-target="#goals-inline"
                         type="button" role="tab" aria-controls="goals-inline" aria-selected="false">Goals</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="progress-chart-tab-inline" data-bs-toggle="tab"
+                    <button class="nav-link v8-animated-pill v8-tap-feedback" id="progress-chart-tab-inline" data-bs-toggle="tab"
                         data-bs-target="#progress-chart-inline" type="button" role="tab"
                         aria-controls="progress-chart-inline" aria-selected="false">Progress Chart</button>
                 </li>

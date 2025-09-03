@@ -9,6 +9,14 @@ $theme_color = getenv('APP_THEME_COLOR') ?: '#6f42c1'; // Fallback to default pu
 <link rel="icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png" sizes="256x256">
 <link rel="apple-touch-icon" href="uploads/app_logo/uma_musume_race_planner_logo_256.png">
 
+<!-- Google Fonts: M PLUS Rounded 1c -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  html, body {
+    font-family: 'M PLUS Rounded 1c', 'Figtree', 'Segoe UI', 'Tahoma', 'Verdana', sans-serif;
+  }
+</style>
+
 
 <style>
   :root {
@@ -46,6 +54,22 @@ $theme_color = getenv('APP_THEME_COLOR') ?: '#6f42c1'; // Fallback to default pu
     <p class="lead">Plan, track, and optimize your umamusume's racing career</p>
   </div>
 </div>
+
+<!-- V8: M PLUS Rounded 1c font + motif CSS variables and V8 UX script -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --motif-primary: <?= htmlspecialchars(getenv('APP_THEME_COLOR') ?: '#2f9d46') ?>;
+  --motif-accent: #ff7aa2;
+  --motif-bg: #ffffff;
+  --gradient-button: linear-gradient(90deg, var(--motif-primary), #7bd389);
+  --gradient-card: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(250,250,250,0.95));
+}
+body { font-family: 'M PLUS Rounded 1c', Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+</style>
+<script src="js/v8-ux.js" defer></script>
 
 <!-- Load skill rows manager (lightweight) -->
 <script src="js/skill-rows.js"></script>

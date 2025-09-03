@@ -4,13 +4,13 @@
 ?>
 
 <div id="planListContainer">
-  <div class="card shadow-sm mb-4" aria-labelledby="plans-heading">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 id="plans-heading" class="mb-0">
+  <div class="card shadow-sm mb-4 v8-plan-card" aria-labelledby="plans-heading">
+    <div class="card-header d-flex justify-content-between align-items-center v8-gradient-header">
+      <h5 id="plans-heading" class="mb-0 v8-gradient-text">
         <i class="bi bi-card-checklist me-2" aria-hidden="true"></i>
         Your Race Plans
       </h5>
-      <button class="btn btn-sm button-pill" id="createPlanBtn" aria-label="Create new plan">
+      <button class="btn btn-sm button-pill v8-animated-pill v8-tap-feedback" id="createPlanBtn" aria-label="Create new plan">
         <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Create New
       </button>
     </div>
@@ -18,10 +18,10 @@
     <div class="card-body p-3">
       <div class="plan-filters mb-3" role="tablist" aria-label="Plan filters">
         <div id="plan-filter-buttons" class="d-flex" role="group">
-          <button type="button" class="tab-pill active" data-filter="all" aria-pressed="true">All</button>
-          <button type="button" class="tab-pill" data-filter="Active" aria-pressed="false">Active</button>
-          <button type="button" class="tab-pill" data-filter="Planning" aria-pressed="false">Planning</button>
-          <button type="button" class="tab-pill" data-filter="Finished" aria-pressed="false">Finished</button>
+          <button type="button" class="tab-pill active v8-animated-pill v8-tap-feedback" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="tab-pill v8-animated-pill v8-tap-feedback" data-filter="Active" aria-pressed="false">Active</button>
+          <button type="button" class="tab-pill v8-animated-pill v8-tap-feedback" data-filter="Planning" aria-pressed="false">Planning</button>
+          <button type="button" class="tab-pill v8-animated-pill v8-tap-feedback" data-filter="Finished" aria-pressed="false">Finished</button>
         </div>
       </div>
 
@@ -47,22 +47,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!planGrid || !filterButtonGroup) return;
 
   // Inject dynamic CSS styles for stat bars and thumbnails
-  const style = document.createElement('style');
-  style.textContent = `
-    .plan-list-thumbnail-container { width: 64px; height: 64px; border-radius: .5rem; overflow: hidden; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-    .plan-list-thumbnail { width:100%; height:100%; object-fit:cover; display:block; }
-    .plan-list-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#e9ecef; border-radius:.5rem; font-size:1.25rem; color:#adb5bd; }
-    body.dark-mode .plan-list-placeholder { background-color: rgba(255,255,255,0.04); color: var(--color-text-muted-dark); }
-    .plan-stat-bars { display:flex; gap:.5rem; margin-top:.5rem; align-items:center; }
-    .card-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
-    @media(min-width:768px){ .card-grid{ grid-template-columns:1fr 1fr; } }
-    .plan-card { padding:1rem; display:flex; gap:1rem; align-items:center; background: #fff; border-radius:.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-    .plan-card .meta { flex:1; }
-    .plan-card .actions { display:flex; gap:.5rem; }
-    .tab-pill { border-radius: 999px; background:#f6f6fa; color:#333; padding:.35rem .75rem; font-weight:500; margin-right:.5rem; border: none; }
-    .tab-pill[aria-pressed="true"]{ background: var(--color-stat-speed); color:#fff; }
-  `;
-  document.head.appendChild(style);
+    const style = document.createElement('style');
+    style.textContent = `
+      .plan-list-thumbnail-container { width: 64px; height: 64px; border-radius: .5rem; overflow: hidden; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+      .plan-list-thumbnail { width:100%; height:100%; object-fit:cover; display:block; }
+      .plan-list-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#e9ecef; border-radius:.5rem; font-size:1.25rem; color:#adb5bd; }
+      body.dark-mode .plan-list-placeholder { background-color: rgba(255,255,255,0.04); color: var(--color-text-muted-dark); }
+      .plan-stat-bars { display:flex; gap:.5rem; margin-top:.5rem; align-items:center; }
+      .card-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
+      @media(min-width:768px){ .card-grid{ grid-template-columns:1fr 1fr; } }
+      .plan-card { padding:1rem; display:flex; gap:1rem; align-items:center; background: var(--gradient-card, #fff); border-radius:1rem; box-shadow: var(--shadow-card, 0 4px 12px rgba(0,0,0,0.04)); }
+      .plan-card .meta { flex:1; }
+      .plan-card .actions { display:flex; gap:.5rem; }
+      .tab-pill, .button-pill { border-radius: 999px; font-weight:600; box-shadow: var(--shadow-button, 0 2px 8px rgba(0,0,0,0.06)); border: none; }
+      .button-pill { padding:.5rem 1.25rem; background: var(--gradient-button, linear-gradient(90deg, #28a745, #fd7e14)); color:#fff; transition: background 0.2s, box-shadow 0.2s; }
+      .button-pill:hover { background: linear-gradient(90deg, var(--color-stat-power), var(--color-stat-guts)); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+      .tab-pill { background: #f6f6fa; color: #333; padding:.35rem .75rem; margin-right:.5rem; transition: background 0.2s; }
+      .tab-pill.active, .tab-pill[aria-pressed="true"]{ background: var(--motif-primary, var(--color-stat-speed)); color:#fff; }
+      .stat-mini-bar { height:8px; border-radius:6px; background: var(--gradient-stat-bar, #eee); overflow:hidden; }
+      .new-badge { font-weight:700; color:#fff; background: var(--color-stat-power); border-radius:999px; padding:0.2em 0.7em; box-shadow: var(--glow-new, 0 0 8px 2px #ffb347, 0 0 16px 4px #fff); font-size:0.85em; margin-left:0.5em; }
+    `;
+    document.head.appendChild(style);
 
   /**
    * Creates a mini progress bar based on the stat value
@@ -71,20 +76,22 @@ document.addEventListener('DOMContentLoaded', () => {
    * @returns {string} HTML string for the stat bar.
    */
   function createMiniStatBar(value, statName) {
-    const percent = Math.min((value / 1200) * 100, 100);
-    // Directly use CSS variables defined in style.css for consistency
-    const statColors = {
-      speed: 'var(--color-stat-speed)',    // Updated to --color-stat-speed
-      stamina: 'var(--color-stat-stamina)', // Updated to --color-stat-stamina
-      power: 'var(--color-stat-power)',    // Updated to --color-stat-power
-      guts: 'var(--color-stat-guts)',      // Updated to --color-stat-guts
-      wit: 'var(--color-stat-wit)'        // Updated to --color-stat-wit
-    };
-    return `
-      <div class="stat-mini" title="${statName.charAt(0).toUpperCase() + statName.slice(1)}: ${value}" style="flex:1;">
-        <div style="width:100%; height:8px; background:#eee; border-radius:6px; overflow:hidden;"><div style="width:${percent}%; height:100%; background:${statColors[statName]}; transition:width 260ms ease;"></div></div>
-      </div>
-    `;
+      const percent = Math.min((value / 1200) * 100, 100);
+      // Use gradient for stat bar background, overlay color for fill
+      const statColors = {
+        speed: 'var(--color-stat-speed)',
+        stamina: 'var(--color-stat-stamina)',
+        power: 'var(--color-stat-power)',
+        guts: 'var(--color-stat-guts)',
+        wit: 'var(--color-stat-wit)'
+      };
+      return `
+        <div class="stat-mini" title="${statName.charAt(0).toUpperCase() + statName.slice(1)}: ${value}" style="flex:1;">
+          <div class="stat-mini-bar" style="width:100%;">
+            <div style="width:${percent}%; height:100%; background:${statColors[statName]}; transition:width 260ms cubic-bezier(.4,0,.2,1);"></div>
+          </div>
+        </div>
+      `;
   }
 
   /**
