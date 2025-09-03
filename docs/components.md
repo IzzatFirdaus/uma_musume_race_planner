@@ -165,3 +165,31 @@ For full roadmap and design history, see `APPLICATION_PLANNING.md`.
 **Validation:**
 - Thumb reach on mobile, WCAG AA contrast, keyboard navigation across dialogs/tabs.
 - No reliance on copyrighted assets; only inspired shapes/colors/styles.
+
+---
+
+## VERSION 9 — Mechanics-Driven Color and Layout Integration (2025-09-03)
+
+**Summary:**
+- Color-coded action bubbles for training mechanics (stamina, speed, power, guts, wit)
+- Status bar and event countdown with animated gradients
+- Stat panels with color-coded stats and bonus overlays
+- Skill cards with type color differentiation and bonus badges
+- Energy/motivation gauge with animated transitions
+- Responsive, thumb-friendly layout for mobile (footer actions, touch targets)
+- Animation logic for tap feedback, status changes, continuous icon movement
+- Accessibility: ARIA labels, keyboard navigation, WCAG AA contrast, 44px+ touch targets
+
+**Changelog:**
+- `css/style.css`: added V9 color variables, gradients, and action bubble/button classes
+- `components/stats-panel.php`: horizontal stat panel with color and bonus overlays
+- `components/x-skill-card.php`: skill type color and bonus overlays
+- `components/header.php`: energy/motivation gauge
+- `components/footer.php`: thumb-friendly action row
+- `js/v8-ux.js`: V9 animation logic for tap feedback, status, icons
+
+**Validation:**
+- All components use mechanics-driven color system
+- Animations respect reduced motion
+- Accessibility audit complete
+- Mobile layout and touch targets validated

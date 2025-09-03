@@ -273,3 +273,20 @@ See also `docs/components.md` for component-level notes and the VERSION 6/7/8 ch
 - Tap feedback: animated ripple effect for buttons, respects reduced motion.
 - Accessibility: ARIA, keyboard navigation, WCAG AA contrast, touch targets ≥44px.
 - Milestone status: Core palette, font, stat bars, pill buttons, modals, sidebar, tap feedback, and accessibility audit in progress.
+
+---
+
+## VERSION 9 — Mechanics-Driven Color and Layout Integration (2025-09-03)
+
+**What's new:**
+- Color-coded action bubbles for training mechanics
+- Animated status bar and energy/motivation gauge
+- Stat panels with color-coded stats and bonus overlays
+- Skill cards with type color differentiation and bonus badges
+- Responsive, thumb-friendly layout for mobile
+- Animation logic for tap feedback, status changes, continuous icon movement
+- Accessibility: ARIA labels, keyboard navigation, WCAG AA contrast, 44px+ touch targets
+
+**Milestone status:**
+- Core palette, stat panels, action bubbles, skill cards, energy gauge, animation, accessibility: complete
+- Documentation updated
