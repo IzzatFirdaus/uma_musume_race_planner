@@ -1,0 +1,60 @@
+PLAN 1
+
+TURN BEFORE
+12
+
+RACE
+Kyodo News Hai
+
+Name
+[El☆Número 1] El Condor Pasa
+Junior Year EARLY AUG
+BEGINNER
+
+Attribute
+SPEED
+500
+A+
+STAMINA
+400
+B+
+POWER
+300
+B
+GUTS
+200
+C
+WIT
+100
+D
+
+Skill Name
+Tackle
+10
+✅
+Great early-game skill
+
+TOTAL AVAILABLE SKILL POINTS
+75
+
+ACQUIRE SKILL?
+YES
+
+ENERGY
+80
+
+GOAL
+TOP 5
+
+GROWTH RATE
+SPEED
+20
+STAMINA
+0
+POWER
+0
+GUTS
+0
+WIT
+10
+
