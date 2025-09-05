@@ -168,12 +168,18 @@
         }
 
         function renderAttributes(attributes) {
-            if (!attrsContainer) return;
-            attrsContainer.innerHTML = '';
-            if (!attributes.length) {
-                attrsContainer.innerHTML = '<p class="text-muted mb-0">No attributes available.</p>';
-                return;
-            }
+                        if (!attrsContainer) return;
+                        attrsContainer.innerHTML = '';
+                        if (!attributes.length) {
+                                attrsContainer.innerHTML = `
+                                    <div class="d-flex flex-column align-items-center justify-content-center p-4">
+                                        <i class="bi bi-bar-chart-line" style="font-size:2.5rem;color:var(--color-muted);" aria-hidden="true"></i>
+                                        <div class="mt-2 mb-1 fs-5 text-muted">No attributes available</div>
+                                        <div class="mb-2 text-muted">This plan has no attribute data yet.</div>
+                                    </div>
+                                `;
+                                return;
+                        }
             // Render as compact list for view-only
             const list = document.createElement('div');
             list.className = 'row g-2';
@@ -234,12 +240,22 @@
         }
 
         function renderSkills(skills) {
-            if (!skillsTableBody) return;
-            skillsTableBody.innerHTML = '';
-            if (!skills.length) {
-                skillsTableBody.innerHTML = `<tr><td colspan="6" class="text-muted text-center">No skills available.</td></tr>`;
-                return;
-            }
+                        if (!skillsTableBody) return;
+                        skillsTableBody.innerHTML = '';
+                        if (!skills.length) {
+                                skillsTableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="6" class="text-center p-4">
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <i class="bi bi-lightbulb" style="font-size:2rem;color:var(--color-muted);" aria-hidden="true"></i>
+                                                <div class="mt-2 mb-1 fs-6 text-muted">No skills available</div>
+                                                <div class="mb-2 text-muted">This plan has no skills assigned yet.</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                                return;
+                        }
             skills.forEach((s) => {
                 const tr = document.createElement('tr');
                 const acquired = (String(s.acquired || '').toLowerCase() === 'yes') ? '✅' : '❌';
@@ -256,12 +272,22 @@
         }
 
         function renderPredictions(predictions) {
-            if (!predictionsTableBody) return;
-            predictionsTableBody.innerHTML = '';
-            if (!predictions.length) {
-                predictionsTableBody.innerHTML = `<tr><td colspan="13" class="text-muted text-center">No predictions available.</td></tr>`;
-                return;
-            }
+                        if (!predictionsTableBody) return;
+                        predictionsTableBody.innerHTML = '';
+                        if (!predictions.length) {
+                                predictionsTableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="13" class="text-center p-4">
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <i class="bi bi-search" style="font-size:2rem;color:var(--color-muted);" aria-hidden="true"></i>
+                                                <div class="mt-2 mb-1 fs-6 text-muted">No predictions available</div>
+                                                <div class="mb-2 text-muted">No race predictions have been generated for this plan.</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                                return;
+                        }
             predictions.forEach((p) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -284,12 +310,22 @@
         }
 
         function renderGoals(goals) {
-            if (!goalsTableBody) return;
-            goalsTableBody.innerHTML = '';
-            if (!goals.length) {
-                goalsTableBody.innerHTML = `<tr><td colspan="3" class="text-muted text-center">No goals available.</td></tr>`;
-                return;
-            }
+                        if (!goalsTableBody) return;
+                        goalsTableBody.innerHTML = '';
+                        if (!goals.length) {
+                                goalsTableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="3" class="text-center p-4">
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <i class="bi bi-flag" style="font-size:2rem;color:var(--color-muted);" aria-hidden="true"></i>
+                                                <div class="mt-2 mb-1 fs-6 text-muted">No goals available</div>
+                                                <div class="mb-2 text-muted">No career goals have been set for this plan.</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                                return;
+                        }
             goals.forEach((g) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -370,11 +406,17 @@
                             }
                         });
                     });
-                } else {
-                    chartCanvas.style.display = 'none';
-                    messageContainer.style.display = 'block';
-                    messageContainer.innerHTML = '<p class="text-muted fs-5 mb-0">No progression data available for this plan.</p>';
-                }
+                                } else {
+                                        chartCanvas.style.display = 'none';
+                                        messageContainer.style.display = 'block';
+                                        messageContainer.innerHTML = `
+                                            <div class="d-flex flex-column align-items-center justify-content-center p-4">
+                                                <i class="bi bi-graph-up" style="font-size:2.5rem;color:var(--color-muted);" aria-hidden="true"></i>
+                                                <div class="mt-2 mb-1 fs-5 text-muted">No progression data available</div>
+                                                <div class="mb-2 text-muted">This plan has no training progression chart yet.</div>
+                                            </div>
+                                        `;
+                                }
             } catch (error) {
                 chartCanvas.style.display = 'none';
                 messageContainer.style.display = 'block';
@@ -409,32 +451,51 @@
         // Copy to Clipboard handler (uses window.copyPlanDetailsToClipboard)
         if (btnCopyToClipboard) {
             btnCopyToClipboard.addEventListener('click', function () {
-                if (!lastFetchedData) {
-                    // Attempt lazy fetch if user clicks immediately
-                    const pid = planIdInput?.value;
-                    if (!pid) return;
-                    setLoading(true);
-                    fetchAllSections(pid)
-                        .then((data) => {
-                            lastFetchedData = data;
-                            if (typeof window.copyPlanDetailsToClipboard === 'function') {
-                                window.copyPlanDetailsToClipboard(lastFetchedData);
-                            } else {
-                                alert('Copy module not loaded. Please try again.');
-                            }
-                        })
-                        .catch((err) => {
-                            console.error('Clipboard fetch error (inline):', err);
-                            alert('Failed to prepare clipboard content.');
-                        })
-                        .finally(() => setLoading(false));
-                    return;
-                }
-                if (typeof window.copyPlanDetailsToClipboard === 'function') {
-                    window.copyPlanDetailsToClipboard(lastFetchedData);
-                } else {
-                    alert('Copy module not loaded. Please try again.');
-                }
+                import('sweetalert2').then(Swal => {
+                    if (!lastFetchedData) {
+                        // Attempt lazy fetch if user clicks immediately
+                        const pid = planIdInput?.value;
+                        if (!pid) return;
+                        setLoading(true);
+                        fetchAllSections(pid)
+                            .then((data) => {
+                                lastFetchedData = data;
+                                if (typeof window.copyPlanDetailsToClipboard === 'function') {
+                                    window.copyPlanDetailsToClipboard(lastFetchedData);
+                                } else {
+                                    Swal.default.fire({
+                                        title: 'Copy module not loaded.',
+                                        text: 'Please try again.',
+                                        icon: 'error',
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            })
+                            .catch((err) => {
+                                console.error('Clipboard fetch error (inline):', err);
+                                Swal.default.fire({
+                                    title: 'Failed to prepare clipboard content.',
+                                    icon: 'error',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            })
+                            .finally(() => setLoading(false));
+                        return;
+                    }
+                    if (typeof window.copyPlanDetailsToClipboard === 'function') {
+                        window.copyPlanDetailsToClipboard(lastFetchedData);
+                    } else {
+                        Swal.default.fire({
+                            title: 'Copy module not loaded.',
+                            text: 'Please try again.',
+                            icon: 'error',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
             });
         }
 

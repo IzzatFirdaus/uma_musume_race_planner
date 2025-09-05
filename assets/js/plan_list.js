@@ -12,12 +12,12 @@
      * @returns {string}
      */
     function getApiBase() {
-        if (window.APP_CONFIG && window.APP_CONFIG.API_BASE) return window.APP_CONFIG.API_BASE;
-        if (window.APP_API_BASE) return window.APP_API_BASE;
-        return '/api';
+    // Hardcoded for local deployment under /uma_musume_race_planner/
+    return '/uma_musume_race_planner/api';
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+    console.log('[plan_list.js] DOMContentLoaded - script running');
         const planTableBody = document.getElementById('planListBody');
         const filterButtonGroup = document.getElementById('plan-filter-buttons');
         let allPlans = [];
@@ -75,14 +75,36 @@
 
         // Render plan table rows
         function renderPlanTable(plansToRender) {
-            planTableBody.innerHTML = '';
-            if (!plansToRender.length) {
-                planTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center text-muted p-4">No matching plans found.</td>
-                    </tr>`;
-                return;
-            }
+                        planTableBody.innerHTML = '';
+                        console.log('[plan_list.js] Rendering plans:', plansToRender);
+                        if (!plansToRender.length) {
+                                planTableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="5" class="text-center p-5">
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <i class="bi bi-clipboard-x" style="font-size: 3rem; color: var(--color-muted);" aria-hidden="true"></i>
+                                                <div class="mt-3 mb-2 fs-4 text-muted">No plans found</div>
+                                                <div class="mb-3 text-muted">Get started by creating your first training plan!</div>
+                                                <button type="button" class="btn btn-primary" id="emptyStateCreateBtn">Create Plan</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                                // Add event listener for CTA button
+                                setTimeout(() => {
+                                    const btn = document.getElementById('emptyStateCreateBtn');
+                                    if (btn) {
+                                        btn.addEventListener('click', () => {
+                                            const modalEl = document.getElementById('createPlanModal');
+                                            if (modalEl) {
+                                                const modal = new bootstrap.Modal(modalEl);
+                                                modal.show();
+                                            }
+                                        });
+                                    }
+                                }, 0);
+                                return;
+                        }
             plansToRender.forEach(plan => {
                 const row = document.createElement('tr');
                 const title = escapeHTML(plan?.plan_title ?? 'Untitled Plan');
@@ -179,8 +201,19 @@
                 }
             } else if (deleteBtn) {
                 const planId = deleteBtn.dataset.id;
-                if (planId && confirm('Are you sure you want to delete this plan?')) {
-                    deletePlan(planId);
+                if (planId) {
+                    Swal.fire({
+                        title: 'Delete Plan?',
+                        text: 'Are you sure you want to delete this plan?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            deletePlan(planId);
+                        }
+                    });
                 }
             }
         });
@@ -210,18 +243,19 @@
                 const result = await response.json();
                 if (result.success) {
                     loadPlans();
-                    // Show success message
-                    const messageBox = document.getElementById('messageBoxModal');
-                    if (messageBox) {
-                        document.getElementById('messageBoxBody').textContent = 'Plan deleted successfully';
-                        new bootstrap.Modal(messageBox).show();
-                    }
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Plan deleted successfully.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 } else {
-                    alert('Failed to delete plan: ' + (result.message || 'Unknown error'));
+                    Swal.fire('Error', 'Failed to delete plan: ' + (result.message || 'Unknown error'), 'error');
                 }
             } catch (error) {
                 console.error('Failed to delete plan:', error);
-                alert('Failed to delete plan. Please try again.');
+                Swal.fire('Error', 'Failed to delete plan. Please try again.', 'error');
             }
         }
 
@@ -231,8 +265,15 @@
         const createPlanBtn = document.getElementById('createPlanBtn');
         if (createPlanBtn) {
             createPlanBtn.addEventListener('click', () => {
-                const modal = new bootstrap.Modal(document.getElementById('createPlanModal'));
-                modal.show();
+                console.log('[plan_list.js] CreatePlanBtn clicked');
+                const modalEl = document.getElementById('createPlanModal');
+                if (modalEl) {
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                    console.log('[plan_list.js] modal.show() called');
+                } else {
+                    console.error('[plan_list.js] #createPlanModal not found');
+                }
             });
         }
 
@@ -269,5 +310,6 @@
                 }, 60);
             }
         });
-    });
-})();
+    }); // end DOMContentLoaded
+});
+// ...existing code...

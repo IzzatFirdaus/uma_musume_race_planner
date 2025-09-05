@@ -96,11 +96,17 @@
                             }
                         });
                     });
-                } else {
-                    chartCanvas.style.display = 'none';
-                    messageContainer.style.display = 'block';
-                    messageContainer.innerHTML = '<p class="text-muted fs-5">No progression data available for this plan.</p>';
-                }
+                                } else {
+                                        chartCanvas.style.display = 'none';
+                                        messageContainer.style.display = 'block';
+                                        messageContainer.innerHTML = `
+                                            <div class="d-flex flex-column align-items-center justify-content-center p-4">
+                                                <i class="bi bi-graph-up" style="font-size:2.5rem;color:var(--color-muted);" aria-hidden="true"></i>
+                                                <div class="mt-2 mb-1 fs-5 text-muted">No progression data available</div>
+                                                <div class="mb-2 text-muted">This plan has no training progression chart yet.</div>
+                                            </div>
+                                        `;
+                                }
             } catch (error) {
                 chartCanvas.style.display = 'none';
                 messageContainer.style.display = 'block';
@@ -232,19 +238,33 @@
 
         if (btnCopyToClipboard) {
             btnCopyToClipboard.addEventListener('click', async () => {
-                const planId = document.getElementById('planId')?.value;
-                if (!planId) return;
-                try {
-                    const allData = await fetchAllForClipboard(planId);
-                    if (typeof window.copyPlanDetailsToClipboard === 'function') {
-                        window.copyPlanDetailsToClipboard(allData);
-                    } else {
-                        alert('Copy module not loaded. Please try again.');
-                    }
-                } catch (err) {
-                    console.error('Failed to copy plan details (modal):', err);
-                    alert('Failed to prepare plan content for clipboard.');
-                }
+                import('sweetalert2').then(Swal => {
+                    const planId = document.getElementById('planId')?.value;
+                    if (!planId) return;
+                    fetchAllForClipboard(planId)
+                        .then(allData => {
+                            if (typeof window.copyPlanDetailsToClipboard === 'function') {
+                                window.copyPlanDetailsToClipboard(allData);
+                            } else {
+                                Swal.default.fire({
+                                    title: 'Copy module not loaded.',
+                                    text: 'Please try again.',
+                                    icon: 'error',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy plan details (modal):', err);
+                            Swal.default.fire({
+                                title: 'Failed to prepare plan content for clipboard.',
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        });
+                });
             });
         }
     });

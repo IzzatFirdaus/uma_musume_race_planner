@@ -43,11 +43,34 @@
         }
 
         function renderPlanTable(plans) {
-            planTableBody.innerHTML = '';
-            if (!plans || !plans.length) {
-                planTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted p-4">No matching plans found.</td></tr>';
-                return;
-            }
+                        planTableBody.innerHTML = '';
+                        if (!plans || !plans.length) {
+                                planTableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="5" class="text-center p-5">
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <i class="bi bi-clipboard-x" style="font-size: 3rem; color: var(--color-muted);" aria-hidden="true"></i>
+                                                <div class="mt-3 mb-2 fs-4 text-muted">No plans found</div>
+                                                <div class="mb-3 text-muted">Get started by creating your first training plan!</div>
+                                                <button type="button" class="btn btn-primary" id="emptyStateCreateBtn">Create Plan</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                                // Add event listener for CTA button
+                                setTimeout(() => {
+                                    const btn = document.getElementById('emptyStateCreateBtn');
+                                    if (btn) {
+                                        btn.addEventListener('click', () => {
+                                            const modalEl = document.getElementById('createPlanModal');
+                                            if (modalEl) {
+                                                try { new bootstrap.Modal(modalEl).show(); } catch (e) { modalEl.classList.add('show'); modalEl.style.display = 'block'; }
+                                            }
+                                        });
+                                    }
+                                }, 0);
+                                return;
+                        }
 
             plans.forEach(plan => {
                 const tr = document.createElement('tr');
@@ -103,23 +126,36 @@
             const viewBtn = e.target.closest('.view-inline-btn');
             const deleteBtn = e.target.closest('.delete-btn');
 
-            if (editBtn) {
-                const planId = editBtn.dataset.id;
-                if (planId) {
-                    const modalEl = document.getElementById('planDetailsModal');
-                    if (modalEl) {
-                        loadPlanForEdit(planId).then(() => {
-                            try { new bootstrap.Modal(modalEl).show(); } catch (e) { modalEl.classList.add('show'); modalEl.style.display = 'block'; }
+            import('sweetalert2').then(Swal => {
+                if (editBtn) {
+                    const planId = editBtn.dataset.id;
+                    if (planId) {
+                        const modalEl = document.getElementById('planDetailsModal');
+                        if (modalEl) {
+                            loadPlanForEdit(planId).then(() => {
+                                try { new bootstrap.Modal(modalEl).show(); } catch (e) { modalEl.classList.add('show'); modalEl.style.display = 'block'; }
+                            });
+                        }
+                    }
+                } else if (viewBtn) {
+                    const planId = viewBtn.dataset.id;
+                    if (planId) document.dispatchEvent(new CustomEvent('showPlanInline', { detail: { planId } }));
+                } else if (deleteBtn) {
+                    const planId = deleteBtn.dataset.id;
+                    if (planId) {
+                        Swal.default.fire({
+                            title: 'Delete Plan?',
+                            text: 'Are you sure you want to delete this plan?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'Cancel'
+                        }).then(result => {
+                            if (result.isConfirmed) deletePlan(planId);
                         });
                     }
                 }
-            } else if (viewBtn) {
-                const planId = viewBtn.dataset.id;
-                if (planId) document.dispatchEvent(new CustomEvent('showPlanInline', { detail: { planId } }));
-            } else if (deleteBtn) {
-                const planId = deleteBtn.dataset.id;
-                if (planId && confirm('Are you sure you want to delete this plan?')) deletePlan(planId);
-            }
+            });
         });
 
         async function loadPlanForEdit(planId) {
@@ -141,28 +177,43 @@
         }
 
         async function deletePlan(planId) {
-            try {
-                const base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.APP_API_BASE || '';
-                const response = await fetch(base + '/plan.php?action=delete&id=' + encodeURIComponent(planId), {
+            import('sweetalert2').then(Swal => {
+                fetch((window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.APP_API_BASE || '' + '/plan.php?action=delete&id=' + encodeURIComponent(planId), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
-                });
-                const result = await response.json();
-                if (result.success) {
-                    loadPlans();
-                    const messageBox = document.getElementById('messageBoxModal');
-                    if (messageBox) {
-                        const mbBody = document.getElementById('messageBoxBody');
-                        if (mbBody) mbBody.textContent = 'Plan deleted successfully';
-                        try { new bootstrap.Modal(messageBox).show(); } catch (e) { messageBox.classList.add('show'); messageBox.style.display = 'block'; }
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        loadPlans();
+                        Swal.default.fire({
+                            title: 'Deleted!',
+                            text: 'Plan deleted successfully.',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.default.fire({
+                            title: 'Error',
+                            text: 'Failed to delete plan: ' + (result.message || 'Unknown error'),
+                            icon: 'error',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
                     }
-                } else {
-                    alert('Failed to delete plan: ' + (result.message || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Failed to delete plan:', error);
-                alert('Failed to delete plan. Please try again.');
-            }
+                })
+                .catch(error => {
+                    console.error('Failed to delete plan:', error);
+                    Swal.default.fire({
+                        title: 'Error',
+                        text: 'Failed to delete plan. Please try again.',
+                        icon: 'error',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                });
+            });
         }
 
         document.addEventListener('planUpdated', loadPlans);
