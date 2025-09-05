@@ -11,6 +11,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
  */
 
 // Prevent redeclaration if already defined elsewhere
+// Only declare the function if not already defined
 if (!function_exists('handleTraineeImageUpload')) {
     /**
      * Handles trainee image upload: validates, moves, logs, and returns relative DB path.
@@ -23,8 +24,13 @@ if (!function_exists('handleTraineeImageUpload')) {
      * @return string|null Relative path to saved image, or null if deleted
      * @throws Exception on validation or move errors
      */
-    function handleTraineeImageUpload(PDO $pdo, int $planId, array $fileData, ?string $oldImagePath, $log): ?string
-    {
+    function handleTraineeImageUpload(
+        PDO $pdo,
+        int $planId,
+        array $fileData,
+        ?string $oldImagePath,
+        $log
+    ): ?string {
         $uploadDir = realpath(__DIR__ . '/../assets/images') ?: (__DIR__ . '/../assets/images');
         $uploadDir = rtrim($uploadDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'trainee_images' . DIRECTORY_SEPARATOR;
 
@@ -46,7 +52,10 @@ if (!function_exists('handleTraineeImageUpload')) {
         if (!empty($oldImagePath)) {
             $oldAbs = realpath(__DIR__ . '/../' . ltrim($oldImagePath, '/\\'));
             if ($oldAbs && $isPathInsideBase($oldAbs)) {
-                if (($fileData['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK || (($_POST['clear_trainee_image'] ?? '') === '1')) {
+                if (
+                    ($fileData['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK ||
+                    (($_POST['clear_trainee_image'] ?? '') === '1')
+                ) {
                     $shouldDeleteOldImage = true;
                 }
             }

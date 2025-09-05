@@ -1,5 +1,7 @@
 <?php
 // components/plan-inline-details.php
+// JS dependencies: plan_inline_details.js expects #planInlineDetails, #planIdInline, #plan_title_inline, #planTabsInline, #growthChartInline, #growthChartMessageInline, #exportPlanBtnInline, #downloadTxtInline, #closeInlineDetailsBtn, and various tab/section IDs.
+// Ensure these elements/IDs/classes exist for full JS functionality.
 // This file relies on PHP variables being available from index.php
 // Adjusted version with improved comments, accessibility, and minor logic optimizations
 
@@ -96,7 +98,10 @@ $baseEsc = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
           </div>
           <div class="row mb-3">
             <?php $id_suffix = '_inline'; // Use '_inline' suffix for this view?>
-            <?php include __DIR__ . '/trainee_image_handler.php'; ?>
+            <?php
+              // Include trainee image handler with unique suffix for DOM IDs
+              include __DIR__ . '/trainee_image_handler.php';
+?>
             <div class="col-md-6">
               <div class="row">
                 <div class="col-md-8">

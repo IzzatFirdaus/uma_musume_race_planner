@@ -243,7 +243,9 @@ switch ($action) {
         if (strpos($contentType, 'application/json') !== false) {
             $raw = file_get_contents('php://input');
             $data = json_decode($raw, true);
-            if (is_array($data)) $input = $data;
+            if (is_array($data)) {
+                $input = $data;
+            }
         } else {
             // fall back to $_POST
             $input = $_POST;
@@ -296,6 +298,59 @@ switch ($action) {
         }
         break;
 
+    case 'create':
+        require_method('POST');
+        $input = [];
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'application/json') !== false) {
+            $raw = file_get_contents('php://input');
+            $data = json_decode($raw, true);
+            if (is_array($data)) {
+                $input = $data;
+            }
+        } else {
+            $input = $_POST;
+        }
+
+        // Whitelist of allowed fields for creation
+        $allowed = [
+            'plan_title', 'name', 'race_name', 'turn_before', 'career_stage', 'class', 'time_of_day', 'month',
+            'total_available_skill_points', 'acquire_skill', 'mood_id', 'condition_id', 'strategy_id',
+            'energy', 'race_day', 'goal', 'growth_rate_speed', 'growth_rate_stamina', 'growth_rate_power',
+            'growth_rate_guts', 'growth_rate_wit', 'status', 'source', 'trainee_image_path'
+        ];
+        $fields = [];
+        $values = [];
+        foreach ($allowed as $f) {
+            if (array_key_exists($f, $input)) {
+                $fields[] = "`$f`";
+                $values[] = $input[$f];
+            }
+        }
+        if (empty($fields)) {
+            send_json(400, ['success' => false, 'error' => 'No valid fields provided to create.']);
+        }
+        $fields[] = '`created_at`';
+        $fields[] = '`updated_at`';
+        $values[] = date('Y-m-d H:i:s');
+        $values[] = date('Y-m-d H:i:s');
+        $sql = 'INSERT INTO plans (' . implode(', ', $fields) . ') VALUES (' . implode(', ', array_fill(0, count($fields), '?')) . ')';
+        try {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($values);
+            $newPlanId = (int)$pdo->lastInsertId();
+            send_json(200, ['success' => true, 'id' => $newPlanId]);
+        } catch (Throwable $e) {
+            if (isset($log)) {
+                $log->error('Failed to create plan (api)', [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
+            }
+            send_json(500, ['success' => false, 'error' => 'A database error occurred while creating plan.']);
+        }
+        break;
     case 'duplicate':
         // Prefer POST for mutations; allow GET for backward compatibility but mark deprecated via header.
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

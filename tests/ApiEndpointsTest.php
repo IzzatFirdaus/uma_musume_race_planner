@@ -2,6 +2,8 @@
 
 namespace UmaMusumeRacePlanner\Tests;
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 use PHPUnit\Framework\TestCase;
 
 class ApiEndpointsTest extends TestCase
@@ -195,7 +197,7 @@ class ApiEndpointsTest extends TestCase
             $this->assertArrayHasKey('success', $data);
             $this->assertFalse($data['success']);
         } else {
-            $this->assertTrue(true, 'Endpoint not implemented');
+            $this->markTestSkipped('Update endpoint not implemented');
         }
     }
 
@@ -217,7 +219,7 @@ class ApiEndpointsTest extends TestCase
             $this->assertArrayHasKey('success', $data);
             $this->assertFalse($data['success']);
         } else {
-            $this->assertTrue(true, 'Endpoint not implemented');
+            $this->markTestSkipped('Delete endpoint not implemented');
         }
     }
 

@@ -36,6 +36,8 @@
                     });
 
                     const result = await response.json();
+                    window.lastPlanCreateResult = result;
+                    window.lastPlanCreateError = null;
 
                     if (result.success) {
                           // Close modal
@@ -58,11 +60,29 @@
                         quickCreateForm.reset();
                         quickCreateForm.classList.remove('was-validated');
                     } else {
-                        alert('Failed to create plan: ' + (result.message || 'Unknown error'));
+                        window.lastPlanCreateError = result.message || 'Unknown error';
+                        import('sweetalert2').then(Swal => {
+                            Swal.default.fire({
+                                title: 'Error',
+                                text: 'Failed to create plan: ' + (result.message || 'Unknown error'),
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        });
                     }
                 } catch (error) {
+                    window.lastPlanCreateError = error?.message || error;
                     console.error('Error creating plan:', error);
-                    alert('Failed to create plan. Please try again.');
+                    import('sweetalert2').then(Swal => {
+                        Swal.default.fire({
+                            title: 'Error',
+                            text: 'Failed to create plan. Please try again.',
+                            icon: 'error',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    });
                 }
             });
         }

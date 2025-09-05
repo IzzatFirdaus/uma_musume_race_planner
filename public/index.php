@@ -232,12 +232,14 @@ $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
   <?php require __DIR__ . '/../components/copy_to_clipboard.php'; ?>
 
   <!-- JS (defer for performance); app.js centralizes theme + charts; config first -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/config.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/app.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/autosuggest.js"></script>
   <!-- Page-specific modules for dashboard functionality -->
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/dashboard.js"></script>
+  <!-- SweetAlert2 CDN for notifications (required by plan_list.js, plan_details_modal.js, etc.) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.7/dist/sweetalert2.all.min.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/plan_list.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/quick_create_modal.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/plan_details_modal.js"></script>

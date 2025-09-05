@@ -12,7 +12,7 @@ parameters:
         - backup/*
         - scripts/*
         - includes/*
-        # - %rootDir%/tests/* # Uncomment if you have tests and want to exclude them from analysis
+        - tests/* # Exclude tests from analysis
 
     # Crucial for resolving vendor classes and interfaces
     bootstrapFiles:

@@ -84,9 +84,9 @@ $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
           <figure class="text-center mt-4">
             <?php
               $dashboardScreenshot = "Homepage.png";
-            $safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot), ENT_QUOTES, 'UTF-8');
-            ?>
-            <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/screenshots/<?= $safeDashboardScreenshot ?>" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy" decoding="async">
+$safeDashboardScreenshot = htmlspecialchars(basename($dashboardScreenshot), ENT_QUOTES, 'UTF-8');
+?>
+            <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/images/screenshot/<?= $safeDashboardScreenshot ?>" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy" decoding="async">
             <figcaption class="text-muted small mt-2">Dashboard layout example</figcaption>
           </figure>
         </section>
@@ -112,17 +112,17 @@ $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
           <div class="row mt-4">
             <div class="col-md-6 mb-3">
               <?php
-                $generalScreenshot = "001_GENERAL Edit Plan.png";
-                $safeGeneralScreenshot = htmlspecialchars(basename($generalScreenshot), ENT_QUOTES, 'UTF-8');
-                ?>
-              <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/screenshots/<?= $safeGeneralScreenshot ?>" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy" decoding="async">
+    $generalScreenshot = "001_GENERAL Edit Plan.png";
+$safeGeneralScreenshot = htmlspecialchars(basename($generalScreenshot), ENT_QUOTES, 'UTF-8');
+?>
+              <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/images/screenshot/<?= $safeGeneralScreenshot ?>" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy" decoding="async">
             </div>
             <div class="col-md-6 mb-3">
               <?php
-                $skillsScreenshot = "004_SKILLS Edit Plan.png";
-                $safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot), ENT_QUOTES, 'UTF-8');
-                ?>
-              <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/screenshots/<?= $safeSkillsScreenshot ?>" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy" decoding="async">
+  $skillsScreenshot = "004_SKILLS Edit Plan.png";
+$safeSkillsScreenshot = htmlspecialchars(basename($skillsScreenshot), ENT_QUOTES, 'UTF-8');
+?>
+              <img src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/images/screenshot/<?= $safeSkillsScreenshot ?>" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy" decoding="async">
             </div>
           </div>
 
@@ -231,6 +231,8 @@ $css_v = file_exists($cssFile) ? (string) filemtime($cssFile) : (string) time();
 
   <!-- JS (use defer to improve performance). Theme is handled centrally by assets/js/app.js -->
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/config.js"></script>
+  <!-- SweetAlert2 CDN for notifications (required by plan_list.js, plan_details_modal.js, etc.) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.7/dist/sweetalert2.all.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/app.js"></script>
   <script defer src="<?= htmlspecialchars($baseWeb, ENT_QUOTES, 'UTF-8') ?>assets/js/guide.js"></script>

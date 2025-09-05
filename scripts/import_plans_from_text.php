@@ -354,14 +354,13 @@ function parsePlanBlock(string $block): array
     if ($iTurn !== null) {
         // value likely on same line following or next non-empty line(s)
         $val = null;
-        // try next line(s)
+        // Find the first valid line after header
         for ($j = $iTurn + 1; $j < min($iTurn + 4, $N); $j++) {
             $cand = trim($lines[$j]);
-            if ($cand === '' || preg_match('/^(RACE|Name|Attribute|Skill Name)/i', $cand)) {
+            if ($cand !== '' && !preg_match('/^(RACE|Name|Attribute|Skill Name)/i', $cand)) {
+                $val = $cand;
                 break;
             }
-            $val = $cand;
-            break;
         }
         $plan['turn_before'] = toIntOrNull($val);
     }

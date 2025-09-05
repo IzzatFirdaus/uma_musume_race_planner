@@ -24,7 +24,9 @@
             <i class="bi <?= $icon ?> me-2" aria-hidden="true"></i>
             <span><?= $desc ?></span>
             <small class="text-muted ms-auto">
-              <time datetime="<?= htmlspecialchars($iso, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($display, ENT_QUOTES, 'UTF-8') ?></time>
+              <time datetime="<?= htmlspecialchars($iso, ENT_QUOTES, 'UTF-8') ?>">
+                <?= htmlspecialchars($display, ENT_QUOTES, 'UTF-8') ?>
+              </time>
             </small>
           </li>
             <?php endforeach; ?>

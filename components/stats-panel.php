@@ -7,7 +7,8 @@
 <section class="card mb-4 shadow-sm" aria-labelledby="quickStatsTitle">
   <header class="card-header fw-bold" id="quickStatsTitle">Quick Stats</header>
   <div class="card-body">
-    <ul class="d-flex justify-content-around text-center flex-wrap gap-3 list-unstyled" aria-label="Stats summary">
+  <ul class="d-flex justify-content-around text-center flex-wrap gap-3 list-unstyled"
+    aria-label="Stats summary">
       <!-- Total Plans -->
       <li>
         <span id="statsPlans" class="fs-1 fw-bold quick-stats-number" aria-label="Total plans">

@@ -27,16 +27,42 @@
                 const file = event.target.files?.[0];
                 if (file) {
                     const validTypes = ['image/jpeg','image/png','image/gif','image/webp'];
-                    if (!validTypes.includes(file.type)) {
-                        alert('Unsupported image type.');
-                        uploadInput.value = '';
-                        return;
-                    }
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('File too large. Max 5MB.');
-                        uploadInput.value = '';
-                        return;
-                    }
+                    import('sweetalert2').then(Swal => {
+                        if (!validTypes.includes(file.type)) {
+                            Swal.default.fire({
+                                title: 'Unsupported image type!',
+                                text: 'Please upload JPG, PNG, GIF, or WEBP.',
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            uploadInput.value = '';
+                            return;
+                        }
+                        if (file.size > 5 * 1024 * 1024) {
+                            Swal.default.fire({
+                                title: 'File too large!',
+                                text: 'Max file size is 5MB.',
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            uploadInput.value = '';
+                            return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImg.src = e.target?.result || '#';
+                            previewContainer.style.display = 'block';
+                            if (clearBtn) {
+                                clearBtn.style.display = 'inline-block';
+                            }
+                            if (clearFlagInput) {
+                                clearFlagInput.value = '0';
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    });
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         previewImg.src = e.target?.result || '#';

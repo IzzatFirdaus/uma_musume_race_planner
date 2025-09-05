@@ -187,16 +187,31 @@
             output += 'No race predictions available.\n';
         }
 
+        let Swal;
+        import('sweetalert2').then(mod => { Swal = mod.default; });
         const message = (text, type = 'info') => {
-            if (typeof window.showMessageBox === 'function') {
-                window.showMessageBox(text, type);
+            if (Swal) {
+                let icon = 'info';
+                if (type === 'success') icon = 'success';
+                if (type === 'danger' || type === 'error') icon = 'error';
+                if (type === 'warning') icon = 'warning';
+                Swal.fire({
+                    title: text,
+                    icon: icon,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             } else {
-                try {
-                    console.log(`[${type}] ${text}`); } catch (_) {
-                    }
-                    try {
-                        alert(text); } catch (_) {
-                        }
+                try { console.log(`[${type}] ${text}`); } catch (_) {}
+                import('sweetalert2').then(Swal => {
+                    Swal.default.fire({
+                        title: 'Clipboard Content',
+                        text: text,
+                        icon: 'info',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                });
             }
         };
 

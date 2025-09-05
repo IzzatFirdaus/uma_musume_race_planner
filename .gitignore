@@ -39,6 +39,7 @@ node_modules/
 # Test/coverage
 /coverage/
 phpunit.xml.cache
+test-results/
 
 # Build artifacts
 /dist/

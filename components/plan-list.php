@@ -1,6 +1,7 @@
 <?php
 // components/plan-list.php
-// Compute base path for assets whether included from /public or root
+// JS dependencies: plan_list.js expects #planListBody, #plan-filter-buttons, #createPlanBtn, .edit-btn, .view-inline-btn, .delete-btn
+// Ensure these elements/IDs/classes exist for full JS functionality.
 $isPublic = strpos($_SERVER['SCRIPT_NAME'] ?? '', '/public/') !== false;
 $base = $isPublic ? '../' : '';
 $baseEsc = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
