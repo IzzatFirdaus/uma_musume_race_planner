@@ -1,0 +1,11 @@
+/**
+ * resources/css/app.css
+ *
+ * This is the main CSS entry point for the Vite build process.
+ * It imports all other required stylesheets for the application.
+ */
+
+/* Import your complete custom theme from style.css */
+@import url('style.css');
+
+/* You can add any additional app-wide CSS overrides here if needed in the future. */
