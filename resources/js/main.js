@@ -75,6 +75,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Listen for Livewire events to open modal/inline views
     document.addEventListener("livewire:init", () => {
+        Livewire.on("openPlanModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
+        Livewire.on("openPlanEditModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
+        
+        // Listen for form submission events from Livewire components
+        Livewire.on("submitPlanForm", ({ formId }) => {
+            const form = document.getElementById(formId);
+            if (form) {
+                // Trigger the existing form submission handler
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                form.dispatchEvent(submitEvent);
+            }
+        });
+
         Livewire.on("openPlanModal", ({ planId }) =>
             fetchAndPopulatePlan(planId, false),
         );
@@ -108,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Non-fatal: if Livewire hook isn't available or errors, ignore.
             console.debug('Livewire hook registration skipped or failed', e);
         }
+
     });
 
     // --- Handle opening plans from URL on page load ---

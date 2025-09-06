@@ -71,8 +71,17 @@ class PlanList extends Component
 
         $plans = $query->get();
 
+        // Calculate counts to avoid repeated queries in the view
+        $counts = [
+            'total' => Plan::count(),
+            'active' => Plan::where('status', 'Active')->count(),
+            'planning' => Plan::where('status', 'Planning')->count(),
+            'finished' => Plan::where('status', 'Finished')->count(),
+        ];
+
         return view('livewire.dashboard.plan-list', [
             'plans' => $plans,
+            'counts' => $counts,
         ]);
 
     }

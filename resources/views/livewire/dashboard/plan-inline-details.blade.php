@@ -20,11 +20,12 @@
             </div>
         </div>
         {{-- This form would submit to a Laravel route for updating the plan --}}
-        <form id="planDetailsFormInline" enctype="multipart/form-data">
+        <form id="planDetailsFormInline" enctype="multipart/form-data" wire:submit.prevent="save">
             @method('PUT')
             @csrf
             <div class="card-body">
                 {{-- Use the Livewire form-tabs to match element IDs expected by JS --}}
+
                 @livewire('form-tabs', ['id_suffix' => '_inline'])
             </div>
             <div class="card-footer d-flex justify-content-end">
