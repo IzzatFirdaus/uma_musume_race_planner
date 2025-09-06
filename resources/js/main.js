@@ -75,8 +75,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Listen for Livewire events to open modal/inline views
     document.addEventListener("livewire:init", () => {
-        Livewire.on("openPlanModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
-        Livewire.on("openPlanEditModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
+        // Handle plan modal and inline opening
+        Livewire.on("openPlanModal", ({ planId }) => {
+            // Dispatch the event to load plan data in modal
+            Livewire.dispatch('loadPlan', { planId: planId });
+            // Show the modal
+            const modalEl = document.getElementById('planDetailsModal');
+            if (modalEl) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        });
+        
+        Livewire.on("openPlanEditModal", ({ planId }) => {
+            // Dispatch the event to load plan data in modal
+            Livewire.dispatch('loadPlan', { planId: planId });
+            // Show the modal
+            const modalEl = document.getElementById('planDetailsModal');
+            if (modalEl) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        });
+        
+        // Handle inline plan opening - dispatch to PlanInlineDetails component
+        Livewire.on("openPlanInline", ({ planId }) => {
+            // The component should be available on the page, let's dispatch to it
+            Livewire.dispatch('loadPlanInline', { planId: planId });
+        });
+        });
         
         // Listen for form submission events from Livewire components
         Livewire.on("submitPlanForm", ({ formId }) => {
@@ -88,15 +113,26 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        Livewire.on("openPlanModal", ({ planId }) =>
-            fetchAndPopulatePlan(planId, false),
-        );
-        Livewire.on("openPlanEditModal", ({ planId }) =>
-            fetchAndPopulatePlan(planId, false),
-        );
-        Livewire.on("openPlanInline", ({ planId }) =>
-            fetchAndPopulatePlan(planId, true),
-        );
+        // Listen for error messages
+        Livewire.on("show-error", ({ message }) => {
+            showMessageBox(message, 'danger');
+        });
+
+        // Listen for showing plan list card
+        Livewire.on("showPlanListCard", () => {
+            const listCard = document.getElementById("planListCard");
+            if (listCard) {
+                listCard.style.display = "block";
+            }
+        });
+
+        // Listen for hiding plan list card
+        Livewire.on("hidePlanListCard", () => {
+            const listCard = document.getElementById("planListCard");
+            if (listCard) {
+                listCard.style.display = "none";
+            }
+        });
         // Ensure that if Livewire re-renders the form after we populate it,
         // we re-apply the populated data. This prevents Livewire DOM updates
         // from clearing fields the client just wrote.
@@ -182,11 +218,15 @@ function setupGlobalEventListeners() {
         }
         const planId = target.closest("[data-id]")?.dataset.id;
 
-        // Edit/View Buttons
-        if (target.closest(".edit-btn"))
-            await fetchAndPopulatePlan(planId, false);
-        if (target.closest(".view-inline-btn"))
-            await fetchAndPopulatePlan(planId, true);
+        // Edit/View Buttons - let Livewire handle these
+        if (target.closest(".edit-btn")) {
+            // The Livewire component will handle this via wire:click
+            return;
+        }
+        if (target.closest(".view-inline-btn")) {
+            // The Livewire component will handle this via wire:click  
+            return;
+        }
 
         // Delete Button
         if (target.closest(".delete-btn")) {
@@ -219,13 +259,7 @@ function setupGlobalEventListeners() {
 
         // UI Interaction Buttons
         if (target.closest("#closeInlineDetailsBtn")) {
-            const inlineDetails = document.getElementById("planInlineDetails");
-            if (inlineDetails) {
-                inlineDetails.style.display = "none";
-                inlineDetails.classList.remove("d-block");
-            }
-            const listCard = document.getElementById("planListCard");
-            if (listCard) listCard.style.display = "block";
+            // This is now handled by Livewire wire:click="closePlan", so we just need to update URL
             updateUrlWithPlan(null);
         }
         if (target.closest("#exportPlanBtn, #exportPlanBtnInline")) {
