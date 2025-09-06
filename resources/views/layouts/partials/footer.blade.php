@@ -3,10 +3,10 @@
   <div>
     <a href="https://github.com/IzzatFirdaus/uma_musume_race_planner" target="_blank" rel="noopener noreferrer">
       {{-- This replaces the original getenv('APP_VERSION') call --}}
-      <i class="bi bi-github me-1"></i> Uma Musume Planner {{ env('APP_VERSION', '1.5.0') }}
+  <i class="bi bi-github me-1"></i> Uma Musume Planner {{ config('app.version') }}
     </a>
     {{-- This replaces the original getenv('LAST_UPDATED') call --}}
-    | Last Updated: {{ env('LAST_UPDATED', 'August 4, 2025') }}
+  | Last Updated: {{ config('app.last_updated') }}
   </div>
   <div class="mt-2">
     <a href="https://umamusume.jp/" target="_blank" rel="noopener noreferrer">JP Official Site</a> |

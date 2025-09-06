@@ -20,7 +20,7 @@
     {{-- Custom Theme Color using environment variable with fallback --}}
     <style>
       :root {
-        --app-theme-color: {{ env('APP_THEME_COLOR', '#7d2b8b') }};
+        --app-theme-color: {{ config('app.theme_color') }};
       }
 
       /*

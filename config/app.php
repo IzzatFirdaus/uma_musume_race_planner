@@ -49,6 +49,10 @@ return [
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     */
+        // Custom values for Blade templates (moved from env() calls)
+        'theme_color' => env('APP_THEME_COLOR', '#7d2b8b'),
+        'version' => env('APP_VERSION', '1.5.0'),
+        'last_updated' => env('LAST_UPDATED', 'August 4, 2025'),
 
     'locale' => env('APP_LOCALE', 'en'),
 
