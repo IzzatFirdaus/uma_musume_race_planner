@@ -11,9 +11,10 @@
  */
 export function escapeHtml(str) {
     if (str === null || str === undefined) {
-        return '';
+        return "";
     }
-    return str.toString()
+    return str
+        .toString()
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")

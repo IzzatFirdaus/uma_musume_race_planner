@@ -6,8 +6,8 @@
  */
 
 // --- UPDATED: Import dependencies explicitly ---
-import { attachAutosuggest } from './autosuggest.js';
-import { escapeHtml } from './utils.js';
+import { attachAutosuggest } from "./autosuggest.js";
+import { escapeHtml } from "./utils.js";
 
 /**
  * Initializes the skill management UI for a specific table.
@@ -23,14 +23,14 @@ export function initializeSkillManagement(tableId, addBtnId) {
         return;
     }
 
-    addSkillBtn.addEventListener('click', () => {
+    addSkillBtn.addEventListener("click", () => {
         addSkillRow();
     });
 
     // Add event listener for removing rows using event delegation.
-    skillsTableBody.addEventListener('click', (e) => {
-        if (e.target.closest('.remove-skill-btn')) {
-            e.target.closest('tr').remove();
+    skillsTableBody.addEventListener("click", (e) => {
+        if (e.target.closest(".remove-skill-btn")) {
+            e.target.closest("tr").remove();
         }
     });
 
@@ -38,7 +38,15 @@ export function initializeSkillManagement(tableId, addBtnId) {
      * Adds a new row to the skills table.
      * @param {object} skill The skill data to populate the row with.
      */
-    function addSkillRow(skill = { skill_name: '', sp_cost: '', acquired: 'no', tag: '', notes: '' }) {
+    function addSkillRow(
+        skill = {
+            skill_name: "",
+            sp_cost: "",
+            acquired: "no",
+            tag: "",
+            notes: "",
+        },
+    ) {
         const newRow = skillsTableBody.insertRow();
         const uniqueId = `skill_${Date.now()}`; // Unique name for form inputs
 
@@ -51,7 +59,7 @@ export function initializeSkillManagement(tableId, addBtnId) {
                 <input type="number" name="skills[${uniqueId}][sp_cost]" class="form-control" value="${escapeHtml(skill.sp_cost)}">
             </td>
             <td class="text-center">
-                <input type="checkbox" name="skills[${uniqueId}][acquired]" class="form-check-input" value="yes" ${skill.acquired === 'yes' ? 'checked' : ''}>
+                <input type="checkbox" name="skills[${uniqueId}][acquired]" class="form-check-input" value="yes" ${skill.acquired === "yes" ? "checked" : ""}>
             </td>
             <td>
                 <input type="text" name="skills[${uniqueId}][tag]" class="form-control skill-tag" value="${escapeHtml(skill.tag)}" readonly>
@@ -66,15 +74,15 @@ export function initializeSkillManagement(tableId, addBtnId) {
             </td>
         `;
 
-        const skillNameInput = newRow.querySelector('.skill-name-input');
-        const notesInput = newRow.querySelector('.skill-notes');
-        const tagInput = newRow.querySelector('.skill-tag');
+        const skillNameInput = newRow.querySelector(".skill-name-input");
+        const notesInput = newRow.querySelector(".skill-notes");
+        const tagInput = newRow.querySelector(".skill-tag");
 
         // Attach autosuggest to the newly created input field.
-        attachAutosuggest(skillNameInput, 'skill_name', (selectedSkill) => {
+        attachAutosuggest(skillNameInput, "skill_name", (selectedSkill) => {
             // This callback runs when a user selects a suggestion.
-            notesInput.value = selectedSkill.description || '';
-            tagInput.value = selectedSkill.tag || '';
+            notesInput.value = selectedSkill.description || "";
+            tagInput.value = selectedSkill.tag || "";
         });
     }
 }

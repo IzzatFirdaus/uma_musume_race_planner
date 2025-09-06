@@ -1,5 +1,5 @@
 // Import the initial bootstrap configuration (for Axios, etc.)
-import './bootstrap';
+import "./bootstrap";
 
 // Import and run your main application logic
-import './main.js';
+import "./main.js";
