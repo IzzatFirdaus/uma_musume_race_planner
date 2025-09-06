@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Skill extends Model
+    /**
+     * @property int $sp_cost
+     * @property string $acquired
+     * @property string $notes
+     * @property SkillReference $skillReference
+     */
 {
     use HasFactory;
 
@@ -20,7 +26,7 @@ class Skill extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'plan_id',

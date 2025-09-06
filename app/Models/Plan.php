@@ -9,13 +9,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Plan extends Model
+    /**
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attribute> $attributes
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Goal> $goals
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RacePrediction> $racePredictions
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TerrainGrade> $terrainGrades
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DistanceGrade> $distanceGrades
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StyleGrade> $styleGrades
+     * @property-read \App\Models\Mood $mood
+     * @property-read \App\Models\Condition $condition
+     * @property-read \App\Models\Strategy $strategy
+     */
 {
     use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'plan_title',
@@ -46,6 +59,8 @@ class Plan extends Model
 
     /**
      * Get the attributes for the plan.
+     *
+     * @return HasMany<Attribute, Plan>
      */
     public function attributes(): HasMany
     {
@@ -54,6 +69,8 @@ class Plan extends Model
 
     /**
      * Get the skills for the plan.
+     *
+     * @return HasMany<Skill, Plan>
      */
     public function skills(): HasMany
     {
@@ -62,6 +79,8 @@ class Plan extends Model
 
     /**
      * Get the goals for the plan.
+     *
+     * @return HasMany<Goal, Plan>
      */
     public function goals(): HasMany
     {
@@ -70,6 +89,8 @@ class Plan extends Model
 
     /**
      * Get the race predictions for the plan.
+     *
+     * @return HasMany<RacePrediction, Plan>
      */
     public function racePredictions(): HasMany
     {
@@ -78,6 +99,8 @@ class Plan extends Model
 
     /**
      * Get the turns for the plan.
+     *
+     * @return HasMany<Turn, Plan>
      */
     public function turns(): HasMany
     {
@@ -86,6 +109,8 @@ class Plan extends Model
 
     /**
      * Get the terrain grades for the plan.
+     *
+     * @return HasMany<TerrainGrade, Plan>
      */
     public function terrainGrades(): HasMany
     {
@@ -94,6 +119,8 @@ class Plan extends Model
 
     /**
      * Get the distance grades for the plan.
+     *
+     * @return HasMany<DistanceGrade, Plan>
      */
     public function distanceGrades(): HasMany
     {
@@ -102,6 +129,8 @@ class Plan extends Model
 
     /**
      * Get the style grades for the plan.
+     *
+     * @return HasMany<StyleGrade, Plan>
      */
     public function styleGrades(): HasMany
     {

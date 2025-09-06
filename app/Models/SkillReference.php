@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SkillReference extends Model
+    /**
+     * @property string $skill_name
+     */
 {
     use HasFactory;
 
@@ -27,7 +30,7 @@ class SkillReference extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'skill_name',

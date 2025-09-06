@@ -38,7 +38,7 @@
                     </ul>
                     <figure class="text-center mt-4">
                         {{-- UPDATED: Image path now uses the asset() helper --}}
-                        <img src="{{ asset('screenshot/Homepage.png') }}" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy">
+                        <img src="{{ asset('uploads/screenshot/Homepage.png') }}" class="img-fluid shadow-sm rounded" alt="Dashboard Screenshot" loading="lazy">
                         <figcaption class="text-muted small mt-2">Dashboard layout example</figcaption>
                     </figure>
                 </section>
@@ -62,10 +62,10 @@
 
                     <div class="row mt-4">
                         <div class="col-md-6 mb-3">
-                            <img src="{{ asset('screenshot/001_GENERAL Edit Plan.png') }}" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy">
+                            <img src="{{ asset('uploads/screenshot/001_GENERAL Edit Plan.png') }}" class="img-fluid rounded shadow-sm" alt="General Tab" loading="lazy">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <img src="{{ asset('screenshot/004_SKILLS Edit Plan.png') }}" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy">
+                            <img src="{{ asset('uploads/screenshot/004_SKILLS Edit Plan.png') }}" class="img-fluid rounded shadow-sm" alt="Skills Tab" loading="lazy">
                         </div>
                     </div>
                     <p>Always click <strong>"Save Changes"</strong> before closing the plan!</p>

@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+
+parameters:
+    paths:
+        - app/
+    level: 5
+
+    ignoreErrors:
+        - '#Method App\\Models\\Plan::[a-zA-Z]+\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*>#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\\\$skill_name#'
+        - '#Parameter \#1 \\\$callback of method Illuminate\\Database\\Eloquent\\Collection<int,App\\Models\\Skill>::map\(\) contains unresolvable type#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$[a-zA-Z_]+#'
+        - '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,App\\Models\\Skill>::map\(\) contains unresolvable type#'
+    reportUnmatchedIgnoredErrors: false

@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Attribute extends Model
+    /**
+     * @property string $attribute_name
+     * @property string $grade
+     * @property int $value
+     */
 {
     use HasFactory;
 
@@ -20,7 +25,7 @@ class Attribute extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'plan_id',

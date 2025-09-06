@@ -22,3 +22,17 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Additional ignores
+/storage/
+/public/uploads/
+/public/app_bg/
+/public/app_logo/
+/public/screenshot/
+/public/trainee_images/
+/database/*.sqlite
+/plan_sample_data.sql
+/sample_data.sql
+/uma_musume_planner.sql
+/tests/coverage/
+/package-lock.json
+/resources/assets/
