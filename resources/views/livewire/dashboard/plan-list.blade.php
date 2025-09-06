@@ -32,19 +32,19 @@
                 <div class="btn-group" role="group">
                     <button type="button" wire:click="setFilter('all')"
                             class="btn btn-sm dashboard-btn-outline {{ $currentFilter === 'all' ? 'active' : '' }}">
-                        All ({{ App\Models\Plan::count() }})
+                        All ({{ $counts['total'] }})
                     </button>
                     <button type="button" wire:click="setFilter('Active')"
                             class="btn btn-sm dashboard-btn-outline {{ $currentFilter === 'Active' ? 'active' : '' }}">
-                        Active ({{ App\Models\Plan::where('status', 'Active')->count() }})
+                        Active ({{ $counts['active'] }})
                     </button>
                     <button type="button" wire:click="setFilter('Planning')"
                             class="btn btn-sm dashboard-btn-outline {{ $currentFilter === 'Planning' ? 'active' : '' }}">
-                        Planning ({{ App\Models\Plan::where('status', 'Planning')->count() }})
+                        Planning ({{ $counts['planning'] }})
                     </button>
                     <button type="button" wire:click="setFilter('Finished')"
                             class="btn btn-sm dashboard-btn-outline {{ $currentFilter === 'Finished' ? 'active' : '' }}">
-                        Finished ({{ App\Models\Plan::where('status', 'Finished')->count() }})
+                        Finished ({{ $counts['finished'] }})
                     </button>
                 </div>
             </div>
@@ -203,7 +203,14 @@ document.addEventListener('livewire:init', () => {
                         // Extract plan ID from wire:click attribute
                         const match = wireClick.match(/deletePlan\((\d+)\)/);
                         if (match) {
-                            @this.call('deletePlan', parseInt(match[1]));
+                            // Use Livewire component instance to call method
+                            const component = Livewire.find(btn.closest('[wire\\:id]').getAttribute('wire:id'));
+                            if (component) {
+                                component.call('deletePlan', parseInt(match[1]));
+                            } else {
+                                // Fallback to @this if component not found
+                                @this.call('deletePlan', parseInt(match[1]));
+                            }
                         }
                     }
                 });
