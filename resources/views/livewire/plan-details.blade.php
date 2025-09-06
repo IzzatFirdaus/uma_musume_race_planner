@@ -10,7 +10,7 @@
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <form id="planDetailsForm" method="POST" enctype="multipart/form-data">
+            <form id="planDetailsForm" method="POST" enctype="multipart/form-data" wire:submit.prevent="save">
                 @method('PUT')
                 @csrf
                 <div class="modal-body">

@@ -19,12 +19,11 @@
             </div>
         </div>
         {{-- This form would submit to a Laravel route for updating the plan --}}
-        <form id="planDetailsFormInline" enctype="multipart/form-data">
+        <form id="planDetailsFormInline" enctype="multipart/form-data" wire:submit.prevent="save">
             @method('PUT')
             @csrf
             <div class="card-body">
-                {{-- Ensure form-tabs partial uses asset() for any uploaded images --}}
-                @include('plans.partials.form-tabs', ['id_suffix' => '_inline'])
+                @livewire('form-tabs', ['id_suffix' => '_inline'])
             </div>
             <div class="card-footer d-flex justify-content-end">
                 <button type="button" class="btn btn-outline-secondary me-2" id="downloadTxtInline">

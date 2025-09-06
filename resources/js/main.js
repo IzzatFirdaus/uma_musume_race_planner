@@ -72,6 +72,16 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("livewire:init", () => {
         Livewire.on("openPlanModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
         Livewire.on("openPlanEditModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
+        
+        // Listen for form submission events from Livewire components
+        Livewire.on("submitPlanForm", ({ formId }) => {
+            const form = document.getElementById(formId);
+            if (form) {
+                // Trigger the existing form submission handler
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                form.dispatchEvent(submitEvent);
+            }
+        });
     });
 
     // --- Handle opening plans from URL on page load ---
