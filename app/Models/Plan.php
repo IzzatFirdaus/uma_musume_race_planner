@@ -8,22 +8,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attribute> $attributes
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Goal> $goals
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RacePrediction> $racePredictions
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attribute> $attributes
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Goal> $goals
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RacePrediction> $racePredictions
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TerrainGrade> $terrainGrades
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DistanceGrade> $distanceGrades
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StyleGrade> $styleGrades
+ * @property-read \App\Models\Mood $mood
+ * @property-read \App\Models\Condition $condition
+ * @property-read \App\Models\Strategy $strategy
+ */
 class Plan extends Model
-    /**
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attribute> $attributes
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Goal> $goals
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RacePrediction> $racePredictions
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TerrainGrade> $terrainGrades
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DistanceGrade> $distanceGrades
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StyleGrade> $styleGrades
-     * @property-read \App\Models\Mood $mood
-     * @property-read \App\Models\Condition $condition
-     * @property-read \App\Models\Strategy $strategy
-     */
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.

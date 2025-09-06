@@ -28,7 +28,7 @@ class UpdatePlanRequest extends FormRequest
             'plan' => 'sometimes|required|array',
             'plan.plan_title' => 'nullable|string|max:255',
             'plan.name' => 'sometimes|required|string|max:255',
-            'plan.career_stage' => ['sometimes','required', Rule::in(['predebut', 'junior', 'classic', 'senior', 'finale'])],
+            'plan.career_stage' => ['sometimes', 'required', Rule::in(['predebut', 'junior', 'classic', 'senior', 'finale'])],
             'plan.class' => ['nullable', Rule::in(['debut', 'maiden', 'beginner', 'bronze', 'silver', 'gold', 'platinum', 'star', 'legend'])],
 
             'attributes' => 'sometimes|nullable|array',

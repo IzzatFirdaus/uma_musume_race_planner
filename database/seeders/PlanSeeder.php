@@ -38,8 +38,9 @@ class PlanSeeder extends Seeder
 
         // Find the default user created in DatabaseSeeder to own the plans
         $user = User::where('email', 'test@example.com')->first();
-        if (!$user) {
+        if (! $user) {
             $this->command->error('Default user not found. Please ensure DatabaseSeeder runs the User factory.');
+
             return;
         }
 
@@ -54,7 +55,6 @@ class PlanSeeder extends Seeder
         $strategyPaceId = Strategy::where('label', 'PACE')->value('id');
         $strategyFrontId = Strategy::where('label', 'FRONT')->value('id');
 
-        //
         // --- Data for [Bestest Prize 𝆕] Haru Urara ---
         $urara = Plan::create([
             'user_id' => $user->id,
@@ -97,7 +97,7 @@ class PlanSeeder extends Seeder
 
         $urara->racePredictions()->create(['race_name' => 'URA Finale Qualifier', 'venue' => 'KYOTO', 'ground' => 'DIRT', 'distance' => '1400M', 'track_condition' => 'SPRINT', 'direction' => 'RIGHT', 'speed' => '△', 'stamina' => 'X', 'power' => '○', 'guts' => '○', 'wit' => 'X', 'comment' => 'Your trainee isn’t a bad runner, but she may be outclassed. However, she might have a chance depending on the condition of her opponents.']);
 
-        $urara->goals()->createMany([['goal' => 'JUNIOR MAKE DEBUT', 'result' => 'RUN RACE'], ['goal' => 'RUN RACE', 'result' => '2ND'], /* ... more goals ... */]);
+        $urara->goals()->createMany([['goal' => 'JUNIOR MAKE DEBUT', 'result' => 'RUN RACE'], ['goal' => 'RUN RACE', 'result' => '2ND']/* ... more goals ... */]);
 
         // --- Data for [El☆Número 1] El Condor Pasa ---
         $elCondor = Plan::create([
@@ -131,10 +131,11 @@ class PlanSeeder extends Seeder
     /**
      * Helper function to create a skill for a plan.
      * Replicates the GetSkillReferenceId SQL function using firstOrCreate.
-     * @param Plan $plan The plan to attach the skill to.
-     * @param string $skillName The name of the skill.
-     * @param array $referenceData Data to use if creating the reference (description, tag).
-     * @param array $skillData Data for the skill itself (sp_cost, acquired, notes).
+     *
+     * @param  Plan  $plan  The plan to attach the skill to.
+     * @param  string  $skillName  The name of the skill.
+     * @param  array  $referenceData  Data to use if creating the reference (description, tag).
+     * @param  array  $skillData  Data for the skill itself (sp_cost, acquired, notes).
      */
     private function createSkill(Plan $plan, string $skillName, array $referenceData, array $skillData): void
     {

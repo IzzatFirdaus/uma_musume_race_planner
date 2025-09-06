@@ -17,35 +17,79 @@ class DashboardController extends Controller
      */
     public function index(): View
     {
-        // UPDATED: Queries are now global instead of user-specific.
-        $plans = Plan::with([
-            'attributes' => fn ($query) => $query->whereIn('attribute_name', ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT'])
-        ])->latest()->get();
+        $plans = $this->getPlans();
+        $stats = $this->getStatsArray();
+        $activities = $this->getActivitiesArray();
+        $options = $this->getOptions();
 
-        $stats = [
+        return view('dashboard', array_merge(
+            [
+                'plans' => $plans,
+                'stats' => $stats,
+                'activities' => $activities,
+            ],
+            $options
+        ));
+    }
+
+    private function getPlans()
+    {
+        return Plan::with([
+            'attributes' => fn ($query) => $query->whereIn('attribute_name', ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT']),
+        ])->latest()->get();
+    }
+
+    private function getStatsArray()
+    {
+        return [
             'total_plans' => Plan::count(),
             'active_plans' => Plan::where('status', 'Active')->count(),
             'finished_plans' => Plan::where('status', 'Finished')->count(),
         ];
+    }
 
-        $activities = ActivityLog::latest()->take(7)->get();
+    private function getActivitiesArray()
+    {
+        return ActivityLog::latest()->take(7)->get();
+    }
 
-        // Fetch lookup/option data for forms
-        $moodOptions = Mood::all(['id', 'label']);
-        $strategyOptions = Strategy::all(['id', 'label']);
-        $conditionOptions = Condition::all(['id', 'label']);
-        $skillTagOptions = \App\Models\SkillReference::distinct()->pluck('tag');
+    private function getOptions(): array
+    {
+        return [
+            'moodOptions' => Mood::all(['id', 'label']),
+            'strategyOptions' => Strategy::all(['id', 'label']),
+            'conditionOptions' => Condition::all(['id', 'label']),
+            'skillTagOptions' => \App\Models\SkillReference::distinct()->pluck('tag'),
+            'careerStageOptions' => $this->getCareerStageOptions(),
+            'classOptions' => $this->getClassOptions(),
+            'attributeGradeOptions' => ['S+', 'S', 'A+', 'A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'E+', 'E', 'F+', 'F', 'G+', 'G'],
+            'predictionIcons' => ['◎', '⦾', '○', '△', 'X', '-'],
+        ];
+    }
 
-        // Define static options arrays
-        $careerStageOptions = [['value' => 'predebut', 'text' => 'Pre-Debut'], ['value' => 'junior', 'text' => 'Junior Year'], ['value' => 'classic', 'text' => 'Classic Year'], ['value' => 'senior', 'text' => 'Senior Year'], ['value' => 'finale', 'text' => 'Finale Season']];
-        $classOptions = [['value' => 'debut', 'text' => 'Debut'], ['value' => 'maiden', 'text' => 'Maiden'], ['value' => 'beginner', 'text' => 'Beginner'], ['value' => 'bronze', 'text' => 'Bronze'], ['value' => 'silver', 'text' => 'Silver'], ['value' => 'gold', 'text' => 'Gold'], ['value' => 'platinum', 'text' => 'Star'], ['value' => 'legend', 'text' => 'Legend']];
-        $attributeGradeOptions = ['S+', 'S', 'A+', 'A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'E+', 'E', 'F+', 'F', 'G+', 'G'];
-        $predictionIcons = ['◎', '⦾', '○', '△', 'X', '-'];
+    private function getCareerStageOptions(): array
+    {
+        return [
+            ['value' => 'predebut', 'text' => 'Pre-Debut'],
+            ['value' => 'junior', 'text' => 'Junior Year'],
+            ['value' => 'classic', 'text' => 'Classic Year'],
+            ['value' => 'senior', 'text' => 'Senior Year'],
+            ['value' => 'finale', 'text' => 'Finale Season'],
+        ];
+    }
 
-        return view('dashboard', compact(
-            'plans', 'stats', 'activities', 'moodOptions', 'strategyOptions', 'conditionOptions',
-            'skillTagOptions', 'careerStageOptions', 'classOptions', 'attributeGradeOptions', 'predictionIcons'
-        ));
+    private function getClassOptions(): array
+    {
+        return [
+            ['value' => 'debut', 'text' => 'Debut'],
+            ['value' => 'maiden', 'text' => 'Maiden'],
+            ['value' => 'beginner', 'text' => 'Beginner'],
+            ['value' => 'bronze', 'text' => 'Bronze'],
+            ['value' => 'silver', 'text' => 'Silver'],
+            ['value' => 'gold', 'text' => 'Gold'],
+            ['value' => 'platinum', 'text' => 'Star'],
+            ['value' => 'legend', 'text' => 'Legend'],
+        ];
     }
 
     /**
@@ -59,6 +103,7 @@ class DashboardController extends Controller
             'active_plans' => Plan::where('status', 'Active')->count(),
             'finished_plans' => Plan::where('status', 'Finished')->count(),
         ];
+
         return response()->json($stats);
     }
 
@@ -68,6 +113,7 @@ class DashboardController extends Controller
     public function getActivities(): JsonResponse
     {
         $activities = ActivityLog::latest()->take(7)->get();
+
         return response()->json($activities);
     }
 }

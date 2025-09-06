@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $sp_cost
+ * @property string $acquired
+ * @property string $notes
+ * @property SkillReference $skillReference
+ */
 class Skill extends Model
-    /**
-     * @property int $sp_cost
-     * @property string $acquired
-     * @property string $notes
-     * @property SkillReference $skillReference
-     */
 {
     use HasFactory;
 

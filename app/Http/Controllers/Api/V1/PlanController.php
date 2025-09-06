@@ -18,7 +18,7 @@ use Throwable;
 class PlanController extends Controller
 {
     // The ID of the default user for all public plans.
-    const PUBLIC_USER_ID = 1;
+    public const PUBLIC_USER_ID = 1;
 
     /**
      * Defines the relationships to be eager-loaded with every plan response.
@@ -40,6 +40,7 @@ class PlanController extends Controller
     {
         // UPDATED: Fetches all plans globally
         $plans = Plan::with($this->getRelationshipsToLoad())->latest()->get();
+
         return response()->json($plans);
     }
 
@@ -52,33 +53,12 @@ class PlanController extends Controller
     public function store(StorePlanRequest $request): JsonResponse
     {
         $validated = $request->validated();
-
         $plan = DB::transaction(function () use ($request, $validated) {
-            $planData = $validated['plan'];
-            $planData['trainee_image_path'] = null;
-            // UPDATED: Assign to the default public user
-            $planData['user_id'] = self::PUBLIC_USER_ID;
-
-            $plan = Plan::create($planData);
-
-            if ($request->hasFile('trainee_image')) {
-                $this->handleTraineeImageUpload($request, $plan);
-            }
-
-            if (!empty($validated['attributes'])) { $plan->attributes()->createMany($validated['attributes']); }
-            if (!empty($validated['goals'])) { $plan->goals()->createMany($validated['goals']); }
-            if (!empty($validated['racePredictions'])) { $plan->racePredictions()->createMany($validated['racePredictions']); }
-            if (!empty($validated['turns'])) { $plan->turns()->createMany($validated['turns']); }
-            if (!empty($validated['terrainGrades'])) { $plan->terrainGrades()->createMany($validated['terrainGrades']); }
-            if (!empty($validated['distanceGrades'])) { $plan->distanceGrades()->createMany($validated['distanceGrades']); }
-            if (!empty($validated['styleGrades'])) { $plan->styleGrades()->createMany($validated['styleGrades']); }
-
+            $plan = $this->createPlanWithData($validated['plan']);
+            $this->processTraineeImage($request, $plan);
+            $this->createPlanRelations($plan, $validated);
             $this->syncSkills($plan, $validated['skills'] ?? []);
-
-            ActivityLog::create([
-                'description' => "New plan created: {$plan->plan_title}",
-                'icon_class' => 'bi-person-plus',
-            ]);
+            $this->logPlanCreation($plan);
 
             return $plan;
         });
@@ -86,7 +66,42 @@ class PlanController extends Controller
         return response()->json($plan->load($this->getRelationshipsToLoad()), 201);
     }
 
-    /**
+    private function createPlanWithData(array $planData): Plan
+    {
+        $planData['trainee_image_path'] = null;
+        $planData['user_id'] = self::PUBLIC_USER_ID;
+
+        return Plan::create($planData);
+    }
+
+    private function processTraineeImage(Request $request, Plan $plan): void
+    {
+        if ($request->hasFile('trainee_image')) {
+            $this->handleTraineeImageUpload($request, $plan);
+        }
+    }
+
+    private function createPlanRelations(Plan $plan, array $validated): void
+    {
+        $relations = [
+            'attributes', 'goals', 'racePredictions', 'turns', 'terrainGrades', 'distanceGrades', 'styleGrades',
+        ];
+        foreach ($relations as $relation) {
+            if (isset($validated[$relation]) && count($validated[$relation]) > 0) {
+                $plan->{$relation}()->createMany($validated[$relation]);
+            }
+        }
+    }
+
+    private function logPlanCreation(Plan $plan): void
+    {
+        ActivityLog::create([
+            'description' => "New plan created: {$plan->plan_title}",
+            'icon_class' => 'bi-person-plus',
+        ]);
+    }
+
+        /**
      * Store a newly created resource using minimal data (Quick Create).
      * Replaces the 'quick_create' functionality of handle_plan_crud.php.
      *
@@ -94,37 +109,53 @@ class PlanController extends Controller
      */
     public function storeQuick(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $this->validateQuickCreateRequest($request);
+
+        $plan = DB::transaction(function () use ($validated) {
+            $plan = $this->createQuickPlan($validated);
+            $this->createDefaultAttributes($plan);
+            $this->logPlanCreation($plan);
+            return $plan;
+        });
+
+        return response()->json($plan->load($this->getRelationshipsToLoad()), 201);
+    }
+
+    private function validateQuickCreateRequest(Request $request): array
+    {
+        return $request->validate([
             'trainee_name' => 'required|string|max:255',
             'career_stage' => 'required|string|in:predebut,junior,classic,senior,finale',
             'traineeClass' => 'required|string|in:debut,maiden,beginner,bronze,silver,gold,platinum,star,legend',
             'race_name' => 'nullable|string|max:255',
         ]);
+    }
 
-        $plan = DB::transaction(function () use ($validated) {
-            $plan = Plan::create([
-                'user_id' => self::PUBLIC_USER_ID, // UPDATED: Assign to the default public user
-                'name' => $validated['trainee_name'],
-                'plan_title' => $validated['trainee_name'] . "'s New Plan",
-                'career_stage' => $validated['career_stage'],
-                'class' => $validated['traineeClass'],
-                'race_name' => $validated['race_name'] ?? '',
-                'status' => 'Planning',
-                'mood_id' => \App\Models\Mood::where('label', 'NORMAL')->value('id') ?? 1,
-                'strategy_id' => \App\Models\Strategy::where('label', 'PACE')->value('id') ?? 1,
-                'condition_id' => \App\Models\Condition::where('label', 'N/A')->value('id') ?? 1,
-            ]);
+    private function createQuickPlan(array $validated): Plan
+    {
+        return Plan::create([
+            'user_id' => self::PUBLIC_USER_ID, // UPDATED: Assign to the default public user
+            'name' => $validated['trainee_name'],
+            'plan_title' => $validated['trainee_name']."'s New Plan",
+            'career_stage' => $validated['career_stage'],
+            'class' => $validated['traineeClass'],
+            'race_name' => $validated['race_name'] ?? '',
+            'status' => 'Planning',
+            'mood_id' => \App\Models\Mood::where('label', 'NORMAL')->value('id') ?? 1,
+            'strategy_id' => \App\Models\Strategy::where('label', 'PACE')->value('id') ?? 1,
+            'condition_id' => \App\Models\Condition::where('label', 'N/A')->value('id') ?? 1,
+        ]);
+    }
 
-            $default_attributes = ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT'];
-            $attributes_data = collect($default_attributes)->map(fn($name) => [
-                'attribute_name' => $name, 'value' => 0, 'grade' => 'G'
-            ])->all();
-            $plan->attributes()->createMany($attributes_data);
-
-            return $plan;
-        });
-
-        return response()->json($plan->load($this->getRelationshipsToLoad()), 201);
+    private function createDefaultAttributes(Plan $plan): void
+    {
+        $default_attributes = ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT'];
+        $attributes_data = collect($default_attributes)->map(fn ($name) => [
+            'attribute_name' => $name,
+            'value' => 0,
+            'grade' => 'G',
+        ])->all();
+        $plan->attributes()->createMany($attributes_data);
     }
 
     /**
@@ -145,50 +176,10 @@ class PlanController extends Controller
      */
     public function update(UpdatePlanRequest $request, Plan $plan): JsonResponse
     {
-        // UPDATED: Authorization removed
         $validated = $request->validated();
-
         DB::transaction(function () use ($request, $plan, $validated) {
-            $imagePath = $this->handleTraineeImageUpload($request, $plan);
-
-            if (!empty($validated['plan'])) {
-                $planData = $validated['plan'];
-                $planData['trainee_image_path'] = $imagePath;
-                $plan->update($planData);
-            }
-
-            if (isset($validated['attributes'])) {
-                $plan->attributes()->delete();
-                $plan->attributes()->createMany($validated['attributes']);
-            }
-            if (isset($validated['goals'])) {
-                $plan->goals()->delete();
-                $plan->goals()->createMany($validated['goals']);
-            }
-             if (isset($validated['racePredictions'])) {
-                $plan->racePredictions()->delete();
-                $plan->racePredictions()->createMany($validated['racePredictions']);
-            }
-            if (isset($validated['turns'])) {
-                $plan->turns()->delete();
-                $plan->turns()->createMany($validated['turns']);
-            }
-            if (isset($validated['terrainGrades'])) {
-                $plan->terrainGrades()->delete();
-                $plan->terrainGrades()->createMany($validated['terrainGrades']);
-            }
-            if (isset($validated['distanceGrades'])) {
-                $plan->distanceGrades()->delete();
-                $plan->distanceGrades()->createMany($validated['distanceGrades']);
-            }
-            if (isset($validated['styleGrades'])) {
-                $plan->styleGrades()->delete();
-                $plan->styleGrades()->createMany($validated['styleGrades']);
-            }
-            if (isset($validated['skills'])) {
-                $this->syncSkills($plan, $validated['skills']);
-            }
-
+            $this->updatePlanData($request, $plan, $validated);
+            $this->updatePlanRelations($plan, $validated);
             ActivityLog::create([
                 'description' => "Plan updated: {$plan->plan_title}",
                 'icon_class' => 'bi-arrow-repeat',
@@ -196,6 +187,32 @@ class PlanController extends Controller
         });
 
         return response()->json($plan->load($this->getRelationshipsToLoad()));
+    }
+
+    private function updatePlanData(Request $request, Plan $plan, array $validated): void
+    {
+        $imagePath = $this->handleTraineeImageUpload($request, $plan);
+        if (isset($validated['plan']) && count($validated['plan']) > 0) {
+            $planData = $validated['plan'];
+            $planData['trainee_image_path'] = $imagePath ? $imagePath : $plan->trainee_image_path;
+            $plan->update($planData);
+        }
+    }
+
+    private function updatePlanRelations(Plan $plan, array $validated): void
+    {
+        $relations = [
+            'attributes', 'goals', 'racePredictions', 'turns', 'terrainGrades', 'distanceGrades', 'styleGrades',
+        ];
+        foreach ($relations as $relation) {
+            if (isset($validated[$relation])) {
+                $plan->{$relation}()->delete();
+                $plan->{$relation}()->createMany($validated[$relation]);
+            }
+        }
+        if (isset($validated['skills'])) {
+            $this->syncSkills($plan, $validated['skills']);
+        }
     }
 
     /**
@@ -232,6 +249,7 @@ class PlanController extends Controller
     {
         // UPDATED: Authorization removed
         $turns = $plan->turns()->orderBy('turn_number')->get(['turn_number as turn', 'speed', 'stamina', 'power', 'guts', 'wit']);
+
         return response()->json(['success' => true, 'data' => $turns]);
     }
 
@@ -243,20 +261,18 @@ class PlanController extends Controller
     {
         // UPDATED: Authorization removed
         $plan->load($this->getRelationshipsToLoad());
-        $output = $this->buildPlanText($plan);
-        $safeFileName = preg_replace('/[^a-z0-9_]/i', '_', $plan->plan_title ?: 'plan');
+        $safeFileName = preg_replace('/[^a-z0-9_]/i', '_', $plan->plan_title ? $plan->plan_title : 'plan');
         $fileName = "{$safeFileName}_{$plan->id}.txt";
 
-        return new Response($output, 200, [
+        return new Response($this->buildPlanText($plan), 200, [
             'Content-Type' => 'text/plain',
-            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
         ]);
     }
 
     private function buildPlanText(Plan $plan): string
     {
-        $output = "## PLAN: {$plan->plan_title} ##\n\n";
-        $divider = "\n" . str_repeat('=', 80) . "\n\n";
+        $divider = "\n".str_repeat('=', 80)."\n\n";
 
         $generalInfo = [
             ['Trainee Name:', $plan->name],
@@ -264,63 +280,75 @@ class PlanController extends Controller
             ['Class:', strtoupper($plan->class)],
         ];
         $maxKeyLength = max(array_map('strlen', array_column($generalInfo, 0)));
+        $generalInfoText = '';
         foreach ($generalInfo as $row) {
-            $output .= str_pad($row[0], $maxKeyLength) . " {$row[1]}\n";
+            $generalInfoText .= str_pad($row[0], $maxKeyLength)." {$row[1]}\n";
         }
 
         $attrRows = $plan->attributes->map(fn ($attr) => [ucfirst(strtolower($attr->attribute_name)), $attr->value, $attr->grade])->toArray();
-        $output .= $divider . "ATTRIBUTES\n" . $this->buildTextTable(['Attribute', 'Value', 'Grade'], $attrRows);
+        $attributesText = $divider."ATTRIBUTES\n".$this->buildTextTable(['Attribute', 'Value', 'Grade'], $attrRows);
 
         $skillRows = $plan->skills->map(fn ($skill) => [$skill->skillReference->skill_name, $skill->sp_cost, $skill->acquired, $skill->notes])->toArray();
-        $output .= $divider . "SKILLS\n" . $this->buildTextTable(['Name', 'Cost', 'Acquired', 'Notes'], $skillRows);
+        $skillsText = $divider."SKILLS\n".$this->buildTextTable(['Name', 'Cost', 'Acquired', 'Notes'], $skillRows);
 
-        return $output;
+        return "## PLAN: {$plan->plan_title} ##\n\n".$generalInfoText.$attributesText.$skillsText;
     }
 
     private function buildTextTable(array $headers, array $rows): string
     {
-        if (empty($rows)) return "No data.\n";
+        if (count($rows) === 0) {
+            return "No data.\n";
+        }
         $widths = [];
         foreach ($headers as $i => $header) {
             $widths[$i] = max(strlen($header), ...array_map(fn ($row) => strlen($row[$i] ?? ''), $rows));
         }
 
-        $headerRow = "| " . implode(' | ', array_map(fn ($h, $i) => str_pad($h, $widths[$i]), $headers, array_keys($headers))) . " |\n";
-        $dividerRow = "|" . implode("|", array_map(fn ($w) => str_repeat('-', $w + 2), $widths)) . "|\n";
-        $dataRows = implode("", array_map(function ($row) use ($widths) {
-            return "| " . implode(' | ', array_map(fn ($item, $i) => str_pad((string)$item, $widths[$i]), $row, array_keys($row))) . " |\n";
-        }, $rows));
+        $headerRow = '| '.implode(' | ', array_map(fn ($h, $i) => str_pad($h, $widths[$i]), $headers, array_keys($headers)))." |\n";
+        $dividerRow = '|'.implode('|', array_map(fn ($w) => str_repeat('-', $w + 2), $widths))."|\n";
+        $dataRows = implode('', array_map(fn ($row) => '| '.implode(' | ', array_map(fn ($item, $i) => str_pad((string) $item, $widths[$i]), $row, array_keys($row)))." |\n", $rows));
 
-        return $headerRow . $dividerRow . $dataRows;
+        return $headerRow.$dividerRow.$dataRows;
     }
 
     private function syncSkills(Plan $plan, array $skillsData): void
     {
         $plan->skills()->delete();
-        if (empty($skillsData)) return;
-
-        $skillsToCreate = [];
-        foreach ($skillsData as $skill) {
-            $skillName = trim($skill['name'] ?? '');
-            if (empty($skillName)) continue;
-
-            $skillRef = SkillReference::firstOrCreate(
-                ['skill_name' => $skillName],
-                ['description' => $skill['notes'] ?? 'User-added skill.', 'tag' => $skill['tag'] ?? '📝']
-            );
-
-            $skillsToCreate[] = [
-                'skill_reference_id' => $skillRef->id,
-                'sp_cost' => (int) ($skill['sp_cost'] ?? 0),
-                'acquired' => ($skill['acquired'] ?? 'no') === 'yes' ? 'yes' : 'no',
-                'tag' => trim($skill['tag'] ?? ''),
-                'notes' => trim($skill['notes'] ?? ''),
-            ];
+        if (count($skillsData) === 0) {
+            return;
         }
 
-        if (!empty($skillsToCreate)) {
+        $skillsToCreate = array_map([$this, 'buildSkillData'], $skillsData);
+        $skillsToCreate = array_filter($skillsToCreate);
+
+        if (count($skillsToCreate) > 0) {
             $plan->skills()->createMany($skillsToCreate);
         }
+    }
+
+    private function buildSkillData(array $skill): ?array
+    {
+        $skillName = trim($skill['name'] ?? '');
+        if ($skillName === '') {
+            return null;
+        }
+
+        $skillRef = SkillReference::firstOrCreate(
+            ['skill_name' => $skillName],
+            ['description' => $skill['notes'] ?? 'User-added skill.', 'tag' => $skill['tag'] ?? '📝']
+        );
+
+        $acquired = 'no';
+        if (isset($skill['acquired']) && $skill['acquired'] === 'yes') {
+            $acquired = 'yes';
+        }
+
+        return [
+            'skill_reference_id' => $skillRef->id,
+            'acquired' => $acquired,
+            'tag' => trim($skill['tag'] ?? ''),
+            'notes' => trim($skill['notes'] ?? ''),
+        ];
     }
 
     private function handleTraineeImageUpload(Request $request, Plan $plan): ?string
@@ -328,12 +356,12 @@ class PlanController extends Controller
         $currentPath = $plan->trainee_image_path;
 
         if ($request->boolean('clear_trainee_image')) {
-            if ($currentPath) Storage::disk('public')->delete($currentPath);
+            $this->deleteImageIfExists($currentPath);
             $currentPath = null;
         }
 
         if ($request->hasFile('trainee_image')) {
-            if ($currentPath) Storage::disk('public')->delete($currentPath);
+            $this->deleteImageIfExists($currentPath);
             $currentPath = $request->file('trainee_image')->store('trainee_images', 'public');
         }
 
@@ -343,5 +371,12 @@ class PlanController extends Controller
         }
 
         return $currentPath;
+    }
+
+    private function deleteImageIfExists(?string $path): void
+    {
+        if ($path) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

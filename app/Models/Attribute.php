@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $attribute_name
+ * @property string $grade
+ * @property int $value
+ */
 class Attribute extends Model
-    /**
-     * @property string $attribute_name
-     * @property string $grade
-     * @property int $value
-     */
 {
     use HasFactory;
 

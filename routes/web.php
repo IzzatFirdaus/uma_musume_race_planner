@@ -20,6 +20,4 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 /**
  * The application guide page.
  */
-Route::get('/guide', function () {
-    return view('guide');
-})->name('guide');
+Route::get('/guide', fn () => view('guide'))->name('guide');

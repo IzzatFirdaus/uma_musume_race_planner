@@ -9,7 +9,7 @@
 
     <title>Uma Musume Race Planner</title>
 
-    {{-- Third-party CSS Dependencies (from CDN) --}}
+  {{-- Third-party CSS Dependencies (from CDN) --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
@@ -17,10 +17,15 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('uploads/app_logo/uma_musume_race_planner_logo_32.ico') }}" sizes="32x32">
     <link rel="apple-touch-icon" href="{{ asset('uploads/app_logo/uma_musume_race_planner_logo_256.png') }}">
 
-    {{-- Custom Theme Color using environment variable with fallback --}}
+  {{-- Custom Theme Color using environment variable with fallback --}}
     <style>
       :root {
         --app-theme-color: {{ config('app.theme_color') }};
+    /* Ensure CSS vars for background images resolve to public/uploads even during Vite dev */
+    --bg-image-body-light: url("{{ asset('uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png') }}");
+    --bg-image-body-dark: url("{{ asset('uploads/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png') }}");
+    --bg-image-component-light: url("{{ asset('uploads/app_bg/uma_musume_race_planner_bg_light_1028x1536.png') }}");
+    --bg-image-component-dark: url("{{ asset('uploads/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png') }}");
       }
 
       /*
@@ -71,7 +76,7 @@
         This directive loads your app's local CSS and JS files, built by Vite.
         Replace individual <link> and <script> tags for local assets.
     --}}
-    @vite(['resources/css/app.css', 'resources/js/main.js'])
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
 

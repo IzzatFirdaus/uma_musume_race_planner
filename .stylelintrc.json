@@ -1,0 +1,29 @@
+{
+    "extends": [
+        "stylelint-config-standard",
+        "stylelint-config-recommended",
+        "stylelint-config-tailwindcss"
+    ],
+    "rules": {
+        "no-descending-specificity": null,
+        "no-duplicate-selectors": null,
+        "property-no-vendor-prefix": [
+            true,
+            {
+                "ignoreProperties": ["-webkit-backdrop-filter"]
+            }
+        ],
+        "at-rule-no-unknown": [
+            true,
+            {
+                "ignoreAtRules": [
+                    "tailwind",
+                    "apply",
+                    "variants",
+                    "responsive",
+                    "screen"
+                ]
+            }
+        ]
+    }
+}

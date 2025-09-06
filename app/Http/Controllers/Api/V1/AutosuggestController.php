@@ -24,28 +24,37 @@ class AutosuggestController extends Controller
 
         $field = $request->input('field');
         $query = $request->input('query');
-        $suggestions = [];
-
-        switch ($field) {
-            case 'skill_name':
-                $suggestions = SkillReference::where('skill_name', 'LIKE', "%{$query}%")
-                    ->limit(10)
-                    ->get(['skill_name', 'description', 'tag']);
-                break;
-
-            case 'name':
-            case 'race_name':
-            case 'goal':
-                // UPDATED: Query now searches all plans, not just the user's.
-                $suggestions = Plan::where($field, 'LIKE', "%{$query}%")
-                    ->whereNotNull($field)
-                    ->where($field, '!=', '')
-                    ->distinct()
-                    ->limit(10)
-                    ->pluck($field);
-                break;
-        }
+        $suggestions = $this->getSuggestions($field, $query);
 
         return response()->json(['success' => true, 'suggestions' => $suggestions]);
+    }
+
+    private function getSuggestions(string $field, string $query)
+    {
+        if ($field === 'skill_name') {
+            return $this->getSkillSuggestions($query);
+        }
+        if (in_array($field, ['name', 'race_name', 'goal'], true)) {
+            return $this->getPlanSuggestions($field, $query);
+        }
+
+        return [];
+    }
+
+    private function getSkillSuggestions(string $query)
+    {
+        return SkillReference::where('skill_name', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['skill_name', 'description', 'tag']);
+    }
+
+    private function getPlanSuggestions(string $field, string $query)
+    {
+        return Plan::where($field, 'LIKE', "%{$query}%")
+            ->whereNotNull($field)
+            ->where($field, '!=', '')
+            ->distinct()
+            ->limit(10)
+            ->pluck($field);
     }
 }

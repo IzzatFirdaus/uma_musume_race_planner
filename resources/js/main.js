@@ -60,16 +60,19 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- Handle opening plans from URL on page load ---
     handleUrlParameters();
 
-    // --- Attach Autosuggest ---
-    attachAutosuggest(document.getElementById("modalName"), "name");
-    attachAutosuggest(document.getElementById("modalName_inline"), "name");
-    attachAutosuggest(document.getElementById("modalRaceName"), "race_name");
-    attachAutosuggest(
-        document.getElementById("modalRaceName_inline"),
-        "race_name",
-    );
-    attachAutosuggest(document.getElementById("modalGoal"), "goal");
-    attachAutosuggest(document.getElementById("modalGoal_inline"), "goal");
+    // --- Attach Autosuggest (guard if element not present on this page) ---
+    const elModalName = document.getElementById("modalName");
+    if (elModalName) attachAutosuggest(elModalName, "name");
+    const elModalNameInline = document.getElementById("modalName_inline");
+    if (elModalNameInline) attachAutosuggest(elModalNameInline, "name");
+    const elRaceName = document.getElementById("modalRaceName");
+    if (elRaceName) attachAutosuggest(elRaceName, "race_name");
+    const elRaceNameInline = document.getElementById("modalRaceName_inline");
+    if (elRaceNameInline) attachAutosuggest(elRaceNameInline, "race_name");
+    const elGoal = document.getElementById("modalGoal");
+    if (elGoal) attachAutosuggest(elGoal, "goal");
+    const elGoalInline = document.getElementById("modalGoal_inline");
+    if (elGoalInline) attachAutosuggest(elGoalInline, "goal");
 });
 
 // -----------------------------------------------------------------------------
@@ -159,15 +162,12 @@ function setupGlobalEventListeners() {
     });
 
     // Form submission handlers
-    document
-        .getElementById("planDetailsForm")
-        .addEventListener("submit", handleFormSubmit);
-    document
-        .getElementById("planDetailsFormInline")
-        .addEventListener("submit", handleFormSubmit);
-    document
-        .getElementById("quickCreatePlanForm")
-        .addEventListener("submit", handleFormSubmit);
+    const formModal = document.getElementById("planDetailsForm");
+    formModal?.addEventListener("submit", handleFormSubmit);
+    const formInline = document.getElementById("planDetailsFormInline");
+    formInline?.addEventListener("submit", handleFormSubmit);
+    const formQuick = document.getElementById("quickCreatePlanForm");
+    formQuick?.addEventListener("submit", handleFormSubmit);
 
     // Listen for custom events to refresh data
     document.addEventListener("planUpdated", refreshDashboardData);
@@ -227,9 +227,8 @@ async function fetchAndPopulatePlan(planId, isInlineView) {
     const formElement = document.getElementById(
         isInlineView ? "planDetailsFormInline" : "planDetailsForm",
     );
-
-    loadingOverlay.style.display = "flex";
-    formElement.reset();
+    if (loadingOverlay) loadingOverlay.style.display = "flex";
+    formElement?.reset();
     resetFormTabs(isInlineView);
 
     try {
@@ -248,9 +247,10 @@ async function fetchAndPopulatePlan(planId, isInlineView) {
 
         // Show the correct view (modal or inline)
         if (isInlineView) {
-            document.getElementById("mainContent").style.display = "none";
-            document.getElementById("planInlineDetails").style.display =
-                "block";
+            const mainContent = document.getElementById("mainContent");
+            const inlineDetails = document.getElementById("planInlineDetails");
+            if (mainContent) mainContent.style.display = "none";
+            if (inlineDetails) inlineDetails.style.display = "block";
         } else {
             const planDetailsModal = bootstrap.Modal.getOrCreateInstance(
                 document.getElementById("planDetailsModal"),
@@ -265,7 +265,7 @@ async function fetchAndPopulatePlan(planId, isInlineView) {
             "danger",
         );
     } finally {
-        loadingOverlay.style.display = "none";
+        if (loadingOverlay) loadingOverlay.style.display = "none";
     }
 }
 

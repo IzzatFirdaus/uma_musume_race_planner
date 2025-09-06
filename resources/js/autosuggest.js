@@ -14,6 +14,9 @@ const activeSuggestLists = new Map();
  * @param {function|null} onSelectCallback A callback function to run when a suggestion is selected.
  */
 export function attachAutosuggest(input, field, onSelectCallback = null) {
+    if (!input) {
+        return; // Element not on this page; no-op
+    }
     let currentFocus = -1;
     const allowedFields = ["name", "race_name", "skill_name", "goal"];
     if (!allowedFields.includes(field)) {

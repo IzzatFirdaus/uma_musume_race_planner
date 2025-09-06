@@ -22,77 +22,65 @@
 
     /* Text Colors */
     --color-text-dark: #212529; /* Standard dark text */
-    --color-text-light: #ffffff; /* Standard light text */
+    --color-text-light: #fff; /* Standard light text */
     --color-text-muted-light: #6c757d; /* Bootstrap default muted for light theme */
 
     /* Backgrounds & Surfaces (Light Mode) */
     --color-bg-light: #f9f7fd; /* Soft, very light background */
-    --color-surface-light-opaque: #ffffff; /* Opaque card/modal background */
-    --color-surface-light-glass: rgba(
-        255,
-        255,
-        255,
-        0.9
+    --color-surface-light-opaque: #fff; /* Opaque card/modal background */
+    --color-surface-light-glass: rgb(
+        255 255 255 / 90%
     ); /* INCREASED OPACITY for better text contrast */
-    --color-header-light-glass: rgba(
-        240,
-        98,
-        146,
-        0.2
+
+    --color-header-light-glass: rgb(
+        240 98 146 / 20%
     ); /* Slightly stronger header tint, INCREASED OPACITY */
-    --color-border-light: rgba(
-        149,
-        117,
-        205,
-        0.2
+
+    --color-border-light: rgb(
+        149 117 205 / 20%
     ); /* Subtle border for light theme forms */
-    --color-shadow-light: 0 4px 12px rgba(149, 117, 205, 0.15); /* Soft shadow */
+
+    --color-shadow-light: 0 4px 12px rgb(149 117 205 / 15%); /* Soft shadow */
 
     /* Stat Colors - Consistent and clearly named, aligned with SPEC-05 */
-    --color-stat-speed: #3399ff; /* Blue */
+    --color-stat-speed: #39f; /* Blue */
     --color-stat-stamina: #dc3545; /* Red */
     --color-stat-power: #fd7e14; /* Orange */
     --color-stat-guts: #e83e8c; /* Magenta */
     --color-stat-wit: #28a745; /* Green */
 
     /* Background Image URLs - Defined here for easy switching */
-    --bg-image-body-light: url("../uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
-    --bg-image-body-dark: url("../uploads/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
-    --bg-image-component-light: url("../uploads/app_bg/uma_musume_race_planner_bg_light_1028x1536.png");
-    --bg-image-component-dark: url("../uploads/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png");
+    --bg-image-body-light: url("/uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
+    --bg-image-body-dark: url("/uploads/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
+    --bg-image-component-light: url("/uploads/app_bg/uma_musume_race_planner_bg_light_1028x1536.png");
+    --bg-image-component-dark: url("/uploads/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png");
 
     /* Dark Mode Base - Semantic Naming */
     --color-bg-dark: #1a1a1a; /* Deeper, less harsh dark background */
-    --color-surface-dark-glass: rgba(
-        30,
-        30,
-        30,
-        0.85
+    --color-surface-dark-glass: rgb(
+        30 30 30 / 85%
     ); /* Slightly darker, INCREASED OPACITY */
-    --color-header-dark-glass: rgba(
-        45,
-        45,
-        45,
-        0.9
+
+    --color-header-dark-glass: rgb(
+        45 45 45 / 90%
     ); /* Darker, slightly more opaque header tint, INCREASED OPACITY */
-    --color-border-dark: rgba(255, 255, 255, 0.15); /* Border for dark theme */
+
+    --color-border-dark: rgb(255 255 255 / 15%); /* Border for dark theme */
     --color-input-bg-dark: #3a3a3a; /* Dark input background */
     --color-input-text-dark: #e0e0e0; /* Light text for dark inputs */
     --color-table-header-dark: #4a4a4a; /* Dark table header background */
-    --color-table-border-dark: rgba(255, 255, 255, 0.1); /* Dark table border */
-    --color-shadow-dark: 0 6px 16px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+    --color-table-border-dark: rgb(255 255 255 / 10%); /* Dark table border */
+    --color-shadow-dark: 0 6px 16px rgb(0 0 0 / 50%); /* Stronger shadow for depth */
 
     /* Neon Theme for Dark Mode - Enhanced Contrast */
     --color-text-neon-dark: #e1d9ff; /* Light lavender for body text, high contrast */
     --color-neon-purple: #b373ff; /* Bright, vibrant purple for highlights */
-    --color-list-item-dark-glass: rgba(
-        60,
-        53,
-        74,
-        0.9
+    --color-list-item-dark-glass: rgb(
+        60 53 74 / 90%
     ); /* Slightly less transparent for list items, INCREASED OPACITY */
+
     --color-text-muted-dark: #9e95b3; /* Lighter muted text for dark mode */
-    --color-link-dark: #ffffff; /* General link color, bright for visibility */
+    --color-link-dark: #fff; /* General link color, bright for visibility */
 
     /* Common UI Elements */
     --border-radius-base: 0.75rem; /* Slightly smaller, more modern radius */
@@ -114,12 +102,14 @@ body {
     background-color: var(
         --color-bg-light
     ); /* Fallback color, now using variable */
+
     color: var(--color-text-dark); /* Default text color for light mode */
     font-family: "M PLUS Rounded 1c", sans-serif; /* Applied new font */
     padding-bottom: 50px; /* Ensure space for fixed footer */
     transition:
         color var(--transition-speed),
         background-color var(--transition-speed); /* Smooth transitions */
+
     line-height: 1.6; /* Improved readability */
 }
 
@@ -142,6 +132,7 @@ body::before {
 body.dark-mode {
     background-color: var(--color-bg-dark); /* Base dark background */
     color: var(--color-text-neon-dark); /* Neon text for dark mode */
+
     --color-shadow-light: var(--color-shadow-dark); /* Apply dark shadow */
     --color-text-muted-light: var(
         --color-text-muted-dark
@@ -158,10 +149,12 @@ body.dark-mode a {
     color: var(--color-link-dark);
     text-decoration: none; /* Default for links in dark mode unless hovered */
 }
+
 body.dark-mode a:hover {
     color: var(--color-neon-purple); /* Highlight with neon purple on hover */
     text-decoration: underline; /* Standard underline for hover */
 }
+
 body.dark-mode .text-muted {
     color: var(
         --color-text-muted-dark
@@ -183,8 +176,7 @@ footer,
     background-size: cover;
     background-position: center;
     box-shadow: var(--color-shadow-light); /* Use variable for shadow */
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* MOVED UP */
+    border: 1px solid rgb(255 255 255 / 40%); /* MOVED UP */
     backdrop-filter: blur(var(--backdrop-blur-strength));
     background-color: var(--color-surface-light-glass);
     border-radius: var(--border-radius-base); /* Use variable for radius */
@@ -205,6 +197,7 @@ footer,
         background-color: var(
             --color-surface-light-opaque
         ); /* Fallback to opaque for light mode */
+
         background-image: none; /* Remove background image if backdrop-filter isn't supported */
     }
 
@@ -218,9 +211,11 @@ footer,
         background-color: var(
             --color-surface-dark-glass
         ); /* Fallback to opaque for dark mode */
+
         background-image: none; /* Remove background image if backdrop-filter isn't supported */
     }
 }
+
 /* End of Backdrop-filter fallback */
 
 /* Card Header Specifics */
@@ -228,10 +223,11 @@ footer,
     background-color: var(--color-header-light-glass);
     font-weight: 700;
     color: var(--color-primary);
-    border-bottom: 1px solid rgba(240, 98, 146, 0.3); /* Slightly stronger border */
+    border-bottom: 1px solid rgb(240 98 146 / 30%); /* Slightly stronger border */
     border-top-left-radius: var(
         --border-radius-base
     ); /* Match card border radius */
+
     border-top-right-radius: var(--border-radius-base);
     padding: 1rem 1.25rem; /* Standard padding */
 }
@@ -242,7 +238,7 @@ footer,
 .header-banner h1,
 .header-banner p {
     color: var(--color-text-dark) !important; /* Use dark text on light glass */
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); /* Slightly STRONGER shadow for readability */
+    text-shadow: 0 1px 4px rgb(0 0 0 / 15%); /* Slightly STRONGER shadow for readability */
 }
 
 /* Navbar Dark Mode Toggle Label in LIGHT mode */
@@ -250,6 +246,7 @@ footer,
     color: var(
         --color-text-dark
     ) !important; /* Make "Dark Mode" text dark for contrast */
+
     text-shadow: none; /* Remove text-shadow for crispness */
 }
 
@@ -258,10 +255,12 @@ footer a {
     color: var(
         --color-primary
     ); /* Use primary color for footer links in light mode */
+
     font-weight: 600;
     text-decoration: none;
     text-shadow: none; /* Ensure no text-shadow for crispness */
 }
+
 footer a:hover {
     text-decoration: underline;
     color: #d84381; /* Darker primary on hover */
@@ -299,6 +298,7 @@ body.dark-mode .navbar .form-check-label {
     color: var(
         --color-text-neon-dark
     ) !important; /* Use neon text for dark mode */
+
     text-shadow: none;
 }
 
@@ -307,9 +307,11 @@ body.dark-mode footer a {
 }
 
 /* --- Navbar Specifics --- */
+
 /* Improve hamburger icon visibility in light mode */
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+
     /* The rgba(33, 37, 41, 0.75) corresponds to a dark grey with some transparency,
      which should contrast well with the light glass background. */
 }
@@ -339,6 +341,7 @@ body.dark-mode .modal-footer {
     background-color: var(
         --color-primary
     ); /* Use primary color for active tabs */
+
     color: var(--color-text-light);
     font-weight: 600;
     border-radius: 999px; /* More pill-shaped */
@@ -350,6 +353,7 @@ body.dark-mode .nav-tabs .nav-link.active {
     background-color: var(
         --color-neon-purple
     ); /* Neon for dark mode active tabs */
+
     color: var(--color-text-light);
 }
 
@@ -357,12 +361,15 @@ body.dark-mode .nav-tabs .nav-link.active {
     color: var(--color-text-dark); /* Default tab link color */
     transition: all var(--transition-speed);
 }
+
 .nav-link:hover {
     color: var(--color-secondary); /* Accent on hover */
 }
+
 body.dark-mode .nav-link {
     color: var(--color-text-neon-dark);
 }
+
 body.dark-mode .nav-link:hover {
     color: var(--color-neon-purple);
 }
@@ -376,7 +383,7 @@ body.dark-mode .nav-link:hover {
     margin-right: 15px;
     vertical-align: middle;
     border-radius: var(--border-radius-base);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Consistent shadow */
+    box-shadow: 0 2px 8px rgb(0 0 0 / 20%); /* Consistent shadow */
 }
 
 .navbar-brand .logo {
@@ -404,15 +411,19 @@ body.dark-mode .nav-link:hover {
     transition:
         background-color var(--transition-speed),
         transform 0.1s ease-out; /* Add subtle transform */
+
     /* Placeholder for potential gradient styles */
+
     /* background-image: linear-gradient(135deg, var(--color-primary), #d84381); */
 }
+
 .btn-uma:hover {
     background-color: #d84381; /* Slightly darker shade on hover */
     color: var(--color-text-light);
     transform: translateY(-1px); /* Subtle lift effect */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+    box-shadow: 0 4px 8px rgb(0 0 0 / 20%); /* Add shadow on hover */
 }
+
 .btn-uma:active {
     background-color: #c43272; /* Even darker on active */
     transform: translateY(0);
@@ -430,15 +441,19 @@ body.dark-mode .nav-link:hover {
 .bg-active {
     background-color: #28a745; /* Green for active/success */
     color: var(--color-text-light);
+
     /* Added text shadow for better readability on green background */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 20%);
 }
+
 .bg-finished {
     background-color: #0d6efd; /* Blue for finished/info */
     color: var(--color-text-light);
+
     /* Added text shadow for better readability on blue background */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 20%);
 }
+
 body.dark-mode .bg-active,
 body.dark-mode .bg-finished {
     color: var(--color-text-light); /* Ensure light text in dark mode badges */
@@ -456,6 +471,7 @@ body.dark-mode .bg-finished {
     background-color: var(
         --color-surface-light-opaque
     ); /* Opaque for clearer input */
+
     color: var(--color-text-dark);
     padding: 0.75rem 1rem; /* More generous padding */
     font-size: 1rem; /* Ensure standard font size */
@@ -473,7 +489,7 @@ body.dark-mode .bg-finished {
 .form-control:focus,
 .form-select:focus {
     border-color: var(--color-secondary);
-    box-shadow: 0 0 0 0.25rem rgba(149, 117, 205, 0.25); /* Stronger, clearer focus ring */
+    box-shadow: 0 0 0 0.25rem rgb(149 117 205 / 25%); /* Stronger, clearer focus ring */
     background-color: var(
         --color-surface-light-opaque
     ); /* Keep opaque on focus */
@@ -494,6 +510,7 @@ body.dark-mode .form-control::placeholder {
 .autocomplete-container {
     position: relative;
 }
+
 .autocomplete-items {
     position: absolute;
     z-index: 1060; /* Higher z-index to appear above most content */
@@ -501,16 +518,17 @@ body.dark-mode .form-control::placeholder {
     left: 0;
     right: 0;
     max-height: 250px; /* Slightly more space */
-    overflow-y: auto;
-    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* MOVED UP */
+    overflow-y: auto; /* MOVED UP */
     backdrop-filter: blur(var(--backdrop-blur-strength));
     background-color: var(
         --color-surface-light-glass
     ); /* Consistent glass effect */
-    border: 1px solid rgba(0, 0, 0, 0.1);
+
+    border: 1px solid rgb(0 0 0 / 10%);
     border-radius: 0 0 var(--border-radius-base) var(--border-radius-base); /* Match card radius at bottom */
     box-shadow: var(--color-shadow-light);
 }
+
 body.dark-mode .autocomplete-items {
     background-color: var(--color-surface-dark-glass);
     border-color: var(--color-border-dark);
@@ -526,20 +544,20 @@ body.dark-mode .autocomplete-items {
 
 .autocomplete-items div:hover,
 .autocomplete-active {
-    background-color: rgba(
-        149,
-        117,
-        205,
-        0.1
+    background-color: rgb(
+        149 117 205 / 10%
     ); /* Light, subtle hover state using secondary color tint */
+
     color: var(--color-secondary); /* Hint of secondary color on hover */
 }
+
 body.dark-mode .autocomplete-items div:hover,
 body.dark-mode .autocomplete-active {
-    background-color: rgba(
+    background-color: rgb(
         var(--color-neon-purple),
         0.2
     ); /* Neon tint on hover */
+
     color: var(--color-neon-purple); /* Neon text on hover */
 }
 
@@ -556,13 +574,11 @@ body.dark-mode .autocomplete-active {
 
 .table thead th {
     font-weight: 700;
-    background-color: rgba(
-        248,
-        249,
-        250,
-        0.9
+    background-color: rgb(
+        248 249 250 / 90%
     ); /* INCREASED OPACITY for better distinction */
-    border-bottom: 2px solid rgba(0, 0, 0, 0.15); /* Stronger separator */
+
+    border-bottom: 2px solid rgb(0 0 0 / 15%); /* Stronger separator */
     padding: 0.85rem 1rem; /* Slightly more padding for headers */
     color: var(--color-text-dark); /* Ensure dark text on light header */
     position: sticky; /* For sticky headers in scrollable areas if applicable */
@@ -581,11 +597,8 @@ body.dark-mode .table thead th {
 }
 
 .table-hover tbody tr:hover {
-    background-color: rgba(
-        149,
-        117,
-        205,
-        0.07
+    background-color: rgb(
+        149 117 205 / 7%
     ); /* Slightly more pronounced hover effect */
 }
 
@@ -594,11 +607,8 @@ body.dark-mode .table {
 }
 
 body.dark-mode .table-hover tbody tr:hover {
-    background-color: rgba(
-        255,
-        255,
-        255,
-        0.1
+    background-color: rgb(
+        255 255 255 / 10%
     ); /* Slightly more visible hover for dark mode */
 }
 
@@ -607,9 +617,10 @@ body.dark-mode .table-hover tbody tr:hover {
     background-color: transparent;
     border-radius: var(--border-radius-base); /* Match card radius */
 }
+
 .recent-activity-card .list-group-item {
     background-color: transparent; /* Light mode items inherit card background */
-    border: 1px solid rgba(0, 0, 0, 0.1); /* Slightly stronger border */
+    border: 1px solid rgb(0 0 0 / 10%); /* Slightly stronger border */
     margin-bottom: -1px; /* Overlap borders for a continuous list */
     transition:
         background-color 0.2s ease,
@@ -618,21 +629,21 @@ body.dark-mode .table-hover tbody tr:hover {
     font-size: 0.95rem; /* Slightly larger font size */
     color: var(--color-text-dark); /* Ensure text is dark in light mode */
 }
+
 .recent-activity-card .list-group-item:first-child {
     border-top-left-radius: var(--border-radius-base);
     border-top-right-radius: var(--border-radius-base);
 }
+
 .recent-activity-card .list-group-item:last-child {
     border-bottom-left-radius: var(--border-radius-base);
     border-bottom-right-radius: var(--border-radius-base);
     margin-bottom: 0;
 }
+
 .recent-activity-card .list-group-item:hover {
-    background-color: rgba(
-        149,
-        117,
-        205,
-        0.05
+    background-color: rgb(
+        149 117 205 / 5%
     ); /* Slightly more visible hover for list items */
 }
 
@@ -640,13 +651,15 @@ body.dark-mode .recent-activity-card .list-group-item {
     background-color: var(
         --color-list-item-dark-glass
     ); /* Dark glass for list items */
-    border-color: rgba(255, 255, 255, 0.15); /* Slightly stronger border */
+
+    border-color: rgb(255 255 255 / 15%); /* Slightly stronger border */
     color: var(
         --color-text-neon-dark
     ); /* Set text to neon color for dark mode */
 }
+
 body.dark-mode .recent-activity-card .list-group-item:hover {
-    background-color: rgba(
+    background-color: rgb(
         var(--color-neon-purple),
         0.15
     ); /* Slightly more pronounced neon hover for list items */
@@ -662,6 +675,7 @@ body.dark-mode .recent-activity-card .list-group-item:hover {
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
+
 .quick-stats-label {
     font-size: 0.95rem; /* Slightly larger */
     color: var(--color-text-muted-light);
@@ -670,6 +684,7 @@ body.dark-mode .recent-activity-card .list-group-item:hover {
 body.dark-mode .quick-stats-number {
     color: var(--color-link-dark); /* Use white for the numbers in dark mode */
 }
+
 body.dark-mode .quick-stats-label {
     color: var(--color-text-muted-dark);
 }
@@ -687,15 +702,19 @@ body.dark-mode .quick-stats-number.text-primary {
 .text-speed-blue {
     color: var(--color-stat-speed);
 }
+
 .text-stamina-red {
     color: var(--color-stat-stamina);
 }
+
 .text-power-orange {
     color: var(--color-stat-power);
 }
+
 .text-guts-magenta {
     color: var(--color-stat-guts);
 }
+
 .text-wit-green {
     color: var(--color-stat-wit);
 }
@@ -708,50 +727,54 @@ body.dark-mode .quick-stats-number.text-primary {
     border-radius: 4px; /* Rounded ends for the bar container */
     overflow: hidden; /* Ensure bars stay within bounds */
 }
+
 .stat-bar {
     flex-grow: 1;
     border-radius: 4px; /* Slightly larger radius for individual bars */
     background-color: #e9ecef; /* Neutral background for empty portion */
 }
+
 .stat-bar > div {
     height: 100%;
     border-radius: 4px;
     transition: width 0.5s ease-out; /* Smooth animation for stat changes */
 }
+
 /* Individual stat bar colors - now using variable names */
 .stat-bar .bar-speed {
     background-color: var(--color-stat-speed);
 }
+
 .stat-bar .bar-stamina {
     background-color: var(--color-stat-stamina);
 }
+
 .stat-bar .bar-power {
     background-color: var(--color-stat-power);
 }
+
 .stat-bar .bar-guts {
     background-color: var(--color-stat-guts);
 }
+
 .stat-bar .bar-wit {
     background-color: var(--color-stat-wit);
 }
 
 body.dark-mode .stat-bar {
-    background-color: rgba(
-        255,
-        255,
-        255,
-        0.18
+    background-color: rgb(
+        255 255 255 / 18%
     ); /* Slightly lighter background for dark mode bars, more visible */
 }
 
 /* Contextual info for skills - clear, distinct, but not overwhelming */
 .skill-context-info {
-    font-size: 0.875rem; /* Slightly larger for readability */
-    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* MOVED UP */
+    font-size: 0.875rem; /* Slightly larger for readability */ /* MOVED UP */
     backdrop-filter: blur(var(--backdrop-blur-strength));
     background-color: var(
         --color-surface-light-glass
     ); /* Consistent glass effect */
+
     color: var(--color-text-dark);
     padding: 0.75rem 1rem; /* More padding */
     margin-top: 1rem; /* More separation */
@@ -759,6 +782,7 @@ body.dark-mode .stat-bar {
     border-left: 5px solid var(--color-secondary); /* Thicker accent border */
     box-shadow: var(--color-shadow-light); /* Add shadow for depth */
 }
+
 body.dark-mode .skill-context-info {
     background: var(--color-surface-dark-glass);
     color: var(--color-text-neon-dark);
@@ -771,11 +795,8 @@ body.dark-mode .skill-context-info {
 ------------------------------ */
 .loading-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9); /* Slightly less transparent */
+    inset: 0;
+    background: rgb(255 255 255 / 90%); /* Slightly less transparent */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -783,15 +804,17 @@ body.dark-mode .skill-context-info {
     border-radius: var(--border-radius-base);
     transition: background var(--transition-speed);
 }
+
 body.dark-mode .loading-overlay {
-    background: rgba(0, 0, 0, 0.75); /* Darker overlay for dark mode */
+    background: rgb(0 0 0 / 75%); /* Darker overlay for dark mode */
 }
 
 .guide-sticky-nav {
     /* Inherits frosted glass from themed surfaces */
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15); /* Clearer separator */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Stronger shadow for depth */
+    border-bottom: 1px solid rgb(0 0 0 / 15%); /* Clearer separator */
+    box-shadow: 0 2px 6px rgb(0 0 0 / 10%); /* Stronger shadow for depth */
     padding: 1rem 0; /* Consistent padding */
+
     /* --- GUIDE STICKY NAV Z-INDEX AND TOP POSITIONING --- */
     z-index: 1020; /* Ensure guide nav is below main navbar but above content */
     top: var(
@@ -810,11 +833,11 @@ body.dark-mode .guide-sticky-nav {
     color: var(--color-text-dark);
     padding: 2.5rem; /* More generous padding */
     border-radius: var(--border-radius-base);
-    box-shadow: var(--color-shadow-light);
-    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* MOVED UP */
+    box-shadow: var(--color-shadow-light); /* MOVED UP */
     backdrop-filter: blur(var(--backdrop-blur-strength));
     margin-bottom: 2rem; /* Space between sections */
 }
+
 body.dark-mode .section-highlight {
     background: var(--color-surface-dark-glass);
     color: var(--color-text-neon-dark);
@@ -825,18 +848,22 @@ footer {
     padding: 2rem 0; /* Increased padding for more prominence */
     font-size: 0.95rem; /* Slightly larger font for readability */
 }
+
 footer a {
     color: var(
         --color-primary
     ); /* Use primary color for footer links in light mode */
+
     font-weight: 600;
     text-decoration: none;
     text-shadow: none; /* Ensure no text-shadow for crispness */
 }
+
 footer a:hover {
     text-decoration: underline;
     color: #d84381; /* Darker primary on hover */
 }
+
 body.dark-mode footer a {
     color: var(--color-neon-purple); /* Neon purple for footer links */
     text-shadow: none; /* No shadow in dark mode */
@@ -855,6 +882,7 @@ body.dark-mode .plan-filters .btn-outline-secondary.active {
     background-color: var(
         --color-neon-purple
     ); /* Neon background for active/hover */
+
     color: var(--color-text-light); /* White text on neon */
     border-color: var(--color-neon-purple); /* Neon border */
 }
@@ -875,6 +903,7 @@ body.dark-mode .recent-activity-card .list-group-item .text-muted {
     color: var(
         --color-text-dark
     ) !important; /* Force dark text in light mode for contrast */
+
     text-shadow: none; /* Remove any conflicting text-shadow */
 }
 
@@ -883,8 +912,9 @@ body.dark-mode .recent-activity-card .list-group-item .text-muted {
     background-color: var(
         --color-header-light-glass
     ); /* Consistent glass header background */
+
     color: var(--color-primary); /* Use primary brand color for text */
-    border-bottom: 2px solid rgba(240, 98, 146, 0.4); /* Stronger border matching primary tint */
+    border-bottom: 2px solid rgb(240 98 146 / 40%); /* Stronger border matching primary tint */
     text-shadow: none; /* Clear text */
 }
 
@@ -892,6 +922,7 @@ body.dark-mode .table-hover thead th {
     background-color: var(
         --color-header-dark-glass
     ); /* Dark mode glass header */
+
     color: var(--color-text-neon-dark); /* Neon text for dark mode */
     border-bottom: 2px solid var(--color-border-dark); /* Dark mode border */
 }
@@ -900,12 +931,15 @@ body.dark-mode .table-hover thead th {
 .accordion-item {
     border: 1px solid var(--color-border-light); /* Consistent border */
     border-radius: var(--border-radius-base); /* Rounded corners */
-    margin-bottom: 1rem; /* Space between items */
-    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* MOVED UP */
+    margin-bottom: 1rem; /* Space between items */ /* MOVED UP */
+    /* stylelint-disable property-no-vendor-prefix */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    /* stylelint-enable property-no-vendor-prefix */
     backdrop-filter: blur(var(--backdrop-blur-strength));
     background-color: var(
         --color-surface-light-glass
     ); /* Frosted glass background */
+
     box-shadow: var(--color-shadow-light); /* Add subtle shadow */
     overflow: hidden; /* Ensures child elements respect radius */
 }
@@ -918,6 +952,7 @@ body.dark-mode .table-hover thead th {
     background-color: var(
         --color-surface-light-glass
     ); /* Maintain glass effect */
+
     color: var(--color-text-dark); /* Dark text for light mode */
     font-weight: 600;
     padding: 1rem 1.25rem; /* Consistent padding */
@@ -932,6 +967,7 @@ body.dark-mode .table-hover thead th {
     background-color: var(
         --color-header-light-glass
     ); /* Highlight when active */
+
     color: var(--color-primary); /* Primary color when open */
     border-bottom-color: var(--color-border-light); /* Border when open */
     box-shadow: none; /* Remove inner shadow */
@@ -939,7 +975,7 @@ body.dark-mode .table-hover thead th {
 
 .accordion-header .accordion-button:focus {
     border-color: var(--color-secondary);
-    box-shadow: 0 0 0 0.25rem rgba(149, 117, 205, 0.25); /* Clear focus ring */
+    box-shadow: 0 0 0 0.25rem rgb(149 117 205 / 25%); /* Clear focus ring */
 }
 
 .accordion-body {
@@ -977,8 +1013,7 @@ body.dark-mode .accordion-body {
     color: var(--color-text-dark);
     padding: 2.5rem;
     border-radius: var(--border-radius-base);
-    box-shadow: var(--color-shadow-light);
-    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* MOVED UP */
+    box-shadow: var(--color-shadow-light); /* MOVED UP */
     backdrop-filter: blur(var(--backdrop-blur-strength));
     margin-bottom: 2rem; /* Ensure space after it */
 }
@@ -997,7 +1032,7 @@ body.dark-mode .accordion-body {
 #glossary dd {
     margin-bottom: 1.5rem; /* Space after definition */
     padding-left: 1rem; /* Indent definition slightly */
-    border-left: 3px solid rgba(149, 117, 205, 0.2); /* Subtle accent line */
+    border-left: 3px solid rgb(149 117 205 / 20%); /* Subtle accent line */
 }
 
 body.dark-mode #glossary {
@@ -1015,7 +1050,7 @@ body.dark-mode #glossary dt {
 }
 
 body.dark-mode #glossary dd {
-    border-left: 3px solid rgba(var(--color-neon-purple), 0.4); /* Neon accent line */
+    border-left: 3px solid rgb(var(--color-neon-purple), 0.4); /* Neon accent line */
 }
 
 /* Guide Page Related Links (bottom section, not footer) */
@@ -1024,8 +1059,7 @@ body.dark-mode #glossary dd {
     background: var(--color-surface-light-glass); /* Apply glass effect */
     padding: 2rem; /* Consistent padding */
     border-radius: var(--border-radius-base); /* Consistent radius */
-    box-shadow: var(--color-shadow-light);
-    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength)); /* MOVED UP */
+    box-shadow: var(--color-shadow-light); /* MOVED UP */
     backdrop-filter: blur(var(--backdrop-blur-strength));
     margin-top: 2rem !important; /* Ensure spacing from previous section */
     margin-bottom: 2rem !important; /* Ensure spacing before footer */
@@ -1063,6 +1097,7 @@ body.dark-mode .container > .text-center.text-muted.small {
     color: var(
         --color-text-neon-dark
     ); /* General text color for this section in dark mode */
+
     box-shadow: var(--color-shadow-dark);
 }
 
@@ -1083,17 +1118,20 @@ body.dark-mode .container > .text-center.text-muted.small a:hover {
 }
 
 /* --- Global Navbar Z-Index for higher precedence --- */
+
 /* The .navbar class itself already has sticky-top from navbar.php */
 .navbar {
     z-index: 1050; /* Higher than Bootstrap's default modal, ensures it stays on top */
 }
 
 /* Add a CSS variable for navbar height for better consistency */
+
 /* This can be set dynamically by JS if needed, but a fixed value is a good start */
 body {
     --navbar-height: 56px; /* Approx default Bootstrap navbar height */
 }
-@media (min-width: 992px) {
+
+@media (width >= 992px) {
     /* Adjust for larger screens if navbar height changes */
     body {
         --navbar-height: 56px; /* Keep consistent or adjust if navbar grows */

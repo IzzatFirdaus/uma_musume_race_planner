@@ -9,26 +9,10 @@ class ActivityLog extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
+    public const UPDATED_AT = null;
+    public const CREATED_AT = 'timestamp';
+
     protected $table = 'activity_log';
-
-    /**
-     * The name of the "updated at" column.
-     *
-     * @var string|null
-     */
-    const UPDATED_AT = null;
-
-    /**
-     * The name of the "created at" column.
-     *
-     * @var string|null
-     */
-    const CREATED_AT = 'timestamp';
 
     /**
      * The attributes that are mass assignable.

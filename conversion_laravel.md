@@ -247,7 +247,7 @@ This step involves migrating the user interface and client-side scripts into the
 3.  **Update JavaScript**: Client-side JavaScript is updated to interact with the new Laravel backend.
     - **API Endpoints**: All `fetch()` requests are updated from old PHP scripts (`get_plans.php`, `handle_plan_crud.php`) to the new, versioned API routes (e.g., `fetch('/api/v1/plans')`).
     - **Data Injection**: Initial page data is passed from the `DashboardController` to `dashboard.blade.php` and injected into a global `window.plannerData` JavaScript object using the `@json` Blade directive.
-      <!-- end list -->
+        <!-- end list -->
     ```blade
     // In dashboard.blade.php
     @push('scripts')
@@ -266,6 +266,7 @@ This step involves migrating the user interface and client-side scripts into the
 ### Step 5: Migrating Specific Features
 
 1.  **Image Uploads**: Use Laravel's built-in `Storage` facade to handle the trainee image uploads.
+
     ```php
     // Example in PlanController's store or update method
     if ($request->hasFile('trainee_image')) {
@@ -276,7 +277,9 @@ This step involves migrating the user interface and client-side scripts into the
     ```
 
     - Run `php artisan storage:link` once to create a symbolic link from `public/storage` to `storage/app/public`.
+
 2.  **Database Seeding**: Convert your `sample_data.sql` file into Laravel Seeders. This allows you to easily populate your database with test data using a single Artisan command.
+
     ```bash
     php artisan make:seeder LookupSeeder
     php artisan make:seeder PlanSeeder
