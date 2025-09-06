@@ -50,7 +50,7 @@ class DashboardController extends Controller
 
     private function getActivitiesArray()
     {
-        return ActivityLog::latest()->take(7)->get();
+        return ActivityLog::orderBy('timestamp', 'desc')->take(7)->get();
     }
 
     private function getOptions(): array
@@ -112,7 +112,7 @@ class DashboardController extends Controller
      */
     public function getActivities(): JsonResponse
     {
-        $activities = ActivityLog::latest()->take(7)->get();
+        $activities = ActivityLog::orderBy('timestamp', 'desc')->take(7)->get();
 
         return response()->json($activities);
     }

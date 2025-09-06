@@ -22,5 +22,8 @@
         "stylelint-config-tailwindcss": "^1.0.0",
         "tailwindcss": "^4.0.0",
         "vite": "^7.0.4"
+    },
+    "dependencies": {
+        "sweetalert2": "^11.23.0"
     }
 }

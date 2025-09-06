@@ -6,6 +6,8 @@
 
     {{-- CSRF token for AJAX and form requests --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+  {{-- Ensure relative asset URLs resolve when app is served from a subdirectory --}}
+  <base href="{{ url('') }}/">
 
     <title>Uma Musume Race Planner</title>
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Models\ActivityLog;
 use App\Models\Plan;
 use Livewire\Component;
 
@@ -14,6 +15,42 @@ class PlanList extends Component
         $this->currentFilter = $filter;
         // Force component re-render
         $this->dispatch('refreshPlans');
+    }
+
+    public function viewPlan(int $planId): void
+    {
+        // Dispatch an event to open the plan details modal
+        $this->dispatch('openPlanModal', planId: $planId);
+    }
+
+    public function editPlan(int $planId): void
+    {
+        // Dispatch an event to open the plan edit modal
+        $this->dispatch('openPlanEditModal', planId: $planId);
+    }
+
+    public function deletePlan($id)
+    {
+        try {
+            $plan = Plan::findOrFail($id);
+            $planName = $plan->name;
+
+            $plan->delete();
+
+            // Log the deletion
+            ActivityLog::create([
+                'description' => "Deleted plan: {$planName}",
+                'icon_class' => 'bi-trash',
+                'timestamp' => now()
+            ]);
+
+            // Dispatch success event for SweetAlert2
+            $this->dispatch('plan-deleted', ['message' => "Plan '{$planName}' deleted successfully!"]);
+
+        } catch (\Exception $e) {
+            // Dispatch error event for SweetAlert2
+            $this->dispatch('plan-error', ['message' => 'Failed to delete plan: ' . $e->getMessage()]);
+        }
     }
 
     public function render()

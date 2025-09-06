@@ -2,6 +2,21 @@
 
 @section('content')
     <main class="container">
+        <script>
+            window.plannerData = {
+                plans: @json($plans ?? []),
+                stats: @json($stats ?? []),
+                activities: @json($activities ?? []),
+                moodOptions: @json($moodOptions ?? []),
+                strategyOptions: @json($strategyOptions ?? []),
+                conditionOptions: @json($conditionOptions ?? []),
+                skillTagOptions: @json($skillTagOptions ?? []),
+                careerStageOptions: @json($careerStageOptions ?? []),
+                classOptions: @json($classOptions ?? []),
+                attributeGradeOptions: @json($attributeGradeOptions ?? []),
+                predictionIcons: @json($predictionIcons ?? []),
+            };
+        </script>
         {{-- Header Banner --}}
         @livewire('dashboard.header-banner')
 

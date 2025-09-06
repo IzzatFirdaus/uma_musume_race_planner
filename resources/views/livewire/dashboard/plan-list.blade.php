@@ -1,5 +1,19 @@
 
 <div>
+    @if (session()->has('message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('message') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     {{-- Plan list card for dashboard --}}
     <div class="card shadow-sm mb-4 border-0 rounded-4 plan-list-theme">
         <div class="card-header d-flex justify-content-between align-items-center rounded-top-4 plan-list-header-theme">
@@ -45,7 +59,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="plan-list-body">
                         @forelse($plans as $plan)
                             <tr>
                                 <td>
@@ -91,13 +105,23 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button class="btn btn-outline-primary" title="View Details">
+                                        <button wire:click="viewPlan({{ $plan->id }})"
+                                                data-id="{{ $plan->id }}"
+                                                class="btn btn-outline-primary view-inline-btn"
+                                                title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button class="btn btn-outline-secondary" title="Edit">
+                                        <button wire:click="editPlan({{ $plan->id }})"
+                                                data-id="{{ $plan->id }}"
+                                                class="btn btn-outline-secondary edit-btn"
+                                                title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger" title="Delete">
+                                        <button wire:click="deletePlan({{ $plan->id }})"
+                                                data-id="{{ $plan->id }}"
+                                                wire:confirm="Are you sure you want to delete '{{ $plan->name }}'? This action cannot be undone!"
+                                                class="btn btn-outline-danger delete-btn"
+                                                title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -122,3 +146,69 @@
         </div>
     </div>
 </div>
+
+@script
+<script>
+// Add SweetAlert2 for deletion confirmation
+document.addEventListener('livewire:init', () => {
+    Livewire.on('plan-deleted', (event) => {
+        if (window.Swal) {
+            Swal.fire({
+                title: 'Deleted!',
+                text: event[0].message || 'Plan has been deleted successfully.',
+                icon: 'success',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+    });
+
+    Livewire.on('plan-error', (event) => {
+        if (window.Swal) {
+            Swal.fire({
+                title: 'Error!',
+                text: event[0].message || 'An error occurred.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+});
+
+// Replace the default Livewire confirm dialog with SweetAlert2
+    document.addEventListener('DOMContentLoaded', function() {
+    // Override delete button clicks to use SweetAlert2
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button[wire\\:confirm]');
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const confirmText = btn.getAttribute('wire:confirm');
+            const wireClick = btn.getAttribute('wire:click');
+
+            if (window.Swal && confirmText && wireClick) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: confirmText,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Extract plan ID from wire:click attribute
+                        const match = wireClick.match(/deletePlan\((\d+)\)/);
+                        if (match) {
+                            @this.call('deletePlan', parseInt(match[1]));
+                        }
+                    }
+                });
+            }
+        }
+    }, true);
+});
+</script>
+@endscript

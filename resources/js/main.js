@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- Initial Data Rendering (from Blade) ---
     // The DashboardController now passes initial data to the view, removing the need for initial fetch calls.
     if (window.plannerData) {
-        renderPlanTable(window.plannerData.plans || []);
+        // Let Livewire render the plan rows; only hydrate stats & activities here
         renderStats(window.plannerData.stats || {});
         renderRecentActivity(window.plannerData.activities || []);
     }
@@ -56,6 +56,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // --- Main Event Listener for all clicks ---
     setupGlobalEventListeners();
+
+    // Open Quick Create modal when Create button clicked
+    const createBtn = document.getElementById("createPlanBtn");
+    if (createBtn) {
+        createBtn.addEventListener("click", () => {
+            const modalEl = document.getElementById("createPlanModal");
+            if (modalEl) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        });
+    }
+
+    // Listen for Livewire events to open modal/inline views
+    document.addEventListener("livewire:init", () => {
+        Livewire.on("openPlanModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
+        Livewire.on("openPlanEditModal", ({ planId }) => fetchAndPopulatePlan(planId, false));
+    });
 
     // --- Handle opening plans from URL on page load ---
     handleUrlParameters();
@@ -239,11 +256,12 @@ async function fetchAndPopulatePlan(planId, isInlineView) {
                 `Network response was not ok (status: ${response.status})`,
             );
 
-        const result = await response.json();
-        currentPlanData = result; // Store the fetched data globally
+    const result = await response.json();
+    // Controller returns the plan object directly, not wrapped in { data }
+    currentPlanData = { data: result };
 
-        // Populate the form with the retrieved data
-        populateForm(result.data, isInlineView);
+    // Populate the form with the retrieved data
+    populateForm(result, isInlineView);
 
         // Show the correct view (modal or inline)
         if (isInlineView) {
@@ -344,7 +362,7 @@ async function handleFormSubmit(e) {
  * @param {string|number} planId The ID of the plan to delete.
  */
 async function handleDeletePlan(planId) {
-    if (confirm("Are you sure you want to delete this plan?")) {
+    const doDelete = async () => {
         try {
             const response = await fetch(`/api/v1/plans/${planId}`, {
                 method: "DELETE",
@@ -355,13 +373,41 @@ async function handleDeletePlan(planId) {
                     Accept: "application/json",
                 },
             });
-            if (!response.ok)
-                throw new Error("Server responded with an error.");
-            showMessageBox("Plan deleted successfully!");
+            if (!response.ok) throw new Error("Server responded with an error.");
+            if (window.Swal) {
+                await window.Swal.fire({
+                    title: "Deleted!",
+                    text: "Plan deleted successfully.",
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } else {
+                showMessageBox("Plan deleted successfully!");
+            }
             document.dispatchEvent(new CustomEvent("planUpdated"));
         } catch (error) {
-            showMessageBox(`Error: ${error.message}`, "danger");
+            if (window.Swal) {
+                window.Swal.fire({ title: "Error", text: error.message, icon: "error" });
+            } else {
+                showMessageBox(`Error: ${error.message}`, "danger");
+            }
         }
+    };
+
+    if (window.Swal) {
+        const { isConfirmed } = await window.Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+        });
+        if (isConfirmed) await doDelete();
+    } else if (confirm("Are you sure you want to delete this plan?")) {
+        await doDelete();
     }
 }
 
@@ -371,17 +417,17 @@ async function handleDeletePlan(planId) {
 async function refreshDashboardData() {
     try {
         const [plansRes, statsRes, activityRes] = await Promise.all([
-            fetch("/api/v1/plans/list"),
+            fetch("/api/v1/plans"),
             fetch("/api/v1/dashboard/stats"),
             fetch("/api/v1/dashboard/activities"),
         ]);
-        const plans = await plansRes.json();
-        const stats = await statsRes.json();
-        const activities = await activityRes.json();
+        const plans = await plansRes.json(); // array
+        const stats = await statsRes.json(); // object
+        const activities = await activityRes.json(); // array
 
-        renderPlanTable(plans.data);
-        renderStats(stats.data);
-        renderRecentActivity(activities.data);
+        renderPlanTable(plans);
+        renderStats(stats);
+        renderRecentActivity(activities);
     } catch (error) {
         console.error("Failed to refresh dashboard data:", error);
         showMessageBox("Could not refresh dashboard data.", "danger");
@@ -734,7 +780,7 @@ async function renderGrowthChart(planId, isInline) {
     }
 
     try {
-        const response = await fetch(`/api/v1/plans/${planId}/progress`);
+    const response = await fetch(`/api/v1/plans/${planId}/progress-chart`);
         const result = await response.json();
 
         if (
@@ -948,3 +994,9 @@ function showMessageBox(message, type = "success") {
     messageBoxModalInstance.show();
     setTimeout(() => messageBoxModalInstance.hide(), 3000);
 }
+
+// Expose a subset of helpers for inline scripts if needed
+window.UmaPlanner = {
+    fetchAndPopulatePlan,
+    handleDeletePlan,
+};
