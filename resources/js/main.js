@@ -75,14 +75,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Listen for Livewire events to open modal/inline views
     document.addEventListener("livewire:init", () => {
-        // Handle plan modal opening - dispatch to PlanDetails component
+        // Handle plan modal and inline opening
         Livewire.on("openPlanModal", ({ planId }) => {
-            // Find and trigger the PlanDetails component
-            const planDetailsComponent = Livewire.find('plan-details');
-            if (planDetailsComponent) {
-                planDetailsComponent.call('loadPlan', planId);
-            }
-            // Also show the modal
+            // Dispatch the event to load plan data in modal
+            Livewire.dispatch('loadPlan', { planId: planId });
+            // Show the modal
             const modalEl = document.getElementById('planDetailsModal');
             if (modalEl) {
                 bootstrap.Modal.getOrCreateInstance(modalEl).show();
@@ -90,12 +87,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         
         Livewire.on("openPlanEditModal", ({ planId }) => {
-            // Find and trigger the PlanDetails component
-            const planDetailsComponent = Livewire.find('plan-details');
-            if (planDetailsComponent) {
-                planDetailsComponent.call('loadPlan', planId);
-            }
-            // Also show the modal
+            // Dispatch the event to load plan data in modal
+            Livewire.dispatch('loadPlan', { planId: planId });
+            // Show the modal
             const modalEl = document.getElementById('planDetailsModal');
             if (modalEl) {
                 bootstrap.Modal.getOrCreateInstance(modalEl).show();
@@ -106,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
         Livewire.on("openPlanInline", ({ planId }) => {
             // The component should be available on the page, let's dispatch to it
             Livewire.dispatch('loadPlanInline', { planId: planId });
+        });
         });
         
         // Listen for form submission events from Livewire components
@@ -121,6 +116,22 @@ document.addEventListener("DOMContentLoaded", function () {
         // Listen for error messages
         Livewire.on("show-error", ({ message }) => {
             showMessageBox(message, 'danger');
+        });
+
+        // Listen for showing plan list card
+        Livewire.on("showPlanListCard", () => {
+            const listCard = document.getElementById("planListCard");
+            if (listCard) {
+                listCard.style.display = "block";
+            }
+        });
+
+        // Listen for hiding plan list card
+        Livewire.on("hidePlanListCard", () => {
+            const listCard = document.getElementById("planListCard");
+            if (listCard) {
+                listCard.style.display = "none";
+            }
         });
         // Ensure that if Livewire re-renders the form after we populate it,
         // we re-apply the populated data. This prevents Livewire DOM updates
@@ -248,13 +259,7 @@ function setupGlobalEventListeners() {
 
         // UI Interaction Buttons
         if (target.closest("#closeInlineDetailsBtn")) {
-            const inlineDetails = document.getElementById("planInlineDetails");
-            if (inlineDetails) {
-                inlineDetails.style.display = "none";
-                inlineDetails.classList.remove("d-block");
-            }
-            const listCard = document.getElementById("planListCard");
-            if (listCard) listCard.style.display = "block";
+            // This is now handled by Livewire wire:click="closePlan", so we just need to update URL
             updateUrlWithPlan(null);
         }
         if (target.closest("#exportPlanBtn, #exportPlanBtnInline")) {

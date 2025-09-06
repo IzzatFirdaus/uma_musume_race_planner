@@ -56,6 +56,9 @@ class PlanInlineDetails extends Component
         $this->isLoading = true;
         $this->isVisible = true;
         
+        // Dispatch JavaScript event to hide the plan list card
+        $this->dispatch('hidePlanListCard');
+        
         try {
             $plan = Plan::with([
                 'attributes', 
@@ -123,6 +126,9 @@ class PlanInlineDetails extends Component
     {
         $this->isVisible = false;
         $this->reset();
+        
+        // Dispatch JavaScript event to show the plan list card
+        $this->dispatch('showPlanListCard');
     }
 
     public function save()

@@ -6,7 +6,7 @@
         No direct image/background usage here, but ensure any referenced partials
         (like form-tabs) also use `asset()` for uploaded images.
     --}}
-    <div id="planInlineDetails" class="card mb-4" style="{{ $isVisible ? 'display: block;' : 'display: none;' }}">
+    <div id="planInlineDetails" class="card mb-4" @style(['display: block' => $isVisible, 'display: none' => !$isVisible])>
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0" id="planInlineDetailsLabel">
                 @if($plan_title)
