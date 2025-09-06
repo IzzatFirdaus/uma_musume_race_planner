@@ -1,0 +1,22 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\SkillReference;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class SkillReferenceFactory extends Factory
+{
+    protected $model = SkillReference::class;
+
+    public function definition(): array
+    {
+        return [
+            'skill_name' => $this->faker->unique()->words(2, true),
+            'description' => $this->faker->sentence(),
+            'stat_type' => $this->faker->word(),
+            'best_for' => $this->faker->sentence(),
+            'tag' => $this->faker->word(),
+        ];
+    }
+}

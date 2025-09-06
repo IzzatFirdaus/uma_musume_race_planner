@@ -1,0 +1,25 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Skill;
+use App\Models\Plan;
+use App\Models\SkillReference;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class SkillFactory extends Factory
+{
+    protected $model = Skill::class;
+
+    public function definition(): array
+    {
+        return [
+            'plan_id' => Plan::factory(),
+            'skill_reference_id' => SkillReference::factory(),
+            'sp_cost' => $this->faker->numberBetween(0, 500),
+            'acquired' => $this->faker->randomElement(['yes', 'no']),
+            'tag' => $this->faker->word(),
+            'notes' => $this->faker->sentence(),
+        ];
+    }
+}

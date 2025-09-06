@@ -1,0 +1,21 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\DistanceGrade;
+use App\Models\Plan;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class DistanceGradeFactory extends Factory
+{
+    protected $model = DistanceGrade::class;
+
+    public function definition(): array
+    {
+        return [
+            'plan_id' => Plan::factory(),
+            'distance' => $this->faker->randomElement(['Sprint', 'Mile', 'Medium', 'Long']),
+            'grade' => $this->faker->randomElement(['G', 'F', 'E', 'D', 'C', 'B', 'A', 'S']),
+        ];
+    }
+}

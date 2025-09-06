@@ -108,7 +108,7 @@ body {
     padding-bottom: 50px; /* Ensure space for fixed footer */
     transition:
         color var(--transition-speed),
-        background-color var(--transition-speed); /* Smooth transitions */
+    background-color var(--transition-speed); /* Smooth transitions */
 
     line-height: 1.6; /* Improved readability */
 }
@@ -166,8 +166,35 @@ body.dark-mode .text-muted {
    Rationale: Consistent application of the core design aesthetic.
    Elements like cards, modals, navbars, and footers share this style.
 ---------------------------------------------------- */
+
+/* Header Banner Styles */
 .header-banner,
-.navbar,
+.header-banner-theme {
+    margin-top: 0 !important; /* Remove top margin so it sits directly below navbar */
+
+    /* Other header banner styles remain unchanged */
+}
+
+/* Navbar Styles */
+
+/* --- Navbar Colors: Light & Dark Mode --- */
+.navbar {
+    background: rgb(240 98 146 / 85%); /* Brand pink glass for light mode */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgb(240 98 146 / 18%); /* Brand border */
+    z-index: 1050;
+}
+
+body.dark-mode .navbar {
+    background: rgb(179 115 255 / 85%); /* Neon purple glass for dark mode */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgb(179 115 255 / 22%); /* Neon border */
+}
+
 .card,
 .modal-content,
 footer,
@@ -177,6 +204,8 @@ footer,
     background-position: center;
     box-shadow: var(--color-shadow-light); /* Use variable for shadow */
     border: 1px solid rgb(255 255 255 / 40%); /* MOVED UP */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
     background-color: var(--color-surface-light-glass);
     border-radius: var(--border-radius-base); /* Use variable for radius */
@@ -188,8 +217,7 @@ footer,
 
 /* Backdrop-filter fallback for unsupported browsers */
 @supports not (backdrop-filter: blur(10px)) {
-    .header-banner,
-    .navbar,
+    /* Remove grouped styles for .header-banner and .navbar to avoid overlap */
     .card,
     .modal-content,
     footer,
@@ -217,6 +245,217 @@ footer,
 }
 
 /* End of Backdrop-filter fallback */
+
+/* Header Banner Theme Support */
+.header-banner-theme {
+    background-image: var(--bg-image-component-light);
+    background-color: var(--color-surface-light-glass);
+    color: var(--color-text-dark);
+    box-shadow: var(--color-shadow-light);
+    border-radius: var(--border-radius-base);
+    border: 1px solid rgb(255 255 255 / 40%);
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    backdrop-filter: blur(var(--backdrop-blur-strength));
+    transition:
+        background-color var(--transition-speed),
+        color var(--transition-speed);
+}
+
+body.dark-mode .header-banner-theme {
+    background-image: var(--bg-image-component-dark);
+    background-color: var(--color-surface-dark-glass);
+    color: var(--color-text-neon-dark);
+    box-shadow: var(--color-shadow-dark);
+    border-color: var(--color-border-dark);
+}
+
+/* Plan List Theme Support */
+.dashboard-btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition:
+        background-color var(--transition-speed),
+        color var(--transition-speed);
+}
+
+.dashboard-btn-primary:hover {
+    background-color: #d84381;
+    color: var(--color-text-light);
+}
+
+body.dark-mode .dashboard-btn-primary {
+    background-color: var(--color-neon-purple);
+    color: var(--color-text-light);
+}
+
+body.dark-mode .dashboard-btn-primary:hover {
+    background-color: #a259ff;
+    color: var(--color-text-light);
+}
+
+.dashboard-btn-outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition:
+        background-color var(--transition-speed),
+        color var(--transition-speed),
+        border-color var(--transition-speed);
+}
+
+.dashboard-btn-outline:hover,
+.dashboard-btn-outline.active {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border-color: var(--color-primary);
+}
+
+body.dark-mode .dashboard-btn-outline {
+    color: var(--color-neon-purple);
+    border-color: var(--color-neon-purple);
+}
+
+body.dark-mode .dashboard-btn-outline:hover,
+body.dark-mode .dashboard-btn-outline.active {
+    background-color: var(--color-neon-purple);
+    color: var(--color-text-light);
+    border-color: var(--color-neon-purple);
+}
+
+.stats-panel-theme {
+    background-image: var(--bg-image-component-light);
+    background-color: var(--color-surface-light-glass);
+    color: var(--color-text-dark);
+    box-shadow: var(--color-shadow-light);
+    border-radius: var(--border-radius-base);
+    border: 1px solid rgb(255 255 255 / 40%);
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    backdrop-filter: blur(var(--backdrop-blur-strength));
+    transition:
+        background-color var(--transition-speed),
+        color var(--transition-speed);
+}
+
+body.dark-mode .stats-panel-theme {
+    background-image: var(--bg-image-component-dark);
+    background-color: var(--color-surface-dark-glass);
+    color: var(--color-text-neon-dark);
+    box-shadow: var(--color-shadow-dark);
+    border-color: var(--color-border-dark);
+}
+
+.stats-panel-header-theme {
+    background-color: var(--color-header-light-glass);
+    color: var(--color-primary);
+    border-bottom: 1px solid rgb(240 98 146 / 30%);
+    border-top-left-radius: var(--border-radius-base);
+    border-top-right-radius: var(--border-radius-base);
+    padding: 1rem 1.25rem;
+}
+
+body.dark-mode .stats-panel-header-theme {
+    background-color: var(--color-header-dark-glass);
+    color: var(--color-text-neon-dark);
+    border-bottom: 1px solid var(--color-border-dark);
+}
+
+.stats-panel-body-theme {
+    background-color: transparent;
+    color: inherit;
+}
+
+.recent-activity-theme {
+    background-image: var(--bg-image-component-light);
+    background-color: var(--color-surface-light-glass);
+    color: var(--color-text-dark);
+    box-shadow: var(--color-shadow-light);
+    border-radius: var(--border-radius-base);
+    border: 1px solid rgb(255 255 255 / 40%);
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    backdrop-filter: blur(var(--backdrop-blur-strength));
+    transition:
+        background-color var(--transition-speed),
+        color var(--transition-speed);
+}
+
+body.dark-mode .recent-activity-theme {
+    background-image: var(--bg-image-component-dark);
+    background-color: var(--color-surface-dark-glass);
+    color: var(--color-text-neon-dark);
+    box-shadow: var(--color-shadow-dark);
+    border-color: var(--color-border-dark);
+}
+
+.recent-activity-header-theme {
+    background-color: var(--color-header-light-glass);
+    color: var(--color-primary);
+    border-bottom: 1px solid rgb(240 98 146 / 30%);
+    border-top-left-radius: var(--border-radius-base);
+    border-top-right-radius: var(--border-radius-base);
+    padding: 1rem 1.25rem;
+}
+
+body.dark-mode .recent-activity-header-theme {
+    background-color: var(--color-header-dark-glass);
+    color: var(--color-text-neon-dark);
+    border-bottom: 1px solid var(--color-border-dark);
+}
+
+.recent-activity-body-theme {
+    background-color: transparent;
+    color: inherit;
+}
+
+.plan-list-theme {
+    background-image: var(--bg-image-component-light);
+    background-color: var(--color-surface-light-glass);
+    color: var(--color-text-dark);
+    box-shadow: var(--color-shadow-light);
+    border-radius: var(--border-radius-base);
+    border: 1px solid rgb(255 255 255 / 40%);
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    backdrop-filter: blur(var(--backdrop-blur-strength));
+    transition:
+        background-color var(--transition-speed),
+        color var(--transition-speed);
+}
+
+body.dark-mode .plan-list-theme {
+    background-image: var(--bg-image-component-dark);
+    background-color: var(--color-surface-dark-glass);
+    color: var(--color-text-neon-dark);
+    box-shadow: var(--color-shadow-dark);
+    border-color: var(--color-border-dark);
+}
+
+.plan-list-header-theme {
+    background-color: var(--color-header-light-glass);
+    color: var(--color-primary);
+    border-bottom: 1px solid rgb(240 98 146 / 30%);
+    border-top-left-radius: var(--border-radius-base);
+    border-top-right-radius: var(--border-radius-base);
+    padding: 1rem 1.25rem;
+}
+
+body.dark-mode .plan-list-header-theme {
+    background-color: var(--color-header-dark-glass);
+    color: var(--color-text-neon-dark);
+    border-bottom: 1px solid var(--color-border-dark);
+}
+
+.plan-list-body-theme {
+    background-color: transparent;
+    color: inherit;
+}
 
 /* Card Header Specifics */
 .card-header {
@@ -519,6 +758,8 @@ body.dark-mode .form-control::placeholder {
     right: 0;
     max-height: 250px; /* Slightly more space */
     overflow-y: auto; /* MOVED UP */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
     background-color: var(
         --color-surface-light-glass
@@ -770,6 +1011,8 @@ body.dark-mode .stat-bar {
 /* Contextual info for skills - clear, distinct, but not overwhelming */
 .skill-context-info {
     font-size: 0.875rem; /* Slightly larger for readability */ /* MOVED UP */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
     background-color: var(
         --color-surface-light-glass
@@ -802,6 +1045,9 @@ body.dark-mode .skill-context-info {
     align-items: center;
     z-index: 10;
     border-radius: var(--border-radius-base);
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    backdrop-filter: blur(var(--backdrop-blur-strength));
     transition: background var(--transition-speed);
 }
 
@@ -814,6 +1060,10 @@ body.dark-mode .loading-overlay {
     border-bottom: 1px solid rgb(0 0 0 / 15%); /* Clearer separator */
     box-shadow: 0 2px 6px rgb(0 0 0 / 10%); /* Stronger shadow for depth */
     padding: 1rem 0; /* Consistent padding */
+
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    backdrop-filter: blur(var(--backdrop-blur-strength));
 
     /* --- GUIDE STICKY NAV Z-INDEX AND TOP POSITIONING --- */
     z-index: 1020; /* Ensure guide nav is below main navbar but above content */
@@ -834,6 +1084,8 @@ body.dark-mode .guide-sticky-nav {
     padding: 2.5rem; /* More generous padding */
     border-radius: var(--border-radius-base);
     box-shadow: var(--color-shadow-light); /* MOVED UP */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
     margin-bottom: 2rem; /* Space between sections */
 }
@@ -1014,6 +1266,8 @@ body.dark-mode .accordion-body {
     padding: 2.5rem;
     border-radius: var(--border-radius-base);
     box-shadow: var(--color-shadow-light); /* MOVED UP */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
     margin-bottom: 2rem; /* Ensure space after it */
 }
@@ -1060,6 +1314,8 @@ body.dark-mode #glossary dd {
     padding: 2rem; /* Consistent padding */
     border-radius: var(--border-radius-base); /* Consistent radius */
     box-shadow: var(--color-shadow-light); /* MOVED UP */
+    /* Compatibility fix for Safari/iOS */
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
     margin-top: 2rem !important; /* Ensure spacing from previous section */
     margin-bottom: 2rem !important; /* Ensure spacing before footer */

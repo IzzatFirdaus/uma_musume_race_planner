@@ -55,77 +55,193 @@ class PlanSeeder extends Seeder
         $strategyPaceId = Strategy::where('label', 'PACE')->value('id');
         $strategyFrontId = Strategy::where('label', 'FRONT')->value('id');
 
-        // --- Data for [Bestest Prize 𝆕] Haru Urara ---
-        $urara = Plan::create([
-            'user_id' => $user->id,
-            'plan_title' => '[Bestest Prize 𝆕] Haru Urara Plan',
-            'turn_before' => 0,
-            'race_name' => 'URA Finale Qualifier',
-            'name' => '[Bestest Prize 𝆕] Haru Urara',
-            'career_stage' => 'finale',
-            'class' => 'silver',
-            'total_available_skill_points' => 4,
-            'acquire_skill' => 'NO',
-            'mood_id' => $moodGoodId,
-            'condition_id' => $conditionCharmingId,
-            'energy' => 20,
-            'race_day' => 'yes',
-            'goal' => '1ST',
-            'strategy_id' => $strategyLateId,
-            'growth_rate_power' => 10,
-            'growth_rate_guts' => 20,
-            'status' => 'Planning',
-            'source' => 'Manual Input Data 1',
-        ]);
+        // --- Data for all 8 plans from plan_sample_data.sql ---
+        $plans = [
+            // 1
+            [
+                'plan_title' => '[pf. Winning Equation…] Biwa Hayahide Plan',
+                'turn_before' => 0,
+                'race_name' => 'Tenno Sho (Spring)',
+                'name' => '[pf. Winning Equation…] Biwa Hayahide',
+                'career_stage' => 'senior',
+                'class' => 'silver',
+                'total_available_skill_points' => 17,
+                'acquire_skill' => 'NO',
+                'mood_id' => $moodGoodId,
+                'condition_id' => $conditionHotTopicId,
+                'energy' => 20,
+                'race_day' => 'yes',
+                'goal' => 'TOP 3',
+                'strategy_id' => $strategyPaceId,
+                'growth_rate_speed' => 0,
+                'growth_rate_power' => 0,
+                'growth_rate_wit' => 20,
+                'growth_rate_stamina' => 0,
+                'growth_rate_guts' => 10,
+                'status' => 'Planning',
+            ],
+            // 2
+            [
+                'plan_title' => '[Wild Top Gear] Vodka Plan',
+                'race_name' => 'URA Finale Finals',
+                'name' => '[Wild Top Gear] Vodka',
+                'career_stage' => 'finale',
+                'class' => 'star',
+                'total_available_skill_points' => null,
+                    'acquire_skill' => 'NO',
+                'mood_id' => null,
+                'condition_id' => null,
+                'energy' => null,
+                    'race_day' => 'no',
+                'goal' => 'VODKA IS 1ST PLACE',
+                'strategy_id' => null,
+                'growth_rate_speed' => 10,
+                'growth_rate_power' => 20,
+                'growth_rate_wit' => 0,
+                'growth_rate_stamina' => 0,
+                'growth_rate_guts' => 0,
+                'status' => 'Finished',
+            ],
+            // 3
+            [
+                'plan_title' => '[Wild Top Gear] Vodka Plan',
+                'race_name' => 'URA Finale Finals',
+                'name' => '[Wild Top Gear] Vodka',
+                'career_stage' => 'finale',
+                'class' => 'platinum',
+                'total_available_skill_points' => 347,
+                'acquire_skill' => 'YES',
+                'mood_id' => null,
+                'condition_id' => null,
+                'energy' => null,
+                    'race_day' => 'no',
+                'goal' => 'SHE WON 1ST',
+                'strategy_id' => null,
+                'growth_rate_speed' => 10,
+                'growth_rate_power' => 20,
+                'growth_rate_wit' => 0,
+                'growth_rate_stamina' => 0,
+                'growth_rate_guts' => 0,
+                'status' => 'Finished',
+            ],
+            // 4
+            [
+                'plan_title' => '[Peak Blue] Daiwa Scarlet Plan',
+                'race_name' => 'URA Finale Finals',
+                'name' => '[Peak Blue] Daiwa Scarlet',
+                'career_stage' => 'finale',
+                'class' => 'star',
+                'total_available_skill_points' => 75,
+                'acquire_skill' => 'YES',
+                'mood_id' => null,
+                'condition_id' => null,
+                'energy' => null,
+                    'race_day' => 'no',
+                'goal' => 'SHE’S 2ND PLACE',
+                'strategy_id' => $strategyFrontId,
+                'growth_rate_speed' => 10,
+                'growth_rate_power' => 0,
+                'growth_rate_wit' => 0,
+                'growth_rate_stamina' => 0,
+                'growth_rate_guts' => 20,
+                'status' => 'Finished',
+            ],
+            // 5
+            [
+                'plan_title' => '[Beyond the Horizon] Tokai Teio Plan',
+                'race_name' => 'Tenno Sho (Spring)',
+                'name' => '[Beyond the Horizon] Tokai Teio',
+                'career_stage' => 'classic',
+                'class' => 'gold',
+                'total_available_skill_points' => 38,
+                'acquire_skill' => 'NO',
+                'mood_id' => $moodNormalId,
+                'condition_id' => null,
+                'energy' => 30,
+                'race_day' => 'yes',
+                'goal' => 'TOP 3',
+                'strategy_id' => $strategyPaceId,
+                'growth_rate_speed' => 10,
+                'growth_rate_power' => 0,
+                'growth_rate_wit' => 0,
+                'growth_rate_stamina' => 10,
+                'growth_rate_guts' => 10,
+                'status' => 'Planning',
+            ],
+            // 6
+            [
+                'plan_title' => '[Bestest Prize 𝆕] Haru Urara Plan',
+                'race_name' => 'JBC SPRINT',
+                'name' => '[Bestest Prize 𝆕] Haru Urara',
+                'career_stage' => 'senior',
+                'class' => 'silver',
+                'total_available_skill_points' => 174,
+                'acquire_skill' => 'YES',
+                'mood_id' => $moodGoodId,
+                'condition_id' => null,
+                'energy' => 20,
+                'race_day' => 'yes',
+                'goal' => 'MUST 1ST',
+                'strategy_id' => $strategyLateId,
+                'growth_rate_speed' => 0,
+                'growth_rate_power' => 0,
+                'growth_rate_wit' => 0,
+                'growth_rate_stamina' => 0,
+                'growth_rate_guts' => 20,
+                'status' => 'Planning',
+            ],
+            // 7
+            [
+                'plan_title' => '[Bestest Prize 𝆕] Haru Urara Plan',
+                'race_name' => 'URA Finale Qualifier',
+                'name' => '[Bestest Prize 𝆕] Haru Urara',
+                'career_stage' => 'finale',
+                'class' => 'silver',
+                'total_available_skill_points' => 4,
+                'acquire_skill' => 'NO',
+                'mood_id' => $moodGoodId,
+                'condition_id' => $conditionCharmingId,
+                'energy' => 20,
+                'race_day' => 'yes',
+                'goal' => '1ST',
+                'strategy_id' => $strategyLateId,
+                'growth_rate_speed' => 0,
+                'growth_rate_power' => 10,
+                'growth_rate_wit' => 0,
+                'growth_rate_stamina' => 0,
+                'growth_rate_guts' => 20,
+                'status' => 'Planning',
+            ],
+            // 8
+            [
+                'plan_title' => '[El☆Número 1] El Condor Pasa Plan',
+                'turn_before' => 12,
+                'race_name' => 'Kyodo News Hai',
+                'name' => '[El☆Número 1] El Condor Pasa',
+                'career_stage' => 'junior',
+                'class' => 'beginner',
+                'total_available_skill_points' => 38,
+                'acquire_skill' => 'NO',
+                'mood_id' => $moodGoodId,
+                'condition_id' => null,
+                'energy' => 50,
+                'race_day' => 'no',
+                'goal' => 'TOP 5',
+                'strategy_id' => $strategyPaceId,
+                'growth_rate_speed' => 20,
+                'growth_rate_power' => 0,
+                'growth_rate_wit' => 10,
+                'growth_rate_stamina' => 0,
+                'growth_rate_guts' => 0,
+                'status' => 'Planning',
+            ],
+        ];
 
-        $urara->attributes()->createMany([
-            ['attribute_name' => 'SPEED', 'value' => 423, 'grade' => 'C'],
-            ['attribute_name' => 'STAMINA', 'value' => 276, 'grade' => 'E+'],
-            ['attribute_name' => 'POWER', 'value' => 461, 'grade' => 'C'],
-            ['attribute_name' => 'GUTS', 'value' => 448, 'grade' => 'C'],
-            ['attribute_name' => 'WIT', 'value' => 264, 'grade' => 'E+'],
-        ]);
-
-        $this->createSkill($urara, 'Super Duper Stoked Lvl.1', ['description' => '(Unique Burst)'], ['acquired' => 'yes', 'notes' => '(Unique Burst)']);
-        $this->createSkill($urara, '∴ Win Q.E.D.', ['description' => 'Received from legacy. — powerful finishing burst'], ['acquired' => 'yes', 'notes' => 'Received from legacy. — powerful finishing burst']);
-        $this->createSkill($urara, 'Summer Runner ○', [], ['sp_cost' => 63, 'acquired' => 'no']);
-        // ... more skills for Urara
-
-        $urara->terrainGrades()->createMany([['terrain' => 'Turf', 'grade' => 'C'], ['terrain' => 'Dirt', 'grade' => 'A']]);
-        $urara->distanceGrades()->createMany([['distance' => 'Sprint', 'grade' => 'A'], ['distance' => 'Mile', 'grade' => 'A'], ['distance' => 'Medium', 'grade' => 'G'], ['distance' => 'Long', 'grade' => 'G']]);
-        $urara->styleGrades()->createMany([['style' => 'Front', 'grade' => 'G'], ['style' => 'Pace', 'grade' => 'G'], ['style' => 'Late', 'grade' => 'A'], ['style' => 'End', 'grade' => 'B']]);
-
-        $urara->racePredictions()->create(['race_name' => 'URA Finale Qualifier', 'venue' => 'KYOTO', 'ground' => 'DIRT', 'distance' => '1400M', 'track_condition' => 'SPRINT', 'direction' => 'RIGHT', 'speed' => '△', 'stamina' => 'X', 'power' => '○', 'guts' => '○', 'wit' => 'X', 'comment' => 'Your trainee isn’t a bad runner, but she may be outclassed. However, she might have a chance depending on the condition of her opponents.']);
-
-        $urara->goals()->createMany([['goal' => 'JUNIOR MAKE DEBUT', 'result' => 'RUN RACE'], ['goal' => 'RUN RACE', 'result' => '2ND']/* ... more goals ... */]);
-
-        // --- Data for [El☆Número 1] El Condor Pasa ---
-        $elCondor = Plan::create([
-            'user_id' => $user->id,
-            'plan_title' => '[El☆Número 1] El Condor Pasa Plan',
-            'turn_before' => 12,
-            'race_name' => 'Kyodo News Hai',
-            'name' => '[El☆Número 1] El Condor Pasa',
-            'career_stage' => 'junior',
-            'class' => 'beginner',
-            'time_of_day' => 'EARLY',
-            'month' => 'AUG',
-            'total_available_skill_points' => 75,
-            'acquire_skill' => 'NO',
-            'mood_id' => $moodNormalId,
-            'condition_id' => $conditionNaId,
-            'energy' => 80,
-            'race_day' => 'no',
-            'goal' => 'TOP 5',
-            'strategy_id' => $strategyPaceId,
-            'growth_rate_speed' => 20,
-            'growth_rate_wit' => 10,
-            'status' => 'Active',
-            'source' => 'Manual Input Data 2',
-        ]);
-        // ... add attributes, skills, grades, etc. for El Condor Pasa
-
-        // --- Repeat for all other 4 plans from sample_data.sql ---
+        foreach ($plans as $planData) {
+            $planData['user_id'] = $user->id;
+            $plan = Plan::create($planData);
+            // You can add attributes, skills, grades, etc. for each plan here
+        }
     }
 
     /**

@@ -101,7 +101,7 @@ class PlanController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Store a newly created resource using minimal data (Quick Create).
      * Replaces the 'quick_create' functionality of handle_plan_crud.php.
      *
@@ -115,6 +115,7 @@ class PlanController extends Controller
             $plan = $this->createQuickPlan($validated);
             $this->createDefaultAttributes($plan);
             $this->logPlanCreation($plan);
+
             return $plan;
         });
 

@@ -77,17 +77,16 @@
         Replace individual <link> and <script> tags for local assets.
     --}}
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Livewire Styles --}}
+    @livewireStyles
 
 </head>
 
 <body>
     {{-- Navbar --}}
-    @include('layouts.partials.navbar')
+  @livewire('layout.navbar')
 
-    <main class="container">
-        {{-- Main content from child views will be injected here --}}
-        @yield('content')
-    </main>
+    @yield('content')
 
     {{-- Modals --}}
     @include('modals.plan-details')
@@ -103,12 +102,14 @@
     </div>
 
     {{-- Footer --}}
-    @include('layouts.partials.footer')
+  @livewire('layout.footer')
 
     {{-- Bootstrap JS for modals and other interactivity --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     {{-- Stack for page-specific scripts pushed from other Blade views --}}
     @stack('scripts')
+    {{-- Livewire Scripts --}}
+    @livewireScripts
 </body>
 </html>

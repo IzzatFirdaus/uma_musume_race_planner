@@ -1,0 +1,47 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Plan;
+use App\Models\User;
+use App\Models\Mood;
+use App\Models\Condition;
+use App\Models\Strategy;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class PlanFactory extends Factory
+{
+    protected $model = Plan::class;
+
+    public function definition(): array
+    {
+        return [
+            'user_id' => User::factory(),
+            'plan_title' => $this->faker->sentence(3),
+            'turn_before' => $this->faker->numberBetween(0, 20),
+            'race_name' => $this->faker->words(3, true),
+            'name' => $this->faker->words(2, true),
+            'career_stage' => $this->faker->randomElement(['predebut', 'junior', 'classic', 'senior', 'finale']),
+            'class' => $this->faker->randomElement(['debut', 'maiden', 'beginner', 'bronze', 'silver', 'gold', 'platinum', 'star', 'legend']),
+            'time_of_day' => $this->faker->randomElement(['EARLY', 'MIDDAY', 'LATE']),
+            'month' => $this->faker->monthName(),
+            'total_available_skill_points' => $this->faker->numberBetween(0, 500),
+            'acquire_skill' => $this->faker->randomElement(['YES', 'NO']),
+            'mood_id' => Mood::factory(),
+            'condition_id' => Condition::factory(),
+            'energy' => $this->faker->numberBetween(0, 100),
+            'race_day' => $this->faker->randomElement(['yes', 'no']),
+            'goal' => $this->faker->sentence(2),
+            'strategy_id' => Strategy::factory(),
+            'growth_rate_speed' => $this->faker->numberBetween(0, 20),
+            'growth_rate_stamina' => $this->faker->numberBetween(0, 20),
+            'growth_rate_power' => $this->faker->numberBetween(0, 20),
+            'growth_rate_guts' => $this->faker->numberBetween(0, 20),
+            'growth_rate_wit' => $this->faker->numberBetween(0, 20),
+            'status' => $this->faker->randomElement(['Planning', 'Active', 'Finished', 'Draft', 'Abandoned']),
+            'source' => $this->faker->word(),
+            'trainee_image_path' => $this->faker->imageUrl(),
+            'deleted_at' => null,
+        ];
+    }
+}

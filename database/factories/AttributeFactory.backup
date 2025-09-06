@@ -1,0 +1,22 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Attribute;
+use App\Models\Plan;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class AttributeFactory extends Factory
+{
+    protected $model = Attribute::class;
+
+    public function definition(): array
+    {
+        return [
+            'plan_id' => Plan::factory(),
+            'attribute_name' => $this->faker->randomElement(['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT']),
+            'value' => $this->faker->numberBetween(0, 1000),
+            'grade' => $this->faker->randomElement(['G', 'F', 'E', 'D', 'C', 'B', 'A', 'S']),
+        ];
+    }
+}

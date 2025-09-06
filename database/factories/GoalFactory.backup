@@ -1,0 +1,21 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Goal;
+use App\Models\Plan;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class GoalFactory extends Factory
+{
+    protected $model = Goal::class;
+
+    public function definition(): array
+    {
+        return [
+            'plan_id' => Plan::factory(),
+            'goal' => $this->faker->sentence(2),
+            'result' => $this->faker->randomElement(['Pending', 'RUN RACE', '1ST', '2ND', 'TOP 3']),
+        ];
+    }
+}

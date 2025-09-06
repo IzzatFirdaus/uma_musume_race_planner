@@ -1,0 +1,21 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\TerrainGrade;
+use App\Models\Plan;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class TerrainGradeFactory extends Factory
+{
+    protected $model = TerrainGrade::class;
+
+    public function definition(): array
+    {
+        return [
+            'plan_id' => Plan::factory(),
+            'terrain' => $this->faker->randomElement(['Turf', 'Dirt']),
+            'grade' => $this->faker->randomElement(['G', 'F', 'E', 'D', 'C', 'B', 'A', 'S']),
+        ];
+    }
+}

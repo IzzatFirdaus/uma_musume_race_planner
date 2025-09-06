@@ -20,34 +20,33 @@ class LookupSeeder extends Seeder
         DB::table('conditions')->delete();
         DB::table('strategies')->delete();
 
-        // Insert base lookup values for moods.
+        // Insert updated moods
         DB::table('moods')->insert([
             ['id' => 1, 'label' => 'AWFUL'],
             ['id' => 2, 'label' => 'BAD'],
-            ['id' => 3, 'label' => 'GOOD'],
-            ['id' => 4, 'label' => 'GREAT'],
-            ['id' => 5, 'label' => 'NORMAL'],
-            ['id' => 6, 'label' => 'N/A'],
+            ['id' => 3, 'label' => 'NORMAL'],
+            ['id' => 4, 'label' => 'GOOD'],
+            ['id' => 5, 'label' => 'GREAT'],
         ]);
 
-        // Insert base lookup values for conditions.
+        // Insert updated conditions
         DB::table('conditions')->insert([
-            ['id' => 1, 'label' => 'RAINY'],
-            ['id' => 2, 'label' => 'SUNNY'],
-            ['id' => 3, 'label' => 'WINDY'],
-            ['id' => 4, 'label' => 'COLD'],
-            ['id' => 5, 'label' => 'N/A'],
-            ['id' => 6, 'label' => 'HOT TOPIC'],
-            ['id' => 7, 'label' => 'CHARMING'],
+            ['id' => 1, 'label' => 'MIGRAINE'],
+            ['id' => 2, 'label' => 'DRY SKIN'],
+            ['id' => 3, 'label' => 'INSOMNIA'],
+            ['id' => 4, 'label' => 'SLOW METABOLISM'],
+            ['id' => 5, 'label' => 'SLACKER'],
+            ['id' => 6, 'label' => 'UNDER THE WEATHER'],
+            ['id' => 7, 'label' => 'SPRING BUD'],
+            ['id' => 8, 'label' => 'SUSPICIOUS CLOUDS'],
         ]);
 
-        // Insert base lookup values for strategies.
+        // Insert updated strategies
         DB::table('strategies')->insert([
             ['id' => 1, 'label' => 'FRONT'],
             ['id' => 2, 'label' => 'PACE'],
             ['id' => 3, 'label' => 'LATE'],
             ['id' => 4, 'label' => 'END'],
-            ['id' => 5, 'label' => 'N/A'],
         ]);
     }
 }

@@ -1,0 +1,21 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\StyleGrade;
+use App\Models\Plan;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class StyleGradeFactory extends Factory
+{
+    protected $model = StyleGrade::class;
+
+    public function definition(): array
+    {
+        return [
+            'plan_id' => Plan::factory(),
+            'style' => $this->faker->randomElement(['Front', 'Pace', 'Late', 'End']),
+            'grade' => $this->faker->randomElement(['G', 'F', 'E', 'D', 'C', 'B', 'A', 'S']),
+        ];
+    }
+}

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    {{-- Navbar provided by layouts.app (Livewire) --}}
     {{-- Sticky sub-navigation for the guide page --}}
     <nav class="sticky-top py-2 guide-sticky-nav">
         <div class="container">
@@ -120,6 +121,7 @@
             </div>
         </div>
     </main>
+    {{-- Footer provided by layouts.app (Livewire) --}}
 @endsection
 
 @push('scripts')

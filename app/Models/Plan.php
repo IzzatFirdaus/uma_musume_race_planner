@@ -9,26 +9,94 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $plan_title
+ * @property int|null $turn_before
+ * @property string|null $race_name
+ * @property string $name
+ * @property string|null $career_stage
+ * @property string|null $class
+ * @property string|null $time_of_day
+ * @property string|null $month
+ * @property int|null $total_available_skill_points
+ * @property string $acquire_skill
+ * @property int|null $mood_id
+ * @property int|null $condition_id
+ * @property int|null $energy
+ * @property string $race_day
+ * @property string|null $goal
+ * @property int|null $strategy_id
+ * @property int $growth_rate_speed
+ * @property int $growth_rate_stamina
+ * @property int $growth_rate_power
+ * @property int $growth_rate_guts
+ * @property int $growth_rate_wit
+ * @property string $status
+ * @property string|null $source
+ * @property string|null $trainee_image_path
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attribute> $attributes
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Goal> $goals
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RacePrediction> $racePredictions
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
-/**
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attribute> $attributes
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Goal> $goals
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RacePrediction> $racePredictions
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TerrainGrade> $terrainGrades
+ * @property-read int|null $attributes_count
+ * @property-read \App\Models\Condition|null $condition
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DistanceGrade> $distanceGrades
+ * @property-read int|null $distance_grades_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Goal> $goals
+ * @property-read int|null $goals_count
+ * @property-read \App\Models\Mood|null $mood
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\RacePrediction> $racePredictions
+ * @property-read int|null $race_predictions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
+ * @property-read int|null $skills_count
+ * @property-read \App\Models\Strategy|null $strategy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StyleGrade> $styleGrades
- * @property-read \App\Models\Mood $mood
- * @property-read \App\Models\Condition $condition
- * @property-read \App\Models\Strategy $strategy
+ * @property-read int|null $style_grades_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TerrainGrade> $terrainGrades
+ * @property-read int|null $terrain_grades_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
+ * @property-read int|null $turns_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereAcquireSkill($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereCareerStage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereClass($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereConditionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereEnergy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereGoal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereGrowthRateGuts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereGrowthRatePower($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereGrowthRateSpeed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereGrowthRateStamina($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereGrowthRateWit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereMonth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereMoodId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan wherePlanTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereRaceDay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereRaceName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereStrategyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereTimeOfDay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereTotalAvailableSkillPoints($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereTraineeImagePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereTurnBefore($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan withoutTrashed()
+ * @mixin \Eloquent
  */
 class Plan extends Model
 {
+    // No custom factory, omit HasFactory generic
     use HasFactory;
     use SoftDeletes;
 
@@ -146,6 +214,8 @@ class Plan extends Model
 
     /**
      * Get the mood associated with the plan.
+     *
+     * @return BelongsTo<Mood, Plan>
      */
     public function mood(): BelongsTo
     {
@@ -154,6 +224,8 @@ class Plan extends Model
 
     /**
      * Get the condition associated with the plan.
+     *
+     * @return BelongsTo<Condition, Plan>
      */
     public function condition(): BelongsTo
     {
@@ -162,6 +234,8 @@ class Plan extends Model
 
     /**
      * Get the strategy associated with the plan.
+     *
+     * @return BelongsTo<Strategy, Plan>
      */
     public function strategy(): BelongsTo
     {

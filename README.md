@@ -1,61 +1,196 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🐎 Uma Musume Race Planner (Laravel Edition)
+
+A lightweight Laravel web application for planning and tracking turn-based training strategies, stat development, skill acquisition, and race goals inspired by Uma Musume. Built for fast manual data entry with autosuggestions, clean interfaces, and no login — ideal for offline strategy planners.
+
+---
+
+## Application Preview
+
+### Application Screenshots (v1.3.2)
+
+_Note: These screenshots showcase the core interface. The latest version (v1.4.0) adds the new Trainee Image and Progress Chart features._
+
+| Light Mode Dashboard | Dark Mode Dashboard |
+| :-------------------: | :-----------------: |
+| ![Homepage](public/uploads/screenshot/Homepage.png) | ![Dark Mode Homepage](public/uploads/screenshot/Dark%20Mode%20Homepage.png) |
+| **Quick Create Modal** | **In-App Guide** |
+| ![Create Plan](public/uploads/screenshot/Create%20Plan.png) | ![Guide Page](public/uploads/screenshot/Guide.png) |
+
+**Plan Editor Tabs:**
+
+| General | Attributes | Aptitude Grades |
+| :-----: | :--------: | :-------------: |
+| ![Plan Editor - General](public/uploads/screenshot/001_GENERAL%20Edit%20Plan.png) | ![Plan Editor - Attributes](public/uploads/screenshot/002_ATTRIBUTES%20Edit%20Plan.png) | ![Plan Editor - Aptitude Grades](public/uploads/screenshot/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
+| **Skills** | **Race Predictions** | **Goals** |
+| ![Plan Editor - Skills](public/uploads/screenshot/004_SKILLS%20Edit%20Plan.png) | ![Plan Editor - Race Predictions](public/uploads/screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) | ![Plan Editor - Goals](public/uploads/screenshot/006_GOALS%20Edit%20Plan.png) |
+
+---
+
+## ✨ Features
+
+## Visual Enhancements (New in v1.4.0)
+
+- **Trainee Image Management:** Personalize each plan by uploading a trainee image, which appears in the editor and as a thumbnail on the main dashboard.
+- **Stat Progression Chart:** A new "Progress Chart" tab in the editor provides a line graph visualizing the trainee's stat growth.
+- **Dynamic Theming:** The application's primary accent color is now configurable via the `.env` file.
+
+## Core Functionality
+
+- **Detailed Plan Management:** Create, view, update, and delete comprehensive training plans.
+- **Two Editing Views:** A full-screen **Details Modal** for in-depth editing and an **Inline Details Panel** for quick access.
+- **Dynamic Dashboard:** Includes panels for quick stats and a log of recent activity.
+
+## Utility & UX
+
+- **Quick Create Modal:** Quickly start a new plan with essential details.
+- **Dark Mode:** A theme toggle for user comfort.
+- **Plain Text Export:** A "Copy to Clipboard" feature generates a clean summary of any plan, perfect for sharing.
+- **Active Navbar Links:** The navbar now highlights the active page for better navigation.
+
+---
+
+## 🖥️ Tech Stack
+
+- **Frontend**: Blade, Livewire, Tailwind CSS, Bootstrap 5, Vanilla JavaScript
+- **Backend**: PHP 8.2+, Laravel 12, Composer
+- **Database**: MySQL / MariaDB
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- A local web server environment (e.g., XAMPP, WAMP, MAMP).
+- PHP 8.2 or higher.
+- MySQL or MariaDB database server.
+- [Composer](https://getcomposer.org/) for managing PHP dependencies.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/IzzatFirdaus/uma_musume_race_planner.git
+cd uma_musume_race_planner
+```
+
+### 2. Install Dependencies
+
+```bash
+composer install
+npm install
+npm run build
+```
+
+### 3. Database Setup
+
+1. **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
+2. **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
+3. **(Optional) Seed Data:** You can optionally import `sample_data.sql` for demo data.
+
+### 4. Environment Configuration
+
+1. In the root directory, create a file named `.env`.
+2. Copy the following configuration, adjusting the database credentials to match your local setup.
+
+```ini
+# .env - Local Development Configuration
+
+# Database Configuration
+DB_HOST=localhost
+DB_DATABASE=uma_musume_planner
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Application Metadata & Theming
+APP_VERSION=v1.4.0
+APP_THEME_COLOR=#7d2b8b
+LAST_UPDATED="July 29, 2025"
+```
+
+### 5. Running the Application
+
+Place the project folder inside your web server's root directory (e.g., `C:/xampp/htdocs/`) and navigate to it in your browser (e.g., `http://localhost/uma-musume-planner-laravel/`).
+
+---
+
+## 📁 Folder Structure
+
+```bash
+uma-musume-planner-laravel/
+├── app/
+├── bootstrap/
+├── config/
+├── database/
+├── public/
+│   └── uploads/
+│       ├── app_bg/
+│       ├── trainee_images/
+│       └── screenshot/
+├── resources/
+│   ├── assets/
+│   ├── css/
+│   ├── js/
+│   └── views/
+├── routes/
+├── storage/
+├── tests/
+├── vendor/
+├── .env
+├── composer.json
+├── uma_musume_planner.sql
+├── sample_data.sql
+├── README.md
+└── ...
+```
+
+---
+
+## 🗃️ Database Overview
+
+- `plans`: The core table storing general plan info, including the `trainee_image_path`.
+- `attributes`: Stores the five core stats for each plan.
+- `skills`, `goals`, `race_predictions`: Child tables for detailed tracking.
+- `terrain_grades`, `distance_grades`, `style_grades`: Aptitude grades.
+- `turns`: Stores turn-by-turn stat progression for the Progress Chart.
+- `activity_log`: Tracks recent user actions.
+
+---
+
+## Safari/iOS CSS Compatibility
+
+This project uses visual effects with `backdrop-filter` in `resources/css/style.css`. For compatibility with Safari and iOS browsers, the vendor-prefixed property `-webkit-backdrop-filter` is included alongside the standard property. If you add new CSS rules using `backdrop-filter`, always add the prefixed version for full browser support.
+
+**Reference:** [MDN Docs: backdrop-filter](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter)
+
+---
+
+## 📌 Notes
+
+- ✅ Built for single-user, local/offline use
+- 🔒 No authentication required
+- 🐣 Inspired by Uma Musume: Pretty Derby
+- 🧪 Ideal for simulation planning and strategy testing
+
+---
+
+## 🧩 To-Do
+
+- [x] Autosuggest skills, races, names
+- [x] Soft-delete support
+- [x] Export plans as formatted text
+- [x] Stat progression chart
+- [ ] Optional login & cloud sync support
+- [ ] Advanced search/filtering (by stats, skills, etc.)
+
+---
+
+## 📜 License
+
+MIT License © 2025
+
+---
 
 ## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is built with [Laravel](https://laravel.com/), a modern PHP web application framework. For more information, see the [Laravel documentation](https://laravel.com/docs).

@@ -14,18 +14,14 @@
     <link rel="apple-touch-icon" href="{{ asset('uploads/app_logo/uma_musume_race_planner_logo_256.png') }}">
 
     @vite(['resources/css/app.css'])
+    {{-- Livewire Styles (welcome page uses Livewire navbar/footer) --}}
+    @livewireStyles
 
 </head>
 <body class="antialiased">
 
-    {{-- UPDATED: Added a simple top-right navigation section --}}
-    <div class="container">
-        <header class="d-flex justify-content-end py-3">
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a href="{{ route('guide') }}" class="nav-link">View Guide</a></li>
-            </ul>
-        </header>
-    </div>
+    {{-- Use Livewire navbar component for consistency --}}
+    @livewire('layout.navbar')
 
     <div class="container d-flex flex-column justify-content-center min-vh-100 py-5">
 
@@ -86,16 +82,16 @@
         </div>
     </div>
 
-    {{-- Minimalist Footer for Welcome Page --}}
-    <footer class="py-4 mt-auto">
-        <div class="container">
-            <p class="text-center text-muted small">
-                A project by Izzat Firdaus |
-                <a href="https://github.com/IzzatFirdaus/uma_musume_race_planner" target="_blank" rel="noopener noreferrer" class="text-muted">
-                    View on GitHub <i class="bi bi-github"></i>
-                </a>
-            </p>
-        </div>
-    </footer>
+    {{-- Use Livewire footer component for consistency --}}
+    @livewire('layout.footer')
+
+    {{-- Bootstrap JS for navbar toggler and other interactivity --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{-- Stack for page-specific scripts pushed from other Blade views --}}
+    @stack('scripts')
+
+    {{-- Livewire Scripts for standalone welcome page --}}
+    @livewireScripts
 </body>
 </html>

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('skill_name')->unique();
             $table->text('description')->nullable();
-            $table->string('stat_type', 20)->nullable();
+            $table->string('stat_type', 50)->nullable();
             $table->text('best_for')->nullable();
             $table->string('tag', 5)->nullable();
         });

@@ -7,10 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * @property int $id
  * @property string $skill_name
+ * @property string|null $description
+ * @property string|null $stat_type
+ * @property string|null $best_for
+ * @property string|null $tag
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
+ * @property-read int|null $skills_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereBestFor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereSkillName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereStatType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereTag($value)
+ * @mixin \Eloquent
  */
 class SkillReference extends Model
 {
+    // No custom factory, omit HasFactory generic
     use HasFactory;
 
     /**
@@ -42,6 +60,8 @@ class SkillReference extends Model
 
     /**
      * Get the skills that reference this definition.
+     *
+     * @return HasMany<Skill, SkillReference>
      */
     public function skills(): HasMany
     {
