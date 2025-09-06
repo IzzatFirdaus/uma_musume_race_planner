@@ -6,7 +6,12 @@ use Livewire\Component;
 
 class FormTabs extends Component
 {
-    public $id_suffix = '';
+    protected $id_suffix = '';
+
+    public function getIdSuffix(): string
+    {
+        return $this->id_suffix;
+    }
 
     public function mount($id_suffix = '')
     {
@@ -16,7 +21,7 @@ class FormTabs extends Component
     public function render()
     {
         return view('livewire.form-tabs', [
-            'id_suffix' => $this->id_suffix
+            'id_suffix' => $this->id_suffix,
         ]);
     }
 }
