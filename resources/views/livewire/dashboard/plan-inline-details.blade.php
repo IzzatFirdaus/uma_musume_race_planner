@@ -1,4 +1,5 @@
 
+
 <div>
     {{-- Be like water. --}}
     {{--
@@ -6,7 +7,7 @@
         No direct image/background usage here, but ensure any referenced partials
         (like form-tabs) also use `asset()` for uploaded images.
     --}}
-    <div id="planInlineDetails" class="card mb-4" style="display: none;">
+    <div id="planInlineDetails" class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0" id="planInlineDetailsLabel">Plan Details</h5>
             <button type="button" class="btn btn-sm btn-outline-secondary" id="closeInlineDetailsBtn">
@@ -23,8 +24,8 @@
             @method('PUT')
             @csrf
             <div class="card-body">
-                {{-- Ensure form-tabs partial uses asset() for any uploaded images --}}
-                @include('plans.partials.form-tabs', ['id_suffix' => '_inline'])
+                {{-- Use the Livewire form-tabs to match element IDs expected by JS --}}
+                @livewire('form-tabs', ['id_suffix' => '_inline'])
             </div>
             <div class="card-footer d-flex justify-content-end">
                 <button type="button" class="btn btn-outline-secondary me-2" id="downloadTxtInline">

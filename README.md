@@ -1,4 +1,3 @@
-
 # 🐎 Uma Musume Race Planner (Laravel Edition)
 
 A lightweight Laravel web application for planning and tracking turn-based training strategies, stat development, skill acquisition, and race goals inspired by Uma Musume. Built for fast manual data entry with autosuggestions, clean interfaces, and no login — ideal for offline strategy planners.
@@ -11,19 +10,19 @@ A lightweight Laravel web application for planning and tracking turn-based train
 
 _Note: These screenshots showcase the core interface. The latest version (v1.4.0) adds the new Trainee Image and Progress Chart features._
 
-| Light Mode Dashboard | Dark Mode Dashboard |
-| :-------------------: | :-----------------: |
-| ![Homepage](public/uploads/screenshot/Homepage.png) | ![Dark Mode Homepage](public/uploads/screenshot/Dark%20Mode%20Homepage.png) |
-| **Quick Create Modal** | **In-App Guide** |
-| ![Create Plan](public/uploads/screenshot/Create%20Plan.png) | ![Guide Page](public/uploads/screenshot/Guide.png) |
+|                    Light Mode Dashboard                     |                             Dark Mode Dashboard                             |
+| :---------------------------------------------------------: | :-------------------------------------------------------------------------: |
+|     ![Homepage](public/uploads/screenshot/Homepage.png)     | ![Dark Mode Homepage](public/uploads/screenshot/Dark%20Mode%20Homepage.png) |
+|                   **Quick Create Modal**                    |                              **In-App Guide**                               |
+| ![Create Plan](public/uploads/screenshot/Create%20Plan.png) |             ![Guide Page](public/uploads/screenshot/Guide.png)              |
 
 **Plan Editor Tabs:**
 
-| General | Attributes | Aptitude Grades |
-| :-----: | :--------: | :-------------: |
-| ![Plan Editor - General](public/uploads/screenshot/001_GENERAL%20Edit%20Plan.png) | ![Plan Editor - Attributes](public/uploads/screenshot/002_ATTRIBUTES%20Edit%20Plan.png) | ![Plan Editor - Aptitude Grades](public/uploads/screenshot/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
-| **Skills** | **Race Predictions** | **Goals** |
-| ![Plan Editor - Skills](public/uploads/screenshot/004_SKILLS%20Edit%20Plan.png) | ![Plan Editor - Race Predictions](public/uploads/screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) | ![Plan Editor - Goals](public/uploads/screenshot/006_GOALS%20Edit%20Plan.png) |
+|                                      General                                      |                                              Attributes                                               |                                           Aptitude Grades                                           |
+| :-------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
+| ![Plan Editor - General](public/uploads/screenshot/001_GENERAL%20Edit%20Plan.png) |        ![Plan Editor - Attributes](public/uploads/screenshot/002_ATTRIBUTES%20Edit%20Plan.png)        | ![Plan Editor - Aptitude Grades](public/uploads/screenshot/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
+|                                    **Skills**                                     |                                         **Race Predictions**                                          |                                              **Goals**                                              |
+|  ![Plan Editor - Skills](public/uploads/screenshot/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](public/uploads/screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](public/uploads/screenshot/006_GOALS%20Edit%20Plan.png)            |
 
 ---
 
@@ -172,7 +171,53 @@ This project uses visual effects with `backdrop-filter` in `resources/css/style.
 - 🐣 Inspired by Uma Musume: Pretty Derby
 - 🧪 Ideal for simulation planning and strategy testing
 
----
+## Repo scan (automated)
+
+This section was generated automatically from a quick repository scan and summarizes the runtime and key package information detected in this project.
+
+- PHP: 8.2.12
+- Laravel: 12.21.0
+- Database engine: mysql
+- Key packages and versions:
+
+- laravel/framework: 12.21.0
+- livewire/livewire: 3.6.4
+- larastan/larastan: 3.6.1
+- laravel/pint: 1.24.0
+- laravel/sail: 1.44.0
+- phpunit/phpunit: 11.5.28
+- tailwindcss: 4.1.11
+
+- Eloquent models detected: (none reported by scanner)
+
+Verification:
+
+- Source: automated Laravel Boost `application-info` scan.
+- To reproduce locally, run the following in PowerShell:
+
+```powershell
+php -v
+php artisan --version
+composer show --installed
+```
+
+Recommended quick checks and commands:
+
+```powershell
+# Install dependencies
+composer install; npm install
+
+# Build frontend assets (if making frontend changes)
+npm run build
+
+# Run Laravel Pint formatter (project includes Laravel Pint)
+php vendor/bin/pint --dirty
+
+# Run tests
+php artisan test
+```
+
+If you'd like, I can expand this section to include route lists, database schema excerpts, or test run output.
 
 ## 🧩 To-Do
 

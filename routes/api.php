@@ -25,8 +25,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // Custom routes for the PlanController
     Route::post('plans/quick', [PlanController::class, 'storeQuick'])
         ->name('plans.storeQuick');
-    Route::get('plans/{plan}/progress-chart',
-        [PlanController::class, 'progressChart'])
+    Route::get(
+        'plans/{plan}/progress-chart',
+        [PlanController::class, 'progressChart']
+    )
         ->name('plans.progressChart');
 
     // Route for the autosuggest functionality

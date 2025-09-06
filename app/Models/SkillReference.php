@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $tag
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
  * @property-read int|null $skills_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference query()
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereSkillName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereStatType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereTag($value)
+ *
  * @mixin \Eloquent
  */
 class SkillReference extends Model
@@ -61,7 +63,7 @@ class SkillReference extends Model
     /**
      * Get the skills that reference this definition.
      *
-     * @return HasMany<Skill, SkillReference>
+     * @return HasMany<\App\Models\Skill, \App\Models\SkillReference>
      */
     public function skills(): HasMany
     {

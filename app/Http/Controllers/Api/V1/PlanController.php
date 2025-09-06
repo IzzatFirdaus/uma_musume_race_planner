@@ -38,10 +38,14 @@ class PlanController extends Controller
      */
     public function index(): JsonResponse
     {
-        // UPDATED: Fetches all plans globally
-        $plans = Plan::with($this->getRelationshipsToLoad())->latest()->get();
+        $plans = $this->getAllPlans();
 
         return response()->json($plans);
+    }
+
+    private function getAllPlans()
+    {
+        return Plan::with($this->getRelationshipsToLoad())->latest()->get();
     }
 
     /**
@@ -53,7 +57,14 @@ class PlanController extends Controller
     public function store(StorePlanRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $plan = DB::transaction(function () use ($request, $validated) {
+        $plan = $this->createDetailedPlan($request, $validated);
+
+        return response()->json($plan->load($this->getRelationshipsToLoad()), 201);
+    }
+
+    private function createDetailedPlan(StorePlanRequest $request, array $validated)
+    {
+        return DB::transaction(function () use ($request, $validated) {
             $plan = $this->createPlanWithData($validated['plan']);
             $this->processTraineeImage($request, $plan);
             $this->createPlanRelations($plan, $validated);
@@ -62,8 +73,6 @@ class PlanController extends Controller
 
             return $plan;
         });
-
-        return response()->json($plan->load($this->getRelationshipsToLoad()), 201);
     }
 
     private function createPlanWithData(array $planData): Plan

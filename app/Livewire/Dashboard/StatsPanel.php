@@ -7,6 +7,16 @@ use Livewire\Component;
 
 class StatsPanel extends Component
 {
+    /**
+     * @var array<string, int>
+     */
+    protected $stats = [];
+
+    public function getStats(): array
+    {
+        return $this->stats;
+    }
+
     public function getStatsProperty()
     {
         return [

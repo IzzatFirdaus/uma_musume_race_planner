@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $wit
  * @property string|null $comment
  * @property-read \App\Models\Plan $plan
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RacePrediction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RacePrediction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RacePrediction query()
@@ -39,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RacePrediction whereTrackCondition($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RacePrediction whereVenue($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RacePrediction whereWit($value)
+ *
  * @mixin \Eloquent
  */
 class RacePrediction extends Model
@@ -77,7 +79,7 @@ class RacePrediction extends Model
     /**
      * Get the plan that owns the race prediction.
      *
-     * @return BelongsTo<Plan, RacePrediction>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\RacePrediction>
      */
     public function plan(): BelongsTo
     {

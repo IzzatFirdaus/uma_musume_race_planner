@@ -10,17 +10,21 @@ class PlanList extends Component
 {
     public string $currentFilter = 'all';
 
-    public function setFilter(string $filter): void
+    public function getCurrentFilter(): string
+    {
+        return $this->currentFilter;
+    }
+
+    public function filterPlansByStatus(string $filter): void
     {
         $this->currentFilter = $filter;
-        // Force component re-render
         $this->dispatch('refreshPlans');
     }
 
     public function viewPlan(int $planId): void
     {
-        // Dispatch an event to open the plan details modal
-        $this->dispatch('openPlanModal', planId: $planId);
+        // Dispatch an event to open the inline plan details view
+        $this->dispatch('openPlanInline', planId: $planId);
     }
 
     public function editPlan(int $planId): void
@@ -41,15 +45,14 @@ class PlanList extends Component
             ActivityLog::create([
                 'description' => "Deleted plan: {$planName}",
                 'icon_class' => 'bi-trash',
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
 
             // Dispatch success event for SweetAlert2
             $this->dispatch('plan-deleted', ['message' => "Plan '{$planName}' deleted successfully!"]);
-
         } catch (\Exception $e) {
             // Dispatch error event for SweetAlert2
-            $this->dispatch('plan-error', ['message' => 'Failed to delete plan: ' . $e->getMessage()]);
+            $this->dispatch('plan-error', ['message' => 'Failed to delete plan: '.$e->getMessage()]);
         }
     }
 
@@ -59,7 +62,7 @@ class PlanList extends Component
             'attributes' => fn ($query) => $query->whereIn('attribute_name', ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT']),
             'mood',
             'condition',
-            'strategy'
+            'strategy',
         ])->latest();
 
         if ($this->currentFilter !== 'all') {
@@ -71,5 +74,6 @@ class PlanList extends Component
         return view('livewire.dashboard.plan-list', [
             'plans' => $plans,
         ]);
+
     }
 }

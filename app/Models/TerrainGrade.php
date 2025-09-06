@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $terrain
  * @property string|null $grade
  * @property-read \App\Models\Plan $plan
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TerrainGrade newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TerrainGrade newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TerrainGrade query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TerrainGrade whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TerrainGrade wherePlanId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TerrainGrade whereTerrain($value)
+ *
  * @mixin \Eloquent
  */
 class TerrainGrade extends Model
@@ -47,7 +49,7 @@ class TerrainGrade extends Model
     /**
      * Get the plan that owns the grade.
      *
-     * @return BelongsTo<Plan, TerrainGrade>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\TerrainGrade>
      */
     public function plan(): BelongsTo
     {

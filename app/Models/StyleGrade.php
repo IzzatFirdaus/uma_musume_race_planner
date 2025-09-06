@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $style
  * @property string|null $grade
  * @property-read \App\Models\Plan $plan
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StyleGrade newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StyleGrade newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StyleGrade query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StyleGrade whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StyleGrade wherePlanId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StyleGrade whereStyle($value)
+ *
  * @mixin \Eloquent
  */
 class StyleGrade extends Model
@@ -47,7 +49,7 @@ class StyleGrade extends Model
     /**
      * Get the plan that owns the grade.
      *
-     * @return BelongsTo<Plan, StyleGrade>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\StyleGrade>
      */
     public function plan(): BelongsTo
     {

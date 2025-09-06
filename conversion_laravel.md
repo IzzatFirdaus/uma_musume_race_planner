@@ -247,7 +247,7 @@ This step involves migrating the user interface and client-side scripts into the
 3.  **Update JavaScript**: Client-side JavaScript is updated to interact with the new Laravel backend.
     - **API Endpoints**: All `fetch()` requests are updated from old PHP scripts (`get_plans.php`, `handle_plan_crud.php`) to the new, versioned API routes (e.g., `fetch('/api/v1/plans')`).
     - **Data Injection**: Initial page data is passed from the `DashboardController` to `dashboard.blade.php` and injected into a global `window.plannerData` JavaScript object using the `@json` Blade directive.
-      <!-- end list -->
+        <!-- end list -->
     ```blade
     // In dashboard.blade.php
     @push('scripts')
