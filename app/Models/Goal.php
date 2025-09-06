@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $goal
  * @property string $result
  * @property-read \App\Models\Plan $plan
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goal newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goal newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goal query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goal whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goal wherePlanId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goal whereResult($value)
+ *
  * @mixin \Eloquent
  */
 class Goal extends Model
@@ -47,7 +49,7 @@ class Goal extends Model
     /**
      * Get the plan that owns the goal.
      *
-     * @return BelongsTo<Plan, Goal>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\Goal>
      */
     public function plan(): BelongsTo
     {

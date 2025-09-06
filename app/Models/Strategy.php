@@ -11,11 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $label
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Plan> $plans
  * @property-read int|null $plans_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Strategy newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Strategy newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Strategy query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Strategy whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Strategy whereLabel($value)
+ *
  * @mixin \Eloquent
  */
 class Strategy extends Model
@@ -40,7 +42,7 @@ class Strategy extends Model
     /**
      * Get the plans for the strategy.
      *
-     * @return HasMany<Plan, Strategy>
+     * @return HasMany<\App\Models\Plan, \App\Models\Strategy>
      */
     public function plans(): HasMany
     {

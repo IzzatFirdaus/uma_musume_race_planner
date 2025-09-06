@@ -6,6 +6,11 @@
 
     {{-- CSRF token for AJAX and form requests --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+  {{-- App base URL for building API paths from JS (works with or without subdirectory) --}}
+  <meta name="app-base-url" content="{{ url('') }}">
+  {{-- App public path (subdirectory-aware), e.g. /uma-musume-planner-laravel/public --}}
+  @php($publicPath = rtrim(parse_url(asset(''), PHP_URL_PATH) ?? '', '/'))
+  <meta name="app-public-path" content="{{ $publicPath }}">
   {{-- Ensure relative asset URLs resolve when app is served from a subdirectory --}}
   <base href="{{ url('') }}/">
 

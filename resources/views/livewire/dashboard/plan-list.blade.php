@@ -1,4 +1,5 @@
 
+
 <div>
     @if (session()->has('message'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -15,7 +16,7 @@
     @endif
 
     {{-- Plan list card for dashboard --}}
-    <div class="card shadow-sm mb-4 border-0 rounded-4 plan-list-theme">
+    <div id="planListCard" class="card shadow-sm mb-4 border-0 rounded-4 plan-list-theme">
         <div class="card-header d-flex justify-content-between align-items-center rounded-top-4 plan-list-header-theme">
             <h5 class="mb-0">
                 <i class="bi bi-card-checklist me-2"></i>

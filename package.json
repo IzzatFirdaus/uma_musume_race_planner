@@ -5,11 +5,14 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
+        "playwright:install": "playwright install",
+        "playwright:test": "playwright test",
         "test": "jest",
         "lint:css": "stylelint \"resources/**/*.css\"",
         "lint:css:fix": "stylelint \"resources/**/*.css\" --fix"
     },
     "devDependencies": {
+        "@playwright/test": "^1.55.0",
         "@tailwindcss/vite": "^4.0.0",
         "axios": "^1.8.2",
         "concurrently": "^9.0.1",
@@ -24,6 +27,7 @@
         "vite": "^7.0.4"
     },
     "dependencies": {
+        "node-fetch": "^2.7.0",
         "sweetalert2": "^11.23.0"
     }
 }

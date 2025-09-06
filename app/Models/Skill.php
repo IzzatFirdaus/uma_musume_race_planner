@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $notes
  * @property-read \App\Models\Plan $plan
  * @property-read \App\Models\SkillReference $skillReference
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Skill newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Skill newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Skill query()
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Skill whereSkillReferenceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Skill whereSpCost($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Skill whereTag($value)
+ *
  * @mixin \Eloquent
  */
 class Skill extends Model
@@ -57,7 +59,7 @@ class Skill extends Model
     /**
      * Get the plan that owns the skill.
      *
-     * @return BelongsTo<Plan, Skill>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\Skill>
      */
     public function plan(): BelongsTo
     {
@@ -67,7 +69,7 @@ class Skill extends Model
     /**
      * Get the skill reference definition.
      *
-     * @return BelongsTo<SkillReference, Skill>
+     * @return BelongsTo<\App\Models\SkillReference, \App\Models\Skill>
      */
     public function skillReference(): BelongsTo
     {

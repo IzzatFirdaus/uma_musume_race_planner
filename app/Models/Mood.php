@@ -11,11 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $label
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Plan> $plans
  * @property-read int|null $plans_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mood newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mood newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mood query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mood whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mood whereLabel($value)
+ *
  * @mixin \Eloquent
  */
 class Mood extends Model
@@ -40,7 +42,7 @@ class Mood extends Model
     /**
      * Get the plans for the mood.
      *
-     * @return HasMany<Plan, Mood>
+     * @return HasMany<\App\Models\Plan, \App\Models\Mood>
      */
     public function plans(): HasMany
     {

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $guts
  * @property int $wit
  * @property-read \App\Models\Plan $plan
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn query()
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn whereStamina($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn whereTurnNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn whereWit($value)
+ *
  * @mixin \Eloquent
  */
 class Turn extends Model
@@ -59,7 +61,7 @@ class Turn extends Model
     /**
      * Get the plan that owns the turn.
      *
-     * @return BelongsTo<Plan, Turn>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\Turn>
      */
     public function plan(): BelongsTo
     {

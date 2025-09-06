@@ -108,7 +108,7 @@ body {
     padding-bottom: 50px; /* Ensure space for fixed footer */
     transition:
         color var(--transition-speed),
-    background-color var(--transition-speed); /* Smooth transitions */
+        background-color var(--transition-speed); /* Smooth transitions */
 
     line-height: 1.6; /* Improved readability */
 }

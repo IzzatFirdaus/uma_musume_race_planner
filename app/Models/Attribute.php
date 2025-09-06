@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $value
  * @property string|null $grade
  * @property-read \App\Models\Plan $plan
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute query()
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute wherePlanId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereValue($value)
+ *
  * @mixin \Eloquent
  */
 class Attribute extends Model
@@ -50,7 +52,7 @@ class Attribute extends Model
     /**
      * Get the plan that owns the attribute.
      *
-     * @return BelongsTo<Plan, Attribute>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\Attribute>
      */
     public function plan(): BelongsTo
     {

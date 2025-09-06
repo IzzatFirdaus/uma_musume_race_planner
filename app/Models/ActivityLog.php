@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon $timestamp
  * @property string $description
  * @property string $icon_class
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityLog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityLog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityLog query()
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityLog whereIconClass($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityLog whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityLog whereTimestamp($value)
+ *
  * @mixin \Eloquent
  */
 class ActivityLog extends Model

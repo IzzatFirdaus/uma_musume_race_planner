@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $distance
  * @property string|null $grade
  * @property-read \App\Models\Plan $plan
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DistanceGrade newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DistanceGrade newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DistanceGrade query()
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DistanceGrade whereGrade($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DistanceGrade whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DistanceGrade wherePlanId($value)
+ *
  * @mixin \Eloquent
  */
 class DistanceGrade extends Model
@@ -47,7 +49,7 @@ class DistanceGrade extends Model
     /**
      * Get the plan that owns the grade.
      *
-     * @return BelongsTo<Plan, DistanceGrade>
+     * @return BelongsTo<\App\Models\Plan, \App\Models\DistanceGrade>
      */
     public function plan(): BelongsTo
     {

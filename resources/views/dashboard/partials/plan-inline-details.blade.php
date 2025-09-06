@@ -1,3 +1,4 @@
+
 {{--
     Inline card view for editing the full details of a selected plan.
     No direct image/background usage here, but ensure any referenced partials

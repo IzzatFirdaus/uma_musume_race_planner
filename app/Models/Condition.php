@@ -11,11 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $label
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Plan> $plans
  * @property-read int|null $plans_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereLabel($value)
+ *
  * @mixin \Eloquent
  */
 class Condition extends Model
@@ -40,7 +42,7 @@ class Condition extends Model
     /**
      * Get the plans for the condition.
      *
-     * @return HasMany<Plan, Condition>
+     * @return HasMany<\App\Models\Plan, \App\Models\Condition>
      */
     public function plans(): HasMany
     {

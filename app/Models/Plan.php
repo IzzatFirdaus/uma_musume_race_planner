@@ -57,6 +57,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read int|null $terrain_grades_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
  * @property-read int|null $turns_count
+
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan onlyTrashed()
@@ -92,6 +94,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Plan extends Model
@@ -135,7 +138,7 @@ class Plan extends Model
     /**
      * Get the attributes for the plan.
      *
-     * @return HasMany<Attribute, Plan>
+     * @return HasMany<\App\Models\Attribute, \App\Models\Plan>
      */
     public function attributes(): HasMany
     {
@@ -145,7 +148,7 @@ class Plan extends Model
     /**
      * Get the skills for the plan.
      *
-     * @return HasMany<Skill, Plan>
+     * @return HasMany<\App\Models\Skill, \App\Models\Plan>
      */
     public function skills(): HasMany
     {
@@ -155,7 +158,7 @@ class Plan extends Model
     /**
      * Get the goals for the plan.
      *
-     * @return HasMany<Goal, Plan>
+     * @return HasMany<\App\Models\Goal, \App\Models\Plan>
      */
     public function goals(): HasMany
     {
@@ -165,7 +168,7 @@ class Plan extends Model
     /**
      * Get the race predictions for the plan.
      *
-     * @return HasMany<RacePrediction, Plan>
+     * @return HasMany<\App\Models\RacePrediction, \App\Models\Plan>
      */
     public function racePredictions(): HasMany
     {
@@ -175,7 +178,7 @@ class Plan extends Model
     /**
      * Get the turns for the plan.
      *
-     * @return HasMany<Turn, Plan>
+     * @return HasMany<\App\Models\Turn, \App\Models\Plan>
      */
     public function turns(): HasMany
     {
@@ -185,7 +188,7 @@ class Plan extends Model
     /**
      * Get the terrain grades for the plan.
      *
-     * @return HasMany<TerrainGrade, Plan>
+     * @return HasMany<\App\Models\TerrainGrade, \App\Models\Plan>
      */
     public function terrainGrades(): HasMany
     {
@@ -195,7 +198,7 @@ class Plan extends Model
     /**
      * Get the distance grades for the plan.
      *
-     * @return HasMany<DistanceGrade, Plan>
+     * @return HasMany<\App\Models\DistanceGrade, \App\Models\Plan>
      */
     public function distanceGrades(): HasMany
     {
@@ -205,7 +208,7 @@ class Plan extends Model
     /**
      * Get the style grades for the plan.
      *
-     * @return HasMany<StyleGrade, Plan>
+     * @return HasMany<\App\Models\StyleGrade, \App\Models\Plan>
      */
     public function styleGrades(): HasMany
     {
@@ -215,7 +218,7 @@ class Plan extends Model
     /**
      * Get the mood associated with the plan.
      *
-     * @return BelongsTo<Mood, Plan>
+     * @return BelongsTo<\App\Models\Mood, \App\Models\Plan>
      */
     public function mood(): BelongsTo
     {
@@ -225,7 +228,7 @@ class Plan extends Model
     /**
      * Get the condition associated with the plan.
      *
-     * @return BelongsTo<Condition, Plan>
+     * @return BelongsTo<\App\Models\Condition, \App\Models\Plan>
      */
     public function condition(): BelongsTo
     {
@@ -235,7 +238,7 @@ class Plan extends Model
     /**
      * Get the strategy associated with the plan.
      *
-     * @return BelongsTo<Strategy, Plan>
+     * @return BelongsTo<\App\Models\Strategy, \App\Models\Plan>
      */
     public function strategy(): BelongsTo
     {

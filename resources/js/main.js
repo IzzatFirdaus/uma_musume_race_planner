@@ -1,3 +1,4 @@
+
 /**
  * js/main.js
  *
@@ -15,6 +16,10 @@ let messageBoxModalInstance;
 let growthChartInstance = null;
 let growthChartInstanceInline = null;
 let currentPlanData = {}; // Single source for currently loaded plan data
+
+// --- API base path detection (subdirectory aware) ---
+const APP_PUBLIC_PATH = (document.querySelector('meta[name="app-public-path"]')?.content || '').replace(/\/$/, '') || '';
+const apiUrl = (path) => `${APP_PUBLIC_PATH}${path}`;
 
 // --- Icon Configuration ---
 const statIcons = {
@@ -82,6 +87,41 @@ document.addEventListener("DOMContentLoaded", function () {
                 form.dispatchEvent(submitEvent);
             }
         });
+
+        Livewire.on("openPlanModal", ({ planId }) =>
+            fetchAndPopulatePlan(planId, false),
+        );
+        Livewire.on("openPlanEditModal", ({ planId }) =>
+            fetchAndPopulatePlan(planId, false),
+        );
+        Livewire.on("openPlanInline", ({ planId }) =>
+            fetchAndPopulatePlan(planId, true),
+        );
+        // Ensure that if Livewire re-renders the form after we populate it,
+        // we re-apply the populated data. This prevents Livewire DOM updates
+        // from clearing fields the client just wrote.
+        try {
+            if (Livewire.hook) {
+                Livewire.hook('message.processed', () => {
+                    if (!currentPlanData || !currentPlanData.data) return;
+                    const plan = currentPlanData.data;
+                    // If modal is visible, repopulate modal fields
+                    const modalEl = document.getElementById('planDetailsModal');
+                    if (modalEl && modalEl.classList.contains('show')) {
+                        populateForm(plan, false);
+                    }
+                    // If inline details are visible, repopulate inline fields
+                    const inlineEl = document.getElementById('planInlineDetails');
+                    if (inlineEl && inlineEl.classList.contains('d-block')) {
+                        populateForm(plan, true);
+                    }
+                });
+            }
+        } catch (e) {
+            // Non-fatal: if Livewire hook isn't available or errors, ignore.
+            console.debug('Livewire hook registration skipped or failed', e);
+        }
+
     });
 
     // --- Handle opening plans from URL on page load ---
@@ -136,6 +176,10 @@ function setupDarkMode(body, darkModeToggle) {
 function setupGlobalEventListeners() {
     document.addEventListener("click", async (event) => {
         const target = event.target;
+        // Ignore clicks inside SweetAlert2 container or while overlay is active
+        if (document.querySelector(".swal2-container")) {
+            return;
+        }
         const planId = target.closest("[data-id]")?.dataset.id;
 
         // Edit/View Buttons
@@ -175,8 +219,13 @@ function setupGlobalEventListeners() {
 
         // UI Interaction Buttons
         if (target.closest("#closeInlineDetailsBtn")) {
-            document.getElementById("planInlineDetails").style.display = "none";
-            document.getElementById("mainContent").style.display = "flex";
+            const inlineDetails = document.getElementById("planInlineDetails");
+            if (inlineDetails) {
+                inlineDetails.style.display = "none";
+                inlineDetails.classList.remove("d-block");
+            }
+            const listCard = document.getElementById("planListCard");
+            if (listCard) listCard.style.display = "block";
             updateUrlWithPlan(null);
         }
         if (target.closest("#exportPlanBtn, #exportPlanBtnInline")) {
@@ -184,6 +233,32 @@ function setupGlobalEventListeners() {
                 copyPlanDetailsToClipboard(currentPlanData.data);
             } else {
                 showMessageBox("No plan data loaded to export.", "warning");
+            }
+        }
+
+        // Fallback close handler for modal if Bootstrap is not yet available
+        if (
+            target.closest(
+                '#planDetailsModal [data-bs-dismiss="modal"], #planDetailsModal .btn-secondary',
+            )
+        ) {
+            const modalEl = document.getElementById("planDetailsModal");
+            if (modalEl) {
+                // Try Bootstrap first
+                try {
+                    window.bootstrap?.Modal?.getOrCreateInstance(
+                        modalEl,
+                    )?.hide();
+                } catch (_) {}
+                // Force-hide regardless
+                modalEl.classList.remove("show");
+                modalEl.style.display = "none";
+                modalEl.setAttribute("aria-hidden", "true");
+                modalEl.removeAttribute("aria-modal");
+                document.body.classList.remove("modal-open");
+                document
+                    .querySelectorAll(".modal-backdrop")
+                    .forEach((el) => el.remove());
             }
         }
     });
@@ -214,7 +289,7 @@ function setupGlobalEventListeners() {
             renderGrowthChart(planId, false);
         });
     document
-        .getElementById("progress-chart-tab-inline")
+        .getElementById("progress-chart-tab_inline")
         ?.addEventListener("shown.bs.tab", (e) => {
             const planId = document.getElementById("planId_inline").value;
             renderGrowthChart(planId, true);
@@ -251,6 +326,11 @@ async function fetchAndPopulatePlan(planId, isInlineView) {
             ? "planInlineDetailsLoadingOverlay"
             : "planDetailsLoadingOverlay",
     );
+    console.debug("fetchAndPopulatePlan called", { planId, isInlineView });
+    if (!planId) {
+        console.warn("fetchAndPopulatePlan: no planId provided, aborting");
+        return;
+    }
     const formElement = document.getElementById(
         isInlineView ? "planDetailsFormInline" : "planDetailsForm",
     );
@@ -260,30 +340,45 @@ async function fetchAndPopulatePlan(planId, isInlineView) {
 
     try {
         // --- UPDATED: Simplified to a single, efficient API call ---
-        const response = await fetch(`/api/v1/plans/${planId}`);
+        const response = await fetch(
+            apiUrl(`/api/v1/plans/${encodeURIComponent(planId)}`),
+        );
         if (!response.ok)
             throw new Error(
                 `Network response was not ok (status: ${response.status})`,
             );
 
-    const result = await response.json();
-    // Controller returns the plan object directly, not wrapped in { data }
-    currentPlanData = { data: result };
+        const result = await response.json();
+        console.debug("fetchAndPopulatePlan: fetched result", result);
+        // Controller returns the plan object directly, not wrapped in { data }
+        currentPlanData = { data: result };
 
-    // Populate the form with the retrieved data
-    populateForm(result, isInlineView);
+        // Populate the form with the retrieved data
+        // Normalize some backend keys to be resilient to naming differences
+        // (older API/Controllers used 'racePredictions' or 'race_predictions')
+        if (!result.predictions && (result.racePredictions || result.race_predictions)) {
+            result.predictions = result.racePredictions || result.race_predictions;
+        }
+        populateForm(result, isInlineView);
 
         // Show the correct view (modal or inline)
         if (isInlineView) {
             const mainContent = document.getElementById("mainContent");
             const inlineDetails = document.getElementById("planInlineDetails");
-            if (mainContent) mainContent.style.display = "none";
-            if (inlineDetails) inlineDetails.style.display = "block";
+            const listCard = document.getElementById("planListCard");
+            console.debug("fetchAndPopulatePlan: toggling inline UI", {
+                mainContentExists: !!mainContent,
+                inlineExists: !!inlineDetails,
+                listCardExists: !!listCard,
+            });
+            // Only hide the plan list card to keep sidebar visible
+            if (listCard) listCard.style.display = "none";
+            if (inlineDetails) {
+                inlineDetails.style.removeProperty("display");
+                inlineDetails.classList.add("d-block");
+            }
         } else {
-            const planDetailsModal = bootstrap.Modal.getOrCreateInstance(
-                document.getElementById("planDetailsModal"),
-            );
-            planDetailsModal.show();
+            showModalById("planDetailsModal");
         }
         updateUrlWithPlan(planId, isInlineView);
     } catch (error) {
@@ -317,7 +412,9 @@ async function handleFormSubmit(e) {
         const planId = formData.get("planId");
 
         // --- UPDATED: API submission logic ---
-        const url = planId ? `/api/v1/plans/${planId}` : "/api/v1/plans";
+        const url = planId
+            ? apiUrl(`/api/v1/plans/${planId}`)
+            : apiUrl('/api/v1/plans');
         const method = "POST"; // Use POST for both, but spoof PUT for updates
         if (planId) formData.append("_method", "PUT");
 
@@ -328,7 +425,7 @@ async function handleFormSubmit(e) {
                 "X-CSRF-TOKEN": document
                     .querySelector('meta[name="csrf-token"]')
                     .getAttribute("content"),
-                Accept: "application/json", // Important for Laravel validation responses
+                Accept: "application/json" // Important for Laravel validation responses
             },
         });
 
@@ -374,16 +471,17 @@ async function handleFormSubmit(e) {
 async function handleDeletePlan(planId) {
     const doDelete = async () => {
         try {
-            const response = await fetch(`/api/v1/plans/${planId}`, {
+            const response = await fetch(apiUrl(`/api/v1/plans/${planId}`), {
                 method: "DELETE",
                 headers: {
                     "X-CSRF-TOKEN": document
                         .querySelector('meta[name="csrf-token"]')
                         .getAttribute("content"),
-                    Accept: "application/json",
-                },
+                    Accept: "application/json"
+                }
             });
-            if (!response.ok) throw new Error("Server responded with an error.");
+            if (!response.ok)
+                throw new Error("Server responded with an error.");
             if (window.Swal) {
                 await window.Swal.fire({
                     title: "Deleted!",
@@ -395,10 +493,26 @@ async function handleDeletePlan(planId) {
             } else {
                 showMessageBox("Plan deleted successfully!");
             }
+            // Optimistically remove the row from the current list
+            const tableBody = document.getElementById("plan-list-body");
+            if (tableBody) {
+                const rows = Array.from(tableBody.querySelectorAll("tr"));
+                for (const r of rows) {
+                    if (r.querySelector(`button[data-id="${planId}"]`)) {
+                        r.remove();
+                        break;
+                    }
+                }
+            }
+            // Trigger a background refresh of the dashboard data
             document.dispatchEvent(new CustomEvent("planUpdated"));
         } catch (error) {
             if (window.Swal) {
-                window.Swal.fire({ title: "Error", text: error.message, icon: "error" });
+                window.Swal.fire({
+                    title: "Error",
+                    text: error.message,
+                    icon: "error",
+                });
             } else {
                 showMessageBox(`Error: ${error.message}`, "danger");
             }
@@ -427,9 +541,9 @@ async function handleDeletePlan(planId) {
 async function refreshDashboardData() {
     try {
         const [plansRes, statsRes, activityRes] = await Promise.all([
-            fetch("/api/v1/plans"),
-            fetch("/api/v1/dashboard/stats"),
-            fetch("/api/v1/dashboard/activities"),
+            fetch(apiUrl('/api/v1/plans')),
+            fetch(apiUrl('/api/v1/dashboard/stats')),
+            fetch(apiUrl('/api/v1/dashboard/activities')),
         ]);
         const plans = await plansRes.json(); // array
         const stats = await statsRes.json(); // object
@@ -456,53 +570,51 @@ async function refreshDashboardData() {
 function populateForm(data, isInline) {
     const suffix = isInline ? "_inline" : "";
 
-    // Populate all simple form fields
-    document.getElementById(`planId${suffix}`).value = data.id || "";
-    document.getElementById(
+    const setValue = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+    };
+    const setText = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+    const setChecked = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = val;
+    };
+
+    setValue(`planId${suffix}`, data.id || "");
+    setText(
         isInline ? "planInlineDetailsLabel" : "planDetailsModalLabel",
-    ).textContent = `Plan Details: ${data.plan_title || "Untitled"}`;
-    document.getElementById(`plan_title${suffix}`).value =
-        data.plan_title || "";
-    document.getElementById(`modalName${suffix}`).value = data.name || "";
-    document.getElementById(`modalCareerStage${suffix}`).value =
-        data.career_stage || "";
-    document.getElementById(`modalClass${suffix}`).value = data.class || "";
-    document.getElementById(`modalRaceName${suffix}`).value =
-        data.race_name || "";
-    document.getElementById(`modalTurnBefore${suffix}`).value =
-        data.turn_before || 0;
-    document.getElementById(`modalGoal${suffix}`).value = data.goal || "";
-    document.getElementById(`modalStrategy${suffix}`).value =
-        data.strategy_id || "";
-    document.getElementById(`modalMood${suffix}`).value = data.mood_id || "";
-    document.getElementById(`modalCondition${suffix}`).value =
-        data.condition_id || "";
+        `Plan Details: ${data.plan_title || "Untitled"}`,
+    );
+    setValue(`plan_title${suffix}`, data.plan_title || "");
+    setValue(`modalName${suffix}`, data.name || "");
+    setValue(`modalCareerStage${suffix}`, data.career_stage || "");
+    setValue(`modalClass${suffix}`, data.class || "");
+    setValue(`modalRaceName${suffix}`, data.race_name || "");
+    setValue(`modalTurnBefore${suffix}`, data.turn_before || 0);
+    setValue(`modalGoal${suffix}`, data.goal || "");
+    setValue(`modalStrategy${suffix}`, data.strategy_id || "");
+    setValue(`modalMood${suffix}`, data.mood_id || "");
+    setValue(`modalCondition${suffix}`, data.condition_id || "");
     const energyRange = document.getElementById(`energyRange${suffix}`);
-    energyRange.value = data.energy || 0;
-    document.getElementById(`energyValue${suffix}`).textContent =
-        energyRange.value;
-    document.getElementById(`raceDaySwitch${suffix}`).checked =
-        data.race_day === "yes";
-    document.getElementById(`acquireSkillSwitch${suffix}`).checked =
-        data.acquire_skill === "YES";
-    document.getElementById(`skillPoints${suffix}`).value =
-        data.total_available_skill_points || 0;
-    document.getElementById(`modalStatus${suffix}`).value =
-        data.status || "Planning";
-    document.getElementById(`modalTimeOfDay${suffix}`).value =
-        data.time_of_day || "";
-    document.getElementById(`modalMonth${suffix}`).value = data.month || "";
-    document.getElementById(`modalSource${suffix}`).value = data.source || "";
-    document.getElementById(`growthRateSpeed${suffix}`).value =
-        data.growth_rate_speed || 0;
-    document.getElementById(`growthRateStamina${suffix}`).value =
-        data.growth_rate_stamina || 0;
-    document.getElementById(`growthRatePower${suffix}`).value =
-        data.growth_rate_power || 0;
-    document.getElementById(`growthRateGuts${suffix}`).value =
-        data.growth_rate_guts || 0;
-    document.getElementById(`growthRateWit${suffix}`).value =
-        data.growth_rate_wit || 0;
+    if (energyRange) {
+        energyRange.value = data.energy || 0;
+        setText(`energyValue${suffix}`, energyRange.value);
+    }
+    setChecked(`raceDaySwitch${suffix}`, data.race_day === "yes");
+    setChecked(`acquireSkillSwitch${suffix}`, data.acquire_skill === "YES");
+    setValue(`skillPoints${suffix}`, data.total_available_skill_points || 0);
+    setValue(`modalStatus${suffix}`, data.status || "Planning");
+    setValue(`modalTimeOfDay${suffix}`, data.time_of_day || "");
+    setValue(`modalMonth${suffix}`, data.month || "");
+    setValue(`modalSource${suffix}`, data.source || "");
+    setValue(`growthRateSpeed${suffix}`, data.growth_rate_speed || 0);
+    setValue(`growthRateStamina${suffix}`, data.growth_rate_stamina || 0);
+    setValue(`growthRatePower${suffix}`, data.growth_rate_power || 0);
+    setValue(`growthRateGuts${suffix}`, data.growth_rate_guts || 0);
+    setValue(`growthRateWit${suffix}`, data.growth_rate_wit || 0);
 
     // Render complex nested data
     renderAttributes(data.attributes || [], isInline);
@@ -594,111 +706,28 @@ function renderRecentActivity(activities) {
 }
 
 /**
- * Renders the attribute sliders in the form.
- * @param {Array} attributes The list of attribute objects.
- * @param {boolean} isInline True if for the inline view.
+ * Renders attributes tab (no-op if containers are absent).
  */
 function renderAttributes(attributes, isInline) {
-    const containerId = isInline
-        ? "attributeSlidersContainerInline"
-        : "attributeSlidersContainer";
-    const container = document.getElementById(containerId);
+    // Containers may not be present in current Blade; safely no-op.
+    const suffix = isInline ? "_inline" : "";
+    const container =
+        document.getElementById(`attributes${suffix}`) ||
+        document.getElementById(`attributesContainer${suffix}`);
     if (!container) return;
-    container.innerHTML = "";
-    const defaultAttributeNames = ["speed", "stamina", "power", "guts", "wit"];
-    defaultAttributeNames.forEach((attrName) => {
-        const attr = attributes.find(
-            (a) => a.attribute_name.toLowerCase() === attrName,
-        ) || { value: 0 };
-        const div = document.createElement("div");
-        div.className = "col-6 col-md-4 col-lg mb-3";
-        const iconInfo = statIcons[attrName];
-        div.innerHTML = `
-            <div class="d-flex align-items-center mb-1">
-                <i class="${iconInfo.class} stat-icon ${iconInfo.colorClass} me-2"></i>
-                <label class="form-label mb-0 small">${attrName.charAt(0).toUpperCase() + attrName.slice(1)}</label>
-            </div>
-            <input type="number" class="form-control form-control-sm" name="attributes[${attrName}]" min="0" max="1200" value="${attr.value}" data-stat="${attrName}">`;
-        container.appendChild(div);
-    });
+    // TODO: Implement when markup is finalized.
 }
 
 /**
- * Renders the aptitude grade selectors in the form.
- * @param {object} data The full plan data object from the API.
- * @param {boolean} isInline True if for the inline view.
+ * Renders aptitude grades tab (no-op if containers are absent).
  */
-function renderAptitudeGrades(data, isInline) {
-    const containerId = isInline
-        ? "aptitudeGradesContainerInline"
-        : "aptitudeGradesContainer";
-    const container = document.getElementById(containerId);
+function renderAptitudeGrades(planData, isInline) {
+    const suffix = isInline ? "_inline" : "";
+    const container =
+        document.getElementById(`grades${suffix}`) ||
+        document.getElementById(`gradesContainer${suffix}`);
     if (!container) return;
-    container.innerHTML = "";
-
-    const gradesData = {
-        terrain_grades: data.terrain_grades || [],
-        distance_grades: data.distance_grades || [],
-        style_grades: data.style_grades || [],
-    };
-    const gradeTypes = [
-        {
-            title: "Terrain",
-            data: gradesData.terrain_grades,
-            key: "terrain",
-            defaults: ["Turf", "Dirt"],
-        },
-        {
-            title: "Distance",
-            data: gradesData.distance_grades,
-            key: "distance",
-            defaults: ["Sprint", "Mile", "Medium", "Long"],
-        },
-        {
-            title: "Style",
-            data: gradesData.style_grades,
-            key: "style",
-            defaults: ["Front", "Pace", "Late", "End"],
-        },
-    ];
-    const gradeOptions = window.plannerData?.attributeGradeOptions || [
-        "S",
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-    ];
-
-    gradeTypes.forEach((type) => {
-        const col = document.createElement("div");
-        col.className = "col-md-4";
-        let content = `<h6>${type.title}</h6>`;
-        const gradeMap = new Map(
-            type.data.map((item) => [item[type.key], item.grade]),
-        );
-
-        type.defaults.forEach((itemKey) => {
-            const currentGrade = gradeMap.get(itemKey) || "G";
-            const optionsHtml = gradeOptions
-                .map(
-                    (grade) =>
-                        `<option value="${grade}" ${grade === currentGrade ? "selected" : ""}>${grade}</option>`,
-                )
-                .join("");
-            content += `
-                <div class="mb-2 row align-items-center">
-                    <label class="col-sm-4 col-form-label col-form-label-sm">${itemKey}</label>
-                    <div class="col-sm-8">
-                        <select class="form-select form-select-sm" name="${type.key}Grades[${itemKey}]">${optionsHtml}</select>
-                    </div>
-                </div>`;
-        });
-        col.innerHTML = content;
-        container.appendChild(col);
-    });
+    // TODO: Implement when markup is finalized.
 }
 
 /**
@@ -790,7 +819,7 @@ async function renderGrowthChart(planId, isInline) {
     }
 
     try {
-    const response = await fetch(`/api/v1/plans/${planId}/progress-chart`);
+        const response = await fetch(apiUrl(`/api/v1/plans/${planId}/progress-chart`));
         const result = await response.json();
 
         if (
@@ -981,13 +1010,18 @@ function resetFormTabs(isInline) {
         .querySelectorAll(".tab-pane")
         .forEach((pane) => pane.classList.remove("show", "active"));
 
-    const generalTabBtn = container.querySelector('.nav-link[href*="general"]');
+    // Support both anchor-based and button-based Bootstrap tab toggles
+    let generalTabBtn = container.querySelector('.nav-link[href*="general"]');
+    if (!generalTabBtn) {
+        generalTabBtn = container.querySelector('.nav-link[data-bs-target*="general"]');
+    }
     generalTabBtn?.classList.add("active");
-    const generalTabPaneId = generalTabBtn?.getAttribute("href");
+    let generalTabPaneId = generalTabBtn?.getAttribute("href");
+    if (!generalTabPaneId) {
+        generalTabPaneId = generalTabBtn?.getAttribute("data-bs-target");
+    }
     if (generalTabPaneId) {
-        document
-            .querySelector(generalTabPaneId)
-            ?.classList.add("show", "active");
+        document.querySelector(generalTabPaneId)?.classList.add("show", "active");
     }
 }
 
@@ -996,13 +1030,28 @@ function resetFormTabs(isInline) {
  * @param {string} message The message to display.
  * @param {string} type The alert type ('success', 'danger', 'warning', 'info').
  */
+/**
+ * Shows a SweetAlert2 popup as a temporary message box.
+ * @param {string} message The message to display.
+ * @param {string} type The alert type ('success', 'danger', 'warning', 'info').
+ */
 function showMessageBox(message, type = "success") {
-    if (!messageBoxModalInstance) return;
-    const messageBoxBody = document.getElementById("messageBoxBody");
-    messageBoxBody.textContent = message;
-    messageBoxBody.className = `modal-body text-center alert alert-${type} mb-0`;
-    messageBoxModalInstance.show();
-    setTimeout(() => messageBoxModalInstance.hide(), 3000);
+    if (window.Swal) {
+        let icon = type;
+        // Map Bootstrap alert types to SweetAlert2 icons
+        if (type === "danger") icon = "error";
+        if (type === "info") icon = "info";
+        if (type === "warning") icon = "warning";
+        if (type === "success") icon = "success";
+        Swal.fire({
+            text: message,
+            icon: icon,
+            timer: 3000,
+            showConfirmButton: false,
+            position: 'top',
+            toast: true
+        });
+    }
 }
 
 // Expose a subset of helpers for inline scripts if needed
@@ -1010,3 +1059,23 @@ window.UmaPlanner = {
     fetchAndPopulatePlan,
     handleDeletePlan,
 };
+
+// Utility: robustly open a modal by id, even if bootstrap is not fully initialized yet
+function showModalById(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (window.bootstrap?.Modal) {
+        window.bootstrap.Modal.getOrCreateInstance(el).show();
+    }
+    // Force visible state regardless of Bootstrap presence
+    el.classList.add("show");
+    el.style.display = "block";
+    el.removeAttribute("aria-hidden");
+    if (!document.querySelector(".modal-backdrop")) {
+        const backdrop = document.createElement("div");
+        backdrop.className = "modal-backdrop fade show";
+        backdrop.setAttribute("data-temp-backdrop", "true");
+        document.body.appendChild(backdrop);
+    }
+    document.body.classList.add("modal-open");
+}
