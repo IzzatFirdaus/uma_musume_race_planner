@@ -3,21 +3,13 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Plan;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class StatsPanel extends Component
 {
-    /**
-     * @var array<string, int>
-     */
-    protected $stats = [];
-
-    public function getStats(): array
-    {
-        return $this->stats;
-    }
-
-    public function getStatsProperty()
+    #[Computed]
+    public function stats(): array
     {
         return [
             'total_plans' => Plan::count(),
@@ -28,8 +20,6 @@ class StatsPanel extends Component
 
     public function render()
     {
-        return view('livewire.dashboard.stats-panel', [
-            'stats' => $this->stats,
-        ]);
+        return view('livewire.dashboard.stats-panel');
     }
 }

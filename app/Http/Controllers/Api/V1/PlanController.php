@@ -89,9 +89,16 @@ class PlanController extends Controller
 
     private function createPlanRelations(Plan $plan, array $validated): void
     {
-        $relations = [
+        $this->createRelations($plan, $validated, [
             'attributes', 'goals', 'racePredictions', 'turns', 'terrainGrades', 'distanceGrades', 'styleGrades',
-        ];
+        ]);
+    }
+
+    /**
+     * Helper to create related models for a plan.
+     */
+    private function createRelations(Plan $plan, array $validated, array $relations): void
+    {
         foreach ($relations as $relation) {
             if (isset($validated[$relation]) && count($validated[$relation]) > 0) {
                 $plan->{$relation}()->createMany($validated[$relation]);
@@ -184,6 +191,13 @@ class PlanController extends Controller
     public function update(UpdatePlanRequest $request, Plan $plan): PlanResource
     {
         $validated = $request->validated();
+        $this->performPlanUpdate($request, $plan, $validated);
+
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
+    }
+
+    private function performPlanUpdate(UpdatePlanRequest $request, Plan $plan, array $validated): void
+    {
         DB::transaction(function () use ($request, $plan, $validated) {
             $this->updatePlanData($request, $plan, $validated);
             $this->updatePlanRelations($plan, $validated);
@@ -192,8 +206,6 @@ class PlanController extends Controller
                 'icon_class' => 'bi-arrow-repeat',
             ]);
         });
-
-        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
     }
 
     private function updatePlanData(Request $request, Plan $plan, array $validated): void

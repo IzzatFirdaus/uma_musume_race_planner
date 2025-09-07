@@ -6,12 +6,12 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 
 /**
- * API Exception for handling API-specific errors.
+ * API Error for handling API-specific errors.
  *
  * Provides structured error responses for API endpoints
  * following consistent formatting standards.
  */
-class ApiException extends Exception
+class ApiError extends Exception
 {
     /**
      * @var int HTTP status code
@@ -24,7 +24,7 @@ class ApiException extends Exception
     protected array $errorData;
 
     /**
-     * Create a new API exception instance.
+     * Create a new API error instance.
      *
      * @param  string  $message  The error message
      * @param  int  $statusCode  The HTTP status code

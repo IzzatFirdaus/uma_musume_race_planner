@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "http://localhost/uma-musume-planner-laravel/public/";
+const BASE = "http://127.0.0.1:8000/";
 
 test.describe("Plan actions (view, edit, delete)", () => {
-    test("view inline, open edit modal, and delete with SweetAlert2", async ({
+    test("view details page, open edit modal, and delete with SweetAlert2", async ({
         page,
     }) => {
         await page.goto(BASE, { waitUntil: "networkidle" });
@@ -16,41 +16,63 @@ test.describe("Plan actions (view, edit, delete)", () => {
 
         const firstRow = rows.first();
 
-        // VIEW INLINE - call client helper directly to avoid Livewire re-render race
-        const planId = await firstRow
-            .locator(".view-inline-btn[data-id]")
-            .getAttribute("data-id");
-        await page.evaluate((id) => {
-            // eslint-disable-next-line no-undef
-            return window.UmaPlanner?.fetchAndPopulatePlan(id, true);
-        }, planId);
+        // VIEW DETAILS - Navigate to the new plan details page
+        const viewBtn = firstRow.locator(".view-details-btn[data-id]");
+        const planId = await viewBtn.getAttribute("data-id");
 
-        // Wait for inline details to become visible
-        await page.waitForSelector("#planInlineDetails", {
-            state: "visible",
-            timeout: 5000,
-        });
-        await expect(page.locator("#planInlineDetails")).toBeVisible();
-        // Close inline view
-        await page.locator("#closeInlineDetailsBtn").click();
-        await page.waitForSelector("#planInlineDetails", {
-            state: "hidden",
-            timeout: 5000,
-        });
+        // Click the view button to navigate to the plan view page
+        await viewBtn.click();
 
-        // EDIT (open modal)
-        // EDIT - open modal via client helper
-        await page.evaluate((id) => {
-            // eslint-disable-next-line no-undef
-            return window.UmaPlanner?.fetchAndPopulatePlan(id, false);
-        }, planId);
-        await page.waitForSelector(
-            '#planDetailsModal.show, #planDetailsModal[aria-hidden="false"]',
-            { timeout: 5000 },
+        // Wait for navigation to the plan view page
+        await page.waitForURL(`**/plans/${planId}/view`, { timeout: 5000 });
+
+        // Verify we're on the plan view page (read-only mode)
+        await expect(page).toHaveURL(`${BASE}plans/${planId}/view`);
+        await expect(page.locator('h5:has-text("View Plan")')).toBeVisible();
+        await expect(
+            page.locator('.badge:has-text("View Mode")'),
+        ).toBeVisible();
+
+        // Verify fields are in view mode (read-only)
+        await expect(page.locator('input[name="plan_title"]')).toHaveAttribute(
+            "readonly",
+            "",
         );
-        await expect(page.locator("#planDetailsModal")).toBeVisible();
-        // Close the modal
-        await page.locator("#planDetailsModal button.btn-secondary").click();
+
+        // Navigate to edit mode using the Edit Plan button
+        await page.getByRole("link", { name: "Edit Plan" }).click();
+        await page.waitForURL(`**/plans/${planId}/edit`, { timeout: 5000 });
+
+        // Verify we're now in edit mode
+        await expect(page).toHaveURL(`${BASE}plans/${planId}/edit`);
+        await expect(page.locator('h5:has-text("Edit Plan")')).toBeVisible();
+        await expect(
+            page.locator('.badge:has-text("Edit Mode")'),
+        ).toBeVisible();
+
+        // Verify fields are now editable (no readonly attribute)
+        await expect(
+            page.locator('input[name="plan_title"]'),
+        ).not.toHaveAttribute("readonly");
+
+        // Navigate back to dashboard
+        await page.getByRole("link", { name: "Back to Dashboard" }).click();
+        await page.waitForURL(BASE, { timeout: 5000 });
+
+        // Test the edit button on the plan list
+        const editBtn = firstRow.locator(".edit-btn[data-id]");
+        await editBtn.click();
+
+        // Wait for navigation to the plan edit page
+        await page.waitForURL(`**/plans/${planId}/edit`, { timeout: 5000 });
+
+        // Verify we're on the edit page
+        await expect(page).toHaveURL(`${BASE}plans/${planId}/edit`);
+        await expect(page.locator('h5:has-text("Edit Plan")')).toBeVisible();
+
+        // Navigate back to dashboard for delete test
+        await page.getByRole("link", { name: "Back to Dashboard" }).click();
+        await page.waitForURL(BASE, { timeout: 5000 });
         await page.waitForSelector("#planDetailsModal", {
             state: "hidden",
             timeout: 5000,

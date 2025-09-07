@@ -180,6 +180,7 @@ body.dark-mode .text-muted {
 /* --- Navbar Colors: Light & Dark Mode --- */
 .navbar {
     background: rgb(240 98 146 / 85%); /* Brand pink glass for light mode */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
@@ -189,6 +190,7 @@ body.dark-mode .text-muted {
 
 body.dark-mode .navbar {
     background: rgb(179 115 255 / 85%); /* Neon purple glass for dark mode */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
@@ -204,6 +206,7 @@ footer,
     background-position: center;
     box-shadow: var(--color-shadow-light); /* Use variable for shadow */
     border: 1px solid rgb(255 255 255 / 40%); /* MOVED UP */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -254,6 +257,7 @@ footer,
     box-shadow: var(--color-shadow-light);
     border-radius: var(--border-radius-base);
     border: 1px solid rgb(255 255 255 / 40%);
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -335,6 +339,7 @@ body.dark-mode .dashboard-btn-outline.active {
     box-shadow: var(--color-shadow-light);
     border-radius: var(--border-radius-base);
     border: 1px solid rgb(255 255 255 / 40%);
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -378,6 +383,7 @@ body.dark-mode .stats-panel-header-theme {
     box-shadow: var(--color-shadow-light);
     border-radius: var(--border-radius-base);
     border: 1px solid rgb(255 255 255 / 40%);
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -421,6 +427,7 @@ body.dark-mode .recent-activity-header-theme {
     box-shadow: var(--color-shadow-light);
     border-radius: var(--border-radius-base);
     border: 1px solid rgb(255 255 255 / 40%);
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -758,6 +765,7 @@ body.dark-mode .form-control::placeholder {
     right: 0;
     max-height: 250px; /* Slightly more space */
     overflow-y: auto; /* MOVED UP */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -1011,6 +1019,7 @@ body.dark-mode .stat-bar {
 /* Contextual info for skills - clear, distinct, but not overwhelming */
 .skill-context-info {
     font-size: 0.875rem; /* Slightly larger for readability */ /* MOVED UP */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -1045,6 +1054,7 @@ body.dark-mode .skill-context-info {
     align-items: center;
     z-index: 10;
     border-radius: var(--border-radius-base);
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -1084,6 +1094,7 @@ body.dark-mode .guide-sticky-nav {
     padding: 2.5rem; /* More generous padding */
     border-radius: var(--border-radius-base);
     box-shadow: var(--color-shadow-light); /* MOVED UP */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -1266,6 +1277,7 @@ body.dark-mode .accordion-body {
     padding: 2.5rem;
     border-radius: var(--border-radius-base);
     box-shadow: var(--color-shadow-light); /* MOVED UP */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));
@@ -1314,6 +1326,7 @@ body.dark-mode #glossary dd {
     padding: 2rem; /* Consistent padding */
     border-radius: var(--border-radius-base); /* Consistent radius */
     box-shadow: var(--color-shadow-light); /* MOVED UP */
+
     /* Compatibility fix for Safari/iOS */
     -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
     backdrop-filter: blur(var(--backdrop-blur-strength));

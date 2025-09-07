@@ -98,6 +98,19 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
+        // Handle browser events dispatched from server-side to avoid component registration issues
+        Livewire.on("browser-event", ({ event, data }) => {
+            if (event === "openPlanEditModal") {
+                // Dispatch the event to load plan data in modal
+                Livewire.dispatch("loadPlan", { planId: data.planId });
+                // Show the modal
+                const modalEl = document.getElementById("planDetailsModal");
+                if (modalEl) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
+            }
+        });
+
         // Handle inline plan opening - dispatch to PlanInlineDetails component
         Livewire.on("openPlanInline", ({ planId }) => {
             // The component should be available on the page, let's dispatch to it
@@ -180,6 +193,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (elGoal) attachAutosuggest(elGoal, "goal");
     const elGoalInline = document.getElementById("modalGoal_inline");
     if (elGoalInline) attachAutosuggest(elGoalInline, "goal");
+
+    // --- Attach Autosuggest to Quick Create Modal ---
+    const elQuickTraineeName = document.getElementById("quick_trainee_name");
+    if (elQuickTraineeName) attachAutosuggest(elQuickTraineeName, "name");
+    const elQuickRaceName = document.getElementById("quick_race_name");
+    if (elQuickRaceName) attachAutosuggest(elQuickRaceName, "race_name");
 });
 
 // -----------------------------------------------------------------------------

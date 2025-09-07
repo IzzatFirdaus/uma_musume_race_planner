@@ -26,3 +26,11 @@ Route::get('/guide', fn () => view('guide'))->name('guide');
  * The Umamusume Roster page (placeholder).
  */
 Route::get('/characters', fn () => view('characters'))->name('characters');
+
+/**
+ * Plan Details Pages (view and edit modes)
+ */
+use App\Livewire\Dashboard\PlanDetailsPage;
+
+Route::get('/plans/{planId}/view', PlanDetailsPage::class)->name('plans.view');
+Route::get('/plans/{planId}/edit', PlanDetailsPage::class)->name('plans.edit');

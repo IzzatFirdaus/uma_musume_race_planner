@@ -65,7 +65,6 @@ class ProcessPlanExport implements ShouldQueue
                 'file_name' => $this->fileName,
                 'file_path' => $filePath,
             ]);
-
         } catch (\Exception $e) {
             Log::error('Plan export failed', [
                 'plan_id' => $this->plan->id,

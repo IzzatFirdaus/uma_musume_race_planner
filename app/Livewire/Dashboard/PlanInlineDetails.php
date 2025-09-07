@@ -79,6 +79,7 @@ class PlanInlineDetails extends Component
     protected $listeners = [
         'loadPlanInline' => 'loadPlan',
         'openPlanInline' => 'loadPlan',
+        'formTabs:state' => 'receiveFormTabsState',
     ];
 
     public function loadPlan($planId)
@@ -143,13 +144,42 @@ class PlanInlineDetails extends Component
             $this->goals = $plan->goals->toArray();
             $this->terrainGrades = $plan->terrainGrades->toArray();
             $this->distanceGrades = $plan->distanceGrades->toArray();
-            $this->styleGrades = $plan->styleGrades->toArray();
-
         } catch (\Exception $e) {
             $this->dispatch('show-error', message: 'Failed to load plan: '.$e->getMessage());
         }
 
         $this->isLoading = false;
+
+        // Hydrate FormTabs with current state
+        $this->dispatch('formTabs:hydrate', data: [
+            'planId' => $this->planId,
+            'plan_title' => $this->plan_title,
+            'name' => $this->name,
+            'career_stage' => $this->career_stage,
+            'class' => $this->class,
+            'race_name' => $this->race_name,
+            'turn_before' => $this->turn_before,
+            'goal' => $this->goal,
+            'strategy_id' => $this->strategy_id,
+            'mood_id' => $this->mood_id,
+            'condition_id' => $this->condition_id,
+            'energy' => $this->energy,
+            'race_day' => $this->race_day,
+            'acquire_skill' => $this->acquire_skill,
+            'total_available_skill_points' => $this->total_available_skill_points,
+            'status' => $this->status,
+            'time_of_day' => $this->time_of_day,
+            'month' => $this->month,
+            'source' => $this->source,
+            'growth_rate_speed' => $this->growth_rate_speed,
+            'growth_rate_stamina' => $this->growth_rate_stamina,
+            'growth_rate_power' => $this->growth_rate_power,
+            'growth_rate_guts' => $this->growth_rate_guts,
+            'growth_rate_wit' => $this->growth_rate_wit,
+            'skills' => $this->skills,
+            'predictions' => $this->racePredictions,
+            'goals' => $this->goals,
+        ]);
     }
 
     public function closePlan()
@@ -163,9 +193,119 @@ class PlanInlineDetails extends Component
 
     public function save()
     {
-        // For now, just emit an event to let main.js handle the submission
-        // This maintains compatibility with the existing JavaScript submission handler
-        $this->dispatch('submitPlanForm', formId: 'planDetailsFormInline');
+        // Ask child FormTabs for its current state; receive via receiveFormTabsState
+        $this->dispatch('formTabs:requestState');
+    }
+
+    /**
+     * Receive state from FormTabs and persist to database.
+     */
+    public function receiveFormTabsState(array $data): void
+    {
+        try {
+            $plan = Plan::findOrFail($this->planId);
+
+            // Normalize booleans to DB expectations
+            $raceDay = ! empty($data['race_day']);
+            $acquireSkill = ! empty($data['acquire_skill']);
+
+            $plan->update([
+                'plan_title' => $data['plan_title'] ?? $plan->plan_title,
+                'name' => $data['name'] ?? $plan->name,
+                'career_stage' => $data['career_stage'] ?? $plan->career_stage,
+                'class' => $data['class'] ?? $plan->class,
+                'race_name' => $data['race_name'] ?? $plan->race_name,
+                'turn_before' => $data['turn_before'] ?? $plan->turn_before,
+                'goal' => $data['goal'] ?? $plan->goal,
+                'strategy_id' => $data['strategy_id'] ?? $plan->strategy_id,
+                'mood_id' => $data['mood_id'] ?? $plan->mood_id,
+                'condition_id' => $data['condition_id'] ?? $plan->condition_id,
+                'energy' => $data['energy'] ?? $plan->energy,
+                'race_day' => $raceDay ? 'yes' : 'no',
+                'acquire_skill' => $acquireSkill ? 'YES' : 'NO',
+                'total_available_skill_points' => $data['total_available_skill_points'] ?? $plan->total_available_skill_points,
+                'status' => $data['status'] ?? $plan->status,
+                'time_of_day' => $data['time_of_day'] ?? $plan->time_of_day,
+                'month' => $data['month'] ?? $plan->month,
+                'source' => $data['source'] ?? $plan->source,
+                'growth_rate_speed' => $data['growth_rate_speed'] ?? $plan->growth_rate_speed,
+                'growth_rate_stamina' => $data['growth_rate_stamina'] ?? $plan->growth_rate_stamina,
+                'growth_rate_power' => $data['growth_rate_power'] ?? $plan->growth_rate_power,
+                'growth_rate_guts' => $data['growth_rate_guts'] ?? $plan->growth_rate_guts,
+                'growth_rate_wit' => $data['growth_rate_wit'] ?? $plan->growth_rate_wit,
+            ]);
+
+            // Persist related lists
+            // Skills: we only have free-text name/tag/acquired/notes here. Map to SkillReference if possible, else create placeholder reference.
+            if (isset($data['skills']) && is_array($data['skills'])) {
+                // For simplicity, replace all rows
+                $plan->skills()->delete();
+                foreach ($data['skills'] as $row) {
+                    if (! is_array($row)) {
+                        continue;
+                    }
+                    $name = trim((string) ($row['name'] ?? ''));
+                    if ($name === '') {
+                        continue;
+                    }
+
+                    $ref = \App\Models\SkillReference::firstOrCreate(['skill_name' => $name]);
+                    $plan->skills()->create([
+                        'skill_reference_id' => $ref->id,
+                        'sp_cost' => $row['sp_cost'] ?? null,
+                        'acquired' => ! empty($row['acquired']) ? 'yes' : 'no',
+                        'tag' => $row['tag'] ?? null,
+                        'notes' => $row['notes'] ?? null,
+                    ]);
+                }
+            }
+
+            if (isset($data['predictions']) && is_array($data['predictions'])) {
+                $plan->racePredictions()->delete();
+                foreach ($data['predictions'] as $p) {
+                    if (! is_array($p)) {
+                        continue;
+                    }
+                    $plan->racePredictions()->create([
+                        'race_name' => $p['race_name'] ?? null,
+                        'venue' => $p['venue'] ?? null,
+                        'ground' => $p['ground'] ?? null,
+                        'distance' => $p['distance'] ?? null,
+                        'speed' => (string) ($p['speed'] ?? ''),
+                        'stamina' => (string) ($p['stamina'] ?? ''),
+                        'power' => (string) ($p['power'] ?? ''),
+                        'guts' => (string) ($p['guts'] ?? ''),
+                        'wit' => (string) ($p['wit'] ?? ''),
+                        'comment' => $p['comment'] ?? null,
+                    ]);
+                }
+            }
+
+            if (isset($data['goals']) && is_array($data['goals'])) {
+                $plan->goals()->delete();
+                foreach ($data['goals'] as $g) {
+                    if (! is_array($g)) {
+                        continue;
+                    }
+                    $goalText = trim((string) ($g['goal'] ?? ''));
+                    $resultText = trim((string) ($g['result'] ?? ''));
+                    if ($goalText === '' && $resultText === '') {
+                        continue;
+                    }
+                    $plan->goals()->create([
+                        'goal' => $goalText ?: null,
+                        'result' => $resultText ?: '',
+                    ]);
+                }
+            }
+
+            // Refresh visible state
+            $this->loadPlan($plan->id);
+
+            $this->dispatch('plan-saved', message: 'Plan saved successfully!');
+        } catch (\Exception $e) {
+            $this->dispatch('show-error', message: 'Failed to save plan: '.$e->getMessage());
+        }
     }
 
     public function render()

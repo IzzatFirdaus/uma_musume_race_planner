@@ -201,7 +201,7 @@ class PlanService
 
         if (isset($validated['plan']) && count($validated['plan']) > 0) {
             $planData = $validated['plan'];
-            $planData['trainee_image_path'] = $imagePath ?: $plan->trainee_image_path;
+            $planData['trainee_image_path'] = $imagePath ? $imagePath : $plan->trainee_image_path;
             $plan->update($planData);
         }
     }
@@ -241,14 +241,14 @@ class PlanService
     {
         $plan->skills()->delete();
 
-        if (empty($skillsData)) {
+        if (count($skillsData) === 0) {
             return;
         }
 
         $skillsToCreate = array_map([$this, 'buildSkillData'], $skillsData);
         $skillsToCreate = array_filter($skillsToCreate);
 
-        if (! empty($skillsToCreate)) {
+        if (count($skillsToCreate) > 0) {
             $plan->skills()->createMany($skillsToCreate);
         }
     }
@@ -277,7 +277,7 @@ class PlanService
 
         return [
             'skill_reference_id' => $skillRef->id,
-            'acquired' => ($skill['acquired'] ?? 'no') === 'yes' ? 'yes' : 'no',
+            'acquired' => isset($skill['acquired']) && $skill['acquired'] === 'yes' ? 'yes' : 'no',
             'tag' => trim($skill['tag'] ?? ''),
             'notes' => trim($skill['notes'] ?? ''),
         ];

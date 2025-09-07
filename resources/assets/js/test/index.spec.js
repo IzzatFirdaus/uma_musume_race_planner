@@ -12,7 +12,9 @@ jest.mock('axios');
 test('planner: fetch plans from real API', async () => {
   const response = await fetch('http://localhost:8000/api/v1/plans');
   expect(response.status).toBe(200);
-  const plans = await response.json();
+  const result = await response.json();
+  // Accept either an array or an object with `data` containing the array
+  const plans = Array.isArray(result) ? result : result?.data || [];
   expect(Array.isArray(plans)).toBe(true);
   expect(plans.length).toBeGreaterThan(0);
 });

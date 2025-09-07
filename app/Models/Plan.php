@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
- * @property int $user_id
  * @property string|null $plan_title
  * @property int|null $turn_before
  * @property string|null $race_name
@@ -57,7 +56,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read int|null $terrain_grades_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
  * @property-read int|null $turns_count
-
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newQuery()
@@ -101,12 +99,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Plan extends Model
 {
-    // No custom factory, omit HasFactory generic
     use HasFactory;
-
-    // No custom factory, omit HasFactory generic
-    use HasFactory;
-    use SoftDeletes;
     use SoftDeletes;
 
     /**
@@ -115,7 +108,6 @@ class Plan extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'user_id',
         'plan_title',
         'turn_before',
         'race_name',

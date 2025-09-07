@@ -25,10 +25,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // Custom routes for the PlanController
     Route::post('plans/quick', [PlanController::class, 'storeQuick'])
         ->name('plans.storeQuick');
-    Route::get(
-        'plans/{plan}/progress-chart',
-        [PlanController::class, 'progressChart']
-    )
+    Route::get('plans/{plan}/progress-chart', [PlanController::class, 'progressChart'])
         ->name('plans.progressChart');
 
     // Route for the autosuggest functionality
@@ -36,9 +33,8 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         ->name('autosuggest');
 
     // Routes for refreshing dashboard data
-    Route::get('dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
-    Route::get(
-        'dashboard/activities',
-        [DashboardController::class, 'getActivities']
-    )->name('dashboard.activities');
+    Route::get('dashboard/stats', [DashboardController::class, 'getStats'])
+        ->name('dashboard.stats');
+    Route::get('dashboard/activities', [DashboardController::class, 'getActivities'])
+        ->name('dashboard.activities');
 });

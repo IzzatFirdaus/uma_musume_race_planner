@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Condition;
@@ -14,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
  * Handles caching strategies for frequently accessed data
  * to improve application performance and reduce database queries.
  */
-class CacheService
+final class CacheService
 {
     /**
      * Cache duration in seconds (1 hour).
@@ -148,26 +150,27 @@ class CacheService
      */
     public function getStatistics(): array
     {
-        $keys = [
+        return $this->calculateCacheStatistics([
             'lookup_data',
             'plan_statistics',
             'recent_plans_10',
             'recent_plans_20',
-        ];
+        ]);
+    }
 
+    private function calculateCacheStatistics(array $keys): array
+    {
         $stats = [
             'total_keys' => 0,
             'cached_keys' => 0,
             'cache_hit_rate' => 0,
         ];
-
         foreach ($keys as $key) {
             $stats['total_keys']++;
             if (Cache::has($key)) {
                 $stats['cached_keys']++;
             }
         }
-
         $stats['cache_hit_rate'] = $stats['total_keys'] > 0
             ? round(($stats['cached_keys'] / $stats['total_keys']) * 100, 2)
             : 0;

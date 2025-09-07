@@ -1,14 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard;
 
 use App\Models\ActivityLog;
 use App\Models\Plan;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class PlanList extends Component
 {
+    use AuthorizesRequests;
+    use WithPagination;
+
+    protected string $paginationTheme = 'bootstrap';
+
     // Called by wire:click="setFilter('...')" in Blade
+    public function mount(): void
+    {
+        $this->planCounts = $this->planCounts();
+    }
     public function setFilter(string $filter): void
     {
         $this->filterPlansByStatus($filter);
@@ -23,7 +37,17 @@ class PlanList extends Component
     // Platform: iOS, Android, PC (Steam), cross-platform link, global events match JP.
     // Resource usage: Steam ~11 GB, Mobile ~6 GB.
     // UI and logic must use authentic terms: “Career Mode”, “Skill Points (SP)”, “Mood”, “Energy”, “Fans”, “Support Cards”, “Veteran”, “Rebirth”, “Scouts”, “Goddess Statue”.
+    /**
+     * Current filter for plan status
+     * @var string
+     */
     public string $currentFilter = 'all';
+
+    /**
+     * Plan counts for dashboard summary (status breakdown, etc.)
+     * @var array<string, int>
+     */
+    public array $planCounts = [];
 
     public function filterPlansByStatus(string $filter): void
     {
@@ -33,17 +57,17 @@ class PlanList extends Component
 
     public function viewPlan(int $planId): void
     {
-        // Dispatch an event to open the inline plan details view
-        $this->dispatch('openPlanInline', planId: $planId);
+        // Redirect to the new Plan View page (read-only mode)
+        $this->redirect(route('plans.view', $planId));
     }
 
     public function editPlan(int $planId): void
     {
-        // Dispatch an event to open the plan edit modal
-        $this->dispatch('openPlanEditModal', planId: $planId);
+        // Redirect to the new Plan Edit page (edit mode)
+        $this->redirect(route('plans.edit', $planId));
     }
 
-    public function deletePlan($id)
+    public function deletePlan(int $id): void
     {
         try {
             $plan = Plan::findOrFail($id);
@@ -68,33 +92,37 @@ class PlanList extends Component
 
     public function render()
     {
-        $query = Plan::with([
-            // Use official stat names and relationships for Umamusume: Pretty Derby global server
-            'attributes' => fn ($query) => $query->whereIn('attribute_name', ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT']),
-            'mood',
-            'condition',
-            'strategy',
-            // 'supportCards' and 'veteranUmaMusume' removed due to missing model/relationship
-        ])->latest();
+        $query = Plan::query()
+            ->with([
+                // Use official stat names and relationships for Umamusume: Pretty Derby global server
+                'attributes' => fn ($query) => $query->whereIn('attribute_name', ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT']),
+                'mood',
+                'condition',
+                'strategy',
+                // 'supportCards' and 'veteranUmaMusume' removed due to missing model/relationship
+            ])->latest();
 
         if ($this->currentFilter !== 'all') {
             $query->where('status', $this->currentFilter);
         }
 
-        $plans = $query->get();
+        $plans = $query->paginate(10);
 
-        // Calculate counts to avoid repeated queries in the view
-        $counts = [
+        return view('livewire.dashboard.plan-list', [
+            // Use authentic Umamusume: Pretty Derby global server terminology in UI
+            'plans' => $plans,
+            'counts' => $this->planCounts,
+        ]);
+    }
+
+    #[Computed]
+    public function planCounts(): array
+    {
+        return [
             'total' => Plan::count(),
             'active' => Plan::where('status', 'Active')->count(),
             'planning' => Plan::where('status', 'Planning')->count(),
             'finished' => Plan::where('status', 'Finished')->count(),
         ];
-
-        return view('livewire.dashboard.plan-list', [
-            // Use authentic Umamusume: Pretty Derby global server terminology in UI
-            'plans' => $plans,
-            'counts' => $counts,
-        ]);
     }
 }

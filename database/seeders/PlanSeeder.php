@@ -7,7 +7,6 @@ use App\Models\Mood;
 use App\Models\Plan;
 use App\Models\SkillReference;
 use App\Models\Strategy;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -36,13 +35,7 @@ class PlanSeeder extends Seeder
         // Re-enable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Find the default user created in DatabaseSeeder to own the plans
-        $user = User::where('email', 'test@example.com')->first();
-        if (! $user) {
-            $this->command->error('Default user not found. Please ensure DatabaseSeeder runs the User factory.');
-
-            return;
-        }
+        // No user logic required; plans are user-agnostic.
 
         // Replicate SQL variables by fetching IDs with Eloquent
         $moodGoodId = Mood::where('label', 'GOOD')->value('id');
@@ -237,8 +230,10 @@ class PlanSeeder extends Seeder
             ],
         ];
 
+        // Set user_id for all plans to the default user (id=1)
+        $defaultUserId = 1;
         foreach ($plans as $planData) {
-            $planData['user_id'] = $user->id;
+            $planData['user_id'] = $defaultUserId;
             $plan = Plan::create($planData);
             // You can add attributes, skills, grades, etc. for each plan here
         }

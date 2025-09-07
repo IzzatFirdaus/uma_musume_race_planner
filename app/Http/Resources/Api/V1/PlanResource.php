@@ -22,21 +22,21 @@ class PlanResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'plan_title' => $this->plan_title,
-            'name' => $this->name,
-            'career_stage' => $this->career_stage,
-            'class' => $this->class,
-            'race_name' => $this->race_name,
-            'status' => $this->status,
-            'month' => $this->month,
-            'time_of_day' => $this->time_of_day,
-            'turn_before' => $this->turn_before,
-            'turn_after' => $this->turn_after,
-            'motivation_level' => $this->motivation_level,
-            'trainee_image_path' => $this->trainee_image_path,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'id' => $this['id'],
+            'plan_title' => $this['plan_title'],
+            'name' => $this['name'],
+            'career_stage' => $this['career_stage'],
+            'class' => $this['class'],
+            'race_name' => $this['race_name'],
+            'status' => $this['status'],
+            'month' => $this['month'],
+            'time_of_day' => $this['time_of_day'],
+            'turn_before' => $this['turn_before'],
+            'turn_after' => $this['turn_after'],
+            'motivation_level' => $this['motivation_level'],
+            'trainee_image_path' => $this['trainee_image_path'],
+            'created_at' => $this['created_at']?->toISOString(),
+            'updated_at' => $this['updated_at']?->toISOString(),
 
             // Relationships - conditionally loaded
             'mood' => $this->whenLoaded('mood'),
@@ -44,7 +44,7 @@ class PlanResource extends JsonResource
             'strategy' => $this->whenLoaded('strategy'),
             'attributes' => $this->whenLoaded('attributes'),
             'skills' => $this->whenLoaded('skills', function () {
-                return $this->skills->map(function ($skill) {
+                return $this['skills']->map(function ($skill) {
                     return [
                         'id' => $skill->id,
                         'skill_reference_id' => $skill->skill_reference_id,
@@ -65,8 +65,8 @@ class PlanResource extends JsonResource
 
             // API metadata
             'links' => [
-                'self' => route('api.v1.plans.show', $this->id),
-                'progress_chart' => route('api.v1.plans.progressChart', $this->id),
+                'self' => route('api.v1.plans.show', $this['id']),
+                'progress_chart' => route('api.v1.plans.progressChart', $this['id']),
             ],
         ];
     }

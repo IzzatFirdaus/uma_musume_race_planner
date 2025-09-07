@@ -14,7 +14,7 @@
   {{-- Ensure relative asset URLs resolve when app is served from a subdirectory --}}
   <base href="{{ url('') }}/">
 
-    <title>Uma Musume Race Planner</title>
+    <title>{{ $title ?? 'Uma Musume Race Planner' }}</title>
 
   {{-- Third-party CSS Dependencies (from CDN) --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -93,11 +93,7 @@
     {{-- Navbar --}}
   @livewire('layout.navbar')
 
-    @yield('content')
-
-    {{-- Modals --}}
-    @include('modals.plan-details')
-    @include('modals.quick-create-plan')
+    {{ $slot }}
 
     {{-- Global Message Box for user notifications --}}
     <div class="modal fade" id="messageBoxModal" tabindex="-1" aria-hidden="true">

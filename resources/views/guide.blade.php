@@ -2,19 +2,8 @@
 
 @section('content')
     {{-- Navbar provided by layouts.app (Livewire) --}}
-    {{-- Sticky sub-navigation for the guide page --}}
-    <nav class="sticky-top py-2 guide-sticky-nav">
-        <div class="container">
-            <ul class="nav nav-pills justify-content-center">
-                <li class="nav-item"><a class="nav-link" href="#welcome">Welcome</a></li>
-                <li class="nav-item"><a class="nav-link" href="#dashboard">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="#create-edit">Plan Editor</a></li>
-                <li class="nav-item"><a class="nav-link" href="#ai-help">AI Assistant</a></li>
-                <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-                <li class="nav-item"><a class="nav-link" href="#glossary">Glossary</a></li>
-            </ul>
-        </div>
-    </nav>
+    {{-- Sticky sub-navigation for the guide page (Livewire) --}}
+    @livewire('guide-sticky-nav')
 
     <main class="container my-4">
         {{-- The main banner is included via the app layout, but we add the card structure here. --}}
@@ -108,61 +97,5 @@
 @endsection
 
 @push('scripts')
-<script>
-    // This script is specific to the guide page for smooth scrolling and nav highlighting.
-    document.addEventListener('DOMContentLoaded', function () {
-        const guideNav = document.querySelector('.guide-sticky-nav');
-        if (!guideNav) return;
-
-        const mainNavbar = document.querySelector('.navbar.sticky-top');
-        const totalStickyHeight = (mainNavbar?.offsetHeight || 0) + guideNav.offsetHeight;
-
-        // Smooth scrolling for guide navigation
-        guideNav.querySelectorAll('.nav-link').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-
-                if (targetElement) {
-                    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                    const offsetPosition = elementPosition - totalStickyHeight;
-
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: "smooth"
-                    });
-                }
-            });
-        });
-
-        // Highlight active nav link on scroll
-        const sections = document.querySelectorAll('main section[id]');
-        const guideNavLinks = guideNav.querySelectorAll('.nav-link');
-        let scrollTimeout;
-
-        function highlightNavOnScroll() {
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                let currentActiveSectionId = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop - totalStickyHeight - 50;
-                    if (window.scrollY >= sectionTop) {
-                        currentActiveSectionId = section.getAttribute('id');
-                    }
-                });
-
-                guideNavLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === '#' + currentActiveSectionId) {
-                        link.classList.add('active');
-                    }
-                });
-            }, 100);
-        }
-
-        window.addEventListener('scroll', highlightNavOnScroll);
-        highlightNavOnScroll(); // Call on load
-    });
-</script>
+    {{-- Extra page-specific JS can be pushed here if needed. --}}
 @endpush

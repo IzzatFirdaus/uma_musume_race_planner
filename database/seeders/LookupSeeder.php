@@ -29,7 +29,7 @@ class LookupSeeder extends Seeder
             ['id' => 5, 'label' => 'GREAT'],
         ]);
 
-        // Insert updated conditions
+        // Insert all conditions referenced, including those in SQL (like HOT TOPIC, CHARMING, N/A).
         DB::table('conditions')->insert([
             ['id' => 1, 'label' => 'MIGRAINE'],
             ['id' => 2, 'label' => 'DRY SKIN'],
@@ -39,7 +39,9 @@ class LookupSeeder extends Seeder
             ['id' => 6, 'label' => 'UNDER THE WEATHER'],
             ['id' => 7, 'label' => 'SPRING BUD'],
             ['id' => 8, 'label' => 'SUSPICIOUS CLOUDS'],
-            ['id' => 9, 'label' => 'N/A'],
+            ['id' => 9, 'label' => 'CHARMING'],
+            ['id' => 10, 'label' => 'HOT TOPIC'],
+            ['id' => 11, 'label' => 'N/A'],
         ]);
 
         // Insert updated strategies

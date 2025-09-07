@@ -13,14 +13,17 @@ return new class extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
-            // This links the plan to a user and deletes the plan if the user is deleted.
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // Ensure user_id is present and references users.id (required for sample data import)
+            $table->unsignedBigInteger('user_id');
             $table->string('plan_title')->nullable();
             $table->integer('turn_before')->nullable();
             $table->string('race_name')->nullable();
             $table->string('name')->index();
             $table->enum('career_stage', ['predebut', 'junior', 'classic', 'senior', 'finale'])->nullable();
-            $table->enum('class', ['debut', 'maiden', 'beginner', 'bronze', 'silver', 'gold', 'platinum', 'star', 'legend'])->nullable();
+            $table->enum('class', [
+                'debut', 'maiden', 'beginner', 'bronze', 'silver',
+                'gold', 'platinum', 'star', 'legend',
+            ])->nullable();
             $table->string('time_of_day', 50)->nullable();
             $table->string('month', 50)->nullable();
             $table->integer('total_available_skill_points')->nullable();
@@ -41,6 +44,12 @@ return new class extends Migration
             $table->string('trainee_image_path')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            // Foreign key for user_id (required, not nullable)
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('restrict');
         });
     }
 

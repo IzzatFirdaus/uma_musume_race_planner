@@ -108,7 +108,7 @@
                                     <div class="btn-group btn-group-sm" role="group">
                                         <button wire:click="viewPlan({{ $plan->id }})"
                                                 data-id="{{ $plan->id }}"
-                                                class="btn btn-outline-primary view-inline-btn"
+                                                class="btn btn-outline-primary view-details-btn"
                                                 title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </button>
@@ -131,11 +131,11 @@
                         @empty
                                 <tr>
                                     <td colspan="5" class="text-center py-5">
-                                        <div class="flex flex-col items-center justify-center">
-                                            <i class="bi bi-inbox display-1 text-gray-400 mb-3"></i>
-                                            <h4 class="mb-2 font-semibold text-lg text-gray-700 dark:text-gray-200">No plans yet!</h4>
+                                        <div class="d-flex flex-column align-items-center justify-content-center">
+                                            <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                                            <h4 class="mb-2">No plans yet</h4>
                                             <p class="mb-3 text-muted">You haven't created any race plans. Get started by creating your first plan.</p>
-                                            <button class="btn btn-primary px-4 py-2" id="emptyStateCreatePlanBtn" onclick="document.getElementById('createPlanBtn').click();">
+                                            <button class="btn btn-primary" id="emptyStateCreatePlanBtn" onclick="document.getElementById('createPlanBtn').click();">
                                                 <i class="bi bi-plus-circle me-1"></i> Create Plan
                                             </button>
                                             @if($currentFilter !== 'all')
@@ -147,6 +147,9 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            <div class="px-3 py-2">
+                {{ $plans->links() }}
             </div>
         </div>
     </div>
@@ -175,6 +178,21 @@ document.addEventListener('livewire:init', () => {
                 text: event[0].message || 'An error occurred.',
                 icon: 'error',
                 confirmButtonText: 'OK'
+            });
+        }
+    });
+
+    // Show SweetAlert2 toast when plan is updated or actions occur
+    Livewire.on('plan-updated', (event) => {
+        if (window.Swal) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: event[0]?.message || 'Plan updated successfully.',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
             });
         }
     });

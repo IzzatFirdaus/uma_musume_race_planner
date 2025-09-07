@@ -6,7 +6,6 @@ use App\Models\Condition;
 use App\Models\Mood;
 use App\Models\Plan;
 use App\Models\Strategy;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,7 +18,7 @@ class PlanResourceTest extends TestCase
         parent::setUp();
 
         // Seed only the lookup tables we need
-        $this->artisan('db:seed', ['--class' => 'Database\Seeders\LookupSeeder']);
+        $this->artisan('db:seed', ['--class' => \Database\Seeders\LookupSeeder::class]);
     }
 
     /**
@@ -27,13 +26,10 @@ class PlanResourceTest extends TestCase
      */
     public function test_plan_index_returns_proper_json_structure(): void
     {
-        // Create test user
-        $user = User::factory()->create(['email' => 'test@example.com']);
 
         // Create test plans using existing lookup data without factory
         for ($i = 1; $i <= 3; $i++) {
             Plan::create([
-                'user_id' => $user->id,
                 'name' => "Test Horse {$i}",
                 'plan_title' => "Test Plan {$i}",
                 'career_stage' => 'senior',
@@ -82,12 +78,9 @@ class PlanResourceTest extends TestCase
      */
     public function test_plan_show_returns_proper_json_structure(): void
     {
-        // Create test user
-        $user = User::factory()->create(['email' => 'test@example.com']);
 
         // Create test plan using existing lookup data without factory
         $plan = Plan::create([
-            'user_id' => $user->id,
             'name' => 'Test Horse Show',
             'plan_title' => 'Test Plan Show',
             'career_stage' => 'senior',

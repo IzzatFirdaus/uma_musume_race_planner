@@ -6,7 +6,6 @@ use App\Models\Condition;
 use App\Models\Mood;
 use App\Models\Plan;
 use App\Models\Strategy;
-use App\Models\User;
 use App\Services\PlanService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -23,10 +22,7 @@ class PlanServiceTest extends TestCase
         parent::setUp();
 
         // Seed lookup tables
-        $this->artisan('db:seed', ['--class' => 'Database\Seeders\LookupSeeder']);
-
-        // Create the default user that the service expects
-        User::factory()->create(['id' => 1, 'email' => 'test@example.com']);
+        $this->artisan('db:seed', ['--class' => \Database\Seeders\LookupSeeder::class]);
 
         // Initialize service
         $this->planService = app(PlanService::class);
@@ -49,7 +45,6 @@ class PlanServiceTest extends TestCase
         $this->assertEquals('junior', $plan->career_stage);
         $this->assertEquals('beginner', $plan->class);
         $this->assertEquals('Test Race', $plan->race_name);
-        $this->assertEquals(1, $plan->user_id);
 
         // Check default attributes were created
         $this->assertEquals(5, $plan->attributes()->count());
@@ -86,7 +81,6 @@ class PlanServiceTest extends TestCase
         $this->assertInstanceOf(Plan::class, $plan);
         $this->assertEquals('Detailed Test Plan', $plan->plan_title);
         $this->assertEquals('Test Horse Detailed', $plan->name);
-        $this->assertEquals(1, $plan->user_id);
 
         // Check attributes were created
         $this->assertEquals(2, $plan->attributes()->count());
@@ -101,7 +95,6 @@ class PlanServiceTest extends TestCase
     {
         // Create a plan manually with existing lookup data to avoid factory issues
         $plan = Plan::create([
-            'user_id' => 1,
             'name' => 'Test Plan for Deletion',
             'plan_title' => 'Test Plan for Deletion',
             'career_stage' => 'senior',
