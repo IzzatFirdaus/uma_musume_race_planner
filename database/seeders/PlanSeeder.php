@@ -234,6 +234,17 @@ class PlanSeeder extends Seeder
         $defaultUserId = 1;
         foreach ($plans as $planData) {
             $planData['user_id'] = $defaultUserId;
+
+            // Try to extract the Umamusume character name from the plan name.
+            // Plan names use the pattern: "[Card Title] Character Name"
+            if (isset($planData['name']) && preg_match('/\[.*?\]\s*(.+)$/', $planData['name'], $matches)) {
+                $characterName = trim($matches[1]);
+                $um = \App\Models\Umamusume::where('name', $characterName)->first();
+                if ($um && isset($um->images['avatar'])) {
+                    $planData['trainee_image_path'] = $um->images['avatar'];
+                }
+            }
+
             $plan = Plan::create($planData);
             // You can add attributes, skills, grades, etc. for each plan here
         }

@@ -16,18 +16,6 @@ class PlanList extends Component
     use AuthorizesRequests;
     use WithPagination;
 
-    protected string $paginationTheme = 'bootstrap';
-
-    // Called by wire:click="setFilter('...')" in Blade
-    public function mount(): void
-    {
-        $this->planCounts = $this->planCounts();
-    }
-    public function setFilter(string $filter): void
-    {
-        $this->filterPlansByStatus($filter);
-    }
-
     // Career Mode: 72 half-month turns, training, racing, rest, recreation, skill acquisition, mood, energy, fans, goals, rebirth/veteran unlocks.
     // Support cards and veteran system: Trainers select support cards and two veteran Umamusume for stat/skill boosts per Career.
     // Skills: Use official categories (Speed, Acceleration, Recovery, Passive, Debuff, Starting Gate, Lane Change, Observation) and activation conditions (style, distance, position, stamina, timing).
@@ -37,17 +25,15 @@ class PlanList extends Component
     // Platform: iOS, Android, PC (Steam), cross-platform link, global events match JP.
     // Resource usage: Steam ~11 GB, Mobile ~6 GB.
     // UI and logic must use authentic terms: “Career Mode”, “Skill Points (SP)”, “Mood”, “Energy”, “Fans”, “Support Cards”, “Veteran”, “Rebirth”, “Scouts”, “Goddess Statue”.
-    /**
-     * Current filter for plan status
-     * @var string
-     */
     public string $currentFilter = 'all';
 
-    /**
-     * Plan counts for dashboard summary (status breakdown, etc.)
-     * @var array<string, int>
-     */
-    public array $planCounts = [];
+    protected string $paginationTheme = 'bootstrap';
+
+    // Called by wire:click="setFilter('...')" in Blade
+    public function setFilter(string $filter): void
+    {
+        $this->filterPlansByStatus($filter);
+    }
 
     public function filterPlansByStatus(string $filter): void
     {

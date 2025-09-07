@@ -14,6 +14,7 @@ body.dark-mode .dropdown-menu-glass {
     box-shadow: var(--color-shadow-dark);
     border-color: var(--color-border-dark);
 }
+
 /* ---------------------------------------------------------------------
    Uma Musume Planner - style.css (v3.6 - UI/UX Thematic Update)
    Description: Custom visual styles layered on top of Bootstrap 5, optimized for UI/UX.
@@ -21,10 +22,8 @@ body.dark-mode .dropdown-menu-glass {
 --------------------------------------------------------------------- */
 
 /* ------------------------------
-   Font Import: "M PLUS Rounded 1c" for rounded, playful UI
-   Rationale: Aligns with official Uma Musume aesthetic for familiarity and engagement.
+    Font: Google Font is loaded via a <link> tag in the Blade layout for better performance.
 ------------------------------ */
-@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600;700&display=swap");
 
 /* ------------------------------
    Global Design Variables (Light + Dark Mode)

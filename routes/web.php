@@ -1,36 +1,26 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
-use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| All routes are now public and do not require authentication.
-|
-*/
-
-/**
- * The main application dashboard is now the root page.
- */
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-/**
- * The application guide page.
- */
-Route::get('/guide', fn () => view('guide'))->name('guide');
-
-/**
- * The Umamusume Roster page.
- */
-Route::get('/characters', [App\Http\Controllers\UmamusumeController::class, 'index'])->name('characters');
+declare(strict_types=1);
 
 /**
  * Plan Details Pages (view and edit modes)
  */
 use App\Livewire\Dashboard\PlanDetailsPage;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UmamusumeController;
+use Illuminate\Support\Facades\View;
 
 Route::get('/plans/{planId}/view', PlanDetailsPage::class)->name('plans.view');
 Route::get('/plans/{planId}/edit', PlanDetailsPage::class)->name('plans.edit');
+
+// Root dashboard route
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+// Umamusume roster
+Route::get('/characters', [UmamusumeController::class, 'index'])->name('characters');
+
+// Application guide page
+Route::get('/guide', function () {
+	return View::make('guide');
+})->name('guide');

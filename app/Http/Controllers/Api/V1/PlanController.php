@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
@@ -21,18 +23,6 @@ class PlanController extends Controller
 {
     // The ID of the default user for all public plans.
     public const PUBLIC_USER_ID = 1;
-
-    /**
-     * Defines the relationships to be eager-loaded with every plan response.
-     */
-    protected function getRelationshipsToLoad(): array
-    {
-        // UPDATED: 'user' relationship removed from eager loading
-        return [
-            'attributes', 'skills.skillReference', 'racePredictions', 'goals', 'turns',
-            'terrainGrades', 'distanceGrades', 'styleGrades', 'mood', 'condition', 'strategy',
-        ];
-    }
 
     /**
      * Display a listing of all public resources.
@@ -57,6 +47,118 @@ class PlanController extends Controller
         $plan = $this->createDetailedPlan($request, $validated);
 
         return new PlanResource($plan->load($this->getRelationshipsToLoad()));
+    }
+
+    /**
+     * Store a newly created resource using minimal data (Quick Create).
+     * Replaces the 'quick_create' functionality of handle_plan_crud.php.
+     *
+     * @throws Throwable
+     */
+    public function storeQuick(Request $request): PlanResource
+    {
+        $validated = $this->validateQuickCreateRequest($request);
+
+        $plan = DB::transaction(function () use ($validated) {
+            $plan = $this->createQuickPlan($validated);
+            $this->createDefaultAttributes($plan);
+            $this->logPlanCreation($plan);
+
+            return $plan;
+        });
+
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
+    }
+
+    /**
+     * Display the specified resource.
+     * Replaces functionality from fetch_plan_details.php and all get_plan_*.php files.
+     */
+    public function show(Plan $plan): PlanResource
+    {
+        // UPDATED: Authorization removed
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * Replaces the 'update' functionality of handle_plan_crud.php.
+     *
+     * @throws Throwable
+     */
+    public function update(UpdatePlanRequest $request, Plan $plan): PlanResource
+    {
+        $validated = $request->validated();
+        $this->performPlanUpdate($request, $plan, $validated);
+
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * Replaces the 'delete' functionality of handle_plan_crud.php.
+     */
+    public function destroy(Plan $plan): JsonResponse
+    {
+        // UPDATED: Authorization removed
+        $planTitle = $plan->plan_title;
+
+        DB::transaction(function () use ($plan, $planTitle): void {
+            $imagePath = $plan->trainee_image_path;
+            $plan->delete(); // Soft delete
+
+            if ($imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            ActivityLog::create([
+                'description' => "Plan deleted: {$planTitle}",
+                'icon_class' => 'bi-trash',
+            ]);
+        });
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Provide data for the progress chart.
+     * This method replaces the functionality of get_progress_chart_data.php.
+     */
+    public function progressChart(Plan $plan): JsonResponse
+    {
+        // UPDATED: Authorization removed
+        $turns = $plan->turns()->orderBy('turn_number')->get(['turn_number as turn', 'speed', 'stamina', 'power', 'guts', 'wit']);
+
+        return response()->json(['success' => true, 'data' => $turns]);
+    }
+
+    /**
+     * Export a plan's details as a formatted text file.
+     * This method replaces the functionality of export_plan_data.php.
+     */
+    public function export(Plan $plan): Response
+    {
+        // UPDATED: Authorization removed
+        $plan->load($this->getRelationshipsToLoad());
+        $safeFileName = preg_replace('/[^a-z0-9_]/i', '_', $plan->plan_title ? $plan->plan_title : 'plan');
+        $fileName = "{$safeFileName}_{$plan->id}.txt";
+
+        return new Response($this->buildPlanText($plan), 200, [
+            'Content-Type' => 'text/plain',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+        ]);
+    }
+
+    /**
+     * Defines the relationships to be eager-loaded with every plan response.
+     */
+    protected function getRelationshipsToLoad(): array
+    {
+        // UPDATED: 'user' relationship removed from eager loading
+        return [
+            'attributes', 'skills.skillReference', 'racePredictions', 'goals', 'turns',
+            'terrainGrades', 'distanceGrades', 'styleGrades', 'mood', 'condition', 'strategy',
+        ];
     }
 
     private function createDetailedPlan(StorePlanRequest $request, array $validated)
@@ -114,27 +216,6 @@ class PlanController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource using minimal data (Quick Create).
-     * Replaces the 'quick_create' functionality of handle_plan_crud.php.
-     *
-     * @throws Throwable
-     */
-    public function storeQuick(Request $request): PlanResource
-    {
-        $validated = $this->validateQuickCreateRequest($request);
-
-        $plan = DB::transaction(function () use ($validated) {
-            $plan = $this->createQuickPlan($validated);
-            $this->createDefaultAttributes($plan);
-            $this->logPlanCreation($plan);
-
-            return $plan;
-        });
-
-        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
-    }
-
     private function validateQuickCreateRequest(Request $request): array
     {
         return $request->validate([
@@ -172,33 +253,9 @@ class PlanController extends Controller
         $plan->attributes()->createMany($attributes_data);
     }
 
-    /**
-     * Display the specified resource.
-     * Replaces functionality from fetch_plan_details.php and all get_plan_*.php files.
-     */
-    public function show(Plan $plan): PlanResource
-    {
-        // UPDATED: Authorization removed
-        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * Replaces the 'update' functionality of handle_plan_crud.php.
-     *
-     * @throws Throwable
-     */
-    public function update(UpdatePlanRequest $request, Plan $plan): PlanResource
-    {
-        $validated = $request->validated();
-        $this->performPlanUpdate($request, $plan, $validated);
-
-        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
-    }
-
     private function performPlanUpdate(UpdatePlanRequest $request, Plan $plan, array $validated): void
     {
-        DB::transaction(function () use ($request, $plan, $validated) {
+        DB::transaction(function () use ($request, $plan, $validated): void {
             $this->updatePlanData($request, $plan, $validated);
             $this->updatePlanRelations($plan, $validated);
             ActivityLog::create([
@@ -232,61 +289,6 @@ class PlanController extends Controller
         if (isset($validated['skills'])) {
             $this->syncSkills($plan, $validated['skills']);
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * Replaces the 'delete' functionality of handle_plan_crud.php.
-     */
-    public function destroy(Plan $plan): JsonResponse
-    {
-        // UPDATED: Authorization removed
-        $planTitle = $plan->plan_title;
-
-        DB::transaction(function () use ($plan, $planTitle) {
-            $imagePath = $plan->trainee_image_path;
-            $plan->delete(); // Soft delete
-
-            if ($imagePath) {
-                Storage::disk('public')->delete($imagePath);
-            }
-
-            ActivityLog::create([
-                'description' => "Plan deleted: {$planTitle}",
-                'icon_class' => 'bi-trash',
-            ]);
-        });
-
-        return response()->json(null, 204);
-    }
-
-    /**
-     * Provide data for the progress chart.
-     * This method replaces the functionality of get_progress_chart_data.php.
-     */
-    public function progressChart(Plan $plan): JsonResponse
-    {
-        // UPDATED: Authorization removed
-        $turns = $plan->turns()->orderBy('turn_number')->get(['turn_number as turn', 'speed', 'stamina', 'power', 'guts', 'wit']);
-
-        return response()->json(['success' => true, 'data' => $turns]);
-    }
-
-    /**
-     * Export a plan's details as a formatted text file.
-     * This method replaces the functionality of export_plan_data.php.
-     */
-    public function export(Plan $plan): Response
-    {
-        // UPDATED: Authorization removed
-        $plan->load($this->getRelationshipsToLoad());
-        $safeFileName = preg_replace('/[^a-z0-9_]/i', '_', $plan->plan_title ? $plan->plan_title : 'plan');
-        $fileName = "{$safeFileName}_{$plan->id}.txt";
-
-        return new Response($this->buildPlanText($plan), 200, [
-            'Content-Type' => 'text/plain',
-            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
-        ]);
     }
 
     private function buildPlanText(Plan $plan): string

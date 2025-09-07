@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Models\Condition;
@@ -79,7 +81,7 @@ class FormTabs extends Component
         'formTabs:requestState' => 'emitState',
     ];
 
-    public function mount($id_suffix = '', $planId = null)
+    public function mount($id_suffix = '', $planId = null): void
     {
         $this->id_suffix = $id_suffix;
         $this->planId = $planId;

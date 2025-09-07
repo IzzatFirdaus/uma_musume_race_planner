@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,11 +14,14 @@
   {{-- Ensure relative asset URLs resolve when app is served from a subdirectory --}}
   <base href="{{ url('') }}/">
 
-    <title>Uma Musume Race Planner</title>
+  <title>@yield('title', config('app.name', 'Uma Musume Race Planner'))</title>
+  <meta name="description" content="@yield('meta_description', 'Uma Musume Planner — create and manage training plans for Umamusume')">
 
   {{-- Third-party CSS Dependencies (from CDN) --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  {{-- Google Font: M PLUS Rounded 1c (moved from CSS @import for better performance) --}}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600;700&display=swap">
 
     {{-- Favicons and Touch Icons --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('uploads/app_logo/uma_musume_race_planner_logo_32.ico') }}" sizes="32x32">
@@ -84,32 +87,42 @@
         Replace individual <link> and <script> tags for local assets.
     --}}
   @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- Livewire Styles --}}
-    @livewireStyles
+  {{-- Vite bundles and per-page styles --}}
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @stack('styles')
+
+  {{-- Livewire Styles --}}
+  @livewireStyles
 
 </head>
 
-<body>
-    {{-- Navbar --}}
-  @livewire('layout.navbar')
+<body class="@yield('body-class', '')" data-theme="{{ config('app.theme', 'auto') }}">
+  {{-- Skip-to-content link for keyboard users --}}
+  <a class="visually-hidden-focusable" href="#main-content">@lang('Skip to content')</a>
 
+  {{-- Navbar --}}
+  <livewire:layout.navbar />
+
+  {{-- Main content area (accessible landmark) --}}
+  <main id="main-content" tabindex="-1" role="main">
     @yield('content')
+  </main>
 
-    {{-- Modals --}}
-    @include('modals.plan-details')
-    @include('modals.quick-create-plan')
+  {{-- Modals --}}
+  @include('modals.plan-details')
+  @include('modals.quick-create-plan')
 
-    {{-- Global Message Box for user notifications --}}
-    <div class="modal fade" id="messageBoxModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center alert alert-success mb-0" id="messageBoxBody"></div>
-            </div>
-        </div>
+  {{-- Global Message Box for user notifications --}}
+  <div class="modal fade" id="messageBoxModal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="messageBoxLabel">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body text-center alert alert-success mb-0" id="messageBoxBody" role="status" aria-live="polite"></div>
+      </div>
     </div>
+  </div>
 
-    {{-- Footer --}}
-  @livewire('layout.footer')
+  {{-- Footer partial (blade) — prefer partial over Livewire component to ensure deterministic render during tests/seed runs --}}
+  @include('layouts.partials.footer')
 
   {{-- SweetAlert2 for notifications and modals --}}
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -119,6 +132,7 @@
 
   {{-- Stack for page-specific scripts pushed from other Blade views --}}
   @stack('scripts')
+
   {{-- Livewire Scripts --}}
   @livewireScripts
 </body>

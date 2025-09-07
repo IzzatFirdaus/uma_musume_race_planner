@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard;
 
 use App\Models\Plan;
@@ -82,7 +84,7 @@ class PlanInlineDetails extends Component
         'formTabs:state' => 'receiveFormTabsState',
     ];
 
-    public function loadPlan($planId)
+    public function loadPlan($planId): void
     {
         $this->isLoading = true;
         $this->isVisible = true;
@@ -182,7 +184,7 @@ class PlanInlineDetails extends Component
         ]);
     }
 
-    public function closePlan()
+    public function closePlan(): void
     {
         $this->isVisible = false;
         $this->reset();
@@ -191,7 +193,7 @@ class PlanInlineDetails extends Component
         $this->dispatch('showPlanListCard');
     }
 
-    public function save()
+    public function save(): void
     {
         // Ask child FormTabs for its current state; receive via receiveFormTabsState
         $this->dispatch('formTabs:requestState');
@@ -293,8 +295,8 @@ class PlanInlineDetails extends Component
                         continue;
                     }
                     $plan->goals()->create([
-                        'goal' => $goalText ?: null,
-                        'result' => $resultText ?: '',
+                        'goal' => $goalText ? $goalText : null,
+                        'result' => $resultText ? $resultText : '',
                     ]);
                 }
             }

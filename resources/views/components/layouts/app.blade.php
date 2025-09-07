@@ -91,7 +91,7 @@
 
 <body>
     {{-- Navbar --}}
-  @livewire('layout.navbar')
+  <livewire:layout.navbar />
 
     {{ $slot }}
 
@@ -105,7 +105,7 @@
     </div>
 
     {{-- Footer --}}
-  @livewire('layout.footer')
+  <livewire:layout.footer />
 
   {{-- SweetAlert2 for notifications and modals --}}
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

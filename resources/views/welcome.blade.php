@@ -21,7 +21,7 @@
 <body class="antialiased">
 
     {{-- Use Livewire navbar component for consistency --}}
-    @livewire('layout.navbar')
+    <livewire:layout.navbar />
 
     <div class="container d-flex flex-column justify-content-center min-vh-100 py-5">
 
@@ -83,7 +83,7 @@
     </div>
 
     {{-- Use Livewire footer component for consistency --}}
-    @livewire('layout.footer')
+    <livewire:layout.footer />
 
     {{-- Bootstrap JS for navbar toggler and other interactivity --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LookupSeeder::class,
             SkillReferenceSeeder::class,
+            UmamusumeSeeder::class,
             PlanSeeder::class,
             ActivityLogSeeder::class,
         ]);

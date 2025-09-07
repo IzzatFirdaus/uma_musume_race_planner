@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\ActivityLog;
@@ -23,6 +25,7 @@ class PlanService
      *
      * @param  Request  $request  The HTTP request containing files
      * @param  array  $validated  The validated data
+     *
      * @return Plan The created plan
      *
      * @throws Throwable
@@ -44,6 +47,7 @@ class PlanService
      * Create a quick plan with minimal data.
      *
      * @param  array  $validated  The validated data
+     *
      * @return Plan The created plan
      *
      * @throws Throwable
@@ -65,6 +69,7 @@ class PlanService
      * @param  Request  $request  The HTTP request containing files
      * @param  Plan  $plan  The plan to update
      * @param  array  $validated  The validated data
+     *
      * @return Plan The updated plan
      *
      * @throws Throwable
@@ -91,7 +96,7 @@ class PlanService
     {
         $planTitle = $plan->plan_title;
 
-        DB::transaction(function () use ($plan, $planTitle) {
+        DB::transaction(function () use ($plan, $planTitle): void {
             $imagePath = $plan->trainee_image_path;
             $plan->delete(); // Soft delete
 
@@ -107,6 +112,7 @@ class PlanService
      * Create a plan with basic data.
      *
      * @param  array  $planData  The plan data
+     *
      * @return Plan The created plan
      */
     private function createPlanWithData(array $planData): Plan
@@ -121,6 +127,7 @@ class PlanService
      * Create a basic plan from quick create data.
      *
      * @param  array  $validated  The validated data
+     *
      * @return Plan The created plan
      */
     private function createBasicPlan(array $validated): Plan
@@ -257,6 +264,7 @@ class PlanService
      * Build skill data for creation.
      *
      * @param  array  $skill  The skill data
+     *
      * @return array|null The formatted skill data or null
      */
     private function buildSkillData(array $skill): ?array
@@ -288,6 +296,7 @@ class PlanService
      *
      * @param  Request  $request  The HTTP request
      * @param  Plan  $plan  The plan to associate the image with
+     *
      * @return string|null The image path
      */
     private function handleTraineeImageUpload(Request $request, Plan $plan): ?string

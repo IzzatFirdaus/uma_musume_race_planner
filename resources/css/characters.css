@@ -1,0 +1,68 @@
+/* Extracted from characters.blade.php */
+.character-card-inner {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.character-card-inner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgb(0 0 0 / 15%) !important;
+}
+
+.stat-mini {
+    padding: 2px;
+    border-radius: 4px;
+    background: rgb(0 0 0 / 5%);
+}
+
+.character-card.filtered {
+    display: none;
+}
+
+@media (width <= 576px) {
+    .card-img-top {
+        height: 150px !important;
+    }
+
+    .display-4 {
+        font-size: 2rem !important;
+    }
+}
+
+.stat-display {
+    padding: 10px;
+    border-radius: 8px;
+    background: rgb(0 0 0 / 5%);
+    margin-bottom: 10px;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.skill-card {
+    padding: 10px;
+    border-radius: 8px;
+    background: rgb(0 0 0 / 5%);
+}
+
+.aptitude-grade {
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.grade-S { background-color: #d4edda; color: #155724; }
+.grade-A { background-color: #cce5ff; color: #004085; }
+.grade-B { background-color: #fff3cd; color: #856404; }
+.grade-C { background-color: #f8d7da; color: #721c24; }
+.grade-D, .grade-E, .grade-F, .grade-G { background-color: #f1f3f4; color: #495057; }

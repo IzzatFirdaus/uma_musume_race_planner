@@ -200,7 +200,7 @@ class UmamusumeSeeder extends Seeder
                 'height_cm' => 160,
                 'weight' => 'Standard',
                 'three_sizes' => ['bust' => 91, 'waist' => 58, 'hips' => 85],
-                'images' => ['avatar' => 'uploads/trainee_images/__narita_brian_and_biwa_hayahide_umamusume_drawn_by_hitoto__sample-e1edfe57e7e12f49d5a724698f738783_cropped.jpg', 'full' => null, 'cropped' => null, 'source' => 'fanart'],
+                'images' => ['avatar' => 'uploads/trainee_images/__narita_brian_and_biwa_hayahide_umamusume_drawn_by_hitoto__sample-e1edfe57e7e12f49d5a724698f738783.jpg', 'full' => null, 'cropped' => null, 'source' => 'fanart'],
                 'rarity' => 3,
                 'growth_rates' => ['speed' => 10, 'stamina' => 20],
                 'aptitudes' => [
@@ -238,7 +238,7 @@ class UmamusumeSeeder extends Seeder
                 'height_cm' => 171,
                 'weight' => 'Standard',
                 'three_sizes' => ['bust' => 93, 'waist' => 61, 'hips' => 88],
-                'images' => ['avatar' => 'uploads/trainee_images/__narita_brian_and_biwa_hayahide_umamusume_drawn_by_hitoto__sample-e1edfe57e7e12f49d5a724698f738783.jpg', 'full' => null, 'cropped' => null, 'source' => 'fanart'],
+                'images' => ['avatar' => 'uploads/trainee_images/__narita_brian_and_biwa_hayahide_umamusume_drawn_by_hitoto__sample-e1edfe57e7e12f49d5a724698f738783_cropped.jpg', 'full' => null, 'cropped' => null, 'source' => 'fanart'],
                 'rarity' => 3,
                 'growth_rates' => ['stamina' => 20, 'wisdom' => 10],
                 'aptitudes' => [

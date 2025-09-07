@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $acquired
  * @property string|null $tag
  * @property string|null $notes
+ *
  * @property-read \App\Models\Plan $plan
  * @property-read \App\Models\SkillReference $skillReference
  *
@@ -37,8 +40,6 @@ class Skill extends Model
 
     /**
      * Indicates if the model should be timestamped.
-     *
-     * @var bool
      */
     public $timestamps = false;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
@@ -30,11 +32,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Umamusume extends Model
 {
+
+    public $incrementing = false;
     protected $table = 'umamusume';
 
     protected $primaryKey = 'id';
-
-    public $incrementing = false;
 
     protected $keyType = 'string';
 

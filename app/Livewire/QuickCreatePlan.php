@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use Livewire\Component;
@@ -10,7 +12,7 @@ class QuickCreatePlan extends Component
 
     public $classOptions = [];
 
-    public function mount()
+    public function mount(): void
     {
         $this->careerStageOptions = [
             ['value' => 'predebut', 'text' => 'Pre-Debut'],

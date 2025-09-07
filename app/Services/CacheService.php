@@ -67,9 +67,10 @@ final class CacheService
      * Get cached recent plans list.
      *
      * @param  int  $limit  Number of plans to retrieve
+     *
      * @return \Illuminate\Database\Eloquent\Collection The cached recent plans
      */
-    public function getRecentPlans(int $limit = 10)
+    public function getRecentPlans(int $limit = 10): \Illuminate\Database\Eloquent\Collection
     {
         $cacheKey = "recent_plans_{$limit}";
 
@@ -171,8 +172,8 @@ final class CacheService
                 $stats['cached_keys']++;
             }
         }
-        $stats['cache_hit_rate'] = $stats['total_keys'] > 0
-            ? round(($stats['cached_keys'] / $stats['total_keys']) * 100, 2)
+        $stats['cache_hit_rate'] = ($stats['total_keys'] ?? 0) > 0
+            ? round($stats['cached_keys'] / $stats['total_keys'] * 100, 2)
             : 0;
 
         return $stats;

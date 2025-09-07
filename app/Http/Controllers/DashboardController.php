@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
@@ -30,6 +32,31 @@ class DashboardController extends Controller
             ],
             $options
         ));
+    }
+
+    /**
+     * API endpoint to get dashboard stats.
+     */
+    public function getStats(): JsonResponse
+    {
+        // UPDATED: Queries are now global.
+        $stats = [
+            'total_plans' => Plan::count(),
+            'active_plans' => Plan::where('status', 'Active')->count(),
+            'finished_plans' => Plan::where('status', 'Finished')->count(),
+        ];
+
+        return response()->json($stats);
+    }
+
+    /**
+     * API endpoint to get recent activities.
+     */
+    public function getActivities(): JsonResponse
+    {
+        $activities = ActivityLog::orderBy('timestamp', 'desc')->take(7)->get();
+
+        return response()->json($activities);
     }
 
     private function getPlans()
@@ -90,30 +117,5 @@ class DashboardController extends Controller
             ['value' => 'platinum', 'text' => 'Star'],
             ['value' => 'legend', 'text' => 'Legend'],
         ];
-    }
-
-    /**
-     * API endpoint to get dashboard stats.
-     */
-    public function getStats(): JsonResponse
-    {
-        // UPDATED: Queries are now global.
-        $stats = [
-            'total_plans' => Plan::count(),
-            'active_plans' => Plan::where('status', 'Active')->count(),
-            'finished_plans' => Plan::where('status', 'Finished')->count(),
-        ];
-
-        return response()->json($stats);
-    }
-
-    /**
-     * API endpoint to get recent activities.
-     */
-    public function getActivities(): JsonResponse
-    {
-        $activities = ActivityLog::orderBy('timestamp', 'desc')->take(7)->get();
-
-        return response()->json($activities);
     }
 }

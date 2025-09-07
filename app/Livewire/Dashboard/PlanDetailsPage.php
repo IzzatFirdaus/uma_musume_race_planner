@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard;
 
 use Livewire\Component;
@@ -86,7 +88,7 @@ class PlanDetailsPage extends Component
         $this->loadPlan($this->planId);
     }
 
-    public function loadPlan($planId)
+    public function loadPlan($planId): void
     {
         $this->isLoading = true;
         try {
@@ -149,7 +151,7 @@ class PlanDetailsPage extends Component
         $this->isLoading = false;
     }
 
-    public function save()
+    public function save(): void
     {
         // Prevent saving in view mode
         if (! $this->isEditMode) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\V1\AutosuggestController;
 use App\Http\Controllers\Api\V1\PlanController;
 use App\Http\Controllers\DashboardController;
@@ -19,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 /**
  * API Version 1 Routes
  */
-Route::prefix('v1')->name('api.v1.')->group(function () {
+Route::prefix('v1')->name('api.v1.')->group(function (): void {
     // Plan resource routes (index, show, store, update, destroy)
     Route::apiResource('plans', PlanController::class);
 

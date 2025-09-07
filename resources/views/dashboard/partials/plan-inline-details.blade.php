@@ -22,7 +22,7 @@
         @csrf
         <div class="card-body">
             {{-- Use Livewire FormTabs for reactive state --}}
-            @livewire('form-tabs', ['id_suffix' => '_inline'])
+            <livewire:form-tabs id_suffix="_inline" />
         </div>
         <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-outline-secondary me-2" id="downloadTxtInline">

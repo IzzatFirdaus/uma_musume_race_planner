@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Models\Plan;
@@ -83,10 +85,20 @@ class PlanDetails extends Component
     // UI state
     public $isLoading = false;
 
+    /**
+     * Custom error messages for validation.
+     */
+    protected array $messages = [
+        'plan_title.required' => 'The plan title is required.',
+        'career_stage.required' => 'Please select a career stage.',
+        'class.required' => 'Please select a class.',
+        'status.required' => 'Status is required.',
+    ];
+
     #[On('loadPlan')]
     #[On('openPlanModal')]
     #[On('openPlanEditModal')]
-    public function mount($planId = null)
+    public function mount($planId = null): void
     {
         if ($planId) {
             $this->loadPlan($planId);
@@ -96,11 +108,22 @@ class PlanDetails extends Component
     #[On('loadPlan')]
     #[On('openPlanModal')]
     #[On('openPlanEditModal')]
-    public function loadPlan($planId)
+    public function loadPlan($planId): void
     {
         $this->isLoading = true;
         try {
-            $plan = $this->fetchPlanWithRelations($planId);
+            $plan = Plan::with([
+                'attributes',
+                'skills.skillReference',
+                'racePredictions',
+                'goals',
+                'terrainGrades',
+                'distanceGrades',
+                'styleGrades',
+                'mood',
+                'condition',
+                'strategy',
+            ])->findOrFail($planId);
             $this->assignPlanProperties($plan);
         } catch (\Exception $e) {
             $this->dispatch('show-error', ['message' => 'Failed to load plan: '.$e->getMessage()]);
@@ -108,20 +131,28 @@ class PlanDetails extends Component
         $this->isLoading = false;
     }
 
-    private function fetchPlanWithRelations($planId)
+    /**
+     * Save the plan details after validation.
+     */
+    public function save(): void
     {
-        return Plan::with([
-            'attributes',
-            'skills.skillReference',
-            'racePredictions',
-            'goals',
-            'terrainGrades',
-            'distanceGrades',
-            'styleGrades',
-            'mood',
-            'condition',
-            'strategy',
-        ])->findOrFail($planId);
+        $this->validate();
+
+        try {
+            // Save logic here (update or create Plan)
+            // ...existing code...
+            $this->dispatch('submitPlanForm', formId: 'planDetailsForm');
+        } catch (\Exception $e) {
+            $this->dispatch('show-error', message: 'Failed to save plan: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Render the component view.
+     */
+    public function render()
+    {
+        return view('livewire.plan-details');
     }
 
     private function assignPlanProperties(Plan $plan): void
@@ -165,39 +196,5 @@ class PlanDetails extends Component
         $this->terrainGrades = $plan->terrainGrades->toArray();
         $this->distanceGrades = $plan->distanceGrades->toArray();
         $this->styleGrades = $plan->styleGrades->toArray();
-    }
-
-    /**
-     * Custom error messages for validation.
-     */
-    protected array $messages = [
-        'plan_title.required' => 'The plan title is required.',
-        'career_stage.required' => 'Please select a career stage.',
-        'class.required' => 'Please select a class.',
-        'status.required' => 'Status is required.',
-    ];
-
-    /**
-     * Save the plan details after validation.
-     */
-    public function save(): void
-    {
-        $this->validate();
-
-        try {
-            // Save logic here (update or create Plan)
-            // ...existing code...
-            $this->dispatch('submitPlanForm', formId: 'planDetailsForm');
-        } catch (\Exception $e) {
-            $this->dispatch('show-error', message: 'Failed to save plan: '.$e->getMessage());
-        }
-    }
-
-    /**
-     * Render the component view.
-     */
-    public function render()
-    {
-        return view('livewire.plan-details');
     }
 }

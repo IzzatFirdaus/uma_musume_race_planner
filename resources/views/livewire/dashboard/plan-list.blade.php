@@ -53,11 +53,11 @@
                 <table class="table table-hover table-vcenter mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 60px;"></th>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Next Race</th>
-                            <th>Actions</th>
+                            <th style="width: 80px;">Character</th>
+                            <th>Plan Details</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 150px;">Next Race</th>
+                            <th style="width: 120px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="plan-list-body">
@@ -65,27 +65,47 @@
                             <tr>
                                 <td>
                                     @if($plan->trainee_image_path)
-                                        <img src="{{ asset($plan->trainee_image_path) }}"
-                                             alt="{{ $plan->name }}"
-                                             class="rounded-circle"
-                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                        <div class="position-relative">
+                                            <img src="{{ asset($plan->trainee_image_path) }}"
+                                                 alt="{{ $plan->name }}"
+                                                 class="rounded-3 border border-2 border-light shadow-sm"
+                                                 style="width: 64px; height: 64px; object-fit: cover; object-position: top;"
+                                                 title="{{ $plan->name }}">
+                                            <!-- Character quality/rarity indicator -->
+                                            <div class="position-absolute bottom-0 end-0 translate-middle">
+                                                <span class="badge bg-warning text-dark rounded-circle"
+                                                      style="width: 20px; height: 20px; font-size: 10px; line-height: 10px;"
+                                                      title="Plan Status">
+                                                    @if($plan->status === 'Active') ▶️
+                                                    @elseif($plan->status === 'Planning') 📝
+                                                    @elseif($plan->status === 'Finished') ✅
+                                                    @else ❓
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </div>
                                     @else
-                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
-                                             style="width: 40px; height: 40px;">
-                                            <i class="bi bi-person text-white"></i>
+                                        <div class="rounded-3 bg-secondary d-flex align-items-center justify-content-center border border-2 border-light shadow-sm"
+                                             style="width: 64px; height: 64px;">
+                                            <i class="bi bi-person text-white fs-4"></i>
                                         </div>
                                     @endif
                                 </td>
                                 <td>
                                     <div>
-                                        <strong>{{ $plan->name }}</strong>
+                                        <div class="fw-bold text-primary mb-1">{{ $plan->name }}</div>
                                         @if($plan->plan_title)
-                                            <br><small class="text-muted">{{ $plan->plan_title }}</small>
+                                            <div class="text-muted small">{{ $plan->plan_title }}</div>
+                                        @endif
+                                        @if($plan->turn_before)
+                                            <div class="text-info small mt-1">
+                                                <i class="bi bi-clock me-1"></i>Turn {{ $plan->turn_before }}
+                                            </div>
                                         @endif
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="badge
+                                <td class="text-center">
+                                    <span class="badge px-3 py-2
                                         @if($plan->status === 'Active') bg-success
                                         @elseif($plan->status === 'Planning') bg-warning text-dark
                                         @elseif($plan->status === 'Finished') bg-primary
@@ -96,9 +116,9 @@
                                 </td>
                                 <td>
                                     @if($plan->race_name)
-                                        {{ $plan->race_name }}
+                                        <div class="fw-semibold">{{ $plan->race_name }}</div>
                                         @if($plan->turn_before)
-                                            <br><small class="text-muted">Turn {{ $plan->turn_before }}</small>
+                                            <small class="text-muted">Turn {{ $plan->turn_before }}</small>
                                         @endif
                                     @else
                                         <span class="text-muted">No race scheduled</span>

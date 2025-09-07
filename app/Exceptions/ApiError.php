@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exceptions;
 
 use Exception;
@@ -88,65 +90,71 @@ class ApiError extends Exception
      *
      * @param  string  $message  The error message
      * @param  array  $errors  Validation errors
+     *
      * @return static The exception instance
      */
     public static function validation(string $message = 'Validation failed', array $errors = []): static
     {
-    return new self($message, 422, ['validation_errors' => $errors]);
+        return new self($message, 422, ['validation_errors' => $errors]);
     }
 
     /**
      * Create a not found error response.
      *
      * @param  string  $message  The error message
+     *
      * @return static The exception instance
      */
     public static function notFound(string $message = 'Resource not found'): static
     {
-    return new self($message, 404);
+        return new self($message, 404);
     }
 
     /**
      * Create an unauthorized error response.
      *
      * @param  string  $message  The error message
+     *
      * @return static The exception instance
      */
     public static function unauthorized(string $message = 'Unauthorized'): static
     {
-    return new self($message, 401);
+        return new self($message, 401);
     }
 
     /**
      * Create a forbidden error response.
      *
      * @param  string  $message  The error message
+     *
      * @return static The exception instance
      */
     public static function forbidden(string $message = 'Forbidden'): static
     {
-    return new self($message, 403);
+        return new self($message, 403);
     }
 
     /**
      * Create a rate limit exceeded error response.
      *
      * @param  string  $message  The error message
+     *
      * @return static The exception instance
      */
     public static function rateLimitExceeded(string $message = 'Rate limit exceeded'): static
     {
-    return new self($message, 429);
+        return new self($message, 429);
     }
 
     /**
      * Create a server error response.
      *
      * @param  string  $message  The error message
+     *
      * @return static The exception instance
      */
     public static function serverError(string $message = 'Internal server error'): static
     {
-    return new self($message, 500);
+        return new self($message, 500);
     }
 }
