@@ -23,9 +23,9 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/guide', fn () => view('guide'))->name('guide');
 
 /**
- * The Umamusume Roster page (placeholder).
+ * The Umamusume Roster page.
  */
-Route::get('/characters', fn () => view('characters'))->name('characters');
+Route::get('/characters', [App\Http\Controllers\UmamusumeController::class, 'index'])->name('characters');
 
 /**
  * Plan Details Pages (view and edit modes)

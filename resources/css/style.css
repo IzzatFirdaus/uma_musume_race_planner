@@ -1,3 +1,19 @@
+/* Dropdown Menu Glass Effect for Navbar */
+.dropdown-menu-glass {
+    background-color: var(--color-surface-light-glass);
+    -webkit-backdrop-filter: blur(var(--backdrop-blur-strength));
+    backdrop-filter: blur(var(--backdrop-blur-strength));
+    border-radius: var(--border-radius-base);
+    box-shadow: var(--color-shadow-light);
+    border: 1px solid rgb(255 255 255 / 40%);
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
+}
+
+body.dark-mode .dropdown-menu-glass {
+    background-color: var(--color-surface-dark-glass);
+    box-shadow: var(--color-shadow-dark);
+    border-color: var(--color-border-dark);
+}
 /* ---------------------------------------------------------------------
    Uma Musume Planner - style.css (v3.6 - UI/UX Thematic Update)
    Description: Custom visual styles layered on top of Bootstrap 5, optimized for UI/UX.

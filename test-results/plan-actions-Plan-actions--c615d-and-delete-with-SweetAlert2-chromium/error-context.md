@@ -1,0 +1,147 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - 'link "Uma Musume Logo Uma Musume: Pretty Derby Planner" [ref=e4] [cursor=pointer]':
+        - /url: http://127.0.0.1:8000
+        - img "Uma Musume Logo" [ref=e5] [cursor=pointer]
+        - generic [ref=e6] [cursor=pointer]: "Uma Musume: Pretty Derby Planner"
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link " Training Center" [ref=e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000
+            - generic [ref=e11] [cursor=pointer]: 
+            - text: Training Center
+        - listitem [ref=e12]:
+          - link " Umamusume Roster" [ref=e13] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/characters
+            - generic [ref=e14] [cursor=pointer]: 
+            - text: Umamusume Roster
+        - listitem [ref=e15]:
+          - link " New Training Plan" [ref=e16] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e17] [cursor=pointer]: 
+            - text: New Training Plan
+        - listitem [ref=e18]:
+          - link " Trainer's Guide" [ref=e19] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/guide
+            - generic [ref=e20] [cursor=pointer]: 
+            - text: Trainer's Guide
+        - listitem [ref=e21]:
+          - button " Game Info" [ref=e22] [cursor=pointer]:
+            - generic [ref=e23] [cursor=pointer]: 
+            - text: Game Info
+        - listitem [ref=e24]:
+          - generic [ref=e25]:
+            - checkbox " Dark Mode" [ref=e26]
+            - generic [ref=e27]:
+              - generic [ref=e28]: 
+              - text: Dark Mode
+  - main [ref=e29]:
+    - generic [ref=e32]:
+      - img "App Logo" [ref=e33]
+      - generic [ref=e34]:
+        - heading "Uma Musume Race Planner" [level=1] [ref=e35]
+        - paragraph [ref=e36]: Plan, track, and optimize your umamusume's racing career
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - heading " Your Race Plans" [level=5] [ref=e42]:
+              - generic [ref=e43]: 
+              - text: Your Race Plans
+            - button " Create New" [ref=e44] [cursor=pointer]:
+              - generic [ref=e45] [cursor=pointer]: 
+              - text: Create New
+          - generic [ref=e46]:
+            - group [ref=e48]:
+              - button "All (0)" [ref=e49] [cursor=pointer]
+              - button "Active (0)" [ref=e50] [cursor=pointer]
+              - button "Planning (0)" [ref=e51] [cursor=pointer]
+              - button "Finished (0)" [ref=e52] [cursor=pointer]
+            - table [ref=e54]:
+              - rowgroup [ref=e55]:
+                - row "Name Status Next Race Actions" [ref=e56]:
+                  - cell [ref=e57]
+                  - cell "Name" [ref=e58]
+                  - cell "Status" [ref=e59]
+                  - cell "Next Race" [ref=e60]
+                  - cell "Actions" [ref=e61]
+              - rowgroup [ref=e62]:
+                - row " No plans yet You haven't created any race plans. Get started by creating your first plan.  Create Plan" [ref=e63]:
+                  - cell " No plans yet You haven't created any race plans. Get started by creating your first plan.  Create Plan" [ref=e64]:
+                    - generic [ref=e65]:
+                      - generic [ref=e66]: 
+                      - heading "No plans yet" [level=4] [ref=e67]
+                      - paragraph [ref=e68]: You haven't created any race plans. Get started by creating your first plan.
+                      - button " Create Plan" [ref=e69] [cursor=pointer]:
+                        - generic [ref=e70] [cursor=pointer]: 
+                        - text: Create Plan
+        - generic:  
+      - generic [ref=e72]:
+        - generic [ref=e74]:
+          - generic [ref=e75]: Quick Stats
+          - generic [ref=e77]:
+            - generic [ref=e78]:
+              - generic [ref=e79]: "0"
+              - generic [ref=e80]: Plans
+            - generic [ref=e81]:
+              - generic [ref=e82]: "0"
+              - generic [ref=e83]: Active
+            - generic [ref=e84]:
+              - generic [ref=e85]: "0"
+              - generic [ref=e86]: Finished
+        - generic [ref=e88]:
+          - generic [ref=e89]: Recent Activity
+          - generic [ref=e91]: No recent activity.
+        - generic [ref=e92]:
+          - generic [ref=e93]: Support Card Summary
+          - paragraph [ref=e95]: This panel will show a summary of your selected support cards, their effects, and synergy for your current training plan. (Coming soon!)
+  - text: 
+  - contentinfo [ref=e97]:
+    - generic [ref=e98]:
+      - link " Uma Musume Planner v1.5.0-laravel" [ref=e99] [cursor=pointer]:
+        - /url: https://github.com/IzzatFirdaus/uma_musume_race_planner
+        - generic [ref=e100] [cursor=pointer]: 
+        - text: Uma Musume Planner v1.5.0-laravel
+      - generic [ref=e101]: "|"
+      - generic [ref=e102]: "Last Updated: September 7, 2025"
+    - generic [ref=e103]:
+      - link "Japanese Official Site" [ref=e104] [cursor=pointer]:
+        - /url: https://umamusume.jp/
+      - generic [ref=e105]: "|"
+      - link "Global Official Site (EN)" [ref=e106] [cursor=pointer]:
+        - /url: https://umamusume.com/
+      - generic [ref=e107]: "|"
+      - link "Steam Version" [ref=e108] [cursor=pointer]:
+        - /url: https://store.steampowered.com/app/3224770/Umamusume_Pretty_Derby/
+      - generic [ref=e109]: "|"
+      - link "Party Dash Spinoff" [ref=e110] [cursor=pointer]:
+        - /url: https://hachamecha-umamusume.jp/en/
+    - generic [ref=e111]:
+      - link "Official X (Twitter)":
+        - /url: https://x.com/umamusume_eng?lang=en
+      - link "" [ref=e112] [cursor=pointer]:
+        - /url: https://www.facebook.com/umamusume.eng
+        - generic [ref=e113] [cursor=pointer]: 
+      - link "" [ref=e114] [cursor=pointer]:
+        - /url: https://www.youtube.com/@umamusume_eng
+        - generic [ref=e115] [cursor=pointer]: 
+      - link "" [ref=e116] [cursor=pointer]:
+        - /url: https://discord.com/invite/umamusume-eng
+        - generic [ref=e117] [cursor=pointer]: 
+      - link "" [ref=e118] [cursor=pointer]:
+        - /url: https://umamusume.fandom.com/wiki/Game
+        - generic [ref=e119] [cursor=pointer]: 
+    - emphasis [ref=e121]: "This fan-made planning tool is not affiliated with Cygames Inc. or the Uma Musume: Pretty Derby franchise. Umamusume: Pretty Derby is a registered trademark of Cygames, Inc. All game assets and character designs are property of their respective owners. This tool is designed for educational and planning purposes only."
+    - generic [ref=e123]:
+      - text: "Umamusume: Pretty Derby was developed by Cygames and released on"
+      - link "February 24, 2021 (JP)" [ref=e124] [cursor=pointer]:
+        - /url: https://umamusume.jp/
+      - text: and
+      - link "June 26, 2025 (Global)" [ref=e125] [cursor=pointer]:
+        - /url: https://umamusume.com/
+      - text: .
+```

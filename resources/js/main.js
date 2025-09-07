@@ -75,6 +75,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+        // Open Quick Create modal when navbar 'New Training Plan' clicked
+        const newPlanBtn = document.getElementById("newPlanBtn");
+        if (newPlanBtn) {
+            newPlanBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const modalEl = document.getElementById("createPlanModal");
+                if (modalEl) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
+            });
+        }
+
     // Listen for Livewire events to open modal/inline views
     document.addEventListener("livewire:init", () => {
         // Handle plan modal and inline opening

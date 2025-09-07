@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AutosuggestController;
 use App\Http\Controllers\Api\V1\PlanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UmamusumeController;
 // Removed unused use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,4 +38,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         ->name('dashboard.stats');
     Route::get('dashboard/activities', [DashboardController::class, 'getActivities'])
         ->name('dashboard.activities');
+
+    // Umamusume API routes
+    Route::get('umamusume', [UmamusumeController::class, 'apiIndex'])
+        ->name('umamusume.index');
+    Route::get('umamusume/{id}', [UmamusumeController::class, 'show'])
+        ->name('umamusume.show');
 });
