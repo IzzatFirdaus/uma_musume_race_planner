@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
+use App\Http\Resources\Api\V1\PlanCollection;
+use App\Http\Resources\Api\V1\PlanResource;
 use App\Models\ActivityLog;
 use App\Models\Plan;
 use App\Models\SkillReference;
@@ -36,16 +38,11 @@ class PlanController extends Controller
      * Display a listing of all public resources.
      * Replaces the functionality of get_plans.php.
      */
-    public function index(): JsonResponse
+    public function index(): PlanCollection
     {
-        $plans = $this->getAllPlans();
+        $plans = Plan::with($this->getRelationshipsToLoad())->latest()->get();
 
-        return response()->json($plans);
-    }
-
-    private function getAllPlans()
-    {
-        return Plan::with($this->getRelationshipsToLoad())->latest()->get();
+        return new PlanCollection($plans);
     }
 
     /**
@@ -54,12 +51,12 @@ class PlanController extends Controller
      *
      * @throws Throwable
      */
-    public function store(StorePlanRequest $request): JsonResponse
+    public function store(StorePlanRequest $request): PlanResource
     {
         $validated = $request->validated();
         $plan = $this->createDetailedPlan($request, $validated);
 
-        return response()->json($plan->load($this->getRelationshipsToLoad()), 201);
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
     }
 
     private function createDetailedPlan(StorePlanRequest $request, array $validated)
@@ -116,7 +113,7 @@ class PlanController extends Controller
      *
      * @throws Throwable
      */
-    public function storeQuick(Request $request): JsonResponse
+    public function storeQuick(Request $request): PlanResource
     {
         $validated = $this->validateQuickCreateRequest($request);
 
@@ -128,7 +125,7 @@ class PlanController extends Controller
             return $plan;
         });
 
-        return response()->json($plan->load($this->getRelationshipsToLoad()), 201);
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
     }
 
     private function validateQuickCreateRequest(Request $request): array
@@ -172,10 +169,10 @@ class PlanController extends Controller
      * Display the specified resource.
      * Replaces functionality from fetch_plan_details.php and all get_plan_*.php files.
      */
-    public function show(Plan $plan): JsonResponse
+    public function show(Plan $plan): PlanResource
     {
         // UPDATED: Authorization removed
-        return response()->json($plan->load($this->getRelationshipsToLoad()));
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
     }
 
     /**
@@ -184,7 +181,7 @@ class PlanController extends Controller
      *
      * @throws Throwable
      */
-    public function update(UpdatePlanRequest $request, Plan $plan): JsonResponse
+    public function update(UpdatePlanRequest $request, Plan $plan): PlanResource
     {
         $validated = $request->validated();
         DB::transaction(function () use ($request, $plan, $validated) {
@@ -196,7 +193,7 @@ class PlanController extends Controller
             ]);
         });
 
-        return response()->json($plan->load($this->getRelationshipsToLoad()));
+        return new PlanResource($plan->load($this->getRelationshipsToLoad()));
     }
 
     private function updatePlanData(Request $request, Plan $plan, array $validated): void

@@ -1,0 +1,259 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "Logo Uma Musume Planner" [ref=e4] [cursor=pointer]:
+        - /url: http://localhost/uma-musume-planner-laravel/public
+        - img "Logo" [ref=e5] [cursor=pointer]
+        - generic [ref=e6] [cursor=pointer]: Uma Musume Planner
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link " Home" [ref=e10] [cursor=pointer]:
+            - /url: http://localhost/uma-musume-planner-laravel/public
+            - generic [ref=e11] [cursor=pointer]: 
+            - text: Home
+        - listitem [ref=e12]:
+          - link " New Plan" [ref=e13] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e14] [cursor=pointer]: 
+            - text: New Plan
+        - listitem [ref=e15]:
+          - link " Guide" [ref=e16] [cursor=pointer]:
+            - /url: http://localhost/uma-musume-planner-laravel/public/guide
+            - generic [ref=e17] [cursor=pointer]: 
+            - text: Guide
+        - listitem [ref=e18]:
+          - generic [ref=e19]:
+            - checkbox "Dark Mode" [ref=e20]
+            - generic [ref=e21]: Dark Mode
+  - main [ref=e22]:
+    - generic [ref=e25]:
+      - img "App Logo" [ref=e26]
+      - generic [ref=e27]:
+        - heading "Uma Musume Race Planner" [level=1] [ref=e28]
+        - paragraph [ref=e29]: Plan, track, and optimize your umamusume's racing career
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - generic:                                  
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - 'heading "Plan Details: Untitled" [level=5] [ref=e35]'
+            - button " Close" [ref=e36] [cursor=pointer]:
+              - generic [ref=e37] [cursor=pointer]: 
+              - text: Close
+          - generic [ref=e38]:
+            - generic [ref=e40]:
+              - tablist [ref=e41]:
+                - tab "General" [selected] [ref=e42] [cursor=pointer]
+                - tab "Attributes" [ref=e43] [cursor=pointer]
+                - tab "Aptitude Grades" [ref=e44] [cursor=pointer]
+                - tab "Skills" [ref=e45] [cursor=pointer]
+                - tab "Race Predictions" [ref=e46] [cursor=pointer]
+                - tab "Goals" [ref=e47] [cursor=pointer]
+                - tab "Progress Chart" [ref=e48] [cursor=pointer]
+              - tabpanel [ref=e50]:
+                - generic [ref=e51]:
+                  - generic [ref=e52]:
+                    - generic [ref=e53]: Plan Title
+                    - textbox "Plan Title" [ref=e54]
+                  - generic [ref=e55]:
+                    - generic [ref=e56]: Turn Before
+                    - spinbutton "Turn Before" [ref=e57]: "0"
+                - generic [ref=e58]:
+                  - generic [ref=e59]:
+                    - generic [ref=e60]: Trainee Name
+                    - textbox "Trainee Name" [ref=e61]
+                  - generic [ref=e62]:
+                    - generic [ref=e63]: Next Race Name
+                    - textbox "Next Race Name" [ref=e64]
+                - generic [ref=e67]:
+                  - generic [ref=e68]:
+                    - generic [ref=e69]: Career Stage
+                    - combobox "Career Stage" [ref=e70]:
+                      - option "Select Stage" [disabled] [selected]
+                      - option "Pre-debut"
+                      - option "Junior"
+                      - option "Classic"
+                      - option "Senior"
+                      - option "Finale"
+                  - generic [ref=e71]:
+                    - generic [ref=e72]: Class
+                    - combobox "Class" [ref=e73]:
+                      - option "Select Class" [disabled] [selected]
+                      - option "Debut"
+                      - option "Maiden"
+                      - option "Beginner"
+                      - option "Bronze"
+                      - option "Silver"
+                      - option "Gold"
+                      - option "Platinum"
+                      - option "Star"
+                      - option "Legend"
+                - generic [ref=e74]:
+                  - generic [ref=e75]:
+                    - generic [ref=e76]: Primary Goal
+                    - textbox "Primary Goal" [ref=e77]
+                  - generic [ref=e78]:
+                    - generic [ref=e79]: Strategy
+                    - combobox "Strategy" [ref=e80]:
+                      - option "Select Strategy" [selected]
+                      - option "END"
+                      - option "FRONT"
+                      - option "LATE"
+                      - option "PACE"
+                  - generic [ref=e81]:
+                    - generic [ref=e82]: Mood
+                    - combobox "Mood" [ref=e83]:
+                      - option "Select Mood" [selected]
+                      - option "AWFUL"
+                      - option "BAD"
+                      - option "GOOD"
+                      - option "GREAT"
+                      - option "NORMAL"
+                - generic [ref=e84]:
+                  - generic [ref=e85]:
+                    - generic [ref=e86]: Condition
+                    - combobox "Condition" [ref=e87]:
+                      - option "Select Condition" [selected]
+                      - option "DRY SKIN"
+                      - option "INSOMNIA"
+                      - option "MIGRAINE"
+                      - option "SLACKER"
+                      - option "SLOW METABOLISM"
+                      - option "SPRING BUD"
+                      - option "SUSPICIOUS CLOUDS"
+                      - option "UNDER THE WEATHER"
+                  - generic [ref=e88]:
+                    - generic [ref=e89]: Energy
+                    - generic [ref=e90]:
+                      - slider [ref=e91]: "0"
+                      - generic [ref=e92]: "0"
+                  - generic [ref=e93]:
+                    - generic [ref=e94]:
+                      - checkbox "Race Day" [ref=e95]
+                      - generic [ref=e96]: Race Day
+                    - generic [ref=e97]:
+                      - checkbox "Acquire Skill" [ref=e98]
+                      - generic [ref=e99]: Acquire Skill
+                - generic [ref=e100]:
+                  - generic [ref=e101]:
+                    - generic [ref=e102]: Skill Points
+                    - spinbutton "Skill Points" [ref=e103]: "0"
+                  - generic [ref=e104]:
+                    - generic [ref=e105]: Status
+                    - combobox "Status" [ref=e106]:
+                      - option "Planning" [selected]
+                      - option "Active"
+                      - option "Finished"
+                  - generic [ref=e107]:
+                    - generic [ref=e108]: Time of Day
+                    - textbox "Time of Day" [ref=e109]
+                  - generic [ref=e110]:
+                    - generic [ref=e111]: Month
+                    - textbox "Month" [ref=e112]
+                - generic [ref=e113]:
+                  - generic [ref=e114]:
+                    - generic [ref=e115]: Source
+                    - textbox "Source" [ref=e116]
+                  - generic [ref=e118]:
+                    - generic [ref=e120]: Growth Rates
+                    - generic [ref=e121]:
+                      - generic [ref=e122]:
+                        - generic [ref=e123]: Speed
+                        - spinbutton [ref=e124]: "0"
+                      - generic [ref=e125]:
+                        - generic [ref=e126]: Power
+                        - spinbutton [ref=e127]: "0"
+                      - generic [ref=e128]:
+                        - generic [ref=e129]: Wit
+                        - spinbutton [ref=e130]: "0"
+                    - generic [ref=e131]:
+                      - generic [ref=e132]:
+                        - generic [ref=e133]: Stamina
+                        - spinbutton [ref=e134]: "0"
+                      - generic [ref=e135]:
+                        - generic [ref=e136]: Guts
+                        - spinbutton [ref=e137]: "0"
+            - generic [ref=e138]:
+              - button " Export as TXT" [ref=e139] [cursor=pointer]:
+                - generic [ref=e140] [cursor=pointer]: 
+                - text: Export as TXT
+              - button "Copy to Clipboard" [ref=e141] [cursor=pointer]
+              - button "Save Changes" [ref=e142] [cursor=pointer]
+      - generic [ref=e143]:
+        - generic [ref=e145]:
+          - generic [ref=e146]: Quick Stats
+          - generic [ref=e148]:
+            - generic [ref=e149]:
+              - generic [ref=e150]: "8"
+              - generic [ref=e151]: Plans
+            - generic [ref=e152]:
+              - generic [ref=e153]: "0"
+              - generic [ref=e154]: Active
+            - generic [ref=e155]:
+              - generic [ref=e156]: "3"
+              - generic [ref=e157]: Finished
+        - generic [ref=e159]:
+          - generic [ref=e160]: Recent Activity
+          - list [ref=e162]:
+            - listitem [ref=e163]:
+              - generic [ref=e164]: 
+              - text: "Plan updated: [pf. Winning Equation…] Biwa Hayahide Plan"
+              - generic [ref=e165]: Sep 6, 09:22 PM
+            - listitem [ref=e166]:
+              - generic [ref=e167]: 
+              - text: "New sample plan created: [pf. Winning Equation…] Biwa Hayahide Plan"
+              - generic [ref=e168]: Sep 6, 09:21 PM
+            - listitem [ref=e169]:
+              - generic [ref=e170]: 
+              - text: "New sample plan created: [Wild Top Gear] Vodka Plan"
+              - generic [ref=e171]: Sep 6, 09:21 PM
+            - listitem [ref=e172]:
+              - generic [ref=e173]: 
+              - text: "New sample plan created: [Wild Top Gear] Vodka Plan"
+              - generic [ref=e174]: Sep 6, 09:21 PM
+            - listitem [ref=e175]:
+              - generic [ref=e176]: 
+              - text: "New sample plan created: [Peak Blue] Daiwa Scarlet Plan"
+              - generic [ref=e177]: Sep 6, 09:21 PM
+            - listitem [ref=e178]:
+              - generic [ref=e179]: 
+              - text: "New sample plan created: [Beyond the Horizon] Tokai Teio Plan"
+              - generic [ref=e180]: Sep 6, 09:21 PM
+            - listitem [ref=e181]:
+              - generic [ref=e182]: 
+              - text: "New sample plan created: [Bestest Prize 𝆕] Haru Urara Plan"
+              - generic [ref=e183]: Sep 6, 09:21 PM
+  - text: 
+  - contentinfo [ref=e184]:
+    - generic [ref=e185]:
+      - link " Uma Musume Planner v1.5.0-laravel" [ref=e186] [cursor=pointer]:
+        - /url: https://github.com/IzzatFirdaus/uma_musume_race_planner
+        - generic [ref=e187] [cursor=pointer]: 
+        - text: Uma Musume Planner v1.5.0-laravel
+      - text: "| Last Updated: August 4, 2025"
+    - generic [ref=e188]:
+      - link "JP Official Site" [ref=e189] [cursor=pointer]:
+        - /url: https://umamusume.jp/
+      - text: "|"
+      - link "Global Site (EN)" [ref=e190] [cursor=pointer]:
+        - /url: https://umamusume.com/
+      - text: "|"
+      - link "Steam Page" [ref=e191] [cursor=pointer]:
+        - /url: https://store.steampowered.com/app/3224770/Umamusume_Pretty_Derby/
+    - generic [ref=e192]:
+      - link "X / Twitter" [ref=e193] [cursor=pointer]:
+        - /url: https://x.com/umamusume_eng?lang=en
+      - link "" [ref=e194] [cursor=pointer]:
+        - /url: https://www.facebook.com/umamusume.eng
+        - generic [ref=e195] [cursor=pointer]: 
+      - link "" [ref=e196] [cursor=pointer]:
+        - /url: https://www.youtube.com/@umamusume_eng
+        - generic [ref=e197] [cursor=pointer]: 
+      - link "" [ref=e198] [cursor=pointer]:
+        - /url: https://discord.com/invite/umamusume-eng
+        - generic [ref=e199] [cursor=pointer]: 
+    - emphasis [ref=e201]: This fan-made planner is not affiliated with Cygames or the Uma Musume franchise. All trademarks and rights belong to their respective owners.
+```

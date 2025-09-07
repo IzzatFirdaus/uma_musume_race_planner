@@ -1,0 +1,256 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"uma_musume_planner"},
+{"type":"table","name":"activity_log","database":"uma_musume_planner","data":
+[
+{"id":"1","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [pf. Winning Equation…] Biwa Hayahide Plan","icon_class":"bi-person-plus"},
+{"id":"2","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [Wild Top Gear] Vodka Plan","icon_class":"bi-person-plus"},
+{"id":"3","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [Wild Top Gear] Vodka Plan","icon_class":"bi-person-plus"},
+{"id":"4","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [Peak Blue] Daiwa Scarlet Plan","icon_class":"bi-person-plus"},
+{"id":"5","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [Beyond the Horizon] Tokai Teio Plan","icon_class":"bi-person-plus"},
+{"id":"6","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [Bestest Prize 𝆕] Haru Urara Plan","icon_class":"bi-person-plus"},
+{"id":"7","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [Bestest Prize 𝆕] Haru Urara Plan","icon_class":"bi-person-plus"},
+{"id":"8","timestamp":"2025-09-06 21:21:00","description":"New sample plan created: [El☆Número 1] El Condor Pasa Plan","icon_class":"bi-person-plus"},
+{"id":"9","timestamp":"2025-09-06 21:22:12","description":"Plan updated: [pf. Winning Equation…] Biwa Hayahide Plan","icon_class":"bi-arrow-repeat"}
+]
+}
+,{"type":"table","name":"attributes","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"cache","database":"uma_musume_planner","data":
+[
+{"key":"uma-musume-planner-cache-boost:mcp:database-schema:mysql:career|class","value":"a:3:{s:6:\"engine\";s:5:\"mysql\";s:6:\"tables\";a:0:{}s:6:\"global\";a:4:{s:5:\"views\";a:1:{i:0;O:8:\"stdClass\":2:{s:4:\"name\";s:18:\"plans_with_details\";s:10:\"definition\";s:1377:\"select `p`.`id` AS `id`,`p`.`plan_title` AS `plan_title`,`p`.`turn_before` AS `turn_before`,`p`.`race_name` AS `race_name`,`p`.`name` AS `name`,`p`.`career_stage` AS `career_stage`,`p`.`class` AS `class`,`p`.`time_of_day` AS `time_of_day`,`p`.`month` AS `month`,`p`.`total_available_skill_points` AS `total_available_skill_points`,`p`.`acquire_skill` AS `acquire_skill`,`p`.`mood_id` AS `mood_id`,`p`.`condition_id` AS `condition_id`,`p`.`strategy_id` AS `strategy_id`,`p`.`energy` AS `energy`,`p`.`race_day` AS `race_day`,`p`.`goal` AS `goal`,`p`.`growth_rate_speed` AS `growth_rate_speed`,`p`.`growth_rate_stamina` AS `growth_rate_stamina`,`p`.`growth_rate_power` AS `growth_rate_power`,`p`.`growth_rate_guts` AS `growth_rate_guts`,`p`.`growth_rate_wit` AS `growth_rate_wit`,`p`.`status` AS `status`,`p`.`source` AS `source`,`p`.`updated_at` AS `updated_at`,`p`.`deleted_at` AS `deleted_at`,`p`.`created_at` AS `created_at`,`p`.`trainee_image_path` AS `trainee_image_path`,`m`.`label` AS `mood_label`,`c`.`label` AS `condition_label`,`s`.`label` AS `strategy_label` from (((`uma_musume_planner`.`plans` `p` left join `uma_musume_planner`.`moods` `m` on(`p`.`mood_id` = `m`.`id`)) left join `uma_musume_planner`.`conditions` `c` on(`p`.`condition_id` = `c`.`id`)) left join `uma_musume_planner`.`strategies` `s` on(`p`.`strategy_id` = `s`.`id`)) where `p`.`deleted_at` is null\";}}s:17:\"stored_procedures\";a:1:{i:0;O:8:\"stdClass\":11:{s:2:\"Db\";s:18:\"uma_musume_planner\";s:4:\"Name\";s:10:\"DeletePlan\";s:4:\"Type\";s:9:\"PROCEDURE\";s:7:\"Definer\";s:14:\"root@localhost\";s:8:\"Modified\";s:19:\"2025-09-05 19:16:10\";s:7:\"Created\";s:19:\"2025-09-05 19:16:10\";s:13:\"Security_type\";s:7:\"DEFINER\";s:7:\"Comment\";s:0:\"\";s:20:\"character_set_client\";s:7:\"utf8mb4\";s:20:\"collation_connection\";s:18:\"utf8mb4_unicode_ci\";s:18:\"Database Collation\";s:18:\"utf8mb4_general_ci\";}}s:9:\"functions\";a:1:{i:0;O:8:\"stdClass\":11:{s:2:\"Db\";s:18:\"uma_musume_planner\";s:4:\"Name\";s:19:\"GetSkillPointsSpent\";s:4:\"Type\";s:8:\"FUNCTION\";s:7:\"Definer\";s:14:\"root@localhost\";s:8:\"Modified\";s:19:\"2025-09-05 19:02:37\";s:7:\"Created\";s:19:\"2025-09-05 19:02:37\";s:13:\"Security_type\";s:7:\"DEFINER\";s:7:\"Comment\";s:0:\"\";s:20:\"character_set_client\";s:7:\"utf8mb4\";s:20:\"collation_connection\";s:18:\"utf8mb4_unicode_ci\";s:18:\"Database Collation\";s:18:\"utf8mb4_general_ci\";}}s:9:\"sequences\";a:0:{}}}","expiration":"1757210913"},
+{"key":"uma-musume-planner-cache-boost:mcp:database-schema:mysql:plans","value":"a:3:{s:6:\"engine\";s:5:\"mysql\";s:6:\"tables\";a:1:{s:5:\"plans\";a:5:{s:7:\"columns\";a:29:{s:2:\"id\";a:1:{s:4:\"type\";s:6:\"bigint\";}s:7:\"user_id\";a:1:{s:4:\"type\";s:6:\"bigint\";}s:10:\"plan_title\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:11:\"turn_before\";a:1:{s:4:\"type\";s:3:\"int\";}s:9:\"race_name\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:4:\"name\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:12:\"career_stage\";a:1:{s:4:\"type\";s:4:\"enum\";}s:5:\"class\";a:1:{s:4:\"type\";s:4:\"enum\";}s:11:\"time_of_day\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:5:\"month\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:28:\"total_available_skill_points\";a:1:{s:4:\"type\";s:3:\"int\";}s:13:\"acquire_skill\";a:1:{s:4:\"type\";s:4:\"enum\";}s:7:\"mood_id\";a:1:{s:4:\"type\";s:6:\"bigint\";}s:12:\"condition_id\";a:1:{s:4:\"type\";s:6:\"bigint\";}s:6:\"energy\";a:1:{s:4:\"type\";s:7:\"tinyint\";}s:8:\"race_day\";a:1:{s:4:\"type\";s:4:\"enum\";}s:4:\"goal\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:11:\"strategy_id\";a:1:{s:4:\"type\";s:6:\"bigint\";}s:17:\"growth_rate_speed\";a:1:{s:4:\"type\";s:3:\"int\";}s:19:\"growth_rate_stamina\";a:1:{s:4:\"type\";s:3:\"int\";}s:17:\"growth_rate_power\";a:1:{s:4:\"type\";s:3:\"int\";}s:16:\"growth_rate_guts\";a:1:{s:4:\"type\";s:3:\"int\";}s:15:\"growth_rate_wit\";a:1:{s:4:\"type\";s:3:\"int\";}s:6:\"status\";a:1:{s:4:\"type\";s:4:\"enum\";}s:6:\"source\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:18:\"trainee_image_path\";a:1:{s:4:\"type\";s:7:\"varchar\";}s:10:\"deleted_at\";a:1:{s:4:\"type\";s:9:\"timestamp\";}s:10:\"created_at\";a:1:{s:4:\"type\";s:9:\"timestamp\";}s:10:\"updated_at\";a:1:{s:4:\"type\";s:9:\"timestamp\";}}s:7:\"indexes\";a:7:{s:26:\"plans_condition_id_foreign\";a:4:{s:7:\"columns\";a:1:{i:0;s:12:\"condition_id\";}s:4:\"type\";s:5:\"btree\";s:9:\"is_unique\";b:0;s:10:\"is_primary\";b:0;}s:21:\"plans_mood_id_foreign\";a:4:{s:7:\"columns\";a:1:{i:0;s:7:\"mood_id\";}s:4:\"type\";s:5:\"btree\";s:9:\"is_unique\";b:0;s:10:\"is_primary\";b:0;}s:16:\"plans_name_index\";a:4:{s:7:\"columns\";a:1:{i:0;s:4:\"name\";}s:4:\"type\";s:5:\"btree\";s:9:\"is_unique\";b:0;s:10:\"is_primary\";b:0;}s:18:\"plans_status_index\";a:4:{s:7:\"columns\";a:1:{i:0;s:6:\"status\";}s:4:\"type\";s:5:\"btree\";s:9:\"is_unique\";b:0;s:10:\"is_primary\";b:0;}s:25:\"plans_strategy_id_foreign\";a:4:{s:7:\"columns\";a:1:{i:0;s:11:\"strategy_id\";}s:4:\"type\";s:5:\"btree\";s:9:\"is_unique\";b:0;s:10:\"is_primary\";b:0;}s:21:\"plans_user_id_foreign\";a:4:{s:7:\"columns\";a:1:{i:0;s:7:\"user_id\";}s:4:\"type\";s:5:\"btree\";s:9:\"is_unique\";b:0;s:10:\"is_primary\";b:0;}s:7:\"primary\";a:4:{s:7:\"columns\";a:1:{i:0;s:2:\"id\";}s:4:\"type\";s:5:\"btree\";s:9:\"is_unique\";b:1;s:10:\"is_primary\";b:1;}}s:12:\"foreign_keys\";a:4:{i:0;a:7:{s:4:\"name\";s:26:\"plans_condition_id_foreign\";s:7:\"columns\";a:1:{i:0;s:12:\"condition_id\";}s:14:\"foreign_schema\";s:18:\"uma_musume_planner\";s:13:\"foreign_table\";s:10:\"conditions\";s:15:\"foreign_columns\";a:1:{i:0;s:2:\"id\";}s:9:\"on_update\";s:8:\"restrict\";s:9:\"on_delete\";s:8:\"set null\";}i:1;a:7:{s:4:\"name\";s:21:\"plans_mood_id_foreign\";s:7:\"columns\";a:1:{i:0;s:7:\"mood_id\";}s:14:\"foreign_schema\";s:18:\"uma_musume_planner\";s:13:\"foreign_table\";s:5:\"moods\";s:15:\"foreign_columns\";a:1:{i:0;s:2:\"id\";}s:9:\"on_update\";s:8:\"restrict\";s:9:\"on_delete\";s:8:\"set null\";}i:2;a:7:{s:4:\"name\";s:25:\"plans_strategy_id_foreign\";s:7:\"columns\";a:1:{i:0;s:11:\"strategy_id\";}s:14:\"foreign_schema\";s:18:\"uma_musume_planner\";s:13:\"foreign_table\";s:10:\"strategies\";s:15:\"foreign_columns\";a:1:{i:0;s:2:\"id\";}s:9:\"on_update\";s:8:\"restrict\";s:9:\"on_delete\";s:8:\"set null\";}i:3;a:7:{s:4:\"name\";s:21:\"plans_user_id_foreign\";s:7:\"columns\";a:1:{i:0;s:7:\"user_id\";}s:14:\"foreign_schema\";s:18:\"uma_musume_planner\";s:13:\"foreign_table\";s:5:\"users\";s:15:\"foreign_columns\";a:1:{i:0;s:2:\"id\";}s:9:\"on_update\";s:8:\"restrict\";s:9:\"on_delete\";s:7:\"cascade\";}}s:8:\"triggers\";a:0:{}s:17:\"check_constraints\";a:0:{}}}s:6:\"global\";a:4:{s:5:\"views\";a:1:{i:0;O:8:\"stdClass\":2:{s:4:\"name\";s:18:\"plans_with_details\";s:10:\"definition\";s:1377:\"select `p`.`id` AS `id`,`p`.`plan_title` AS `plan_title`,`p`.`turn_before` AS `turn_before`,`p`.`race_name` AS `race_name`,`p`.`name` AS `name`,`p`.`career_stage` AS `career_stage`,`p`.`class` AS `class`,`p`.`time_of_day` AS `time_of_day`,`p`.`month` AS `month`,`p`.`total_available_skill_points` AS `total_available_skill_points`,`p`.`acquire_skill` AS `acquire_skill`,`p`.`mood_id` AS `mood_id`,`p`.`condition_id` AS `condition_id`,`p`.`strategy_id` AS `strategy_id`,`p`.`energy` AS `energy`,`p`.`race_day` AS `race_day`,`p`.`goal` AS `goal`,`p`.`growth_rate_speed` AS `growth_rate_speed`,`p`.`growth_rate_stamina` AS `growth_rate_stamina`,`p`.`growth_rate_power` AS `growth_rate_power`,`p`.`growth_rate_guts` AS `growth_rate_guts`,`p`.`growth_rate_wit` AS `growth_rate_wit`,`p`.`status` AS `status`,`p`.`source` AS `source`,`p`.`updated_at` AS `updated_at`,`p`.`deleted_at` AS `deleted_at`,`p`.`created_at` AS `created_at`,`p`.`trainee_image_path` AS `trainee_image_path`,`m`.`label` AS `mood_label`,`c`.`label` AS `condition_label`,`s`.`label` AS `strategy_label` from (((`uma_musume_planner`.`plans` `p` left join `uma_musume_planner`.`moods` `m` on(`p`.`mood_id` = `m`.`id`)) left join `uma_musume_planner`.`conditions` `c` on(`p`.`condition_id` = `c`.`id`)) left join `uma_musume_planner`.`strategies` `s` on(`p`.`strategy_id` = `s`.`id`)) where `p`.`deleted_at` is null\";}}s:17:\"stored_procedures\";a:1:{i:0;O:8:\"stdClass\":11:{s:2:\"Db\";s:18:\"uma_musume_planner\";s:4:\"Name\";s:10:\"DeletePlan\";s:4:\"Type\";s:9:\"PROCEDURE\";s:7:\"Definer\";s:14:\"root@localhost\";s:8:\"Modified\";s:19:\"2025-09-05 19:16:10\";s:7:\"Created\";s:19:\"2025-09-05 19:16:10\";s:13:\"Security_type\";s:7:\"DEFINER\";s:7:\"Comment\";s:0:\"\";s:20:\"character_set_client\";s:7:\"utf8mb4\";s:20:\"collation_connection\";s:18:\"utf8mb4_unicode_ci\";s:18:\"Database Collation\";s:18:\"utf8mb4_general_ci\";}}s:9:\"functions\";a:1:{i:0;O:8:\"stdClass\":11:{s:2:\"Db\";s:18:\"uma_musume_planner\";s:4:\"Name\";s:19:\"GetSkillPointsSpent\";s:4:\"Type\";s:8:\"FUNCTION\";s:7:\"Definer\";s:14:\"root@localhost\";s:8:\"Modified\";s:19:\"2025-09-05 19:02:37\";s:7:\"Created\";s:19:\"2025-09-05 19:02:37\";s:13:\"Security_type\";s:7:\"DEFINER\";s:7:\"Comment\";s:0:\"\";s:20:\"character_set_client\";s:7:\"utf8mb4\";s:20:\"collation_connection\";s:18:\"utf8mb4_unicode_ci\";s:18:\"Database Collation\";s:18:\"utf8mb4_general_ci\";}}s:9:\"sequences\";a:0:{}}}","expiration":"1757205685"},
+{"key":"uma-musume-planner-cache-boost.roster.scan","value":"a:2:{s:6:\"roster\";O:21:\"Laravel\\Roster\\Roster\":2:{s:13:\"\u0000*\u0000approaches\";O:29:\"Illuminate\\Support\\Collection\":2:{s:8:\"\u0000*\u0000items\";a:0:{}s:28:\"\u0000*\u0000escapeWhenCastingToString\";b:0;}s:11:\"\u0000*\u0000packages\";O:32:\"Laravel\\Roster\\PackageCollection\":2:{s:8:\"\u0000*\u0000items\";a:9:{i:0;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:37:\"Laravel\\Roster\\Enums\\Packages:LARAVEL\";s:14:\"\u0000*\u0000packageName\";s:17:\"laravel\/framework\";s:10:\"\u0000*\u0000version\";s:7:\"12.21.0\";s:6:\"\u0000*\u0000dev\";b:0;}i:1;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:37:\"Laravel\\Roster\\Enums\\Packages:PROMPTS\";s:14:\"\u0000*\u0000packageName\";s:15:\"laravel\/prompts\";s:10:\"\u0000*\u0000version\";s:5:\"0.3.6\";s:6:\"\u0000*\u0000dev\";b:0;}i:2;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:38:\"Laravel\\Roster\\Enums\\Packages:LIVEWIRE\";s:14:\"\u0000*\u0000packageName\";s:17:\"livewire\/livewire\";s:10:\"\u0000*\u0000version\";s:5:\"3.6.4\";s:6:\"\u0000*\u0000dev\";b:0;}i:3;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:38:\"Laravel\\Roster\\Enums\\Packages:LARASTAN\";s:14:\"\u0000*\u0000packageName\";s:17:\"larastan\/larastan\";s:10:\"\u0000*\u0000version\";s:5:\"3.6.1\";s:6:\"\u0000*\u0000dev\";b:1;}i:4;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:34:\"Laravel\\Roster\\Enums\\Packages:PINT\";s:14:\"\u0000*\u0000packageName\";s:12:\"laravel\/pint\";s:10:\"\u0000*\u0000version\";s:6:\"1.24.0\";s:6:\"\u0000*\u0000dev\";b:1;}i:5;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:34:\"Laravel\\Roster\\Enums\\Packages:SAIL\";s:14:\"\u0000*\u0000packageName\";s:12:\"laravel\/sail\";s:10:\"\u0000*\u0000version\";s:6:\"1.44.0\";s:6:\"\u0000*\u0000dev\";b:1;}i:6;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:37:\"Laravel\\Roster\\Enums\\Packages:PHPUNIT\";s:14:\"\u0000*\u0000packageName\";s:15:\"phpunit\/phpunit\";s:10:\"\u0000*\u0000version\";s:7:\"11.5.28\";s:6:\"\u0000*\u0000dev\";b:1;}i:7;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:38:\"Laravel\\Roster\\Enums\\Packages:PRETTIER\";s:14:\"\u0000*\u0000packageName\";s:8:\"prettier\";s:10:\"\u0000*\u0000version\";s:5:\"3.6.2\";s:6:\"\u0000*\u0000dev\";b:1;}i:8;O:22:\"Laravel\\Roster\\Package\":4:{s:10:\"\u0000*\u0000package\";E:41:\"Laravel\\Roster\\Enums\\Packages:TAILWINDCSS\";s:14:\"\u0000*\u0000packageName\";s:11:\"tailwindcss\";s:10:\"\u0000*\u0000version\";s:6:\"4.1.11\";s:6:\"\u0000*\u0000dev\";b:1;}}s:28:\"\u0000*\u0000escapeWhenCastingToString\";b:0;}}s:9:\"timestamp\";i:1757203317;}","expiration":"1757289717"},
+{"key":"uma-musume-planner-cache-d189a3df25facd3522214377f5876bcb","value":"i:1;","expiration":"1757206386"},
+{"key":"uma-musume-planner-cache-d189a3df25facd3522214377f5876bcb:timer","value":"i:1757206386;","expiration":"1757206386"}
+]
+}
+,{"type":"table","name":"cache_locks","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"conditions","database":"uma_musume_planner","data":
+[
+{"id":"2","label":"DRY SKIN"},
+{"id":"3","label":"INSOMNIA"},
+{"id":"1","label":"MIGRAINE"},
+{"id":"5","label":"SLACKER"},
+{"id":"4","label":"SLOW METABOLISM"},
+{"id":"7","label":"SPRING BUD"},
+{"id":"8","label":"SUSPICIOUS CLOUDS"},
+{"id":"6","label":"UNDER THE WEATHER"}
+]
+}
+,{"type":"table","name":"distance_grades","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"failed_jobs","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"goals","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"jobs","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"job_batches","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"migrations","database":"uma_musume_planner","data":
+[
+{"id":"1","migration":"0001_01_01_000000_create_users_table","batch":"1"},
+{"id":"2","migration":"0001_01_01_000001_create_cache_table","batch":"1"},
+{"id":"3","migration":"0001_01_01_000002_create_jobs_table","batch":"1"},
+{"id":"4","migration":"2025_08_03_155851_create_moods_table","batch":"1"},
+{"id":"5","migration":"2025_08_03_155852_create_conditions_table","batch":"1"},
+{"id":"6","migration":"2025_08_03_155854_create_strategies_table","batch":"1"},
+{"id":"7","migration":"2025_08_03_155916_create_plans_table","batch":"1"},
+{"id":"8","migration":"2025_08_03_155917_create_attributes_table","batch":"1"},
+{"id":"9","migration":"2025_08_03_155918_create_skill_reference_table","batch":"1"},
+{"id":"10","migration":"2025_08_03_155918_create_skills_table","batch":"1"},
+{"id":"11","migration":"2025_08_03_155919_create_race_predictions_table","batch":"1"},
+{"id":"12","migration":"2025_08_03_155920_create_activity_log_table","batch":"1"},
+{"id":"13","migration":"2025_08_03_155920_create_terrain_grades_table","batch":"1"},
+{"id":"14","migration":"2025_08_03_155921_create_distance_grades_table","batch":"1"},
+{"id":"15","migration":"2025_08_03_155921_create_style_grades_table","batch":"1"},
+{"id":"16","migration":"2025_08_03_155922_create_goals_table","batch":"1"},
+{"id":"17","migration":"2025_08_03_155925_create_turns_table","batch":"1"}
+]
+}
+,{"type":"table","name":"moods","database":"uma_musume_planner","data":
+[
+{"id":"1","label":"AWFUL"},
+{"id":"2","label":"BAD"},
+{"id":"4","label":"GOOD"},
+{"id":"5","label":"GREAT"},
+{"id":"3","label":"NORMAL"}
+]
+}
+,{"type":"table","name":"password_reset_tokens","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"plans","database":"uma_musume_planner","data":
+[
+{"id":"1","user_id":"1","plan_title":"[pf. Winning Equation…] Biwa Hayahide Plan","turn_before":"0","race_name":"Tenno Sho (Spring)","name":"[pf. Winning Equation…] Biwa Hayahide","career_stage":"senior","class":"silver","time_of_day":null,"month":null,"total_available_skill_points":"17","acquire_skill":"NO","mood_id":"4","condition_id":null,"energy":"20","race_day":"yes","goal":"TOP 3","strategy_id":"2","growth_rate_speed":"0","growth_rate_stamina":"0","growth_rate_power":"0","growth_rate_guts":"10","growth_rate_wit":"20","status":"Planning","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"},
+{"id":"2","user_id":"1","plan_title":"[Wild Top Gear] Vodka Plan","turn_before":null,"race_name":"URA Finale Finals","name":"[Wild Top Gear] Vodka","career_stage":"finale","class":"star","time_of_day":null,"month":null,"total_available_skill_points":null,"acquire_skill":"NO","mood_id":null,"condition_id":null,"energy":null,"race_day":"no","goal":"VODKA IS 1ST PLACE","strategy_id":null,"growth_rate_speed":"10","growth_rate_stamina":"0","growth_rate_power":"20","growth_rate_guts":"0","growth_rate_wit":"0","status":"Finished","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"},
+{"id":"3","user_id":"1","plan_title":"[Wild Top Gear] Vodka Plan","turn_before":null,"race_name":"URA Finale Finals","name":"[Wild Top Gear] Vodka","career_stage":"finale","class":"platinum","time_of_day":null,"month":null,"total_available_skill_points":"347","acquire_skill":"YES","mood_id":null,"condition_id":null,"energy":null,"race_day":"no","goal":"SHE WON 1ST","strategy_id":null,"growth_rate_speed":"10","growth_rate_stamina":"0","growth_rate_power":"20","growth_rate_guts":"0","growth_rate_wit":"0","status":"Finished","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"},
+{"id":"4","user_id":"1","plan_title":"[Peak Blue] Daiwa Scarlet Plan","turn_before":null,"race_name":"URA Finale Finals","name":"[Peak Blue] Daiwa Scarlet","career_stage":"finale","class":"star","time_of_day":null,"month":null,"total_available_skill_points":"75","acquire_skill":"YES","mood_id":null,"condition_id":null,"energy":null,"race_day":"no","goal":"SHE’S 2ND PLACE","strategy_id":"1","growth_rate_speed":"10","growth_rate_stamina":"0","growth_rate_power":"0","growth_rate_guts":"20","growth_rate_wit":"0","status":"Finished","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"},
+{"id":"5","user_id":"1","plan_title":"[Beyond the Horizon] Tokai Teio Plan","turn_before":null,"race_name":"Tenno Sho (Spring)","name":"[Beyond the Horizon] Tokai Teio","career_stage":"classic","class":"gold","time_of_day":null,"month":null,"total_available_skill_points":"38","acquire_skill":"NO","mood_id":"3","condition_id":null,"energy":"30","race_day":"yes","goal":"TOP 3","strategy_id":"2","growth_rate_speed":"10","growth_rate_stamina":"10","growth_rate_power":"0","growth_rate_guts":"10","growth_rate_wit":"0","status":"Planning","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"},
+{"id":"6","user_id":"1","plan_title":"[Bestest Prize 𝆕] Haru Urara Plan","turn_before":null,"race_name":"JBC SPRINT","name":"[Bestest Prize 𝆕] Haru Urara","career_stage":"senior","class":"silver","time_of_day":null,"month":null,"total_available_skill_points":"174","acquire_skill":"YES","mood_id":"4","condition_id":null,"energy":"20","race_day":"yes","goal":"MUST 1ST","strategy_id":"3","growth_rate_speed":"0","growth_rate_stamina":"0","growth_rate_power":"0","growth_rate_guts":"20","growth_rate_wit":"0","status":"Planning","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"},
+{"id":"7","user_id":"1","plan_title":"[Bestest Prize 𝆕] Haru Urara Plan","turn_before":null,"race_name":"URA Finale Qualifier","name":"[Bestest Prize 𝆕] Haru Urara","career_stage":"finale","class":"silver","time_of_day":null,"month":null,"total_available_skill_points":"4","acquire_skill":"NO","mood_id":"4","condition_id":null,"energy":"20","race_day":"yes","goal":"1ST","strategy_id":"3","growth_rate_speed":"0","growth_rate_stamina":"0","growth_rate_power":"10","growth_rate_guts":"20","growth_rate_wit":"0","status":"Planning","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"},
+{"id":"8","user_id":"1","plan_title":"[El☆Número 1] El Condor Pasa Plan","turn_before":"12","race_name":"Kyodo News Hai","name":"[El☆Número 1] El Condor Pasa","career_stage":"junior","class":"beginner","time_of_day":null,"month":null,"total_available_skill_points":"38","acquire_skill":"NO","mood_id":"4","condition_id":null,"energy":"50","race_day":"no","goal":"TOP 5","strategy_id":"2","growth_rate_speed":"20","growth_rate_stamina":"0","growth_rate_power":"0","growth_rate_guts":"0","growth_rate_wit":"10","status":"Planning","source":null,"trainee_image_path":null,"deleted_at":null,"created_at":"2025-09-06 21:21:00","updated_at":"2025-09-06 21:21:00"}
+]
+}
+,{"type":"table","name":"race_predictions","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"sessions","database":"uma_musume_planner","data":
+[
+{"id":"ED9jnqjKY1bVYabPhQ5iUXnznSnAQGdWpanaYA5J","user_id":null,"ip_address":"::1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/140.0.7339.16 Safari\/537.36","payload":"YTozOntzOjY6Il90b2tlbiI7czo0MDoiNmRQOTVpWDFXTnFBRERxWGo3SWQzZFE0enh2VjZxV2ZvTXdQY1J2NiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NTA6Imh0dHA6Ly9sb2NhbGhvc3QvdW1hLW11c3VtZS1wbGFubmVyLWxhcmF2ZWwvcHVibGljIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==","last_activity":"1757206322"},
+{"id":"flIDRbBz5tkcVa5yfXwAOD9HzUK8zV7rTaaoBwdM","user_id":null,"ip_address":"127.0.0.1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko\/20100101 Firefox\/142.0","payload":"YTozOntzOjY6Il90b2tlbiI7czo0MDoiSms4eE9PbG1HMWNYcnlGSFkyWTA3RmtFNXhBQ2N2d3owYkh1VGs0cyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9ndWlkZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=","last_activity":"1757210965"}
+]
+}
+,{"type":"table","name":"skills","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"skill_reference","database":"uma_musume_planner","data":
+[
+{"id":"1","skill_name":"Triumphant Pulse","description":"High-powered final‑stretch acceleration burst","stat_type":"Acceleration","best_for":"End Closers","tag":"🔺"},
+{"id":"2","skill_name":"Red Shift\/LP1211‑M","description":"Final‑corner burst when leading","stat_type":"Acceleration","best_for":"Daiwa Scarlet, Maruzensky","tag":"🔺"},
+{"id":"3","skill_name":"Corner Acceleration ○","description":"Burst of speed during corners","stat_type":"Acceleration","best_for":"Corner maneuverers","tag":"🔺"},
+{"id":"4","skill_name":"Corner Adept ○","description":"Slight speed boost on corners","stat_type":"Speed","best_for":"All‑rounders","tag":"🔺"},
+{"id":"5","skill_name":"Slipstream","description":"Acceleration boost when following close behind another","stat_type":"Acceleration","best_for":"Pacer \/ stalkers","tag":"🔺"},
+{"id":"6","skill_name":"Tail Held High","description":"Speed boost on final straight","stat_type":"Speed","best_for":"Late‑stage front\/pacers","tag":"🔺"},
+{"id":"7","skill_name":"Straightaway Adept","description":"Slight speed burst on straights","stat_type":"Speed","best_for":"Front or pace strategies","tag":"🔺"},
+{"id":"8","skill_name":"Straightaway Acceleration","description":"Acceleration on straights","stat_type":"Acceleration","best_for":"Medium‑distance \/ pace runs","tag":"🔺"},
+{"id":"9","skill_name":"Straightaways ○","description":"Speed up on straight segments","stat_type":"Speed","best_for":"All track types","tag":"🔺"},
+{"id":"10","skill_name":"Corners ○","description":"Speed boost during corner turns","stat_type":"Speed","best_for":"All track types","tag":"🔺"},
+{"id":"11","skill_name":"Fast & Furious","description":"Mid‑race speed boost","stat_type":"Speed","best_for":"Pace\/front runners","tag":"🔺"},
+{"id":"12","skill_name":"Shifting Gears","description":"Acceleration when passing mid‑race","stat_type":"Acceleration","best_for":"Front‑runner builds","tag":"🔺"},
+{"id":"13","skill_name":"Speed Star","description":"Easy‑to‑proc corner speed buff","stat_type":"Speed","best_for":"All‑rounders","tag":"🔺"},
+{"id":"14","skill_name":"Inside Scoop","description":"Corner boost when near inner rail","stat_type":"Acceleration","best_for":"Corner‑savvy runners","tag":"🔺"},
+{"id":"15","skill_name":"Pressure","description":"Slight accel. boost when passing another horse","stat_type":"Acceleration","best_for":"Gold Ship, End‑Closer builds","tag":"🔺"},
+{"id":"16","skill_name":"Straightaway Spurt","description":"Final straight acceleration burst","stat_type":"Acceleration","best_for":"Vodka","tag":"🔺"},
+{"id":"17","skill_name":"Unrestrained","description":"Hold the lead on the final corner","stat_type":"Speed","best_for":"Front‑runners","tag":"🔺"},
+{"id":"18","skill_name":"Acceleration","description":"General pass burst mid‑race","stat_type":"Acceleration","best_for":"Front or passing builds","tag":"🔺"},
+{"id":"19","skill_name":"Moxie","description":"Burst of late‑race acceleration when contested","stat_type":"Acceleration","best_for":"Late‑surger \/ pace‑fallback builds","tag":"🔺"},
+{"id":"20","skill_name":"Concentration","description":"Reduce time lost to slow starts","stat_type":"Speed","best_for":"All runners","tag":"🔺"},
+{"id":"21","skill_name":"Turbo Sprint","description":"Massive accel. boost in opening phase","stat_type":"Acceleration","best_for":"Sprinters","tag":"🔺"},
+{"id":"22","skill_name":"Homestretch Haste","description":"Small boost at start of final straight","stat_type":"Speed","best_for":"Late rallies","tag":"🔺"},
+{"id":"23","skill_name":"Ramp Up","description":"Gradual speed increase after mid‑race","stat_type":"Speed","best_for":"Medium‑distance","tag":"🔺"},
+{"id":"24","skill_name":"Behold Thine Emperor","description":"Massive corner acceleration when leading","stat_type":"Acceleration","best_for":"Elite corner specialists","tag":"🔺"},
+{"id":"25","skill_name":"The Duty of Dignity Calls","description":"Speed boost when leading late in race","stat_type":"Speed","best_for":"Regal‑pacing builds","tag":"🔺"},
+{"id":"26","skill_name":"Vanguard Spirit","description":"Maintain speed when leading by a big margin","stat_type":"Speed","best_for":"Long‑distance front‑running","tag":"🔺"},
+{"id":"27","skill_name":"Taking the Lead","description":"Burst when surging to the front early‑race","stat_type":"Speed","best_for":"Front‑runner builds","tag":"🔺"},
+{"id":"28","skill_name":"Swinging Maestro","description":"Recover stamina and improve navigation in corners","stat_type":"Recovery + Positioning","best_for":"Long‑distance \/ corner‑heavy races","tag":"🔋"},
+{"id":"29","skill_name":"Hydrate","description":"Recover stamina mid‑race","stat_type":"Recovery","best_for":"All runners","tag":"🔋"},
+{"id":"30","skill_name":"Race Planner","description":"Reduce early‑race stamina drain","stat_type":"Recovery","best_for":"Mid‑long distance runs","tag":"🔋"},
+{"id":"31","skill_name":"Passing Pro","description":"Recover stamina when passing","stat_type":"Recovery","best_for":"Stalkers","tag":"🔋"},
+{"id":"32","skill_name":"Gourmand","description":"Recover stamina upon triggering many skills","stat_type":"Recovery","best_for":"Skill‑heavy builds","tag":"🔋"},
+{"id":"33","skill_name":"Shake It Out","description":"Recover fatigue after multiple skills","stat_type":"Recovery","best_for":"Combo‑skill builds","tag":"🔋"},
+{"id":"34","skill_name":"Second Wind","description":"Regain a burst of stamina mid‑race when fatigued","stat_type":"Recovery","best_for":"Endurance‑hybrid runners","tag":"🔋"},
+{"id":"35","skill_name":"Iron Will","description":"Early‑race recovery in crowded tracks","stat_type":"Recovery","best_for":"Pack‑runner builds","tag":"🔋"},
+{"id":"36","skill_name":"Lone Wolf","description":"Speed boost if only one of your style","stat_type":"Passive","best_for":"Niche\/style‑split strategies","tag":"📊"},
+{"id":"37","skill_name":"Right‑Handed ○","description":"Performance boost on right‑turn tracks","stat_type":"Passive","best_for":"Track‑specific races","tag":"📊"},
+{"id":"38","skill_name":"Standard Distance ○","description":"Boost on standard‑distance races","stat_type":"Passive","best_for":"Mile\/medium specialists","tag":"📊"},
+{"id":"39","skill_name":"Firm Conditions ○","description":"Performance boost in firm (dry) conditions","stat_type":"Passive","best_for":"Stable weather races","tag":"📊"},
+{"id":"40","skill_name":"Savvy (Style‑based) ○","description":"Passive boost tied to your running style","stat_type":"Passive","best_for":"Depends on run style","tag":"📊"},
+{"id":"41","skill_name":"Dominator","description":"Debuff nearby opponents’ power mid‑race","stat_type":"Debuff","best_for":"Lead‑protect builds","tag":"⛔"},
+{"id":"42","skill_name":"Intimidate","description":"Lower stamina of surrounding foes","stat_type":"Debuff","best_for":"Pack‑thin suppression","tag":"⛔"},
+{"id":"43","skill_name":"Mystifying Murmur","description":"Confuse surrounding enemies, lowering their effectiveness","stat_type":"Debuff","best_for":"High‑Wit PvP builds","tag":"⛔"},
+{"id":"44","skill_name":"All‑Seeing Eyes","description":"Late‑race debuff against nearby opponents","stat_type":"Debuff","best_for":"End‑battle setups","tag":"⛔"},
+{"id":"45","skill_name":"Stamina Eater","description":"Reduce stamina of nearby rivals","stat_type":"Debuff","best_for":"Long‑distance lead‑holding","tag":"⛔"},
+{"id":"46","skill_name":"Speed Eater","description":"Reduce speed of opponents around you","stat_type":"Debuff","best_for":"Competitive pacing suppression","tag":"⛔"},
+{"id":"47","skill_name":"∴ Win Q.E.D. Lvl.2","description":"Placeholder","stat_type":"Special","best_for":"All","tag":"⭐"},
+{"id":"48","skill_name":"Wet Conditions ()","description":"Placeholder","stat_type":"Condition","best_for":"Wet tracks","tag":"🌧"},
+{"id":"49","skill_name":"Wet Conditions (())","description":"Placeholder","stat_type":"Condition","best_for":"Wet tracks","tag":"🌧"},
+{"id":"50","skill_name":"Outer Post Proficiency ()","description":"Placeholder","stat_type":"Position","best_for":"Outer post","tag":"🅾️"},
+{"id":"51","skill_name":"In Body and Mind","description":"Placeholder","stat_type":"Buff","best_for":"All","tag":"🧠"},
+{"id":"52","skill_name":"Tactical Tweak","description":"Placeholder","stat_type":"Tactic","best_for":"Mid-race","tag":"🛠"},
+{"id":"53","skill_name":"Xceleration Lvl. 2","description":"Placeholder","stat_type":"Acceleration","best_for":"All","tag":"🔺"},
+{"id":"54","skill_name":"Remove Wet Conditions x","description":"Placeholder","stat_type":"Condition","best_for":"Wet tracks","tag":"❌"},
+{"id":"55","skill_name":"Straightaway Recovery","description":"Placeholder","stat_type":"Recovery","best_for":"Straights","tag":"🔋"},
+{"id":"56","skill_name":"Lay Low","description":"Placeholder","stat_type":"Stamina","best_for":"Back pack","tag":"🛌"},
+{"id":"57","skill_name":"Nimble Navigator","description":"Placeholder","stat_type":"Position","best_for":"Navigation","tag":"🧭"},
+{"id":"58","skill_name":"Early Lead","description":"Placeholder","stat_type":"Speed","best_for":"Front","tag":"🏁"},
+{"id":"59","skill_name":"Final Push","description":"Placeholder","stat_type":"Acceleration","best_for":"Final corner","tag":"🔺"},
+{"id":"60","skill_name":"Slick Surge","description":"Placeholder","stat_type":"Acceleration","best_for":"Late race","tag":"🔺"},
+{"id":"61","skill_name":"Updrafters","description":"Placeholder","stat_type":"Acceleration","best_for":"Late surger","tag":"🔺"},
+{"id":"62","skill_name":"Steadfast","description":"Placeholder","stat_type":"Stamina","best_for":"All","tag":"🔋"},
+{"id":"63","skill_name":"Hesitant End Closers","description":"Placeholder","stat_type":"Debuff","best_for":"Late runners","tag":"⛔"},
+{"id":"64","skill_name":"Cut and Drive! Lvl. 1","description":"Placeholder","stat_type":"Unique","best_for":"Front-run","tag":"⭐"},
+{"id":"65","skill_name":"Focus","description":"Placeholder","stat_type":"Buff","best_for":"Early race","tag":"🧠"},
+{"id":"66","skill_name":"Updrafted","description":"Placeholder","stat_type":"Acceleration","best_for":"Late race","tag":"🔺"},
+{"id":"67","skill_name":"Late Surger Savvy ○","description":"Placeholder","stat_type":"Passive","best_for":"Late surger","tag":"📊"},
+{"id":"68","skill_name":"Late Surger Savvy ⦾","description":"Placeholder","stat_type":"Passive","best_for":"Late surger","tag":"📊"},
+{"id":"69","skill_name":"Fast-Paced","description":"Placeholder","stat_type":"Speed","best_for":"Mid-race","tag":"🔺"},
+{"id":"70","skill_name":"Unyielding Spirit","description":"Placeholder","stat_type":"Recovery","best_for":"Losing lead","tag":"🔋"},
+{"id":"71","skill_name":"Preferred Position","description":"Placeholder","stat_type":"Passive","best_for":"Mid-pack\/front","tag":"📊"},
+{"id":"72","skill_name":"Prepared to Pass","description":"Placeholder","stat_type":"Buff","best_for":"Challenging","tag":"🧠"},
+{"id":"73","skill_name":"Deep Breaths","description":"Placeholder","stat_type":"Stamina","best_for":"Mid-race","tag":"🔋"},
+{"id":"74","skill_name":"Frenzied End Closers","description":"Placeholder","stat_type":"Debuff","best_for":"Late opponents","tag":"⛔"},
+{"id":"75","skill_name":"Soft Step","description":"Placeholder","stat_type":"Buff","best_for":"Ground agility","tag":"🦶"},
+{"id":"76","skill_name":"Summer Runner ○","description":"Placeholder","stat_type":"Passive","best_for":"Summer","tag":"📊"},
+{"id":"77","skill_name":"Rainy Days ○","description":"Placeholder","stat_type":"Passive","best_for":"Rain","tag":"📊"},
+{"id":"78","skill_name":"Beeline Burst","description":"Placeholder","stat_type":"Acceleration","best_for":"Mid-stretch","tag":"🔺"},
+{"id":"79","skill_name":"Pace Strategy","description":"Placeholder","stat_type":"Passive","best_for":"Pace","tag":"📊"},
+{"id":"80","skill_name":"Calm in a Crowd","description":"Placeholder","stat_type":"Buff","best_for":"Late game","tag":"🧠"},
+{"id":"81","skill_name":"Rosy Outlook","description":"Placeholder","stat_type":"Buff","best_for":"Morale","tag":"🧠"},
+{"id":"82","skill_name":"Subdued Front Runners","description":"Placeholder","stat_type":"Debuff","best_for":"Front runners","tag":"⛔"},
+{"id":"83","skill_name":"Meticulous Measures","description":"Placeholder","stat_type":"Buff","best_for":"All","tag":"🧠"},
+{"id":"84","skill_name":"1,500,000 CC","description":"Placeholder","stat_type":"Buff","best_for":"Uphill","tag":"🧠"},
+{"id":"85","skill_name":"Corazón ☆ Ardiente","description":"Placeholder","stat_type":"Unique","best_for":"All","tag":"⭐"},
+{"id":"86","skill_name":"Hawkeye","description":"Placeholder","stat_type":"Buff","best_for":"Vision","tag":"🦅"},
+{"id":"87","skill_name":"Pace Chaser Straightaways ○","description":"Placeholder","stat_type":"Passive","best_for":"Pace chaser","tag":"📊"},
+{"id":"88","skill_name":"Pace Chaser Straightaways ⦾","description":"Placeholder","stat_type":"Passive","best_for":"Pace chaser","tag":"📊"}
+]
+}
+,{"type":"table","name":"strategies","database":"uma_musume_planner","data":
+[
+{"id":"4","label":"END"},
+{"id":"1","label":"FRONT"},
+{"id":"3","label":"LATE"},
+{"id":"2","label":"PACE"}
+]
+}
+,{"type":"table","name":"style_grades","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"terrain_grades","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"turns","database":"uma_musume_planner","data":
+[
+
+]
+}
+,{"type":"table","name":"users","database":"uma_musume_planner","data":
+[
+{"id":"1","name":"Test User","email":"test@example.com","email_verified_at":"2025-09-06 21:20:59","password":"$2y$12$5GgjUu\/fD6YFnFL21GhLau2INf5vF6o8.vIWawY4AHBNdO9.PLK\/S","remember_token":"STQr3gGq3B","created_at":"2025-09-06 21:20:59","updated_at":"2025-09-06 21:20:59"}
+]
+}
+]

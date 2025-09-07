@@ -129,17 +129,21 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <div class="text-muted">
-                                        <i class="bi bi-inbox display-4 d-block mb-2"></i>
-                                        No plans found
-                                        @if($currentFilter !== 'all')
-                                            for status "{{ $currentFilter }}"
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="bi bi-inbox display-1 text-gray-400 mb-3"></i>
+                                            <h4 class="mb-2 font-semibold text-lg text-gray-700 dark:text-gray-200">No plans yet!</h4>
+                                            <p class="mb-3 text-muted">You haven't created any race plans. Get started by creating your first plan.</p>
+                                            <button class="btn btn-primary px-4 py-2" id="emptyStateCreatePlanBtn" onclick="document.getElementById('createPlanBtn').click();">
+                                                <i class="bi bi-plus-circle me-1"></i> Create Plan
+                                            </button>
+                                            @if($currentFilter !== 'all')
+                                                <div class="mt-2 text-muted">No plans found for status "{{ $currentFilter }}"</div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
                         @endforelse
                     </tbody>
                 </table>

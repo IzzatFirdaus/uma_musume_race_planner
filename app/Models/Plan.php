@@ -64,7 +64,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereAcquireSkill($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereCareerStage($value)
+ *
+ * @property-read int|null $turns_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereClass($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereConditionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan whereCreatedAt($value)
@@ -101,6 +103,10 @@ class Plan extends Model
 {
     // No custom factory, omit HasFactory generic
     use HasFactory;
+
+    // No custom factory, omit HasFactory generic
+    use HasFactory;
+    use SoftDeletes;
     use SoftDeletes;
 
     /**
@@ -109,6 +115,7 @@ class Plan extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
         'plan_title',
         'turn_before',
         'race_name',

@@ -39,6 +39,7 @@ class LookupSeeder extends Seeder
             ['id' => 6, 'label' => 'UNDER THE WEATHER'],
             ['id' => 7, 'label' => 'SPRING BUD'],
             ['id' => 8, 'label' => 'SUSPICIOUS CLOUDS'],
+            ['id' => 9, 'label' => 'N/A'],
         ]);
 
         // Insert updated strategies

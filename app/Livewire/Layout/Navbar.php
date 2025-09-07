@@ -10,4 +10,12 @@ class Navbar extends Component
     {
         return view('livewire.layout.navbar');
     }
+
+    /**
+     * Return component data as JSON (stub).
+     */
+    public function toJSON(): array
+    {
+        return [];
+    }
 }

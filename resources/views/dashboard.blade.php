@@ -7,14 +7,16 @@
                 plans: @json($plans ?? []),
                 stats: @json($stats ?? []),
                 activities: @json($activities ?? []),
-                moodOptions: @json($moodOptions ?? []),
-                strategyOptions: @json($strategyOptions ?? []),
-                conditionOptions: @json($conditionOptions ?? []),
+                motivationOptions: @json($motivationOptions ?? []),
+                runningStyleOptions: @json($runningStyleOptions ?? []),
+                trackConditionOptions: @json($trackConditionOptions ?? []),
                 skillTagOptions: @json($skillTagOptions ?? []),
-                careerStageOptions: @json($careerStageOptions ?? []),
-                classOptions: @json($classOptions ?? []),
+                racePhaseOptions: @json($racePhaseOptions ?? []),
+                raceClassOptions: @json($raceClassOptions ?? []),
                 attributeGradeOptions: @json($attributeGradeOptions ?? []),
                 predictionIcons: @json($predictionIcons ?? []),
+                distanceAptitudeOptions: @json($distanceAptitudeOptions ?? []),
+                trackTypeOptions: @json($trackTypeOptions ?? []),
             };
         </script>
         {{-- Header Banner --}}
@@ -32,6 +34,7 @@
             <div class="col-lg-4">
                 @livewire('dashboard.stats-panel')
                 @livewire('dashboard.recent-activity')
+                @livewire('dashboard.support-card-summary')
             </div>
         </div>
     </main>

@@ -21,3 +21,8 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
  * The application guide page.
  */
 Route::get('/guide', fn () => view('guide'))->name('guide');
+
+/**
+ * The Umamusume Roster page (placeholder).
+ */
+Route::get('/characters', fn () => view('characters'))->name('characters');

@@ -5,12 +5,26 @@ includes:
 parameters:
     paths:
         - app/
-    level: 5
-
     ignoreErrors:
         - '#Method App\\Models\\Plan::[a-zA-Z]+\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<.*>#'
         - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\\\$skill_name#'
         - '#Parameter \#1 \\\$callback of method Illuminate\\Database\\Eloquent\\Collection<int,App\\Models\\Skill>::map\(\) contains unresolvable type#'
-        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$[a-zA-Z_]+#'
-        - '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,App\\Models\\Skill>::map\(\) contains unresolvable type#'
-    reportUnmatchedIgnoredErrors: false
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\\\$[a-zA-Z_]+#'
+        - '#Parameter \#1 \\\$callback of method Illuminate\\Database\\Eloquent\\Collection<int,App\\Models\\Skill>::map\(\) contains unresolvable type#'
+        - '#Method App\\Models\\Attribute::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\Attribute> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\Attribute\)>#'
+        - '#Method App\\Models\\Condition::plans\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, App\\Models\\Condition> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, \$this\(App\\Models\\Condition\)>#'
+        - '#Method App\\Models\\DistanceGrade::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\DistanceGrade> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\DistanceGrade\)>#'
+        - '#Method App\\Models\\Goal::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\Goal> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\Goal\)>#'
+        - '#Method App\\Models\\Mood::plans\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, App\\Models\\Mood> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, \$this\(App\\Models\\Mood\)>#'
+        - '#Method App\\Models\\Plan::mood\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Mood, App\\Models\\Plan> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Mood, \$this\(App\\Models\\Plan\)>#'
+        - '#Method App\\Models\\Plan::condition\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Condition, App\\Models\\Plan> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Condition, \$this\(App\\Models\\Plan\)>#'
+        - '#Method App\\Models\\Plan::strategy\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Strategy, App\\Models\\Plan> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Strategy, \$this\(App\\Models\\Plan\)>#'
+        - '#Method App\\Models\\RacePrediction::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\RacePrediction> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\RacePrediction\)>#'
+        - '#Method App\\Models\\Skill::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\Skill> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\Skill\)>#'
+        - '#Method App\\Models\\Skill::skillReference\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\SkillReference, App\\Models\\Skill> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\SkillReference, \$this\(App\\Models\\Skill\)>#'
+        - '#Method App\\Models\\SkillReference::skills\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Skill, App\\Models\\SkillReference> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Skill, \$this\(App\\Models\\SkillReference\)>#'
+        - '#Method App\\Models\\Strategy::plans\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, App\\Models\\Strategy> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, \$this\(App\\Models\\Strategy\)>#'
+        - '#Method App\\Models\\StyleGrade::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\StyleGrade> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\StyleGrade\)>#'
+        - '#Method App\\Models\\TerrainGrade::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\TerrainGrade> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\TerrainGrade\)>#'
+        - '#Method App\\Models\\Turn::plan\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, App\\Models\\Turn> but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo<App\\Models\\Plan, \$this\(App\\Models\\Turn\)>#'
+        - '#Method App\\Models\\User::plans\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, App\\Models\\User> but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany<App\\Models\\Plan, \$this\(App\\Models\\User\)>#'

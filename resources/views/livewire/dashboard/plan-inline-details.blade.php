@@ -19,7 +19,7 @@
                 <i class="bi bi-x"></i> Close
             </button>
         </div>
-        
+
         @if($isLoading)
         <div class="loading-overlay" id="planInlineDetailsLoadingOverlay" style="display: flex;">
             <div class="spinner-border text-uma" role="status">
@@ -27,13 +27,13 @@
             </div>
         </div>
         @endif
-        
+
         {{-- This form would submit to a Laravel route for updating the plan --}}
         <form id="planDetailsFormInline" enctype="multipart/form-data" wire:submit.prevent="save">
             @method('PUT')
             @csrf
             <input type="hidden" wire:model="planId" id="planIdInline" name="planId">
-            
+
             <div class="card-body">
                 {{-- Form Tabs --}}
                 <div>
@@ -166,19 +166,19 @@
                                 <div class="col-md-4">
                                     <label class="form-label">Energy</label>
                                     <div class="d-flex align-items-center gap-2">
-                                        <input type="range" min="0" max="100" step="1" class="form-range" 
+                                        <input type="range" min="0" max="100" step="1" class="form-range"
                                                id="energyRange_inline" name="energyRange" wire:model.live="energy">
                                         <span class="badge bg-secondary" id="energyValue_inline">{{ $energy }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check form-switch mt-4">
-                                        <input class="form-check-input" type="checkbox" id="raceDaySwitch_inline" 
+                                        <input class="form-check-input" type="checkbox" id="raceDaySwitch_inline"
                                                name="raceDaySwitch" wire:model="race_day">
                                         <label class="form-check-label" for="raceDaySwitch_inline">Race Day</label>
                                     </div>
                                     <div class="form-check form-switch mt-2">
-                                        <input class="form-check-input" type="checkbox" id="acquireSkillSwitch_inline" 
+                                        <input class="form-check-input" type="checkbox" id="acquireSkillSwitch_inline"
                                                name="acquireSkillSwitch" wire:model="acquire_skill">
                                         <label class="form-check-label" for="acquireSkillSwitch_inline">Acquire Skill</label>
                                     </div>
@@ -188,7 +188,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-3">
                                     <label for="skillPoints_inline" class="form-label">Skill Points</label>
-                                    <input type="number" class="form-control" id="skillPoints_inline" 
+                                    <input type="number" class="form-control" id="skillPoints_inline"
                                            name="skillPoints" wire:model="total_available_skill_points">
                                 </div>
                                 <div class="col-md-3">
@@ -201,12 +201,12 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label for="modalTimeOfDay_inline" class="form-label">Time of Day</label>
-                                    <input type="text" class="form-control" id="modalTimeOfDay_inline" 
+                                    <input type="text" class="form-control" id="modalTimeOfDay_inline"
                                            name="modalTimeOfDay" wire:model="time_of_day" placeholder="e.g. Morning, Noon, Evening">
                                 </div>
                                 <div class="col-md-3">
                                     <label for="modalMonth_inline" class="form-label">Month</label>
-                                    <input type="text" class="form-control" id="modalMonth_inline" 
+                                    <input type="text" class="form-control" id="modalMonth_inline"
                                            name="modalMonth" wire:model="month" placeholder="e.g. January">
                                 </div>
                             </div>
@@ -214,7 +214,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="modalSource_inline" class="form-label">Source</label>
-                                    <input type="text" class="form-control" id="modalSource_inline" 
+                                    <input type="text" class="form-control" id="modalSource_inline"
                                            name="modalSource" wire:model="source">
                                 </div>
                                 <div class="col-md-6">
@@ -223,29 +223,29 @@
                                         <div class="col-6">
                                             <div class="input-group input-group-sm mb-2">
                                                 <span class="input-group-text">Speed</span>
-                                                <input type="number" class="form-control" id="growthRateSpeed_inline" 
+                                                <input type="number" class="form-control" id="growthRateSpeed_inline"
                                                        name="growthRateSpeed" wire:model="growth_rate_speed">
                                             </div>
                                             <div class="input-group input-group-sm mb-2">
                                                 <span class="input-group-text">Power</span>
-                                                <input type="number" class="form-control" id="growthRatePower_inline" 
+                                                <input type="number" class="form-control" id="growthRatePower_inline"
                                                        name="growthRatePower" wire:model="growth_rate_power">
                                             </div>
                                             <div class="input-group input-group-sm mb-2">
                                                 <span class="input-group-text">Wit</span>
-                                                <input type="number" class="form-control" id="growthRateWit_inline" 
+                                                <input type="number" class="form-control" id="growthRateWit_inline"
                                                        name="growthRateWit" wire:model="growth_rate_wit">
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="input-group input-group-sm mb-2">
                                                 <span class="input-group-text">Stamina</span>
-                                                <input type="number" class="form-control" id="growthRateStamina_inline" 
+                                                <input type="number" class="form-control" id="growthRateStamina_inline"
                                                        name="growthRateStamina" wire:model="growth_rate_stamina">
                                             </div>
                                             <div class="input-group input-group-sm mb-2">
                                                 <span class="input-group-text">Guts</span>
-                                                <input type="number" class="form-control" id="growthRateGuts_inline" 
+                                                <input type="number" class="form-control" id="growthRateGuts_inline"
                                                        name="growthRateGuts" wire:model="growth_rate_guts">
                                             </div>
                                         </div>
@@ -257,22 +257,22 @@
                         {{-- Attributes Tab --}}
                         <div class="tab-pane fade" id="attributes-inline" role="tabpanel">
                             <div id="attributesContainer_inline" class="row g-3">
-                                @if(count($attributes) > 0)
-                                    @foreach($attributes as $index => $attribute)
+                                @if(count($planAttributes ?? []) > 0)
+                                    @foreach($planAttributes ?? [] as $index => $attribute)
                                         <div class="col-md-6 col-lg-4">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h6 class="card-title">{{ $attribute['attribute_name'] ?? 'Unknown' }}</h6>
                                                     <div class="mb-2">
                                                         <label class="form-label">Value</label>
-                                                        <input type="number" class="form-control" 
-                                                               wire:model="attributes.{{ $index }}.value" 
-                                                               value="{{ $attribute['value'] ?? 0 }}">
+                                <input type="number" class="form-control"
+                                    wire:model="planAttributes.{{ $index }}.value"
+                                    value="{{ $attribute['value'] ?? 0 }}">
                                                     </div>
                                                     <div>
                                                         <label class="form-label">Grade</label>
-                                                        <select class="form-select" 
-                                                                wire:model="attributes.{{ $index }}.grade">
+                            <select class="form-select"
+                                wire:model="planAttributes.{{ $index }}.grade">
                                                             <option value="G">G</option>
                                                             <option value="F">F</option>
                                                             <option value="E">E</option>

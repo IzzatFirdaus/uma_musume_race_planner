@@ -1,4 +1,3 @@
-
 /**
  * js/main.js
  *
@@ -18,7 +17,10 @@ let growthChartInstanceInline = null;
 let currentPlanData = {}; // Single source for currently loaded plan data
 
 // --- API base path detection (subdirectory aware) ---
-const APP_PUBLIC_PATH = (document.querySelector('meta[name="app-public-path"]')?.content || '').replace(/\/$/, '') || '';
+const APP_PUBLIC_PATH =
+    (
+        document.querySelector('meta[name="app-public-path"]')?.content || ""
+    ).replace(/\/$/, "") || "";
 const apiUrl = (path) => `${APP_PUBLIC_PATH}${path}`;
 
 // --- Icon Configuration ---
@@ -78,44 +80,46 @@ document.addEventListener("DOMContentLoaded", function () {
         // Handle plan modal and inline opening
         Livewire.on("openPlanModal", ({ planId }) => {
             // Dispatch the event to load plan data in modal
-            Livewire.dispatch('loadPlan', { planId: planId });
+            Livewire.dispatch("loadPlan", { planId: planId });
             // Show the modal
-            const modalEl = document.getElementById('planDetailsModal');
+            const modalEl = document.getElementById("planDetailsModal");
             if (modalEl) {
                 bootstrap.Modal.getOrCreateInstance(modalEl).show();
             }
         });
-        
+
         Livewire.on("openPlanEditModal", ({ planId }) => {
             // Dispatch the event to load plan data in modal
-            Livewire.dispatch('loadPlan', { planId: planId });
+            Livewire.dispatch("loadPlan", { planId: planId });
             // Show the modal
-            const modalEl = document.getElementById('planDetailsModal');
+            const modalEl = document.getElementById("planDetailsModal");
             if (modalEl) {
                 bootstrap.Modal.getOrCreateInstance(modalEl).show();
             }
         });
-        
+
         // Handle inline plan opening - dispatch to PlanInlineDetails component
         Livewire.on("openPlanInline", ({ planId }) => {
             // The component should be available on the page, let's dispatch to it
-            Livewire.dispatch('loadPlanInline', { planId: planId });
+            Livewire.dispatch("loadPlanInline", { planId: planId });
         });
-        });
-        
+
         // Listen for form submission events from Livewire components
         Livewire.on("submitPlanForm", ({ formId }) => {
             const form = document.getElementById(formId);
             if (form) {
                 // Trigger the existing form submission handler
-                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                const submitEvent = new Event("submit", {
+                    bubbles: true,
+                    cancelable: true,
+                });
                 form.dispatchEvent(submitEvent);
             }
         });
 
         // Listen for error messages
         Livewire.on("show-error", ({ message }) => {
-            showMessageBox(message, 'danger');
+            showMessageBox(message, "danger");
         });
 
         // Listen for showing plan list card
@@ -138,26 +142,26 @@ document.addEventListener("DOMContentLoaded", function () {
         // from clearing fields the client just wrote.
         try {
             if (Livewire.hook) {
-                Livewire.hook('message.processed', () => {
+                Livewire.hook("message.processed", () => {
                     if (!currentPlanData || !currentPlanData.data) return;
                     const plan = currentPlanData.data;
                     // If modal is visible, repopulate modal fields
-                    const modalEl = document.getElementById('planDetailsModal');
-                    if (modalEl && modalEl.classList.contains('show')) {
+                    const modalEl = document.getElementById("planDetailsModal");
+                    if (modalEl && modalEl.classList.contains("show")) {
                         populateForm(plan, false);
                     }
                     // If inline details are visible, repopulate inline fields
-                    const inlineEl = document.getElementById('planInlineDetails');
-                    if (inlineEl && inlineEl.classList.contains('d-block')) {
+                    const inlineEl =
+                        document.getElementById("planInlineDetails");
+                    if (inlineEl && inlineEl.classList.contains("d-block")) {
                         populateForm(plan, true);
                     }
                 });
             }
         } catch (e) {
             // Non-fatal: if Livewire hook isn't available or errors, ignore.
-            console.debug('Livewire hook registration skipped or failed', e);
+            console.debug("Livewire hook registration skipped or failed", e);
         }
-
     });
 
     // --- Handle opening plans from URL on page load ---
@@ -224,7 +228,7 @@ function setupGlobalEventListeners() {
             return;
         }
         if (target.closest(".view-inline-btn")) {
-            // The Livewire component will handle this via wire:click  
+            // The Livewire component will handle this via wire:click
             return;
         }
 
@@ -390,8 +394,12 @@ async function fetchAndPopulatePlan(planId, isInlineView) {
         // Populate the form with the retrieved data
         // Normalize some backend keys to be resilient to naming differences
         // (older API/Controllers used 'racePredictions' or 'race_predictions')
-        if (!result.predictions && (result.racePredictions || result.race_predictions)) {
-            result.predictions = result.racePredictions || result.race_predictions;
+        if (
+            !result.predictions &&
+            (result.racePredictions || result.race_predictions)
+        ) {
+            result.predictions =
+                result.racePredictions || result.race_predictions;
         }
         populateForm(result, isInlineView);
 
@@ -448,7 +456,7 @@ async function handleFormSubmit(e) {
         // --- UPDATED: API submission logic ---
         const url = planId
             ? apiUrl(`/api/v1/plans/${planId}`)
-            : apiUrl('/api/v1/plans');
+            : apiUrl("/api/v1/plans");
         const method = "POST"; // Use POST for both, but spoof PUT for updates
         if (planId) formData.append("_method", "PUT");
 
@@ -459,7 +467,7 @@ async function handleFormSubmit(e) {
                 "X-CSRF-TOKEN": document
                     .querySelector('meta[name="csrf-token"]')
                     .getAttribute("content"),
-                Accept: "application/json" // Important for Laravel validation responses
+                Accept: "application/json", // Important for Laravel validation responses
             },
         });
 
@@ -511,8 +519,8 @@ async function handleDeletePlan(planId) {
                     "X-CSRF-TOKEN": document
                         .querySelector('meta[name="csrf-token"]')
                         .getAttribute("content"),
-                    Accept: "application/json"
-                }
+                    Accept: "application/json",
+                },
             });
             if (!response.ok)
                 throw new Error("Server responded with an error.");
@@ -575,9 +583,9 @@ async function handleDeletePlan(planId) {
 async function refreshDashboardData() {
     try {
         const [plansRes, statsRes, activityRes] = await Promise.all([
-            fetch(apiUrl('/api/v1/plans')),
-            fetch(apiUrl('/api/v1/dashboard/stats')),
-            fetch(apiUrl('/api/v1/dashboard/activities')),
+            fetch(apiUrl("/api/v1/plans")),
+            fetch(apiUrl("/api/v1/dashboard/stats")),
+            fetch(apiUrl("/api/v1/dashboard/activities")),
         ]);
         const plans = await plansRes.json(); // array
         const stats = await statsRes.json(); // object
@@ -853,7 +861,9 @@ async function renderGrowthChart(planId, isInline) {
     }
 
     try {
-        const response = await fetch(apiUrl(`/api/v1/plans/${planId}/progress-chart`));
+        const response = await fetch(
+            apiUrl(`/api/v1/plans/${planId}/progress-chart`),
+        );
         const result = await response.json();
 
         if (
@@ -1047,7 +1057,9 @@ function resetFormTabs(isInline) {
     // Support both anchor-based and button-based Bootstrap tab toggles
     let generalTabBtn = container.querySelector('.nav-link[href*="general"]');
     if (!generalTabBtn) {
-        generalTabBtn = container.querySelector('.nav-link[data-bs-target*="general"]');
+        generalTabBtn = container.querySelector(
+            '.nav-link[data-bs-target*="general"]',
+        );
     }
     generalTabBtn?.classList.add("active");
     let generalTabPaneId = generalTabBtn?.getAttribute("href");
@@ -1055,7 +1067,9 @@ function resetFormTabs(isInline) {
         generalTabPaneId = generalTabBtn?.getAttribute("data-bs-target");
     }
     if (generalTabPaneId) {
-        document.querySelector(generalTabPaneId)?.classList.add("show", "active");
+        document
+            .querySelector(generalTabPaneId)
+            ?.classList.add("show", "active");
     }
 }
 
@@ -1082,8 +1096,8 @@ function showMessageBox(message, type = "success") {
             icon: icon,
             timer: 3000,
             showConfirmButton: false,
-            position: 'top',
-            toast: true
+            position: "top",
+            toast: true,
         });
     }
 }

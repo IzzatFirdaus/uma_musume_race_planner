@@ -9,68 +9,98 @@ class PlanInlineDetails extends Component
 {
     // Plan properties
     public $planId = null;
+
     public $plan_title = '';
+
     public $name = '';
+
     public $career_stage = '';
+
     public $class = '';
+
     public $race_name = '';
+
     public $turn_before = 0;
+
     public $goal = '';
+
     public $strategy_id = '';
+
     public $mood_id = '';
+
     public $condition_id = '';
+
     public $energy = 0;
+
     public $race_day = false;
+
     public $acquire_skill = false;
+
     public $total_available_skill_points = 0;
+
     public $status = 'Planning';
+
     public $time_of_day = '';
+
     public $month = '';
+
     public $source = '';
+
     public $growth_rate_speed = 0;
+
     public $growth_rate_stamina = 0;
+
     public $growth_rate_power = 0;
+
     public $growth_rate_guts = 0;
+
     public $growth_rate_wit = 0;
 
     // Collections for related data
-    public $attributes = [];
+    public $planAttributes = [];
+
     public $skills = [];
+
     public $racePredictions = [];
+
     public $goals = [];
+
     public $terrainGrades = [];
+
     public $distanceGrades = [];
+
     public $styleGrades = [];
 
     // UI state
     public $isLoading = false;
+
     public $isVisible = false;
 
     protected $listeners = [
         'loadPlanInline' => 'loadPlan',
-        'openPlanInline' => 'loadPlan'
+        'openPlanInline' => 'loadPlan',
     ];
 
     public function loadPlan($planId)
     {
         $this->isLoading = true;
         $this->isVisible = true;
-        
+
         // Dispatch JavaScript event to hide the plan list card
         $this->dispatch('hidePlanListCard');
-        
+
         try {
             $plan = Plan::with([
-                'attributes', 
-                'skills.skillReference', 
-                'racePredictions', 
-                'goals', 
-                'terrainGrades', 
-                'distanceGrades', 
+                'attributes',
+                'skills.skillReference',
+                'racePredictions',
+                'goals',
+                'terrainGrades',
+                'distanceGrades',
                 'styleGrades',
                 'mood',
                 'condition',
-                'strategy'
+                'strategy',
             ])->findOrFail($planId);
 
             $this->planId = $plan->id;
@@ -99,14 +129,14 @@ class PlanInlineDetails extends Component
             $this->growth_rate_wit = $plan->growth_rate_wit ?? 0;
 
             // Load related data
-            $this->attributes = $plan->attributes->toArray();
-            $this->skills = $plan->skills->map(function($skill) {
+            $this->planAttributes = $plan->attributes->toArray();
+            $this->skills = $plan->skills->map(function ($skill) {
                 return [
                     'skill_name' => $skill->skillReference->skill_name ?? '',
                     'sp_cost' => $skill->sp_cost ?? 0,
                     'acquired' => $skill->acquired ?? 'no',
                     'tag' => $skill->tag ?? '',
-                    'notes' => $skill->notes ?? ''
+                    'notes' => $skill->notes ?? '',
                 ];
             })->toArray();
             $this->racePredictions = $plan->racePredictions->toArray();
@@ -116,9 +146,9 @@ class PlanInlineDetails extends Component
             $this->styleGrades = $plan->styleGrades->toArray();
 
         } catch (\Exception $e) {
-            $this->dispatch('show-error', message: 'Failed to load plan: ' . $e->getMessage());
+            $this->dispatch('show-error', message: 'Failed to load plan: '.$e->getMessage());
         }
-        
+
         $this->isLoading = false;
     }
 
@@ -126,7 +156,7 @@ class PlanInlineDetails extends Component
     {
         $this->isVisible = false;
         $this->reset();
-        
+
         // Dispatch JavaScript event to show the plan list card
         $this->dispatch('showPlanListCard');
     }
