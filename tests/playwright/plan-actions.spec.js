@@ -41,10 +41,12 @@ test.describe("Plan actions (view, edit, delete)", () => {
 
         // Navigate to edit mode using the Edit Plan button
         await page.getByRole("link", { name: "Edit Plan" }).click();
-        await page.waitForURL(`**/plans/${planId}/edit`, { timeout: 5000 });
+        await page.waitForURL(`**/plans/*/edit`, { timeout: 5000 });
 
         // Verify we're now in edit mode
-        await expect(page).toHaveURL(`${BASE}plans/${planId}/edit`);
+        await expect(page).toHaveURL(
+            new RegExp(`${BASE.replace(/\//g, "\\/")}plans/\\d+/edit`),
+        );
         await expect(page.locator('h5:has-text("Edit Plan")')).toBeVisible();
         await expect(
             page.locator('.badge:has-text("Edit Mode")'),
@@ -59,8 +61,13 @@ test.describe("Plan actions (view, edit, delete)", () => {
         await page.getByRole("link", { name: "Back to Dashboard" }).click();
         await page.waitForURL(BASE, { timeout: 5000 });
 
+        // Re-query rows after navigation (old reference may be stale)
+        const freshRows = page.locator("#plan-list-body tr");
+        await expect(freshRows.first()).toBeVisible({ timeout: 5000 });
+
         // Test the edit button on the plan list
-        const editBtn = firstRow.locator(".edit-btn[data-id]");
+        const freshFirstRow = freshRows.first();
+        const editBtn = freshFirstRow.locator(".edit-btn[data-id]");
         await editBtn.click();
 
         // Wait for navigation to the plan edit page

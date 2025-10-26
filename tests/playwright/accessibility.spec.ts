@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const baseUrl = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:5173';
+const baseUrl = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:8000';
 
 /**
  * Inject axe-core library into the page dynamically and run accessibility checks.
@@ -69,9 +69,12 @@ test.describe('Accessibility - WCAG 2.2 Compliance', () => {
   }) => {
     await page.goto(baseUrl);
 
+    // Wait for header landmark to ensure page is loaded
+    await page.waitForSelector('header[role="banner"]', { timeout: 10000 });
+
     // Tab to the skip link (should be first)
     await page.keyboard.press('Tab');
-    const skipLink = page.locator('a:text("Skip to main")');
+    const skipLink = page.locator('a[href="#main"]');
     await expect(skipLink).toBeFocused({ timeout: 10000 });
     console.log('✓ Skip link is first focusable element');
 
