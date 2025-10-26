@@ -19,12 +19,14 @@ Migrating from a custom PHP structure to a modern framework like Laravel 11 offe
 
 ### Step 1: Project Setup & Initial Configuration
 
-1.  **Install Laravel**: Use Composer to create a new Laravel 11 project.
+1. **Install Laravel**: Use Composer to create a new Laravel 11 project.
+
     ```bash
     composer create-project laravel/laravel uma-musume-planner-laravel
     cd uma-musume-planner-laravel
     ```
-2.  **Configure Environment**: Laravel uses a `.env` file by default. Copy your existing database credentials and application settings into the new `.env` file.
+
+2. **Configure Environment**: Laravel uses a `.env` file by default. Copy your existing database credentials and application settings into the new `.env` file.
 
     ```env
     # .env - Laravel Configuration
@@ -48,7 +50,7 @@ Migrating from a custom PHP structure to a modern framework like Laravel 11 offe
 
 This step focuses on rebuilding the database structure within the Laravel ecosystem.
 
-1.  **Create Migrations**: Translate your `uma_musume_planner.sql` schema into Laravel migration files to make your database structure version-controllable. Generate a migration for each table.
+1. **Create Migrations**: Translate your `uma_musume_planner.sql` schema into Laravel migration files to make your database structure version-controllable. Generate a migration for each table.
 
     ```bash
     # Lookup Tables
@@ -70,8 +72,9 @@ This step focuses on rebuilding the database structure within the Laravel ecosys
     php artisan make:migration create_turns_table
     ```
 
-2.  **Define Schema in Migrations**: Edit each generated migration file in `database/migrations/` to define the table columns using Laravel's schema builder.
+2. **Define Schema in Migrations**: Edit each generated migration file in `database/migrations/` to define the table columns using Laravel's schema builder.
     _Example for `create_plans_table.php` (Updated with full schema):_
+
     ```php
     // database/migrations/YYYY_MM_DD_HHMMSS_create_plans_table.php
     Schema::create('plans', function (Blueprint $table) {
@@ -105,7 +108,8 @@ This step focuses on rebuilding the database structure within the Laravel ecosys
         $table->timestamps(); // Handles created_at and updated_at
     });
     ```
-3.  **Create Models & Define Relationships**: Create an Eloquent Model for each database table and define the relationships between your data entities.
+
+3. **Create Models & Define Relationships**: Create an Eloquent Model for each database table and define the relationships between your data entities.
 
     ```bash
     php artisan make:model Plan
@@ -154,7 +158,8 @@ This step focuses on rebuilding the database structure within the Laravel ecosys
     }
     ```
 
-4.  **Run Migrations**: Use Artisan to execute the migrations and build your database schema.
+4. **Run Migrations**: Use Artisan to execute the migrations and build your database schema.
+
     ```bash
     php artisan migrate
     ```
@@ -165,7 +170,7 @@ This step focuses on rebuilding the database structure within the Laravel ecosys
 
 This step replaces the loose `.php` file endpoints with a structured routing and controller system.
 
-1.  **Define Routes**: Map your application's endpoints in `routes/web.php` for user-facing pages and `routes/api.php` for data-fetching.
+1. **Define Routes**: Map your application's endpoints in `routes/web.php` for user-facing pages and `routes/api.php` for data-fetching.
     _Example `routes/web.php`:_
 
     ```php
@@ -187,12 +192,14 @@ This step replaces the loose `.php` file endpoints with a structured routing and
     });
     ```
 
-2.  **Create Controllers**: The logic from `handle_plan_crud.php` will be moved into a dedicated controller.
+2. **Create Controllers**: The logic from `handle_plan_crud.php` will be moved into a dedicated controller.
+
     ```bash
     php artisan make:controller DashboardController
     php artisan make:controller Api/V1/PlanController --api --model=Plan
     ```
-3.  **Implement Controller Logic**: Populate the controller methods using Eloquent, including authentication, validation via Form Requests, and transaction management.
+
+3. **Implement Controller Logic**: Populate the controller methods using Eloquent, including authentication, validation via Form Requests, and transaction management.
     _Create Form Requests for validation:_
 
     ```bash
@@ -229,25 +236,27 @@ This step replaces the loose `.php` file endpoints with a structured routing and
 
 This step involves migrating the user interface and client-side scripts into the Blade and Vite ecosystem.
 
-1.  **Convert UI to Blade Templates**: All UI code from `index.php`, `plan_details_modal.php`, and the `components/` directory is converted into `.blade.php` files inside `resources/views`.
+1. **Convert UI to Blade Templates**: All UI code from `index.php`, `plan_details_modal.php`, and the `components/` directory is converted into `.blade.php` files inside `resources/views`.
     - **Master Layout (`resources/views/layouts/app.blade.php`)**: A single master layout holds the common HTML structure. It uses `@yield('content')` to inject page-specific content and `@stack('scripts')` for page-specific JavaScript.
     - **Dashboard View (`resources/views/dashboard.blade.php`)**: The main application interface, converted from `index.php`. It `@extends('layouts.app')` and defines the main content section.
     - **Reusable Partials (`@include`)**: The original PHP components are converted into Blade partials, organized by their scope.
         - `resources/views/layouts/partials/`: For site-wide components like `navbar.blade.php` and `footer.blade.php`.
         - `resources/views/dashboard/partials/`: For components specific to the dashboard, such as `stats-panel.blade.php`, `plan-list.blade.php`, and `recent-activity.blade.php`.
         - `resources/views/plans/partials/`: For partials related to the "Plan" resource, like `form-tabs.blade.php` and `copy-script.blade.php`.
-2.  **Manage Assets with Vite**: Move your `css/` and `js/` files into `resources/css` and `resources/js`. Use Vite, Laravel's default asset bundler, to compile and version them.
+2. **Manage Assets with Vite**: Move your `css/` and `js/` files into `resources/css` and `resources/js`. Use Vite, Laravel's default asset bundler, to compile and version them.
     - In `vite.config.js`, reference your main asset files (`app.css`, `app.js`).
     - In your `app.blade.php` layout, include the compiled assets using the `@vite` directive.
+
         ```blade
         <head>
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         </head>
         ```
-3.  **Update JavaScript**: Client-side JavaScript is updated to interact with the new Laravel backend.
+
+3. **Update JavaScript**: Client-side JavaScript is updated to interact with the new Laravel backend.
     - **API Endpoints**: All `fetch()` requests are updated from old PHP scripts (`get_plans.php`, `handle_plan_crud.php`) to the new, versioned API routes (e.g., `fetch('/api/v1/plans')`).
     - **Data Injection**: Initial page data is passed from the `DashboardController` to `dashboard.blade.php` and injected into a global `window.plannerData` JavaScript object using the `@json` Blade directive.
-          <!-- end list -->
+      <!-- end list -->
     ```blade
     // In dashboard.blade.php
     @push('scripts')
@@ -265,7 +274,7 @@ This step involves migrating the user interface and client-side scripts into the
 
 ### Step 5: Migrating Specific Features
 
-1.  **Image Uploads**: Use Laravel's built-in `Storage` facade to handle the trainee image uploads.
+1. **Image Uploads**: Use Laravel's built-in `Storage` facade to handle the trainee image uploads.
 
     ```php
     // Example in PlanController's store or update method
@@ -278,7 +287,7 @@ This step involves migrating the user interface and client-side scripts into the
 
     - Run `php artisan storage:link` once to create a symbolic link from `public/storage` to `storage/app/public`.
 
-2.  **Database Seeding**: Convert your `sample_data.sql` file into Laravel Seeders. This allows you to easily populate your database with test data using a single Artisan command.
+2. **Database Seeding**: Convert your `sample_data.sql` file into Laravel Seeders. This allows you to easily populate your database with test data using a single Artisan command.
 
     ```bash
     php artisan make:seeder LookupSeeder
@@ -287,6 +296,7 @@ This step involves migrating the user interface and client-side scripts into the
 
     - In the main `DatabaseSeeder.php`, you will call these individual seeders in the correct order to ensure foreign key constraints are met.
     - The logic from the `GetSkillReferenceId` SQL function will need to be replicated in your `PlanSeeder` using Eloquent's `firstOrCreate()` method to avoid duplicate skill references.
+
         ```bash
         php artisan db:seed
         ```
