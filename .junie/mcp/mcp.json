@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "C:\\XAMPP\\php\\php.exe",
+            "args": [
+                "C:\\XAMPP\\htdocs\\uma-musume-planner-laravel\\artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}

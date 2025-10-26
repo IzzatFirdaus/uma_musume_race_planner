@@ -12,6 +12,18 @@ class LookupSeeder extends Seeder
      */
     public function run(): void
     {
+        // Ensure a default public user exists with ID 1 (required by plans.user_id FK and services)
+        if (! DB::table('users')->where('id', 1)->exists()) {
+            DB::table('users')->insert([
+                'id' => 1,
+                'name' => 'Public User',
+                'email' => 'public@example.com',
+                'password' => bcrypt('password'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         // To safely reseed lookup tables, use delete() instead of truncate().
         // Truncate is not allowed if the table is referenced by a foreign key constraint.
         // Delete preserves the table structure and works even with FK constraints.

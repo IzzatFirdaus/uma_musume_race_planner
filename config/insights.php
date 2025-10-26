@@ -8,6 +8,7 @@ use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses;
 use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenPrivateMethods;
 use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenTraits;
 use NunoMaduro\PhpInsights\Domain\Metrics\Architecture\Classes;
+use SlevomatCodingStandard\Sniffs\Classes\ForbiddenPublicPropertySniff;
 use SlevomatCodingStandard\Sniffs\Commenting\UselessFunctionDocCommentSniff;
 use SlevomatCodingStandard\Sniffs\Namespaces\AlphabeticallySortedUsesSniff;
 use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff;
@@ -15,7 +16,6 @@ use SlevomatCodingStandard\Sniffs\TypeHints\DisallowMixedTypeHintSniff;
 use SlevomatCodingStandard\Sniffs\TypeHints\ParameterTypeHintSniff;
 use SlevomatCodingStandard\Sniffs\TypeHints\PropertyTypeHintSniff;
 use SlevomatCodingStandard\Sniffs\TypeHints\ReturnTypeHintSniff;
-use SlevomatCodingStandard\Sniffs\Classes\ForbiddenPublicPropertySniff;
 
 return [
 
@@ -78,6 +78,8 @@ return [
         'app/Models/Goal.php',
         'app/Models/Mood.php',
         'app/Models/RacePrediction.php',
+        'app/Livewire',
+        'app/Exceptions/ApiException.php',
     ],
 
     'add' => [
@@ -97,6 +99,8 @@ return [
         PropertyTypeHintSniff::class,
         ReturnTypeHintSniff::class,
         UselessFunctionDocCommentSniff::class,
+        \Slevomat\CodingStandard\Sniffs\Classes\SuperfluousExceptionNamingSniff::class,
+        \Slevomat\CodingStandard\Sniffs\Functions\FunctionLengthSniff::class,
     ],
 
     'config' => [

@@ -1,0 +1,17 @@
+{
+  "updated_files": [
+    "tailwind.config.js",
+    "resources/css/app.css",
+    "resources/views/components/input.blade.php",
+    "resources/views/components/button.blade.php",
+    "resources/views/components/layout.blade.php",
+    "resources/views/dashboard.blade.php",
+    "tools/accessibility-update/PR_DESCRIPTION.md"
+  ],
+  "tests_added": [],
+  "axe_violations_before": null,
+  "axe_violations_after": null,
+  "pint_pass": null,
+  "phpunit_pass": null,
+  "notes": "Stub created. Automated tooling should populate results after running tests."
+}

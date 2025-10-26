@@ -1,0 +1,9 @@
+# Ignore files that intentionally use non-standard Markdown/HTML constructs
+.github/copilot-instructions.md
+conversion_laravel.md
+# Generated artifacts and logs
+node_modules
+vendor
+test-results
+public/build
+storage
