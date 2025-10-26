@@ -23,11 +23,12 @@
     <!-- Page header/banner -->
     <header role="banner" class="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 class="text-2xl font-bold">
-                <a href="/" class="hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded px-2 py-1">
+            {{-- Site branding: use a non-h1 element so pages can provide the single page h1 --}}
+            <div class="site-branding text-2xl font-bold">
+                <a href="/" class="hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 rounded px-2 py-1" aria-label="Home">
                     {{ config('app.name', 'Uma Musume Planner') }}
                 </a>
-            </h1>
+            </div>
         </div>
     </header>
 

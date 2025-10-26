@@ -14,6 +14,6 @@
         <img id="traineeImagePreview{{ $id_suffix }}" src="#" alt="Image Preview" class="img-fluid rounded" style="max-height: 200px; object-fit: contain;">
         <p class="text-muted small mt-1">Max 5MB (JPG, PNG, GIF, WEBP)</p>
     </div>
-    <input type="hidden" id="existingTraineeImagePath{{ $id_suffix }}" name="existingTraineeImagePath" value="">
-    <input type="hidden" id="clearTraineeImageFlag{{ $id_suffix }}" name="clear_trainee_image" value="0">
+    <input type="hidden" id="existingTraineeImagePath{{ $id_suffix }}" name="existingTraineeImagePath" value="" aria-hidden="true" aria-label="existing trainee image path">
+    <input type="hidden" id="clearTraineeImageFlag{{ $id_suffix }}" name="clear_trainee_image" value="0" aria-hidden="true" aria-label="clear trainee image flag">
 </div>

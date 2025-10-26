@@ -24,7 +24,7 @@
             <form id="planDetailsForm" method="POST" enctype="multipart/form-data" wire:submit.prevent="save">
                 @method('PUT')
                 @csrf
-                <input type="hidden" wire:model="planId" id="planId" name="planId">
+                <input type="hidden" wire:model.defer="planId" id="planId" name="planId">
                 <div class="modal-body">
                     {{-- Form Tabs Content (simplified version for modal) --}}
                     <div>
@@ -58,22 +58,22 @@
                                 <div class="row mb-3">
                                     <div class="col-md-8">
                                         <label for="plan_title" class="form-label">Plan Title</label>
-                                        <input type="text" class="form-control" id="plan_title" name="plan_title" wire:model="plan_title">
+                                        <input type="text" class="form-control" id="plan_title" name="plan_title" wire:model.defer="plan_title">
                                     </div>
                                     <div class="col-md-4">
                                         <label for="modalTurnBefore" class="form-label">Turn Before</label>
-                                        <input type="number" class="form-control" id="modalTurnBefore" name="modalTurnBefore" wire:model="turn_before">
+                                        <input type="number" class="form-control" id="modalTurnBefore" name="modalTurnBefore" wire:model.defer="turn_before">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="modalName" class="form-label">Trainee Name</label>
-                                        <input type="text" class="form-control" id="modalName" name="modalName" wire:model="name" required>
+                                        <input type="text" class="form-control" id="modalName" name="modalName" wire:model.defer="name" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="modalRaceName" class="form-label">Next Race Name</label>
-                                        <input type="text" class="form-control" id="modalRaceName" name="modalRaceName" wire:model="race_name">
+                                        <input type="text" class="form-control" id="modalRaceName" name="modalRaceName" wire:model.defer="race_name">
                                     </div>
                                 </div>
 
@@ -82,7 +82,7 @@
                                         <div class="row">
                                             <div class="col-md-8">
                                                 <label for="modalCareerStage" class="form-label">Career Stage</label>
-                                                <select class="form-select" id="modalCareerStage" name="modalCareerStage" wire:model="career_stage">
+                                                <select class="form-select" id="modalCareerStage" name="modalCareerStage" wire:model.defer="career_stage">
                                                     <option value="" disabled>Select Stage</option>
                                                     <option value="predebut">Pre-debut</option>
                                                     <option value="junior">Junior</option>
@@ -93,7 +93,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="modalClass" class="form-label">Class</label>
-                                                <select class="form-select" id="modalClass" name="modalClass" wire:model="class">
+                                                <select class="form-select" id="modalClass" name="modalClass" wire:model.defer="class">
                                                     <option value="" disabled>Select Class</option>
                                                     <option value="debut">Debut</option>
                                                     <option value="maiden">Maiden</option>
@@ -113,11 +113,11 @@
                                 <div class="row mb-3">
                                     <div class="col-md-4">
                                         <label for="modalGoal" class="form-label">Primary Goal</label>
-                                        <input type="text" class="form-control" id="modalGoal" name="modalGoal" wire:model="goal">
+                                        <input type="text" class="form-control" id="modalGoal" name="modalGoal" wire:model.defer="goal">
                                     </div>
                                     <div class="col-md-4">
                                         <label for="modalStrategy" class="form-label">Strategy</label>
-                                        <select class="form-select" id="modalStrategy" name="modalStrategy" wire:model="strategy_id">
+                                        <select class="form-select" id="modalStrategy" name="modalStrategy" wire:model.defer="strategy_id">
                                             <option value="">Select Strategy</option>
                                             @php
                                                 $strategies = \App\Models\Strategy::all();
@@ -129,7 +129,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="modalMood" class="form-label">Mood</label>
-                                        <select class="form-select" id="modalMood" name="modalMood" wire:model="mood_id">
+                                        <select class="form-select" id="modalMood" name="modalMood" wire:model.defer="mood_id">
                                             <option value="">Select Mood</option>
                                             @php
                                                 $moods = \App\Models\Mood::all();
@@ -144,7 +144,7 @@
                                 <div class="row mb-3">
                                     <div class="col-md-4">
                                         <label for="modalCondition" class="form-label">Condition</label>
-                                        <select class="form-select" id="modalCondition" name="modalCondition" wire:model="condition_id">
+                                        <select class="form-select" id="modalCondition" name="modalCondition" wire:model.defer="condition_id">
                                             <option value="">Select Condition</option>
                                             @php
                                                 $conditions = \App\Models\Condition::all();
@@ -180,11 +180,11 @@
                                     <div class="col-md-3">
                                         <label for="skillPoints" class="form-label">Skill Points</label>
                                         <input type="number" class="form-control" id="skillPoints"
-                                               name="skillPoints" wire:model="total_available_skill_points">
+                                               name="skillPoints" wire:model.defer="total_available_skill_points">
                                     </div>
                                     <div class="col-md-3">
                                         <label for="modalStatus" class="form-label">Status</label>
-                                        <select class="form-select" id="modalStatus" name="modalStatus" wire:model="status">
+                                        <select class="form-select" id="modalStatus" name="modalStatus" wire:model.defer="status">
                                             <option value="Planning">Planning</option>
                                             <option value="Active">Active</option>
                                             <option value="Finished">Finished</option>
@@ -193,20 +193,20 @@
                                     <div class="col-md-3">
                                         <label for="modalTimeOfDay" class="form-label">Time of Day</label>
                                         <input type="text" class="form-control" id="modalTimeOfDay"
-                                               name="modalTimeOfDay" wire:model="time_of_day" placeholder="e.g. Morning, Noon, Evening">
+                                               name="modalTimeOfDay" wire:model.defer="time_of_day" placeholder="e.g. Morning, Noon, Evening">
                                     </div>
                                     <div class="col-md-3">
                                         <label for="modalMonth" class="form-label">Month</label>
                                         <input type="text" class="form-control" id="modalMonth"
-                                               name="modalMonth" wire:model="month" placeholder="e.g. January">
+                                               name="modalMonth" wire:model.defer="month" placeholder="e.g. January">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label for="modalSource" class="form-label">Source</label>
-                                        <input type="text" class="form-control" id="modalSource"
-                                               name="modalSource" wire:model="source">
+                         <input type="text" class="form-control" id="modalSource"
+                             name="modalSource" wire:model.defer="source">
                                     </div>
                                     <div class="col-md-6">
                                         <div class="row g-2">
@@ -214,30 +214,30 @@
                                             <div class="col-6">
                                                 <div class="input-group input-group-sm mb-2">
                                                     <span class="input-group-text">Speed</span>
-                                                    <input type="number" class="form-control" id="growthRateSpeed"
-                                                           name="growthRateSpeed" wire:model="growth_rate_speed">
+                               <input type="number" class="form-control" id="growthRateSpeed"
+                                   name="growthRateSpeed" wire:model.defer="growth_rate_speed">
                                                 </div>
                                                 <div class="input-group input-group-sm mb-2">
                                                     <span class="input-group-text">Power</span>
-                                                    <input type="number" class="form-control" id="growthRatePower"
-                                                           name="growthRatePower" wire:model="growth_rate_power">
+                               <input type="number" class="form-control" id="growthRatePower"
+                                   name="growthRatePower" wire:model.defer="growth_rate_power">
                                                 </div>
                                                 <div class="input-group input-group-sm mb-2">
                                                     <span class="input-group-text">Wit</span>
-                                                    <input type="number" class="form-control" id="growthRateWit"
-                                                           name="growthRateWit" wire:model="growth_rate_wit">
+                               <input type="number" class="form-control" id="growthRateWit"
+                                   name="growthRateWit" wire:model.defer="growth_rate_wit">
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="input-group input-group-sm mb-2">
                                                     <span class="input-group-text">Stamina</span>
-                                                    <input type="number" class="form-control" id="growthRateStamina"
-                                                           name="growthRateStamina" wire:model="growth_rate_stamina">
+                               <input type="number" class="form-control" id="growthRateStamina"
+                                   name="growthRateStamina" wire:model.defer="growth_rate_stamina">
                                                 </div>
                                                 <div class="input-group input-group-sm mb-2">
                                                     <span class="input-group-text">Guts</span>
-                                                    <input type="number" class="form-control" id="growthRateGuts"
-                                                           name="growthRateGuts" wire:model="growth_rate_guts">
+                               <input type="number" class="form-control" id="growthRateGuts"
+                                   name="growthRateGuts" wire:model.defer="growth_rate_guts">
                                                 </div>
                                             </div>
                                         </div>
@@ -257,13 +257,13 @@
                                                         <div class="mb-2">
                                                             <label class="form-label">Value</label>
                                     <input type="number" class="form-control"
-                                        wire:model="planAttributes.{{ $index }}.value"
+                                        wire:model.defer="planAttributes.{{ $index }}.value"
                                         value="{{ $attribute['value'] ?? 0 }}">
                                                         </div>
                                                         <div>
                                                             <label class="form-label">Grade</label>
                                 <select class="form-select"
-                                    wire:model="planAttributes.{{ $index }}.grade">
+                                    wire:model.defer="planAttributes.{{ $index }}.grade">
                                                                 <option value="G">G</option>
                                                                 <option value="F">F</option>
                                                                 <option value="E">E</option>

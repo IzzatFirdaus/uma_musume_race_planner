@@ -6,7 +6,10 @@
     border-radius: var(--border-radius-base);
     box-shadow: var(--color-shadow-light);
     border: 1px solid rgb(255 255 255 / 40%);
-    transition: background-color var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
+    transition:
+        background-color var(--transition-speed),
+        box-shadow var(--transition-speed),
+        border-color var(--transition-speed);
 }
 
 body.dark-mode .dropdown-menu-glass {
@@ -30,83 +33,82 @@ body.dark-mode .dropdown-menu-glass {
    Rationale: Centralized control for themes, easy maintenance, consistency.
    Naming convention improved for clarity (e.g., --color-primary instead of --primary-color).
 ------------------------------ */
+
+/*
+ * Uma Musume Planner CSS (v4.0)
+ * Official palette, typography, dark mode, responsive, and accessibility updates (Sep 2025)
+ * All variables and styles are aligned with official Umamusume: Pretty Derby mechanics and UI/UX.
+ */
+
 :root {
     /* Brand Colors */
-    --color-primary: #f06292; /* Strong, recognizable brand color */
-    --color-secondary: #9575cd; /* Complementary accent color */
+    --color-primary: #f06292;
+    --color-secondary: #9575cd;
+
+    /* Official Stat Colors (SPEC-05) */
+    --color-stat-speed: #39f; /* Speed (Blue) */
+    --color-stat-stamina: #3c9; /* Stamina (Green) */
+    --color-stat-power: #f44; /* Power (Red) */
+    --color-stat-guts: #fa0; /* Guts (Orange) */
+    --color-stat-wisdom: #93f; /* Wisdom (Purple) */
+
+    /* Motivation Colors (Official) */
+    --color-motivation-great: #4caf50;
+    --color-motivation-good: #8bc34a;
+    --color-motivation-normal: #ffeb3b;
+    --color-motivation-bad: #ff9800;
+    --color-motivation-awful: #f44336;
 
     /* Text Colors */
-    --color-text-dark: #212529; /* Standard dark text */
-    --color-text-light: #fff; /* Standard light text */
-    --color-text-muted-light: #6c757d; /* Bootstrap default muted for light theme */
+    --color-text-dark: #212529;
+    --color-text-light: #fff;
+    --color-text-muted-light: #6c757d;
 
-    /* Backgrounds & Surfaces (Light Mode) */
-    --color-bg-light: #f9f7fd; /* Soft, very light background */
-    --color-surface-light-opaque: #fff; /* Opaque card/modal background */
-    --color-surface-light-glass: rgb(
-        255 255 255 / 90%
-    ); /* INCREASED OPACITY for better text contrast */
+    /* Typography */
+    --font-heading: "Montserrat", "M PLUS Rounded 1c", arial, sans-serif;
+    --font-body: "Figtree", "Roboto", "M PLUS Rounded 1c", arial, sans-serif;
 
-    --color-header-light-glass: rgb(
-        240 98 146 / 20%
-    ); /* Slightly stronger header tint, INCREASED OPACITY */
+    /* Backgrounds & Surfaces */
+    --color-bg-light: #f9f7fd;
+    --color-surface-light-opaque: #fff;
+    --color-surface-light-glass: rgb(255 255 255 / 90%);
+    --color-header-light-glass: rgb(240 98 146 / 20%);
+    --color-border-light: rgb(149 117 205 / 20%);
+    --color-shadow-light: 0 4px 12px rgb(149 117 205 / 15%);
 
-    --color-border-light: rgb(
-        149 117 205 / 20%
-    ); /* Subtle border for light theme forms */
-
-    --color-shadow-light: 0 4px 12px rgb(149 117 205 / 15%); /* Soft shadow */
-
-    /* Stat Colors - Consistent and clearly named, aligned with SPEC-05 */
-    --color-stat-speed: #39f; /* Blue */
-    --color-stat-stamina: #dc3545; /* Red */
-    --color-stat-power: #fd7e14; /* Orange */
-    --color-stat-guts: #e83e8c; /* Magenta */
-    --color-stat-wit: #28a745; /* Green */
-
-    /* Background Image URLs - Defined here for easy switching */
+    /* Background Images */
     --bg-image-body-light: url("/uploads/app_bg/uma_musume_race_planner_bg_light_1536x1028.png");
     --bg-image-body-dark: url("/uploads/app_bg/uma_musume_race_planner_bg_dark_1536x1028.png");
     --bg-image-component-light: url("/uploads/app_bg/uma_musume_race_planner_bg_light_1028x1536.png");
     --bg-image-component-dark: url("/uploads/app_bg/uma_musume_race_planner_bg_dark_1028x1536.png");
 
-    /* Dark Mode Base - Semantic Naming */
-    --color-bg-dark: #1a1a1a; /* Deeper, less harsh dark background */
-    --color-surface-dark-glass: rgb(
-        30 30 30 / 85%
-    ); /* Slightly darker, INCREASED OPACITY */
+    /* Dark Mode */
+    --color-bg-dark: #1a1a1a;
+    --color-surface-dark-glass: rgb(30 30 30 / 85%);
+    --color-header-dark-glass: rgb(45 45 45 / 90%);
+    --color-border-dark: rgb(255 255 255 / 15%);
+    --color-input-bg-dark: #3a3a3a;
+    --color-input-text-dark: #e0e0e0;
+    --color-table-header-dark: #4a4a4a;
+    --color-table-border-dark: rgb(255 255 255 / 10%);
+    --color-shadow-dark: 0 6px 16px rgb(0 0 0 / 50%);
+    --color-text-neon-dark: #e1d9ff;
+    --color-neon-purple: #b373ff;
+    --color-list-item-dark-glass: rgb(60 53 74 / 90%);
+    --color-text-muted-dark: #9e95b3;
+    --color-link-dark: #fff;
 
-    --color-header-dark-glass: rgb(
-        45 45 45 / 90%
-    ); /* Darker, slightly more opaque header tint, INCREASED OPACITY */
-
-    --color-border-dark: rgb(255 255 255 / 15%); /* Border for dark theme */
-    --color-input-bg-dark: #3a3a3a; /* Dark input background */
-    --color-input-text-dark: #e0e0e0; /* Light text for dark inputs */
-    --color-table-header-dark: #4a4a4a; /* Dark table header background */
-    --color-table-border-dark: rgb(255 255 255 / 10%); /* Dark table border */
-    --color-shadow-dark: 0 6px 16px rgb(0 0 0 / 50%); /* Stronger shadow for depth */
-
-    /* Neon Theme for Dark Mode - Enhanced Contrast */
-    --color-text-neon-dark: #e1d9ff; /* Light lavender for body text, high contrast */
-    --color-neon-purple: #b373ff; /* Bright, vibrant purple for highlights */
-    --color-list-item-dark-glass: rgb(
-        60 53 74 / 90%
-    ); /* Slightly less transparent for list items, INCREASED OPACITY */
-
-    --color-text-muted-dark: #9e95b3; /* Lighter muted text for dark mode */
-    --color-link-dark: #fff; /* General link color, bright for visibility */
-
-    /* Common UI Elements */
-    --border-radius-base: 0.75rem; /* Slightly smaller, more modern radius */
-    --transition-speed: 0.3s ease-in-out; /* Standard transition for smooth changes */
-    --backdrop-blur-strength: 15px; /* Slightly STRONGER blur for effect */
+    /* UI Elements */
+    --border-radius-base: 0.75rem;
+    --transition-speed: 0.3s ease-in-out;
+    --backdrop-blur-strength: 15px;
 }
 
 /* ------------------------------
    Core Body & Background Setup
    Rationale: Foundation for layout and theming.
 ------------------------------ */
+
 html,
 body {
     height: 100%;
@@ -114,18 +116,28 @@ body {
 
 body {
     position: relative;
-    background-color: var(
-        --color-bg-light
-    ); /* Fallback color, now using variable */
-
-    color: var(--color-text-dark); /* Default text color for light mode */
-    font-family: "M PLUS Rounded 1c", sans-serif; /* Applied new font */
-    padding-bottom: 50px; /* Ensure space for fixed footer */
+    background-color: var(--color-bg-light);
+    color: var(--color-text-dark);
+    font-family: var(--font-body);
+    padding-bottom: 50px;
     transition:
         color var(--transition-speed),
-        background-color var(--transition-speed); /* Smooth transitions */
+        background-color var(--transition-speed);
+    line-height: 1.6;
+}
 
-    line-height: 1.6; /* Improved readability */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.heading,
+.header-banner h1,
+.navbar-brand {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 0.01em;
 }
 
 body::before {
@@ -644,102 +656,97 @@ body.dark-mode .nav-link:hover {
     margin-right: 15px;
     vertical-align: middle;
     border-radius: var(--border-radius-base);
-    box-shadow: 0 2px 8px rgb(0 0 0 / 20%); /* Consistent shadow */
+    box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
 }
 
 .navbar-brand .logo {
-    height: 28px; /* Slightly larger for better visibility in navbar */
-    margin-right: 10px; /* Adjusted spacing */
+    height: 28px;
+    margin-right: 10px;
 }
 
+/* Stat icon for stat-meter component */
 .stat-icon {
-    font-size: 1.6rem; /* Slightly larger for better impact */
+    font-size: 1.6rem;
     margin-right: 0.6rem;
     vertical-align: middle;
 }
 
-/* ------------------------------
-   Component: Buttons & Badges
-   Rationale: Clear call-to-actions, consistent states.
------------------------------- */
-.btn-uma {
-    background-color: var(--color-primary);
-    color: var(--color-text-light);
+/* Motivation indicator component */
+.motivation-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    border: none; /* Ensure no default border */
-    border-radius: 0.5rem; /* Consistent button radius, could be more pill-shaped later */
-    padding: 0.75rem 1.5rem; /* More generous padding for touch targets */
-    transition:
-        background-color var(--transition-speed),
-        transform 0.1s ease-out; /* Add subtle transform */
-
-    /* Placeholder for potential gradient styles */
-
-    /* background-image: linear-gradient(135deg, var(--color-primary), #d84381); */
 }
 
-.btn-uma:hover {
-    background-color: #d84381; /* Slightly darker shade on hover */
-    color: var(--color-text-light);
-    transform: translateY(-1px); /* Subtle lift effect */
-    box-shadow: 0 4px 8px rgb(0 0 0 / 20%); /* Add shadow on hover */
-}
-
-.btn-uma:active {
-    background-color: #c43272; /* Even darker on active */
-    transform: translateY(0);
-    box-shadow: none;
-}
-
-/* Status Badges - Clear and accessible colors */
-.badge {
-    padding: 0.4em 0.7em; /* Consistent badge padding */
-    border-radius: 0.375rem; /* Standard Bootstrap radius */
-    font-size: 0.8em; /* Appropriate size */
+.motivation-indicator .badge {
+    font-size: 0.95em;
     font-weight: 700;
-}
-
-.bg-active {
-    background-color: #28a745; /* Green for active/success */
-    color: var(--color-text-light);
-
-    /* Added text shadow for better readability on green background */
-    text-shadow: 0 1px 2px rgb(0 0 0 / 20%);
-}
-
-.bg-finished {
-    background-color: #0d6efd; /* Blue for finished/info */
-    color: var(--color-text-light);
-
-    /* Added text shadow for better readability on blue background */
-    text-shadow: 0 1px 2px rgb(0 0 0 / 20%);
-}
-
-body.dark-mode .bg-active,
-body.dark-mode .bg-finished {
-    color: var(--color-text-light); /* Ensure light text in dark mode badges */
-    text-shadow: none; /* Remove text shadow in dark mode as neon text handles contrast */
+    border-radius: 0.5em;
+    padding: 0.4em 0.8em;
 }
 
 /* ------------------------------
-   Component: Forms & Autocomplete
-   Rationale: Intuitive input, clear states, accessible feedback.
+   Data Visualization & Stat Meter
+   Rationale: Clear representation of stats, consistent color mapping.
 ------------------------------ */
-.form-control,
-.form-select {
-    border-radius: 0.5rem; /* Consistent with buttons/tabs */
-    border: 1px solid var(--color-border-light); /* Use variable for light border */
-    background-color: var(
-        --color-surface-light-opaque
-    ); /* Opaque for clearer input */
+.text-speed-blue {
+    color: var(--color-stat-speed);
+}
+.text-stamina-green {
+    color: var(--color-stat-stamina);
+}
+.text-power-red {
+    color: var(--color-stat-power);
+}
+.text-guts-orange {
+    color: var(--color-stat-guts);
+}
+.text-wisdom-purple {
+    color: var(--color-stat-wisdom);
+}
 
-    color: var(--color-text-dark);
-    padding: 0.75rem 1rem; /* More generous padding */
-    font-size: 1rem; /* Ensure standard font size */
-    transition:
-        border-color var(--transition-speed),
-        box-shadow var(--transition-speed),
-        background-color var(--transition-speed);
+.plan-stat-bars {
+    display: flex;
+    gap: 4px;
+    margin-top: 0.5rem;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.stat-bar {
+    flex-grow: 1;
+    border-radius: 6px;
+    background-color: #e9ecef;
+    height: 12px;
+    overflow: hidden;
+}
+
+.stat-bar > div {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.5s ease-out;
+}
+.stat-bar .bar-speed {
+    background-color: var(--color-stat-speed);
+}
+.stat-bar .bar-stamina {
+    background-color: var(--color-stat-stamina);
+}
+.stat-bar .bar-power {
+    background-color: var(--color-stat-power);
+}
+.stat-bar .bar-guts {
+    background-color: var(--color-stat-guts);
+}
+.stat-bar .bar-wisdom {
+    background-color: var(--color-stat-wisdom);
+}
+
+body.dark-mode .stat-bar {
+    background-color: rgb(255 255 255 / 18%);
 }
 
 .form-control::placeholder {
@@ -866,20 +873,23 @@ body.dark-mode .table thead th {
     ); /* Slightly more pronounced hover effect */
 }
 
-body.dark-mode .table {
-    color: var(--color-text-neon-dark);
+body.dark-mode .stat-bar {
+    background-color: rgb(255 255 255 / 18%);
 }
 
-body.dark-mode .table-hover tbody tr:hover {
-    background-color: rgb(
-        255 255 255 / 10%
-    ); /* Slightly more visible hover for dark mode */
-}
-
-/* Recent Activity List Items - Clear, interactive, and distinct */
-.recent-activity-card .list-group {
-    background-color: transparent;
-    border-radius: var(--border-radius-base); /* Match card radius */
+/* Form Controls (moved misplaced block here) */
+.form-control,
+.form-select {
+    background-color: var(
+        --color-surface-light-opaque
+    ); /* Opaque for clearer input */
+    color: var(--color-text-dark);
+    padding: 0.75rem 1rem; /* More generous padding */
+    font-size: 1rem; /* Ensure standard font size */
+    transition:
+        border-color var(--transition-speed),
+        box-shadow var(--transition-speed),
+        background-color var(--transition-speed);
 }
 
 .recent-activity-card .list-group-item {
@@ -963,25 +973,8 @@ body.dark-mode .quick-stats-number.text-primary {
    Data Visualization
    Rationale: Clear representation of data, consistent color mapping.
 ------------------------------ */
-.text-speed-blue {
-    color: var(--color-stat-speed);
-}
 
-.text-stamina-red {
-    color: var(--color-stat-stamina);
-}
-
-.text-power-orange {
-    color: var(--color-stat-power);
-}
-
-.text-guts-magenta {
-    color: var(--color-stat-guts);
-}
-
-.text-wit-green {
-    color: var(--color-stat-wit);
-}
+/* Removed duplicate/incorrect stat color classes (already defined above) */
 
 .plan-stat-bars {
     display: flex;
@@ -1415,9 +1408,37 @@ body {
     --navbar-height: 56px; /* Approx default Bootstrap navbar height */
 }
 
-@media (width >= 992px) {
-    /* Adjust for larger screens if navbar height changes */
-    body {
-        --navbar-height: 56px; /* Keep consistent or adjust if navbar grows */
+/* ------------------------------
+   Responsive & Accessibility
+   Rationale: Mobile-first, touch targets, and WCAG AA compliance.
+------------------------------ */
+@media (width <= 767.98px) {
+    .plan-stat-bars,
+    .stat-bar {
+        height: 16px;
+    }
+
+    .motivation-indicator {
+        font-size: 1.2rem;
+    }
+
+    button,
+    .btn,
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        font-size: 1.1rem;
     }
 }
+
+/* Focus states for accessibility */
+button:focus,
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0.2rem rgb(149 117 205 / 25%);
+}
+
+/* End of Uma Musume Planner CSS v4.0 */

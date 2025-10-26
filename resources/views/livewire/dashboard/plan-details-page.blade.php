@@ -41,22 +41,26 @@
             @endif
         </div>
 
-        @if($isLoading)
-        <div class="loading-overlay">
+        <div class="loading-overlay" wire:loading>
             <div class="spinner-border dashboard-btn-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-        @endif
 
         @if($isEditMode)
             <form id="planDetailsFormPage" enctype="multipart/form-data" wire:submit.prevent="save">
                 @method('PUT')
                 @csrf
-                <input type="hidden" wire:model="planId" name="planId">
+                <input type="hidden" wire:model.defer="planId" name="planId">
         @endif
 
             <div class="card-body">
+                    <div wire:loading.flex wire:transition class="justify-content-center align-items-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div wire:loading.remove>
                 {{-- Form Tabs --}}
                 <ul class="nav nav-tabs" id="planTabsPage" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -88,22 +92,22 @@
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 <label for="plan_title_page" class="form-label">Plan Title</label>
-                                <input type="text" class="form-control" id="plan_title_page" name="plan_title" wire:model="plan_title" {{ !$isEditMode ? 'readonly' : '' }}>
+                                <input type="text" class="form-control" id="plan_title_page" name="plan_title" wire:model.defer="plan_title" {{ !$isEditMode ? 'readonly' : '' }}>
                             </div>
                             <div class="col-md-4">
                                 <label for="turn_before_page" class="form-label">Turn Before</label>
-                                <input type="number" class="form-control" id="turn_before_page" name="turn_before" wire:model="turn_before" {{ !$isEditMode ? 'readonly' : '' }}>
+                                <input type="number" class="form-control" id="turn_before_page" name="turn_before" wire:model.defer="turn_before" {{ !$isEditMode ? 'readonly' : '' }}>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="name_page" class="form-label">Trainee Name</label>
-                                <input type="text" class="form-control" id="name_page" name="name" wire:model="name" required {{ !$isEditMode ? 'readonly' : '' }}>
+                                <input type="text" class="form-control" id="name_page" name="name" wire:model.defer="name" required {{ !$isEditMode ? 'readonly' : '' }}>
                             </div>
                             <div class="col-md-6">
                                 <label for="race_name_page" class="form-label">Next Race Name</label>
-                                <input type="text" class="form-control" id="race_name_page" name="race_name" wire:model="race_name" {{ !$isEditMode ? 'readonly' : '' }}>
+                                <input type="text" class="form-control" id="race_name_page" name="race_name" wire:model.defer="race_name" {{ !$isEditMode ? 'readonly' : '' }}>
                             </div>
                         </div>
 
@@ -112,7 +116,7 @@
                                 <div class="row">
                                     <div class="col-md-8">
                                         <label for="career_stage_page" class="form-label">Career Stage</label>
-                                        <select class="form-select" id="career_stage_page" name="career_stage" wire:model="career_stage" {{ !$isEditMode ? 'disabled' : '' }}>
+                                        <select class="form-select" id="career_stage_page" name="career_stage" wire:model.defer="career_stage" {{ !$isEditMode ? 'disabled' : '' }}>
                                             <option value="" disabled>Select Stage</option>
                                             <option value="predebut">Pre-debut</option>
                                             <option value="junior">Junior</option>
@@ -123,7 +127,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="class_page" class="form-label">Class</label>
-                                        <select class="form-select" id="class_page" name="class" wire:model="class" {{ !$isEditMode ? 'disabled' : '' }}>
+                                        <select class="form-select" id="class_page" name="class" wire:model.defer="class" {{ !$isEditMode ? 'disabled' : '' }}>
                                             <option value="" disabled>Select Class</option>
                                             <option value="debut">Debut</option>
                                             <option value="maiden">Maiden</option>
@@ -143,11 +147,11 @@
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="goal_page" class="form-label">Primary Goal</label>
-                                <input type="text" class="form-control" id="goal_page" name="goal" wire:model="goal">
+                                <input type="text" class="form-control" id="goal_page" name="goal" wire:model.defer="goal">
                             </div>
                             <div class="col-md-4">
                                 <label for="strategy_id_page" class="form-label">Strategy</label>
-                                <select class="form-select" id="strategy_id_page" name="strategy_id" wire:model="strategy_id">
+                                <select class="form-select" id="strategy_id_page" name="strategy_id" wire:model.defer="strategy_id">
                                     <option value="">Select Strategy</option>
                                     @php
                                         $strategies = \App\Models\Strategy::all();
@@ -159,7 +163,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="mood_id_page" class="form-label">Mood</label>
-                                <select class="form-select" id="mood_id_page" name="mood_id" wire:model="mood_id">
+                                <select class="form-select" id="mood_id_page" name="mood_id" wire:model.defer="mood_id">
                                     <option value="">Select Mood</option>
                                     @php
                                         $moods = \App\Models\Mood::all();
@@ -174,7 +178,7 @@
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="condition_id_page" class="form-label">Condition</label>
-                                <select class="form-select" id="condition_id_page" name="condition_id" wire:model="condition_id">
+                                <select class="form-select" id="condition_id_page" name="condition_id" wire:model.defer="condition_id">
                                     <option value="">Select Condition</option>
                                     @php
                                         $conditions = \App\Models\Condition::all();
@@ -209,12 +213,12 @@
                         <div class="row mb-3">
                             <div class="col-md-3">
                                 <label for="total_available_skill_points_page" class="form-label">Skill Points</label>
-                                <input type="number" class="form-control" id="total_available_skill_points_page"
-                                       name="total_available_skill_points" wire:model="total_available_skill_points">
+                    <input type="number" class="form-control" id="total_available_skill_points_page"
+                        name="total_available_skill_points" wire:model.defer="total_available_skill_points">
                             </div>
                             <div class="col-md-3">
                                 <label for="status_page" class="form-label">Status</label>
-                                <select class="form-select" id="status_page" name="status" wire:model="status">
+                                <select class="form-select" id="status_page" name="status" wire:model.defer="status">
                                     <option value="Planning">Planning</option>
                                     <option value="Active">Active</option>
                                     <option value="Finished">Finished</option>
@@ -222,21 +226,21 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="time_of_day_page" class="form-label">Time of Day</label>
-                                <input type="text" class="form-control" id="time_of_day_page"
-                                       name="time_of_day" wire:model="time_of_day" placeholder="e.g. Morning, Noon, Evening">
+                    <input type="text" class="form-control" id="time_of_day_page"
+                        name="time_of_day" wire:model.defer="time_of_day" placeholder="e.g. Morning, Noon, Evening">
                             </div>
                             <div class="col-md-3">
                                 <label for="month_page" class="form-label">Month</label>
-                                <input type="text" class="form-control" id="month_page"
-                                       name="month" wire:model="month" placeholder="e.g. January">
+                    <input type="text" class="form-control" id="month_page"
+                        name="month" wire:model.defer="month" placeholder="e.g. January">
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="source_page" class="form-label">Source</label>
-                                <input type="text" class="form-control" id="source_page"
-                                       name="source" wire:model="source">
+                    <input type="text" class="form-control" id="source_page"
+                        name="source" wire:model.defer="source">
                             </div>
                             <div class="col-md-6">
                                 <div class="row g-2">
@@ -244,30 +248,30 @@
                                     <div class="col-6">
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Speed</span>
-                                            <input type="number" class="form-control" id="growth_rate_speed_page"
-                                                   name="growth_rate_speed" wire:model="growth_rate_speed">
+                          <input type="number" class="form-control" id="growth_rate_speed_page"
+                              name="growth_rate_speed" wire:model.defer="growth_rate_speed">
                                         </div>
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Power</span>
-                                            <input type="number" class="form-control" id="growth_rate_power_page"
-                                                   name="growth_rate_power" wire:model="growth_rate_power">
+                          <input type="number" class="form-control" id="growth_rate_power_page"
+                              name="growth_rate_power" wire:model.defer="growth_rate_power">
                                         </div>
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Wit</span>
-                                            <input type="number" class="form-control" id="growth_rate_wit_page"
-                                                   name="growth_rate_wit" wire:model="growth_rate_wit">
+                          <input type="number" class="form-control" id="growth_rate_wit_page"
+                              name="growth_rate_wit" wire:model.defer="growth_rate_wit">
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Stamina</span>
-                                            <input type="number" class="form-control" id="growth_rate_stamina_page"
-                                                   name="growth_rate_stamina" wire:model="growth_rate_stamina">
+                          <input type="number" class="form-control" id="growth_rate_stamina_page"
+                              name="growth_rate_stamina" wire:model.defer="growth_rate_stamina">
                                         </div>
                                         <div class="input-group input-group-sm mb-2">
                                             <span class="input-group-text">Guts</span>
-                                            <input type="number" class="form-control" id="growth_rate_guts_page"
-                                                   name="growth_rate_guts" wire:model="growth_rate_guts">
+                          <input type="number" class="form-control" id="growth_rate_guts_page"
+                              name="growth_rate_guts" wire:model.defer="growth_rate_guts">
                                         </div>
                                     </div>
                                 </div>
@@ -280,20 +284,20 @@
                         <div id="attributesContainer_page" class="row g-3">
                             @if(count($planAttributes ?? []) > 0)
                                 @foreach($planAttributes ?? [] as $index => $attribute)
-                                    <div class="col-md-6 col-lg-4">
+                                        <div class="col-md-6 col-lg-4" wire:key="attribute-{{ $index }}">
                                         <div class="card">
                                             <div class="card-body">
                                                 <h6 class="card-title">{{ $attribute['attribute_name'] ?? 'Unknown' }}</h6>
                                                 <div class="mb-2">
                                                     <label class="form-label">Value</label>
                                                     <input type="number" class="form-control"
-                                                        wire:model="planAttributes.{{ $index }}.value"
+                                                        wire:model.defer="planAttributes.{{ $index }}.value"
                                                         value="{{ $attribute['value'] ?? 0 }}">
                                                 </div>
                                                 <div>
                                                     <label class="form-label">Grade</label>
                                                     <select class="form-select"
-                                                        wire:model="planAttributes.{{ $index }}.grade">
+                                                        wire:model.defer="planAttributes.{{ $index }}.grade">
                                                         <option value="G">G</option>
                                                         <option value="F">F</option>
                                                         <option value="E">E</option>
@@ -344,7 +348,7 @@
                                 <tbody>
                                     @if(count($skills) > 0)
                                         @foreach($skills as $index => $skill)
-                                            <tr>
+                                                <tr wire:key="skill-{{ $index }}">
                                                 <td>{{ $skill['skill_name'] ?? '' }}</td>
                                                 <td>{{ $skill['tag'] ?? '' }}</td>
                                                 <td>
@@ -393,7 +397,7 @@
                                 <tbody>
                                     @if(count($racePredictions) > 0)
                                         @foreach($racePredictions as $prediction)
-                                            <tr>
+                                                <tr wire:key="prediction-{{ $loop->index }}">
                                                 <td>{{ $prediction['race_name'] ?? '' }}</td>
                                                 <td>{{ $prediction['venue'] ?? '' }}</td>
                                                 <td>{{ $prediction['ground'] ?? '' }}</td>
@@ -436,7 +440,7 @@
                                 <tbody>
                                     @if(count($goals) > 0)
                                         @foreach($goals as $goal)
-                                            <tr>
+                                                <tr wire:key="goal-{{ $loop->index }}">
                                                 <td>{{ $goal['goal'] ?? '' }}</td>
                                                 <td>{{ $goal['result'] ?? '' }}</td>
                                                 <td>
@@ -487,7 +491,6 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('livewire:init', () => {
             Livewire.on('plan-saved', (event) => {

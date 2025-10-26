@@ -38,7 +38,7 @@
                 <div class="col-md-8">
                     <label for="plan_title{{ $id_suffix }}" class="form-label">Plan Title</label>
                     <input type="text" class="form-control" id="plan_title{{ $id_suffix }}" name="plan_title" wire:model.lazy="plan_title">
-                    <input type="hidden" id="planId{{ $id_suffix }}" name="planId" wire:model="planId">
+                    <input type="hidden" id="planId{{ $id_suffix }}" name="planId" wire:model.defer="planId" aria-hidden="true" aria-label="plan id">
                 </div>
                 <div class="col-md-4">
                     <label for="modalTurnBefore{{ $id_suffix }}" class="form-label">Turn Before</label>
@@ -58,12 +58,12 @@
             </div>
 
             <div class="row mb-3">
-                @livewire('trainee-image-handler')
+                <livewire:trainee-image-handler />
                 <div class="col-md-6">
                     <div class="row">
                         <div class="col-md-8">
                             <label for="modalCareerStage{{ $id_suffix }}" class="form-label">Career Stage</label>
-                            <select class="form-select" id="modalCareerStage{{ $id_suffix }}" name="modalCareerStage" wire:model="career_stage">
+                            <select class="form-select" id="modalCareerStage{{ $id_suffix }}" name="modalCareerStage" wire:model.defer="career_stage">
                                 <option value="" selected disabled>Select Stage</option>
                                 @foreach ($careerStageOptions ?? [] as $option)
                                     <option value="{{ $option['value'] }}">{{ $option['text'] }}</option>
@@ -72,7 +72,7 @@
                         </div>
                         <div class="col-md-4">
                             <label for="modalClass{{ $id_suffix }}" class="form-label">Class</label>
-                            <select class="form-select" id="modalClass{{ $id_suffix }}" name="modalClass" wire:model="class">
+                            <select class="form-select" id="modalClass{{ $id_suffix }}" name="modalClass" wire:model.defer="class">
                                 <option value="" selected disabled>Select Class</option>
                                 @foreach ($classOptions ?? [] as $option)
                                     <option value="{{ $option['value'] }}">{{ $option['text'] }}</option>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="modalStrategy{{ $id_suffix }}" class="form-label">Strategy</label>
-                    <select class="form-select" id="modalStrategy{{ $id_suffix }}" name="modalStrategy" wire:model="strategy_id">
+                    <select class="form-select" id="modalStrategy{{ $id_suffix }}" name="modalStrategy" wire:model.defer="strategy_id">
                         <option value="">Select Strategy</option>
                         @foreach (($strategyOptions ?? []) as $opt)
                             <option value="{{ $opt['id'] ?? $opt['value'] ?? '' }}">{{ $opt['label'] ?? $opt['text'] ?? '' }}</option>
@@ -99,7 +99,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="modalMood{{ $id_suffix }}" class="form-label">Mood</label>
-                    <select class="form-select" id="modalMood{{ $id_suffix }}" name="modalMood" wire:model="mood_id">
+                    <select class="form-select" id="modalMood{{ $id_suffix }}" name="modalMood" wire:model.defer="mood_id">
                         <option value="">Select Mood</option>
                         @foreach (($moodOptions ?? []) as $opt)
                             <option value="{{ $opt['id'] ?? $opt['value'] ?? '' }}">{{ $opt['label'] ?? $opt['text'] ?? '' }}</option>
@@ -111,7 +111,7 @@
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label for="modalCondition{{ $id_suffix }}" class="form-label">Condition</label>
-                    <select class="form-select" id="modalCondition{{ $id_suffix }}" name="modalCondition" wire:model="condition_id">
+                    <select class="form-select" id="modalCondition{{ $id_suffix }}" name="modalCondition" wire:model.defer="condition_id">
                         <option value="">Select Condition</option>
                         @foreach (($conditionOptions ?? []) as $opt)
                             <option value="{{ $opt['id'] ?? $opt['value'] ?? '' }}">{{ $opt['label'] ?? $opt['text'] ?? '' }}</option>
@@ -119,7 +119,7 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Energy</label>
+                    <label class="form-label" for="energyRange{{ $id_suffix }}">Energy</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="range" min="0" max="100" step="1" class="form-range" id="energyRange{{ $id_suffix }}" name="energyRange" wire:model.live="energy">
                         <span class="badge bg-secondary" id="energyValue{{ $id_suffix }}">{{ (int) ($energy ?? 0) }}</span>
@@ -144,7 +144,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="modalStatus{{ $id_suffix }}" class="form-label">Status</label>
-                    <select class="form-select" id="modalStatus{{ $id_suffix }}" name="modalStatus" wire:model="status">
+                    <select class="form-select" id="modalStatus{{ $id_suffix }}" name="modalStatus" wire:model.defer="status">
                         <option value="Planning">Planning</option>
                         <option value="Active">Active</option>
                         <option value="Finished">Finished</option>
@@ -171,25 +171,25 @@
                         <div class="col-6">
                             <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text">Speed</span>
-                                <input type="number" class="form-control" id="growthRateSpeed{{ $id_suffix }}" name="growthRateSpeed" wire:model.lazy="growth_rate_speed">
+                                <input type="number" class="form-control" id="growthRateSpeed{{ $id_suffix }}" name="growthRateSpeed" wire:model.lazy="growth_rate_speed" aria-label="Speed growth rate">
                             </div>
                             <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text">Power</span>
-                                <input type="number" class="form-control" id="growthRatePower{{ $id_suffix }}" name="growthRatePower" wire:model.lazy="growth_rate_power">
+                                <input type="number" class="form-control" id="growthRatePower{{ $id_suffix }}" name="growthRatePower" wire:model.lazy="growth_rate_power" aria-label="Power growth rate">
                             </div>
                             <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text">Wit</span>
-                                <input type="number" class="form-control" id="growthRateWit{{ $id_suffix }}" name="growthRateWit" wire:model.lazy="growth_rate_wit">
+                                <input type="number" class="form-control" id="growthRateWit{{ $id_suffix }}" name="growthRateWit" wire:model.lazy="growth_rate_wit" aria-label="Wit growth rate">
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text">Stamina</span>
-                                <input type="number" class="form-control" id="growthRateStamina{{ $id_suffix }}" name="growthRateStamina" wire:model.lazy="growth_rate_stamina">
+                                <input type="number" class="form-control" id="growthRateStamina{{ $id_suffix }}" name="growthRateStamina" wire:model.lazy="growth_rate_stamina" aria-label="Stamina growth rate">
                             </div>
                             <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text">Guts</span>
-                                <input type="number" class="form-control" id="growthRateGuts{{ $id_suffix }}" name="growthRateGuts" wire:model.lazy="growth_rate_guts">
+                                <input type="number" class="form-control" id="growthRateGuts{{ $id_suffix }}" name="growthRateGuts" wire:model.lazy="growth_rate_guts" aria-label="Guts growth rate">
                             </div>
                         </div>
                     </div>
