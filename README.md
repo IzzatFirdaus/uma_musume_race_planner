@@ -1,241 +1,259 @@
-# 🐎 Uma Musume Race Planner (Laravel Edition)
+# 🌸 Uma Musume Career Tracker System Documentation
 
-A lightweight Laravel web application for planning and tracking turn-based training strategies, stat development, skill acquisition, and race goals inspired by Uma Musume. Built for fast manual data entry with autosuggestions, clean interfaces, and no login — ideal for offline strategy planners.
-
----
-
-## Application Preview
-
-### Application Screenshots (v1.3.2)
-
-_Note: These screenshots showcase the core interface. The latest version (v1.4.0) adds the new Trainee Image and Progress Chart features._
-
-|                    Light Mode Dashboard                     |                             Dark Mode Dashboard                             |
-| :---------------------------------------------------------: | :-------------------------------------------------------------------------: |
-|     ![Homepage](public/uploads/screenshot/Homepage.png)     | ![Dark Mode Homepage](public/uploads/screenshot/Dark%20Mode%20Homepage.png) |
-|                   **Quick Create Modal**                    |                              **In-App Guide**                               |
-| ![Create Plan](public/uploads/screenshot/Create%20Plan.png) |             ![Guide Page](public/uploads/screenshot/Guide.png)              |
-
-**Plan Editor Tabs:**
-
-|                                      General                                      |                                              Attributes                                               |                                           Aptitude Grades                                           |
-| :-------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
-| ![Plan Editor - General](public/uploads/screenshot/001_GENERAL%20Edit%20Plan.png) |        ![Plan Editor - Attributes](public/uploads/screenshot/002_ATTRIBUTES%20Edit%20Plan.png)        | ![Plan Editor - Aptitude Grades](public/uploads/screenshot/003_APTITUDE%20GRADES%20Edit%20Plan.png) |
-|                                    **Skills**                                     |                                         **Race Predictions**                                          |                                              **Goals**                                              |
-|  ![Plan Editor - Skills](public/uploads/screenshot/004_SKILLS%20Edit%20Plan.png)  | ![Plan Editor - Race Predictions](public/uploads/screenshot/005_RACE%20PREDICTIONS%20Edit%20Plan.png) |            ![Plan Editor - Goals](public/uploads/screenshot/006_GOALS%20Edit%20Plan.png)            |
+## Laravel 12+ Compatible
 
 ---
 
-## ✨ Features
+## 📘 Overview
 
-## Visual Enhancements (New in v1.4.0)
-
-- **Trainee Image Management:** Personalize each plan by uploading a trainee image, which appears in the editor and as a thumbnail on the main dashboard.
-- **Stat Progression Chart:** A new "Progress Chart" tab in the editor provides a line graph visualizing the trainee's stat growth.
-- **Dynamic Theming:** The application's primary accent color is now configurable via the `.env` file.
-
-## Core Functionality
-
-- **Detailed Plan Management:** Create, view, update, and delete comprehensive training plans.
-- **Two Editing Views:** A full-screen **Details Modal** for in-depth editing and an **Inline Details Panel** for quick access.
-- **Dynamic Dashboard:** Includes panels for quick stats and a log of recent activity.
-
-## Utility & UX
-
-- **Quick Create Modal:** Quickly start a new plan with essential details.
-- **Dark Mode:** A theme toggle for user comfort.
-- **Plain Text Export:** A "Copy to Clipboard" feature generates a clean summary of any plan, perfect for sharing.
-- **Active Navbar Links:** The navbar now highlights the active page for better navigation.
+Uma Musume Planner is a Laravel 12+ platform designed to track, manage, and analyze the career progression of Uma Musume: Pretty Derby characters. Built with a modern tech stack, it supports turn-by-turn stat logging, dynamic skill management, and career analytics with a smooth, responsive interface.
 
 ---
 
-## 🖥️ Tech Stack
+## 🔧 Features
 
-- **Frontend**: Blade, Livewire, Tailwind CSS, Bootstrap 5, Vanilla JavaScript
-- **Backend**: PHP 8.2+, Laravel 12, Composer
-- **Database**: MySQL / MariaDB
+- ✅ Track multiple Uma Musume characters and their career runs
+- 📊 Log detailed stats per turn (Speed, Stamina, Power, Guts, Wit)
+- 🧠 Track skill acquisition with SP costs, types, and notes
+- ⚖️ Log growth rate bonuses and suitability ratings (Track, Distance, Style)
+- 📝 Annotate runs with notes and special conditions
+- ⬇️ Export full run logs to Excel (.xlsx)
+- 📱 Responsive UI powered by TailwindCSS + Alpine.js
+- ➕ Add dynamic skill rows in real-time
+- 🌙 Supports Dark Mode via class-based toggling
+- 🎴 Blade Component System: skill cards, stamina bars, stat grids, aptitude inputs, growth rate inputs, initial career run form, animated transitions, add/remove skill buttons
 
 ---
 
-## 🚀 Getting Started
+## 💻 Technologies Used
 
-### Prerequisites
+- **Laravel 12+**
+- **PHP 8.2+**
+- **MySQL / MariaDB** (or SQLite for local dev)
+- **Blade + TailwindCSS v4**
+- **Alpine.js** (for dynamic forms)
+- **Laravel Eloquent ORM**
+- **Laravel Excel (Maatwebsite)**
+- **Laravel Sanctum** (optional API authentication)
 
-- A local web server environment (e.g., XAMPP, WAMP, MAMP).
-- PHP 8.2 or higher.
-- MySQL or MariaDB database server.
-- [Composer](https://getcomposer.org/) for managing PHP dependencies.
+## Frontend Standardization
 
-### 1. Clone the Repository
+This project follows a standard frontend stack and conventions to keep the UI consistent, testable, and easy to convert to Livewire-driven components.
+
+Stack (canonical):
+
+- Tailwind CSS v4 (design system and utility classes)
+- Vite (asset bundling) — v7.x as declared in `package.json`
+- Alpine.js for small client-side interactions
+- Livewire v3.x for server-driven interactive components
+- Playwright / Jest for end-to-end and unit test automation
+
+Conventions and locations:
+
+- Livewire PHP classes: `app/Livewire/...` (PSR-4 namespace `App\\Livewire\\...`)
+- Livewire views: `resources/views/livewire/...` (use kebab-case file names)
+- Blade components: `resources/views/components/...` (stateless UI pieces)
+- Shared JS: `resources/js/` and component-specific scripts in the same folder
+- Shared CSS & Tailwind config: `resources/css/`, `tailwind.config.js`
+
+Developer commands (project root):
+
+- Install deps: `composer install` and `npm install`
+- Development (hot-reload): `npm run dev` (Vite) and `php artisan serve` or the repo `dev` script
+- Build assets: `npm run build`
+- Format PHP: `vendor/bin/pint --dirty` (or run pint to auto-fix)
+- Run PHP tests: `php artisan test` (or `composer test` / package script)
+- Run frontend tests: `npm run test` (Jest) and `npm run playwright:test`
+
+Livewire & conversion guidance (short):
+
+- Prefer Livewire for server-stateful UI: forms that submit, add/remove lists, server-side validation, file uploads.
+- Keep tiny UI-only behaviors (animations, simple toggles) in Alpine.js.
+- When adding Livewire components, follow the file layout above and add a Feature Livewire test under `tests/Feature/Livewire/`.
+
+Accessibility & testing:
+
+- Maintain WCAG AA contrast and keyboard navigation for all converted components.
+- Add Playwright tests for critical flows (form submit, modal dialogs, add/remove rows).
+
+If you plan mass conversions, follow the mapping and workflow in `docs/livewire-conversion-mapping.md`.
+
+---
+
+## 🧩 Data Models
+
+### 🔹 UmaMusume
+
+| Field             | Type    | Description                                     |
+| ----------------- | ------- | ----------------------------------------------- |
+| id                | int, PK | Unique identifier for the Uma Musume character. |
+| name              | string  | The character's name.                           |
+| image_url         | string  | URL to the character's image.                   |
+| aptitude_style    | json    | Array of running style suitabilities.           |
+| aptitude_distance | json    | Array of distance suitabilities.                |
+| aptitude_track    | json    | Array of track suitabilities.                   |
+| growth_speed      | int     | Bonus percentage for Speed growth.              |
+| growth_stamina    | int     | Bonus percentage for Stamina growth.            |
+
+### 🔹 CareerRun
+
+| Field              | Type    | Description                                            |
+| ------------------ | ------- | ------------------------------------------------------ |
+| id                 | int, PK | Unique identifier for the career run.                  |
+| uma_musume_id      | int, FK | Foreign key linking to the UmaMusume character.        |
+| year               | enum    | Current career year (e.g., Junior, Classic, Senior).   |
+| status             | enum    | Current status of the run (Ongoing, Finished, Failed). |
+| uma_class          | enum    | Uma's current class (Debut to Legend).                 |
+| current_turn       | int     | The current turn number in the career.                 |
+| current_race       | string  | Name of the current race (if applicable).              |
+| total_sp_available | int     | Total SP available for skill acquisition.              |
+| stamina_percentage | int     | Current stamina percentage.                            |
+
+### 🔹 StatProgress
+
+| Field         | Type    | Description                                       |
+| ------------- | ------- | ------------------------------------------------- |
+| id            | int, PK | Unique identifier for the stat progress entry.    |
+| career_run_id | int, FK | Foreign key linking to the CareerRun.             |
+| speed         | int     | Speed stat value for the turn.                    |
+| stamina       | int     | Stamina stat value for the turn.                  |
+| power         | int     | Power stat value for the turn.                    |
+| guts          | int     | Guts stat value for the turn.                     |
+| wit           | int     | Wit stat value for the turn.                      |
+| turn_number   | int     | The specific turn this stat entry corresponds to. |
+
+### 🔹 Skill
+
+| Field       | Type    | Description                                           |
+| ----------- | ------- | ----------------------------------------------------- |
+| id          | int, PK | Unique identifier for the skill.                      |
+| name        | string  | The name of the skill.                                |
+| description | text    | Full description of the skill's effect.               |
+| type        | enum    | Category of the skill (e.g., Speed, Accel, Recovery). |
+| sp_cost     | int     | The SP (Skill Point) cost to acquire the skill.       |
+| best_for    | string  | Recommended usage strategy for the skill.             |
+
+### 🔹 SkillCareerRun
+
+| Field         | Type    | Description                                             |
+| ------------- | ------- | ------------------------------------------------------- |
+| id            | int, PK | Unique identifier for the association.                  |
+| career_run_id | int, FK | Foreign key referencing the CareerRun.                  |
+| skill_id      | int, FK | Foreign key referencing the Skill.                      |
+| status        | enum    | Status of the skill within the run (Acquired, Skipped). |
+| turn_acquired | int     | The turn number when the skill was logged/acquired.     |
+
+---
+
+## 🧭 User Flow Example
+
+1. **Character Registration:** User creates a new UmaMusume record, defining basic info, aptitudes, and growth rates.
+2. **Career Initiation:** A CareerRun is started for the newly registered (or an existing) Uma Musume.
+3. **Turn-by-Turn Logging:** Each turn, the user logs current stats (StatProgress) and manages skill acquisition/usage.
+4. **Skill Actions:** Skills are marked as Acquired, Skipped, or Suggested within the SkillCareerRun context.
+5. **Run Conclusion:** The CareerRun is eventually marked as Finished or Failed.
+6. **Data Archival:** The complete run log can be exported to Excel for personal records or meta-analysis.
+
+---
+
+## 🔌 Optional API Routes
+
+| Method | Endpoint      | Description                                  |
+| ------ | ------------- | -------------------------------------------- |
+| GET    | /api/uma      | Retrieve a list of all Uma Musume characters |
+| GET    | /api/uma/{id} | View detailed profile of a single Uma Musume |
+| POST   | /api/uma      | Register a new Uma Musume                    |
+| PUT    | /api/uma/{id} | Update an existing Uma Musume's profile      |
+| POST   | /api/career   | Start a new career run for an Uma Musume     |
+
+---
+
+## 🌟 Blade Components (Reusable)
+
+| Component                            | Description                                               |
+| ------------------------------------ | --------------------------------------------------------- |
+| x-umamusume::skill-card              | Styled input card for managing individual skill details.  |
+| x-umamusume::stamina-bar             | Visual meter to represent stamina levels.                 |
+| x-umamusume::add-skill-button        | Button component to dynamically add new skill input rows. |
+| x-umamusume::remove-skill-button     | Button component to remove dynamic skill input rows.      |
+| x-umamusume::aptitude-inputs         | Form inputs for managing Uma Musume aptitude ratings.     |
+| x-umamusume::growth-rate-inputs      | Form inputs for managing Uma Musume growth rate bonuses.  |
+| x-umamusume::initial-career-run-form | Form section for logging initial stats and career run.    |
+| x-umamusume::responsive-grid         | Wrapper for responsive grid layouts.                      |
+| x-umamusume::animated-transition     | Alpine.js-driven component for smooth UI transitions.     |
+
+---
+
+## 🔮 Future Roadmap
+
+| Planned Feature                        | Description                                         |
+| -------------------------------------- | --------------------------------------------------- |
+| 🤖 AI-assisted skill recommendations   | Suggest optimal skills based on career progression. |
+| 📈 Graphical stat trend visualizations | Interactive charts to visualize stat progression.   |
+| 🔄 Import/export legacy spreadsheets   | Tools for converting/importing existing logs.       |
+| 🧠 Skill icon detection/autocomplete   | Real-time skill name suggestions with icons.        |
+| 📊 Visual graphs of stat progression   | User-friendly visual tools for deeper analysis.     |
+| 🧪 Stat outcome predictors             | Forecast future stat outcomes based on progression. |
+| 🧑‍🤝‍🧑 Role-based user collaboration       | User roles for shared tracking environments.        |
+
+---
+
+## 🛠️ Setup Instructions
+
+1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/IzzatFirdaus/uma_musume_race_planner.git
-cd uma_musume_race_planner
+git clone https://github.com/IzzatFirdaus/uma-musume-planner-laravel.git
 ```
 
-### 2. Install Dependencies
+1. **Navigate to the project directory:**
+
+```bash
+cd uma-musume-planner-laravel
+```
+
+1. **Install PHP dependencies using Composer:**
 
 ```bash
 composer install
+```
+
+1. **Set up environment variables:**
+   Copy the example environment file and generate an application key:
+
+```powershell
+copy .env.example .env
+php artisan key:generate
+```
+
+(On Linux/macOS, use `cp` instead of `copy`.)
+
+Ensure you configure your database connection in the `.env` file (MySQL, MariaDB, or SQLite for local dev).
+
+1. **Run database migrations and seeders:**
+
+```bash
+php artisan migrate --seed
+```
+
+1. **Install frontend dependencies and build assets:**
+
+```bash
 npm install
 npm run build
 ```
 
-### 3. Database Setup
-
-1. **Create the Database:** Using a tool like phpMyAdmin, create a new database. The default name is `uma_musume_planner`.
-2. **Import the Schema:** Import the database structure by executing the `uma_musume_planner.sql` file. This will create all the necessary tables.
-3. **(Optional) Seed Data:** You can optionally import `sample_data.sql` for demo data.
-
-### 4. Environment Configuration
-
-1. In the root directory, create a file named `.env`.
-2. Copy the following configuration, adjusting the database credentials to match your local setup.
-
-```ini
-# .env - Local Development Configuration
-
-# Database Configuration
-DB_HOST=localhost
-DB_DATABASE=uma_musume_planner
-DB_USERNAME=root
-DB_PASSWORD=
-
-# Application Metadata & Theming
-APP_VERSION=v1.4.0
-APP_THEME_COLOR=#7d2b8b
-LAST_UPDATED="July 29, 2025"
-```
-
-### 5. Running the Application
-
-Place the project folder inside your web server's root directory (e.g., `C:/xampp/htdocs/`) and navigate to it in your browser (e.g., `http://localhost/uma-musume-planner-laravel/`).
-
----
-
-## 📁 Folder Structure
+1. **Launch the development server:**
 
 ```bash
-uma-musume-planner-laravel/
-├── app/
-├── bootstrap/
-├── config/
-├── database/
-├── public/
-│   └── uploads/
-│       ├── app_bg/
-│       ├── trainee_images/
-│       └── screenshot/
-├── resources/
-│   ├── assets/
-│   ├── css/
-│   ├── js/
-│   └── views/
-├── routes/
-├── storage/
-├── tests/
-├── vendor/
-├── .env
-├── composer.json
-├── uma_musume_planner.sql
-├── sample_data.sql
-├── README.md
-└── ...
+php artisan serve
 ```
 
----
-
-## 🗃️ Database Overview
-
-- `plans`: The core table storing general plan info, including the `trainee_image_path`.
-- `attributes`: Stores the five core stats for each plan.
-- `skills`, `goals`, `race_predictions`: Child tables for detailed tracking.
-- `terrain_grades`, `distance_grades`, `style_grades`: Aptitude grades.
-- `turns`: Stores turn-by-turn stat progression for the Progress Chart.
-- `activity_log`: Tracks recent user actions.
+The application will typically be accessible at <http://127.0.0.1:8000>.
 
 ---
 
-## Safari/iOS CSS Compatibility
+## ⚖️ License
 
-This project uses visual effects with `backdrop-filter` in `resources/css/style.css`. For compatibility with Safari and iOS browsers, the vendor-prefixed property `-webkit-backdrop-filter` is included alongside the standard property. If you add new CSS rules using `backdrop-filter`, always add the prefixed version for full browser support.
-
-**Reference:** [MDN Docs: backdrop-filter](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter)
-
----
-
-## 📌 Notes
-
-- ✅ Built for single-user, local/offline use
-- 🔒 No authentication required
-- 🐣 Inspired by Uma Musume: Pretty Derby
-- 🧪 Ideal for simulation planning and strategy testing
-
-## Repo scan (automated)
-
-This section was generated automatically from a quick repository scan and summarizes the runtime and key package information detected in this project.
-
-- PHP: 8.2.12
-- Laravel: 12.21.0
-- Database engine: mysql
-- Key packages and versions:
-
-- laravel/framework: 12.21.0
-- livewire/livewire: 3.6.4
-- larastan/larastan: 3.6.1
-- laravel/pint: 1.24.0
-- laravel/sail: 1.44.0
-- phpunit/phpunit: 11.5.28
-- tailwindcss: 4.1.11
-
-- Eloquent models detected: (none reported by scanner)
-
-Verification:
-
-- Source: automated Laravel Boost `application-info` scan.
-- To reproduce locally, run the following in PowerShell:
-
-```powershell
-php -v
-php artisan --version
-composer show --installed
-```
-
-Recommended quick checks and commands:
-
-```powershell
-# Install dependencies
-composer install; npm install
-
-# Build frontend assets (if making frontend changes)
-npm run build
-
-# Run Laravel Pint formatter (project includes Laravel Pint)
-php vendor/bin/pint --dirty
-
-# Run tests
-php artisan test
-```
-
-If you'd like, I can expand this section to include route lists, database schema excerpts, or test run output.
-
-## 🧩 To-Do
-
-- [x] Autosuggest skills, races, names
-- [x] Soft-delete support
-- [x] Export plans as formatted text
-- [x] Stat progression chart
-- [ ] Optional login & cloud sync support
-- [ ] Advanced search/filtering (by stats, skills, etc.)
-
----
-
-## 📜 License
-
-MIT License © 2025
-
----
-
-## About Laravel
-
-This project is built with [Laravel](https://laravel.com/), a modern PHP web application framework. For more information, see the [Laravel documentation](https://laravel.com/docs).
+MIT License  
+Free for academic and personal use. Attribution appreciated.
