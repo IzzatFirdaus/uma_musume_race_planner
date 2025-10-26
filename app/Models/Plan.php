@@ -39,7 +39,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attribute> $attributes
  * @property-read int|null $attributes_count
  * @property-read \App\Models\Condition|null $condition
@@ -111,6 +110,7 @@ class Plan extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
         'plan_title',
         'turn_before',
         'race_name',
@@ -136,6 +136,15 @@ class Plan extends Model
         'source',
         'trainee_image_path',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $plan): void {
+            if (empty($plan->user_id)) {
+                $plan->user_id = 1; // Default to public/guest user
+            }
+        });
+    }
 
     /**
      * Get the attributes for the plan.

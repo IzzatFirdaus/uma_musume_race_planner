@@ -76,11 +76,6 @@ class FormTabs extends Component
 
     public $classOptions = [];
 
-    protected $listeners = [
-        'formTabs:hydrate' => 'hydrateFromParent',
-        'formTabs:requestState' => 'emitState',
-    ];
-
     public function mount($id_suffix = '', $planId = null): void
     {
         $this->id_suffix = $id_suffix;

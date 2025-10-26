@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $plan_id
  * @property string|null $goal
  * @property string $result
- *
  * @property-read \App\Models\Plan $plan
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Goal newModelQuery()

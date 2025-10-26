@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $plan_id
  * @property string $distance
  * @property string|null $grade
- *
  * @property-read \App\Models\Plan $plan
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DistanceGrade newModelQuery()

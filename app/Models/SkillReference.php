@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $stat_type
  * @property string|null $best_for
  * @property string|null $tag
- *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Skill> $skills
  * @property-read int|null $skills_count
  *

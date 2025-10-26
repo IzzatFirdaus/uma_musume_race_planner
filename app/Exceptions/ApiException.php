@@ -90,7 +90,6 @@ class ApiException extends Exception
      *
      * @param  string  $message  The error message
      * @param  array  $errors  Validation errors
-     *
      * @return static The exception instance
      */
     public static function validation(string $message = 'Validation failed', array $errors = []): static
@@ -102,7 +101,6 @@ class ApiException extends Exception
      * Create a not found error response.
      *
      * @param  string  $message  The error message
-     *
      * @return static The exception instance
      */
     public static function notFound(string $message = 'Resource not found'): static
@@ -114,7 +112,6 @@ class ApiException extends Exception
      * Create an unauthorized error response.
      *
      * @param  string  $message  The error message
-     *
      * @return static The exception instance
      */
     public static function unauthorized(string $message = 'Unauthorized'): static
@@ -126,7 +123,6 @@ class ApiException extends Exception
      * Create a forbidden error response.
      *
      * @param  string  $message  The error message
-     *
      * @return static The exception instance
      */
     public static function forbidden(string $message = 'Forbidden'): static
@@ -138,7 +134,6 @@ class ApiException extends Exception
      * Create a rate limit exceeded error response.
      *
      * @param  string  $message  The error message
-     *
      * @return static The exception instance
      */
     public static function rateLimitExceeded(string $message = 'Rate limit exceeded'): static
@@ -150,7 +145,6 @@ class ApiException extends Exception
      * Create a server error response.
      *
      * @param  string  $message  The error message
-     *
      * @return static The exception instance
      */
     public static function serverError(string $message = 'Internal server error'): static
