@@ -82,7 +82,6 @@ class ProcessPlanExport implements ShouldQueue
      * Build the plan export text content.
      *
      * @param  Plan  $plan  The plan to export
-     *
      * @return string The formatted plan text
      */
     private function buildPlanText(Plan $plan): string

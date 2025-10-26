@@ -32,8 +32,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Umamusume extends Model
 {
-
     public $incrementing = false;
+
     protected $table = 'umamusume';
 
     protected $primaryKey = 'id';

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
  * Handles caching strategies for frequently accessed data
  * to improve application performance and reduce database queries.
  */
-final class CacheService
+class CacheService
 {
     /**
      * Cache duration in seconds (1 hour).
@@ -67,7 +67,6 @@ final class CacheService
      * Get cached recent plans list.
      *
      * @param  int  $limit  Number of plans to retrieve
-     *
      * @return \Illuminate\Database\Eloquent\Collection The cached recent plans
      */
     public function getRecentPlans(int $limit = 10): \Illuminate\Database\Eloquent\Collection
@@ -172,7 +171,7 @@ final class CacheService
                 $stats['cached_keys']++;
             }
         }
-        $stats['cache_hit_rate'] = ($stats['total_keys'] ?? 0) > 0
+        $stats['cache_hit_rate'] = $stats['total_keys'] > 0
             ? round($stats['cached_keys'] / $stats['total_keys'] * 100, 2)
             : 0;
 

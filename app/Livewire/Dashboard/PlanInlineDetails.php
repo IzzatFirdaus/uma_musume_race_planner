@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Dashboard;
 
 use App\Models\Plan;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class PlanInlineDetails extends Component
@@ -78,12 +79,10 @@ class PlanInlineDetails extends Component
 
     public $isVisible = false;
 
-    protected $listeners = [
-        'loadPlanInline' => 'loadPlan',
-        'openPlanInline' => 'loadPlan',
-        'formTabs:state' => 'receiveFormTabsState',
-    ];
+    // Converted to attribute-based listeners (#[On])
 
+    #[On('loadPlanInline')]
+    #[On('openPlanInline')]
     public function loadPlan($planId): void
     {
         $this->isLoading = true;
@@ -202,6 +201,7 @@ class PlanInlineDetails extends Component
     /**
      * Receive state from FormTabs and persist to database.
      */
+    #[On('formTabs:state')]
     public function receiveFormTabsState(array $data): void
     {
         try {

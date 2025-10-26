@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $power
  * @property int $guts
  * @property int $wit
- *
  * @property-read \App\Models\Plan $plan
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn newModelQuery()

@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\Plan;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -30,6 +31,7 @@ class PlanList extends Component
     protected string $paginationTheme = 'bootstrap';
 
     // Called by wire:click="setFilter('...')" in Blade
+    #[On('filterPlansByStatus')]
     public function setFilter(string $filter): void
     {
         $this->filterPlansByStatus($filter);
@@ -38,7 +40,19 @@ class PlanList extends Component
     public function filterPlansByStatus(string $filter): void
     {
         $this->currentFilter = $filter;
-        $this->dispatch('refreshPlans');
+    }
+
+    #[On('refreshPlans')]
+    public function refreshPlans(): void
+    {
+        // Re-render with latest data and ensure we return to page 1
+        $this->resetPage();
+    }
+
+    #[On('plan-updated')]
+    public function onPlanUpdated(): void
+    {
+        $this->resetPage();
     }
 
     public function viewPlan(int $planId): void
@@ -53,6 +67,7 @@ class PlanList extends Component
         $this->redirect(route('plans.edit', $planId));
     }
 
+    #[On('deletePlan')]
     public function deletePlan(int $id): void
     {
         try {
@@ -97,7 +112,7 @@ class PlanList extends Component
         return view('livewire.dashboard.plan-list', [
             // Use authentic Umamusume: Pretty Derby global server terminology in UI
             'plans' => $plans,
-            'counts' => $this->planCounts,
+            'counts' => $this->planCounts(),
         ]);
     }
 

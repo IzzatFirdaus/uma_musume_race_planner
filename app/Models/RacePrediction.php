@@ -23,7 +23,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $guts
  * @property string $wit
  * @property string|null $comment
- *
  * @property-read \App\Models\Plan $plan
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|RacePrediction newModelQuery()
