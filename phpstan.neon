@@ -6,6 +6,7 @@ parameters:
     paths:
         - app/
     level: 5
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - '#Method App.Models.Plan::[a-zA-Z]+\(\) should return Illuminate.Database.Eloquent.Relations.HasMany<.*> but returns Illuminate.Database.Eloquent.Relations.HasMany<.*>#'
         - '#Access to an undefined property Illuminate.Database.Eloquent.Model::\$skill_name#'
