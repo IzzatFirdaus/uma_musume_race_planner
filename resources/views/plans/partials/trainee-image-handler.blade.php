@@ -1,1 +1,1 @@
-@livewire('trainee-image-handler')
+<livewire:trainee-image-handler />

@@ -69,6 +69,10 @@
           background-size: cover;
         }
       }
+      /* Prevent horizontal scrolling when text is resized for accessibility tests */
+      html, body {
+          overflow-x: hidden;
+      }
       /* Example: SVG support for particular backgrounds if needed (uncomment to use) */
       /*
       body.svg-bg {
@@ -88,7 +92,6 @@
     --}}
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   {{-- Vite bundles and per-page styles --}}
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
   @stack('styles')
 
   {{-- Livewire Styles --}}
@@ -96,21 +99,23 @@
 
 </head>
 
-<body class="@yield('body-class', '')" data-theme="{{ config('app.theme', 'auto') }}">
-  {{-- Skip-to-content link for keyboard users --}}
-  <a class="visually-hidden-focusable" href="#main-content">@lang('Skip to content')</a>
+<body class="@yield('body-class', '')" data-theme="{{ config('app.theme', 'auto') }}" style="overflow-x: hidden;">
+  {{-- Skip-to-main link for keyboard users (matches Playwright tests) --}}
+  <a class="visually-hidden-focusable" href="#main">Skip to main</a>
 
-  {{-- Navbar --}}
-  <livewire:layout.navbar />
+  {{-- Page header/banner (landmark) --}}
+  <header role="banner">
+    <livewire:layout.navbar />
+  </header>
 
   {{-- Main content area (accessible landmark) --}}
-  <main id="main-content" tabindex="-1" role="main">
+  <main id="main" tabindex="-1" role="main">
     @yield('content')
   </main>
 
-  {{-- Modals --}}
-  @include('modals.plan-details')
-  @include('modals.quick-create-plan')
+  {{-- Livewire Alerts and Modals Components --}}
+  <livewire:layout.alerts />
+  <livewire:layout.modals />
 
   {{-- Global Message Box for user notifications --}}
   <div class="modal fade" id="messageBoxModal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="messageBoxLabel">
@@ -121,12 +126,10 @@
     </div>
   </div>
 
-  {{-- Footer partial (blade) — prefer partial over Livewire component to ensure deterministic render during tests/seed runs --}}
-  @include('layouts.partials.footer')
+  {{-- Livewire Footer Component for interactive, theme-aware footer --}}
+  <livewire:layout.footer />
 
   {{-- SweetAlert2 for notifications and modals --}}
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   {{-- Bootstrap JS for modals and other interactivity --}}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 

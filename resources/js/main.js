@@ -6,9 +6,16 @@
  */
 
 // --- UPDATED: Import all necessary modules ---
-import { attachAutosuggest } from "./autosuggest.js";
+import { attachAutosuggest, closeAllAutosuggest } from "./autosuggest.js";
 import { initializeSkillManagement } from "./skill_management.js";
 import { escapeHtml } from "./utils.js";
+
+// --- Local third-party libraries (bundle via Vite) ---
+// SweetAlert2 is present in package.json; import and expose to window so
+// existing inline scripts and legacy code using `window.Swal` continue to work.
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+window.Swal = Swal;
 
 // --- Global variables ---
 let messageBoxModalInstance;
@@ -75,17 +82,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-        // Open Quick Create modal when navbar 'New Training Plan' clicked
-        const newPlanBtn = document.getElementById("newPlanBtn");
-        if (newPlanBtn) {
-            newPlanBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                const modalEl = document.getElementById("createPlanModal");
-                if (modalEl) {
-                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
-                }
-            });
-        }
+    // Open Quick Create modal when navbar 'New Training Plan' clicked
+    const newPlanBtn = document.getElementById("newPlanBtn");
+    if (newPlanBtn) {
+        newPlanBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const modalEl = document.getElementById("createPlanModal");
+            if (modalEl) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        });
+    }
 
     // Listen for Livewire events to open modal/inline views
     document.addEventListener("livewire:init", () => {
@@ -133,6 +140,9 @@ document.addEventListener("DOMContentLoaded", function () {
         Livewire.on("submitPlanForm", ({ formId }) => {
             const form = document.getElementById(formId);
             if (form) {
+                try {
+                    closeAllAutosuggest();
+                } catch {}
                 // Trigger the existing form submission handler
                 const submitEvent = new Event("submit", {
                     bubbles: true,
@@ -168,6 +178,15 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             if (Livewire.hook) {
                 Livewire.hook("message.processed", () => {
+                    // Mark plan list refresh moments for E2E stability
+                    try {
+                        const tbody = document.getElementById("plan-list-body");
+                        if (tbody)
+                            tbody.setAttribute(
+                                "data-last-refresh",
+                                String(Date.now()),
+                            );
+                    } catch {}
                     if (!currentPlanData || !currentPlanData.data) return;
                     const plan = currentPlanData.data;
                     // If modal is visible, repopulate modal fields
@@ -206,11 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const elGoalInline = document.getElementById("modalGoal_inline");
     if (elGoalInline) attachAutosuggest(elGoalInline, "goal");
 
-    // --- Attach Autosuggest to Quick Create Modal ---
-    const elQuickTraineeName = document.getElementById("quick_trainee_name");
-    if (elQuickTraineeName) attachAutosuggest(elQuickTraineeName, "name");
-    const elQuickRaceName = document.getElementById("quick_race_name");
-    if (elQuickRaceName) attachAutosuggest(elQuickRaceName, "race_name");
+    // --- Do not attach Autosuggest to Quick Create Modal to avoid overlay blocking submit ---
 });
 
 // -----------------------------------------------------------------------------
@@ -337,8 +352,13 @@ function setupGlobalEventListeners() {
     formModal?.addEventListener("submit", handleFormSubmit);
     const formInline = document.getElementById("planDetailsFormInline");
     formInline?.addEventListener("submit", handleFormSubmit);
+    // Quick create plan form is handled by Livewire directly; ensure autosuggest closes on submit
     const formQuick = document.getElementById("quickCreatePlanForm");
-    formQuick?.addEventListener("submit", handleFormSubmit);
+    formQuick?.addEventListener("submit", () => {
+        try {
+            closeAllAutosuggest();
+        } catch {}
+    });
 
     // Listen for custom events to refresh data
     document.addEventListener("planUpdated", refreshDashboardData);
@@ -613,18 +633,29 @@ async function handleDeletePlan(planId) {
  */
 async function refreshDashboardData() {
     try {
-        const [plansRes, statsRes, activityRes] = await Promise.all([
-            fetch(apiUrl("/api/v1/plans")),
+        // Let Livewire own the plan list refresh for accuracy and pagination
+        // We only refresh the stats and recent activity via API here
+        const [statsRes, activityRes] = await Promise.all([
             fetch(apiUrl("/api/v1/dashboard/stats")),
             fetch(apiUrl("/api/v1/dashboard/activities")),
         ]);
-        const plans = await plansRes.json(); // array
         const stats = await statsRes.json(); // object
         const activities = await activityRes.json(); // array
 
-        renderPlanTable(plans);
         renderStats(stats);
         renderRecentActivity(activities);
+
+        // Ask the Livewire PlanList component to refresh itself
+        try {
+            if (window.Livewire?.dispatch) {
+                window.Livewire.dispatch("refreshPlans");
+            } else if (window.Livewire?.emit) {
+                window.Livewire.emit("refreshPlans");
+            }
+        } catch (e) {
+            // Non-fatal if Livewire isn't ready
+            console.debug("Livewire refreshPlans dispatch skipped", e);
+        }
     } catch (error) {
         console.error("Failed to refresh dashboard data:", error);
         showMessageBox("Could not refresh dashboard data.", "danger");

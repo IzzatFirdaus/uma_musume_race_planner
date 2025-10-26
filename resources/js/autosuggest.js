@@ -230,6 +230,11 @@ export function attachAutosuggest(input, field, onSelectCallback = null) {
     };
 }
 
+// Public API: allow other scripts to close all autosuggest lists (e.g., before submitting forms)
+export function closeAllAutosuggest() {
+    closeAllLists();
+}
+
 /**
  * Setup ARIA attributes for accessibility
  * @param {HTMLInputElement} input The input element

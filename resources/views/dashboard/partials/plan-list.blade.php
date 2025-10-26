@@ -4,4 +4,4 @@
     ensure you use asset() helper for any dynamic image src.
 --}}
 {{-- Use the Livewire dashboard.plan-list component for interactive plan list --}}
-@livewire('dashboard.plan-list')
+<livewire:dashboard.plan-list />

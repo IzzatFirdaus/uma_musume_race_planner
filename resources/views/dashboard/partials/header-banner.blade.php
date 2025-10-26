@@ -10,7 +10,7 @@
 
 @if (class_exists(\Livewire\Livewire::class))
 	{{-- Use Livewire component when available for reactive content --}}
-	@livewire('dashboard.header-banner')
+	<livewire:dashboard.header-banner />
 @else
 	{{-- Static fallback banner --}}
 	<div class="card shadow-sm mb-4 rounded-4 border-0 header-banner-theme">

@@ -1,6 +1,8 @@
 /* Extracted from characters.blade.php */
 .character-card-inner {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition:
+        transform 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out;
 }
 
 .character-card-inner:hover {
@@ -61,8 +63,30 @@
     border-radius: 4px;
 }
 
-.grade-S { background-color: #d4edda; color: #155724; }
-.grade-A { background-color: #cce5ff; color: #004085; }
-.grade-B { background-color: #fff3cd; color: #856404; }
-.grade-C { background-color: #f8d7da; color: #721c24; }
-.grade-D, .grade-E, .grade-F, .grade-G { background-color: #f1f3f4; color: #495057; }
+.grade-S {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.grade-A {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.grade-B {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.grade-C {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.grade-D,
+.grade-E,
+.grade-F,
+.grade-G {
+    background-color: #f1f3f4;
+    color: #495057;
+}

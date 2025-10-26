@@ -1,6 +1,23 @@
 
 
-<div>
+<div id="PlanListRoot">
+    <style>
+        /* Make the plans table wrap long content and avoid horizontal scroll when text is resized */
+        #PlanListRoot .table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        #PlanListRoot td,
+        #PlanListRoot th {
+            white-space: normal !important;
+            word-break: break-word;
+        }
+        /* Ensure images don't cause overflow */
+        #PlanListRoot img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
     @if (session()->has('message'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('message') }}
@@ -22,7 +39,7 @@
                 <i class="bi bi-card-checklist me-2"></i>
                 Your Race Plans
             </h5>
-            <button class="btn btn-sm dashboard-btn-primary" id="createPlanBtn">
+            <button class="btn btn-sm dashboard-btn-primary" id="createPlanBtn" type="button">
                 <i class="bi bi-plus-circle me-1"></i> Create New
             </button>
         </div>
@@ -50,7 +67,12 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-vcenter mb-0">
+                    <div wire:loading.flex wire:transition class="justify-content-center align-items-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <table class="table table-hover table-vcenter mb-0" wire:loading.remove>
                     <thead class="table-light">
                         <tr>
                             <th style="width: 80px;">Character</th>
@@ -62,7 +84,7 @@
                     </thead>
                     <tbody id="plan-list-body">
                         @forelse($plans as $plan)
-                            <tr>
+                                <tr wire:key="plan-{{ $plan->id }}">
                                 <td>
                                     @if($plan->trainee_image_path)
                                         <div class="position-relative">
@@ -126,18 +148,18 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button wire:click="viewPlan({{ $plan->id }})"
+                                        <a href="{{ route('plans.view', $plan->id) }}"
                                                 data-id="{{ $plan->id }}"
                                                 class="btn btn-outline-primary view-details-btn"
                                                 title="View Details">
                                             <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button wire:click="editPlan({{ $plan->id }})"
+                                        </a>
+                                        <a href="{{ route('plans.edit', $plan->id) }}"
                                                 data-id="{{ $plan->id }}"
                                                 class="btn btn-outline-secondary edit-btn"
                                                 title="Edit">
                                             <i class="bi bi-pencil"></i>
-                                        </button>
+                                        </a>
                                         <button wire:click="deletePlan({{ $plan->id }})"
                                                 data-id="{{ $plan->id }}"
                                                 wire:confirm="Are you sure you want to delete '{{ $plan->name }}'? This action cannot be undone!"
@@ -155,7 +177,7 @@
                                             <i class="bi bi-inbox display-1 text-muted mb-3"></i>
                                             <h4 class="mb-2">No plans yet</h4>
                                             <p class="mb-3 text-muted">You haven't created any race plans. Get started by creating your first plan.</p>
-                                            <button class="btn btn-primary" id="emptyStateCreatePlanBtn" onclick="document.getElementById('createPlanBtn').click();">
+                                            <button class="btn btn-primary" id="emptyStateCreatePlanBtn" type="button">
                                                 <i class="bi bi-plus-circle me-1"></i> Create Plan
                                             </button>
                                             @if($currentFilter !== 'all')
@@ -179,6 +201,13 @@
 <script>
 // Add SweetAlert2 for deletion confirmation
 document.addEventListener('livewire:init', () => {
+    // Quick Create Plan modal open logic
+    document.getElementById('createPlanBtn')?.addEventListener('click', function() {
+        Livewire.emit('open-create-plan-modal');
+    });
+    document.getElementById('emptyStateCreatePlanBtn')?.addEventListener('click', function() {
+        Livewire.emit('open-create-plan-modal');
+    });
     Livewire.on('plan-deleted', (event) => {
         if (window.Swal) {
             Swal.fire({
@@ -215,6 +244,13 @@ document.addEventListener('livewire:init', () => {
                 timerProgressBar: true
             });
         }
+    // Refresh the list after any plan update/create - scope to this component only
+        // Emit to the server-side component to update filter and refresh list
+        Livewire.emit('filterPlansByStatus', @js($currentFilter));
+    });
+
+    Livewire.on('refreshPlans', () => {
+    Livewire.emit('filterPlansByStatus', @js($currentFilter));
     });
 });
 
@@ -246,13 +282,8 @@ document.addEventListener('livewire:init', () => {
                         const match = wireClick.match(/deletePlan\((\d+)\)/);
                         if (match) {
                             // Use Livewire component instance to call method
-                            const component = Livewire.find(btn.closest('[wire\\:id]').getAttribute('wire:id'));
-                            if (component) {
-                                component.call('deletePlan', parseInt(match[1]));
-                            } else {
-                                // Fallback to @this if component not found
-                                @this.call('deletePlan', parseInt(match[1]));
-                            }
+                                                    // Emit an event so the Livewire component can handle deletion server-side
+                                                    Livewire.emit('deletePlan', parseInt(match[1]));
                         }
                     }
                 });

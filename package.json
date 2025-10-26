@@ -7,9 +7,13 @@
         "dev": "vite",
         "playwright:install": "playwright install",
         "playwright:test": "playwright test",
-        "test": "jest",
+    "test": "jest",
+    "test:a11y": "playwright test tests/playwright/accessibility.spec.ts",
+    "lighthouse-ci": "lhci autorun --config=.lighthouseci/lighthouserc.json",
         "lint:css": "stylelint \"resources/**/*.css\"",
-        "lint:css:fix": "stylelint \"resources/**/*.css\" --fix"
+        "lint:css:fix": "stylelint \"resources/**/*.css\" --fix",
+        "prettier:check": "prettier --check \"**/*.{js,ts,jsx,tsx,css,scss,md,markdown,json,yml,yaml,html,vue}\"",
+        "prettier:fix": "prettier --write \"**/*.{js,ts,jsx,tsx,css,scss,md,markdown,json,yml,yaml,html,vue}\""
     },
     "devDependencies": {
         "@playwright/test": "^1.55.0",

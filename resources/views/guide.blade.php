@@ -3,7 +3,7 @@
 @section('content')
     {{-- Navbar provided by layouts.app (Livewire) --}}
     {{-- Sticky sub-navigation for the guide page (Livewire) --}}
-    @livewire('guide-sticky-nav')
+    <livewire:guide-sticky-nav />
 
     <main class="container my-4">
         {{-- The main banner is included via the app layout, but we add the card structure here. --}}
