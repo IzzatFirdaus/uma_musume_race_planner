@@ -9,9 +9,10 @@
     "tools/accessibility-update/PR_DESCRIPTION.md"
   ],
   "tests_added": [],
-  "axe_violations_before": null,
-  "axe_violations_after": null,
+  "axe_violations_before": "N/A",
+  "axe_violations_after": "N/A",
   "pint_pass": null,
   "phpunit_pass": null,
-  "notes": "Stub created. Automated tooling should populate results after running tests."
+  "status": "failed",
+  "notes": "Playwright accessibility tests failed: net::ERR_CONNECTION_REFUSED (dev server was not running). No axe violation counts available. Please re-run tests with the dev server running on http://localhost:8000 or the correct baseUrl."
 }

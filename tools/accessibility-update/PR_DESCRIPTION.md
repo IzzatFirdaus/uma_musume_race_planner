@@ -13,6 +13,15 @@ Why:
 - The repository was missing a Tailwind config; adding one improves the Vite/Tailwind build and ensures Blade templates are scanned for utility classes.
 - Accessibility rules provide a consistent baseline for focus visibility and reduced-motion respect.
 
+## Automated Accessibility Test Results (Playwright)
+
+**Status:** ❌ All Playwright accessibility tests failed due to `net::ERR_CONNECTION_REFUSED` (the dev server was not running at the expected baseUrl).
+
+- No axe violation counts are available.
+- Please re-run tests with the dev server running on `http://localhost:8000` (or set the correct `PLAYWRIGHT_TEST_BASE_URL`).
+
+---
+
 Next steps (follow-up PRs):
 
 1. Run Playwright axe tests and update `tools/accessibility-update/report.json` with `axe_violations_before` and `axe_violations_after`.

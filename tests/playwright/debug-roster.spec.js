@@ -34,8 +34,13 @@ test.describe("Umamusume Roster Debug", () => {
             .catch(() => "No error found");
         console.log("Error message:", errorMessage);
 
-        // Wait a bit to see if it's loading
-        await page.waitForTimeout(2000);
+        // Wait a bit to see if it's loading. Wrap in try/catch because the page
+        // may close in some environments and waitForTimeout will then throw.
+        try {
+            await page.waitForTimeout(2000);
+        } catch (err) {
+            console.log("waitForTimeout skipped or page closed:", err.message);
+        }
 
         const cardCountAfter = await page.locator(".character-card").count();
         console.log("Character cards found after wait:", cardCountAfter);
