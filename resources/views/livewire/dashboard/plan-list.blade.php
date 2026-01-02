@@ -72,7 +72,7 @@
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                    <table class="table table-hover table-vcenter mb-0" wire:loading.remove>
+                    <table class="table table-hover table-vcenter mb-0">
                     <thead class="table-light">
                         <tr>
                             <th style="width: 80px;">Character</th>

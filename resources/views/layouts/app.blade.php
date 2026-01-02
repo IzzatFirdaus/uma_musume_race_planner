@@ -103,10 +103,8 @@
   {{-- Skip-to-main link for keyboard users (matches Playwright tests) --}}
   <a class="visually-hidden-focusable" href="#main">Skip to main</a>
 
-  {{-- Page header/banner (landmark) --}}
-  <header role="banner">
-    <livewire:layout.navbar />
-  </header>
+  {{-- Page header/banner (landmark) - the navbar component renders its own header role. Insert it directly. --}}
+  <livewire:layout.navbar />
 
   {{-- Main content area (accessible landmark) --}}
   <main id="main" tabindex="-1" role="main">

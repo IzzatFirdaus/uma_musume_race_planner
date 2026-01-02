@@ -74,6 +74,7 @@
                 <livewire:form-tabs
                     :id_suffix="'_inline'"
                     :planId="$planId"
+                    :isEditMode="true"
                     :wire:key="'form-tabs-inline-' . ($planId ?? 'new')" />
             </div>
 
