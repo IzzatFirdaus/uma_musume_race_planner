@@ -6,76 +6,9 @@
 The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.
 
 ## Foundational Context
-
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.2.12
-- laravel/framework (LARAVEL) - v12
-- laravel/prompts (PROMPTS) - v0
-- laravel/pint (PINT) - v1
-- laravel/sail (SAIL) - v1
-- phpunit/phpunit (PHPUNIT) - v11
-- tailwindcss (TAILWINDCSS) - v4
-
-## Conventions
-
-- You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, naming.
-## Project-specific Copilot instructions — uma-musume-planner-laravel
-
-Keep guidance short and actionable. Source: repo layout, `composer.json`, `package.json`, `vite.config.js`, `routes/`, `app/`, `resources/`.
-
-Key facts
-- PHP: 8.2.x, Laravel framework v12. Tailwind v4 + Vite used for frontend (see `vite.config.js`).
-- Tests: PHPUnit (phpunit v11). Tests live in `tests/` (Feature and Unit). Use `php artisan test`.
-
-Common dev workflow (minimal)
-1. Install: `composer install && npm install`
-2. Environment: copy .env if needed and run `php artisan key:generate`.
-3. DB & sample data: migrations in `database/migrations/`; sample SQL files exist at repo root (`sample_data.sql`, `uma_musume_planner.sql`, `plan_sample_data.sql`).
-4. Frontend dev: `npm run dev` (Vite). Build for production: `npm run build`.
-5. Run tests: `php artisan test --filter=NameOfTest` or run a file: `php artisan test tests/Feature/MyTest.php`.
-
-Project conventions you must follow (examples in repo)
-- Use Laravel idioms: Eloquent models in `app/Models/`, eager-load to avoid N+1, prefer `Model::query()` over raw `DB::` (see many model usages).
-- Form Requests for validation — check `app/Http/Requests/` for patterns when present.
-- Use PHP 8 constructor property promotion and explicit return types (look at `app/Services/` and `app/Providers/` for examples).
-- Model casts: prefer `casts()` method pattern used across models rather than inline `$casts` (follow sibling models).
-- When creating files use Artisan (e.g. `php artisan make:model --factory --migration --no-interaction`).
-
-Frontend/UI notes
-- The repo contains Tailwind v4 conventions. If you change styling, run `npm run build` or `npm run dev` to regenerate Vite assets; common Vite manifest errors are resolved this way.
-- shadcn/ui guidance exists at `.github/instructions/ui.instructions.md` — follow it for component additions and imports (`@/components/ui/...`).
-
-Testing & formatting
-- Format PHP with Pint before committing: `vendor/bin/pint --dirty`.
-- Run a single PHPUnit test while developing: `php artisan test --filter=testName`.
-- When adding tests, use factories in `database/factories/` and follow existing test patterns in `tests/`.
-
-Useful file pointers
-- bootstrap/app.php — middleware & console wiring (Laravel 12 structure)
-- bootstrap/providers.php — application service providers
-- routes/web.php, routes/api.php — primary endpoints
-- app/Livewire/ — Livewire components used by the app
-- resources/views/ and resources/assets/ — Blade views & front-end sources
-- public/build/ and public/ — built assets and uploads
-
-If you need more detailed scaffolding or run commands you don't see here, open `README.md` and `.github/instructions/ui.instructions.md`. When unsure, run `php artisan list` or `npm run` to inspect available scripts.
-
-If anything above is unclear or you'd like me to expand an area (DB setup, running the app locally, or common patterns inside `app/Services/`), tell me which part and I'll iterate.
-
-===
-
-<laravel-boost-guidelines>
-=== foundation rules ===
-
-# Laravel Boost Guidelines
-
-The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.
-
-## Foundational Context
-This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
-
-- php - 8.2.12
+- php - 8.4.11
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
 - livewire/livewire (LIVEWIRE) - v3
@@ -250,7 +183,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 ## Livewire Core
 - Use the `search-docs` tool to find exact version specific documentation for how to write Livewire & Livewire tests.
-- Use the `php artisan make:livewire [Posts\\CreatePost]` artisan command to create new components
+- Use the `php artisan make:livewire [Posts\CreatePost]` artisan command to create new components
 - State should live on the server, with the UI reflecting it.
 - All Livewire requests hit the Laravel backend, they're like regular HTTP requests. Always validate form data, and run authorization checks in Livewire actions.
 
