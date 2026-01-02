@@ -15,6 +15,9 @@ class FormTabs extends Component
 {
     public $id_suffix = '';
 
+    // Whether the parent is in edit mode (passed from PlanDetailsPage)
+    public $isEditMode = false;
+
     // Core plan fields (Livewire state)
     public $planId = null;
 
@@ -70,6 +73,15 @@ class FormTabs extends Component
     public $predictions = [];
 
     public $goals = [];
+
+    // Attributes and grade arrays
+    public $planAttributes = [];
+
+    public $terrainGrades = [];
+
+    public $distanceGrades = [];
+
+    public $styleGrades = [];
 
     // Options for select fields
     public $careerStageOptions = [];
@@ -177,6 +189,18 @@ class FormTabs extends Component
         if (isset($data['goals']) && is_array($data['goals'])) {
             $this->goals = $data['goals'];
         }
+        if (isset($data['planAttributes']) && is_array($data['planAttributes'])) {
+            $this->planAttributes = $data['planAttributes'];
+        }
+        if (isset($data['terrainGrades']) && is_array($data['terrainGrades'])) {
+            $this->terrainGrades = $data['terrainGrades'];
+        }
+        if (isset($data['distanceGrades']) && is_array($data['distanceGrades'])) {
+            $this->distanceGrades = $data['distanceGrades'];
+        }
+        if (isset($data['styleGrades']) && is_array($data['styleGrades'])) {
+            $this->styleGrades = $data['styleGrades'];
+        }
     }
 
     /**
@@ -213,6 +237,10 @@ class FormTabs extends Component
             'skills' => $this->skills,
             'predictions' => $this->predictions,
             'goals' => $this->goals,
+            'planAttributes' => $this->planAttributes,
+            'terrainGrades' => $this->terrainGrades,
+            'distanceGrades' => $this->distanceGrades,
+            'styleGrades' => $this->styleGrades,
         ];
 
         $this->dispatch('formTabs:state', data: $payload);
@@ -287,6 +315,10 @@ class FormTabs extends Component
             'skills' => $this->skills,
             'predictions' => $this->predictions,
             'goals' => $this->goals,
+            'planAttributes' => $this->planAttributes,
+            'terrainGrades' => $this->terrainGrades,
+            'distanceGrades' => $this->distanceGrades,
+            'styleGrades' => $this->styleGrades,
         ]);
     }
 }

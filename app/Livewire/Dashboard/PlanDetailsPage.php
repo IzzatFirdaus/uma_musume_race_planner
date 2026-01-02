@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class PlanDetailsPage extends Component
@@ -149,6 +150,42 @@ class PlanDetailsPage extends Component
             $this->dispatch('show-error', message: 'Failed to load plan: '.$e->getMessage());
         }
         $this->isLoading = false;
+
+        // Hydrate the FormTabs child component with the loaded state so tabs show data
+        // Use dispatch to trigger Livewire server-side listeners on other components.
+        $this->dispatch('formTabs:hydrate', data: [
+            'planId' => $this->planId,
+            'plan_title' => $this->plan_title,
+            'name' => $this->name,
+            'career_stage' => $this->career_stage,
+            'class' => $this->class,
+            'race_name' => $this->race_name,
+            'turn_before' => $this->turn_before,
+            'goal' => $this->goal,
+            'strategy_id' => $this->strategy_id,
+            'mood_id' => $this->mood_id,
+            'condition_id' => $this->condition_id,
+            'energy' => $this->energy,
+            'race_day' => $this->race_day,
+            'acquire_skill' => $this->acquire_skill,
+            'total_available_skill_points' => $this->total_available_skill_points,
+            'status' => $this->status,
+            'time_of_day' => $this->time_of_day,
+            'month' => $this->month,
+            'source' => $this->source,
+            'growth_rate_speed' => $this->growth_rate_speed,
+            'growth_rate_stamina' => $this->growth_rate_stamina,
+            'growth_rate_power' => $this->growth_rate_power,
+            'growth_rate_guts' => $this->growth_rate_guts,
+            'growth_rate_wit' => $this->growth_rate_wit,
+            'skills' => $this->skills,
+            'predictions' => $this->racePredictions,
+            'goals' => $this->goals,
+            'planAttributes' => $this->planAttributes,
+            'terrainGrades' => $this->terrainGrades,
+            'distanceGrades' => $this->distanceGrades,
+            'styleGrades' => $this->styleGrades,
+        ]);
     }
 
     public function save(): void
@@ -160,42 +197,187 @@ class PlanDetailsPage extends Component
             return;
         }
 
+        // Ask the child FormTabs component for its current state; it will emit
+        // 'formTabs:state' which this component will receive and persist.
+        $this->dispatch('formTabs:requestState');
+    }
+
+    /**
+     * Receive state from FormTabs and persist to database.
+     */
+    #[On('formTabs:state')]
+    public function receiveFormTabsState(array $data): void
+    {
         try {
             $plan = \App\Models\Plan::findOrFail($this->planId);
 
-            // Update plan with current data
+            // Normalize booleans to DB expectations
+            $raceDay = ! empty($data['race_day']);
+            $acquireSkill = ! empty($data['acquire_skill']);
+
             $plan->update([
-                'plan_title' => $this->plan_title,
-                'name' => $this->name,
-                'career_stage' => $this->career_stage,
-                'class' => $this->class,
-                'race_name' => $this->race_name,
-                'turn_before' => $this->turn_before,
-                'goal' => $this->goal,
-                'strategy_id' => $this->strategy_id,
-                'mood_id' => $this->mood_id,
-                'condition_id' => $this->condition_id,
-                'energy' => $this->energy,
-                'race_day' => $this->race_day ? 'yes' : 'no',
-                'acquire_skill' => $this->acquire_skill ? 'YES' : 'NO',
-                'total_available_skill_points' => $this->total_available_skill_points,
-                'status' => $this->status,
-                'time_of_day' => $this->time_of_day,
-                'month' => $this->month,
-                'source' => $this->source,
-                'growth_rate_speed' => $this->growth_rate_speed,
-                'growth_rate_stamina' => $this->growth_rate_stamina,
-                'growth_rate_power' => $this->growth_rate_power,
-                'growth_rate_guts' => $this->growth_rate_guts,
-                'growth_rate_wit' => $this->growth_rate_wit,
+                'plan_title' => $data['plan_title'] ?? $plan->plan_title,
+                'name' => $data['name'] ?? $plan->name,
+                'career_stage' => $data['career_stage'] ?? $plan->career_stage,
+                'class' => $data['class'] ?? $plan->class,
+                'race_name' => $data['race_name'] ?? $plan->race_name,
+                'turn_before' => $data['turn_before'] ?? $plan->turn_before,
+                'goal' => $data['goal'] ?? $plan->goal,
+                'strategy_id' => $data['strategy_id'] ?? $plan->strategy_id,
+                'mood_id' => $data['mood_id'] ?? $plan->mood_id,
+                'condition_id' => $data['condition_id'] ?? $plan->condition_id,
+                'energy' => $data['energy'] ?? $plan->energy,
+                'race_day' => $raceDay ? 'yes' : 'no',
+                'acquire_skill' => $acquireSkill ? 'YES' : 'NO',
+                'total_available_skill_points' => $data['total_available_skill_points'] ?? $plan->total_available_skill_points,
+                'status' => $data['status'] ?? $plan->status,
+                'time_of_day' => $data['time_of_day'] ?? $plan->time_of_day,
+                'month' => $data['month'] ?? $plan->month,
+                'source' => $data['source'] ?? $plan->source,
+                'growth_rate_speed' => $data['growth_rate_speed'] ?? $plan->growth_rate_speed,
+                'growth_rate_stamina' => $data['growth_rate_stamina'] ?? $plan->growth_rate_stamina,
+                'growth_rate_power' => $data['growth_rate_power'] ?? $plan->growth_rate_power,
+                'growth_rate_guts' => $data['growth_rate_guts'] ?? $plan->growth_rate_guts,
+                'growth_rate_wit' => $data['growth_rate_wit'] ?? $plan->growth_rate_wit,
             ]);
 
-            // Log the activity
-            \App\Models\ActivityLog::create([
-                'description' => "Updated plan: {$this->name}",
-                'icon_class' => 'bi-pencil',
-                'timestamp' => now(),
-            ]);
+            // Persist related lists
+            if (isset($data['skills']) && is_array($data['skills'])) {
+                $plan->skills()->delete();
+                foreach ($data['skills'] as $row) {
+                    if (! is_array($row)) {
+                        continue;
+                    }
+                    $name = trim((string) ($row['name'] ?? ''));
+                    if ($name === '') {
+                        continue;
+                    }
+
+                    $ref = \App\Models\SkillReference::firstOrCreate(['skill_name' => $name]);
+                    $plan->skills()->create([
+                        'skill_reference_id' => $ref->id,
+                        'sp_cost' => $row['sp_cost'] ?? null,
+                        'acquired' => ! empty($row['acquired']) ? 'yes' : 'no',
+                        'tag' => $row['tag'] ?? null,
+                        'notes' => $row['notes'] ?? null,
+                    ]);
+                }
+            }
+
+            if (isset($data['planAttributes']) && is_array($data['planAttributes'])) {
+                $plan->attributes()->delete();
+                $attrs = [];
+                foreach ($data['planAttributes'] as $a) {
+                    if (! is_array($a)) {
+                        continue;
+                    }
+                    $name = trim((string) ($a['attribute_name'] ?? $a['attribute_name'] ?? ''));
+                    if ($name === '') {
+                        continue;
+                    }
+                    $attrs[] = [
+                        'attribute_name' => $name,
+                        'value' => isset($a['value']) ? (int) $a['value'] : 0,
+                        'grade' => $a['grade'] ?? null,
+                    ];
+                }
+                if (count($attrs) > 0) {
+                    $plan->attributes()->createMany($attrs);
+                }
+            }
+
+            if (isset($data['terrainGrades']) && is_array($data['terrainGrades'])) {
+                $plan->terrainGrades()->delete();
+                $tg = [];
+                foreach ($data['terrainGrades'] as $t) {
+                    if (! is_array($t) || empty($t['terrain'])) {
+                        continue;
+                    }
+                    $tg[] = [
+                        'terrain' => $t['terrain'],
+                        'grade' => $t['grade'] ?? null,
+                    ];
+                }
+                if (count($tg) > 0) {
+                    $plan->terrainGrades()->createMany($tg);
+                }
+            }
+
+            if (isset($data['distanceGrades']) && is_array($data['distanceGrades'])) {
+                $plan->distanceGrades()->delete();
+                $dg = [];
+                foreach ($data['distanceGrades'] as $d) {
+                    if (! is_array($d) || empty($d['distance'])) {
+                        continue;
+                    }
+                    $dg[] = [
+                        'distance' => $d['distance'],
+                        'grade' => $d['grade'] ?? null,
+                    ];
+                }
+                if (count($dg) > 0) {
+                    $plan->distanceGrades()->createMany($dg);
+                }
+            }
+
+            if (isset($data['styleGrades']) && is_array($data['styleGrades'])) {
+                $plan->styleGrades()->delete();
+                $sg = [];
+                foreach ($data['styleGrades'] as $s) {
+                    if (! is_array($s) || empty($s['style'])) {
+                        continue;
+                    }
+                    $sg[] = [
+                        'style' => $s['style'],
+                        'grade' => $s['grade'] ?? null,
+                    ];
+                }
+                if (count($sg) > 0) {
+                    $plan->styleGrades()->createMany($sg);
+                }
+            }
+
+            if (isset($data['predictions']) && is_array($data['predictions'])) {
+                $plan->racePredictions()->delete();
+                foreach ($data['predictions'] as $p) {
+                    if (! is_array($p)) {
+                        continue;
+                    }
+                    $plan->racePredictions()->create([
+                        'race_name' => $p['race_name'] ?? null,
+                        'venue' => $p['venue'] ?? null,
+                        'ground' => $p['ground'] ?? null,
+                        'distance' => $p['distance'] ?? null,
+                        'speed' => (string) ($p['speed'] ?? ''),
+                        'stamina' => (string) ($p['stamina'] ?? ''),
+                        'power' => (string) ($p['power'] ?? ''),
+                        'guts' => (string) ($p['guts'] ?? ''),
+                        'wit' => (string) ($p['wit'] ?? ''),
+                        'comment' => $p['comment'] ?? null,
+                    ]);
+                }
+            }
+
+            if (isset($data['goals']) && is_array($data['goals'])) {
+                $plan->goals()->delete();
+                foreach ($data['goals'] as $g) {
+                    if (! is_array($g)) {
+                        continue;
+                    }
+                    $goalText = trim((string) ($g['goal'] ?? ''));
+                    $resultText = trim((string) ($g['result'] ?? ''));
+                    if ($goalText === '' && $resultText === '') {
+                        continue;
+                    }
+                    $plan->goals()->create([
+                        'goal' => $goalText ? $goalText : null,
+                        'result' => $resultText ? $resultText : '',
+                    ]);
+                }
+            }
+
+            // Refresh visible state
+            $this->loadPlan($plan->id);
 
             $this->dispatch('plan-saved', message: 'Plan saved successfully!');
         } catch (\Exception $e) {

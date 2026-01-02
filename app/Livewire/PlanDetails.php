@@ -132,6 +132,33 @@ class PlanDetails extends Component
     }
 
     /**
+     * Handle skills update event from child SkillsEditor component.
+     */
+    #[On('skillsUpdated')]
+    public function onSkillsUpdated(array $payload): void
+    {
+        $this->skills = $payload['skills'];
+    }
+
+    /**
+     * Handle race predictions update event from child RacePredictionsEditor component.
+     */
+    #[On('predictionsUpdated')]
+    public function onPredictionsUpdated(array $payload): void
+    {
+        $this->racePredictions = $payload['racePredictions'];
+    }
+
+    /**
+     * Handle goals update event from child GoalsEditor component.
+     */
+    #[On('goalsUpdated')]
+    public function onGoalsUpdated(array $payload): void
+    {
+        $this->goals = $payload['goals'];
+    }
+
+    /**
      * Save the plan details after validation.
      */
     public function save(): void
@@ -139,12 +166,97 @@ class PlanDetails extends Component
         $this->validate();
 
         try {
-            // Save logic here (update or create Plan)
-            // ...existing code...
-            $this->dispatch('submitPlanForm', formId: 'planDetailsForm');
+            // Persist Plan and related models in a transaction
+            $this->persistPlanWithRelations();
+
+            // Reload plan to reflect persisted state
+            if ($this->planId) {
+                $this->loadPlan($this->planId);
+            }
+
+            $this->dispatch('plan-updated', ['message' => 'Plan saved successfully!']);
+            session()->flash('message', 'Plan saved successfully!');
         } catch (\Exception $e) {
             $this->dispatch('show-error', message: 'Failed to save plan: '.$e->getMessage());
         }
+    }
+
+    /**
+     * Persist Plan and all related models (skills, predictions, goals) in a transaction.
+     */
+    private function persistPlanWithRelations(): void
+    {
+        \DB::transaction(function (): void {
+            $plan = Plan::findOrFail($this->planId);
+
+            // Update scalar Plan fields
+            $plan->update([
+                'plan_title' => $this->plan_title,
+                'career_stage' => $this->career_stage,
+                'class' => $this->class,
+                'race_name' => $this->race_name,
+                'turn_before' => $this->turn_before,
+                'goal' => $this->goal,
+                'strategy_id' => $this->strategy_id,
+                'mood_id' => $this->mood_id,
+                'condition_id' => $this->condition_id,
+                'energy' => $this->energy,
+                'race_day' => $this->race_day ? 'yes' : 'no',
+                'acquire_skill' => $this->acquire_skill ? 'YES' : 'NO',
+                'total_available_skill_points' => $this->total_available_skill_points,
+                'status' => $this->status,
+                'time_of_day' => $this->time_of_day,
+                'month' => $this->month,
+                'source' => $this->source,
+                'growth_rate_speed' => $this->growth_rate_speed,
+                'growth_rate_stamina' => $this->growth_rate_stamina,
+                'growth_rate_power' => $this->growth_rate_power,
+                'growth_rate_guts' => $this->growth_rate_guts,
+                'growth_rate_wit' => $this->growth_rate_wit,
+            ]);
+
+            // Persist skills (delete all and recreate, or update-by-id)
+            // For now, simple delete/recreate approach
+            $plan->skills()->delete();
+            if (! empty($this->skills)) {
+                foreach ($this->skills as $skillData) {
+                    $plan->skills()->create([
+                        'skill_name' => $skillData['skill_name'] ?? '',
+                        'sp_cost' => $skillData['sp_cost'] ?? 0,
+                        'acquired' => $skillData['acquired'] ?? 'no',
+                        'tag' => $skillData['tag'] ?? '',
+                        'notes' => $skillData['notes'] ?? '',
+                    ]);
+                }
+            }
+
+            // Persist race predictions
+            $plan->racePredictions()->delete();
+            if (! empty($this->racePredictions)) {
+                foreach ($this->racePredictions as $predictionData) {
+                    $plan->racePredictions()->create($predictionData);
+                }
+            }
+
+            // Persist goals
+            $plan->goals()->delete();
+            if (! empty($this->goals)) {
+                foreach ($this->goals as $goalData) {
+                    $plan->goals()->create($goalData);
+                }
+            }
+
+            // Persist plan attributes
+            $plan->attributes()->delete();
+            if (! empty($this->planAttributes)) {
+                foreach ($this->planAttributes as $attrData) {
+                    $plan->attributes()->create($attrData);
+                }
+            }
+
+            // Refresh relationships
+            $plan->refresh();
+        });
     }
 
     /**
