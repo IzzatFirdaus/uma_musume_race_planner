@@ -8,20 +8,41 @@
 
 Uma Musume Planner is a Laravel 12+ platform designed to track, manage, and analyze the career progression of Uma Musume: Pretty Derby characters. Built with a modern tech stack, it supports turn-by-turn stat logging, dynamic skill management, and career analytics with a smooth, responsive interface.
 
+This application consolidates five legacy Uma Musume tracking applications into a unified, feature-rich platform with both local and account-based storage options.
+
 ---
 
 ## 🔧 Features
 
+### Core Features
+
 - ✅ Track multiple Uma Musume characters and their career runs
 - 📊 Log detailed stats per turn (Speed, Stamina, Power, Guts, Wit)
-- 🧠 Track skill acquisition with SP costs, types, and notes
+- 🧠 Track skill acquisition with 3-state status (Acquired/Skipped/Suggested)
 - ⚖️ Log growth rate bonuses and suitability ratings (Track, Distance, Style)
 - 📝 Annotate runs with notes and special conditions
-- ⬇️ Export full run logs to Excel (.xlsx)
-- 📱 Responsive UI powered by TailwindCSS + Alpine.js
-- ➕ Add dynamic skill rows in real-time
-- 🌙 Supports Dark Mode via class-based toggling
-- 🎴 Blade Component System: skill cards, stamina bars, stat grids, aptitude inputs, growth rate inputs, initial career run form, animated transitions, add/remove skill buttons
+- 🏇 Race planning with predictions and race-day snapshots
+- 🎯 Goal tracking with achievement status
+
+### Storage & Sync
+
+- 💾 Dual storage modes: Local (browser) or Account (database)
+- 🔄 Convert local runs to account storage when ready
+- 📤 Export data to JSON, CSV, Markdown, or Excel
+- 📥 Import from legacy tracker formats
+
+### User Experience
+
+- 🌙 Dark/Light mode with system preference detection
+- 📱 Responsive mobile-first design
+- ⌨️ Full keyboard navigation support
+- ♿ WCAG 2.1 AA accessibility compliance
+- 🔍 Skill autocomplete with EN + JP search
+
+### API Access
+
+- 🔌 RESTful API v1 for programmatic access
+- 📄 Comprehensive API documentation
 
 ---
 
@@ -190,11 +211,21 @@ If you plan mass conversions, follow the mapping and workflow in `docs/livewire-
 | -------------------------------------- | --------------------------------------------------- |
 | 🤖 AI-assisted skill recommendations   | Suggest optimal skills based on career progression. |
 | 📈 Graphical stat trend visualizations | Interactive charts to visualize stat progression.   |
-| 🔄 Import/export legacy spreadsheets   | Tools for converting/importing existing logs.       |
 | 🧠 Skill icon detection/autocomplete   | Real-time skill name suggestions with icons.        |
-| 📊 Visual graphs of stat progression   | User-friendly visual tools for deeper analysis.     |
 | 🧪 Stat outcome predictors             | Forecast future stat outcomes based on progression. |
 | 🧑‍🤝‍🧑 Role-based user collaboration       | User roles for shared tracking environments.        |
+| 📊 Snapshot comparison                 | Side-by-side race-day snapshot comparison.          |
+
+---
+
+## 📚 Documentation
+
+Detailed documentation is available in the `docs/` directory:
+
+- [API Documentation](docs/api/README.md) - RESTful API endpoints and usage
+- [Component Documentation](docs/components/README.md) - Livewire component reference
+- [User Guide](docs/user-guide/README.md) - How to use the application
+- [Migration Guide](docs/migration/README.md) - Importing data from legacy trackers
 
 ---
 
