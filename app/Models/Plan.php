@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Scenario;
+use App\Enums\StorageMode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +27,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $mood_id
  * @property int|null $condition_id
  * @property int|null $energy
+ * @property int|null $stamina_percentage
  * @property string $race_day
  * @property string|null $goal
  * @property int|null $strategy_id
@@ -34,6 +37,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $growth_rate_guts
  * @property int $growth_rate_wit
  * @property string $status
+ * @property Scenario $scenario
+ * @property StorageMode $storage_mode
+ * @property string|null $local_uuid
  * @property string|null $source
  * @property string|null $trainee_image_path
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -58,6 +64,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read int|null $terrain_grades_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Turn> $turns
  * @property-read int|null $turns_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CareerSnapshot> $careerSnapshots
+ * @property-read int|null $career_snapshots_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newQuery()
@@ -124,6 +132,7 @@ class Plan extends Model
         'mood_id',
         'condition_id',
         'energy',
+        'stamina_percentage',
         'race_day',
         'goal',
         'strategy_id',
@@ -133,8 +142,24 @@ class Plan extends Model
         'growth_rate_guts',
         'growth_rate_wit',
         'status',
+        'scenario',
+        'storage_mode',
+        'local_uuid',
         'source',
         'trainee_image_path',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'scenario' => Scenario::class,
+        'storage_mode' => StorageMode::class,
+        'stamina_percentage' => 'integer',
+        'energy' => 'integer',
+        'total_available_skill_points' => 'integer',
     ];
 
     protected static function booted(): void
@@ -143,6 +168,34 @@ class Plan extends Model
             if (empty($plan->user_id)) {
                 $plan->user_id = 1; // Default to public/guest user
             }
+        });
+
+        // Activity logging for Plan events (FR-8.1)
+        static::created(function (self $plan): void {
+            ActivityLog::logActivity(
+                "Created plan: {$plan->name}",
+                $plan,
+                $plan->user_id,
+                'bi-plus-circle'
+            );
+        });
+
+        static::updated(function (self $plan): void {
+            ActivityLog::logActivity(
+                "Updated plan: {$plan->name}",
+                $plan,
+                $plan->user_id,
+                'bi-pencil'
+            );
+        });
+
+        static::deleted(function (self $plan): void {
+            ActivityLog::logActivity(
+                "Deleted plan: {$plan->name}",
+                $plan,
+                $plan->user_id,
+                'bi-trash'
+            );
         });
     }
 
@@ -254,5 +307,64 @@ class Plan extends Model
     public function strategy(): BelongsTo
     {
         return $this->belongsTo(Strategy::class);
+    }
+
+    /**
+     * Get the career snapshots for the plan.
+     *
+     * @return HasMany<\App\Models\CareerSnapshot, \App\Models\Plan>
+     */
+    public function careerSnapshots(): HasMany
+    {
+        return $this->hasMany(CareerSnapshot::class);
+    }
+
+    /**
+     * Check if this plan is stored locally.
+     */
+    public function isLocal(): bool
+    {
+        return $this->storage_mode === StorageMode::Local;
+    }
+
+    /**
+     * Check if this plan is stored in account.
+     */
+    public function isAccount(): bool
+    {
+        return $this->storage_mode === StorageMode::Account;
+    }
+
+    /**
+     * Scope to filter by storage mode.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Plan> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Plan>
+     */
+    public function scopeStorageMode($query, StorageMode $mode)
+    {
+        return $query->where('storage_mode', $mode);
+    }
+
+    /**
+     * Scope to filter local plans only.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Plan> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Plan>
+     */
+    public function scopeLocal($query)
+    {
+        return $query->where('storage_mode', StorageMode::Local);
+    }
+
+    /**
+     * Scope to filter account plans only.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Plan> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Plan>
+     */
+    public function scopeAccount($query)
+    {
+        return $query->where('storage_mode', StorageMode::Account);
     }
 }
