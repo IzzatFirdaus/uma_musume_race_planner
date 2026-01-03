@@ -252,8 +252,10 @@ class MigrateLegacyCsv extends Command
 
     private function importAsRun(Umamusume $character, array $row, string $target, ?int $userId): void
     {
+        $characterId = (int) $character->id;
+
         $plan = Plan::create([
-            'umamusume_id' => $character->id,
+            'umamusume_id' => $characterId,
             'user_id' => $userId,
             'storage_mode' => $target,
             'local_uuid' => $target === 'local' ? Str::uuid()->toString() : null,
