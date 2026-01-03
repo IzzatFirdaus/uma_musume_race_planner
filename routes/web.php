@@ -52,3 +52,13 @@ Route::get('/characters', function () {
 
 // Application guide page (Blade view)
 Route::view('/guide', 'guide')->name('guide');
+
+// Authentication routes (optional - for users who want to sync across devices)
+Route::view('/login', 'auth.login')->name('login');
+Route::view('/register', 'auth.register')->name('register');
+Route::post('/logout', function () {
+    auth()->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
