@@ -1,4 +1,4 @@
-# 🌸 Uma Musume Career Tracker System Documentation
+# 🌸 Uma Musume Career Planner System Documentation
 
 ## Laravel 12+ Compatible
 
