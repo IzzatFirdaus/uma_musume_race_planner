@@ -5,6 +5,7 @@ declare(strict_types=1);
 /**
  * Plan Details Pages (view and edit modes)
  */
+
 use App\Livewire\Dashboard\PlanDetailsPage;
 use App\Models\Umamusume;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,10 @@ Route::view('/', 'dashboard')->name('dashboard.root');
 // Blade view ensures the canonical layout (header, navbar, main) is present
 // for Playwright accessibility and E2E checks.
 Route::view('/dashboard', 'dashboard')->name('dashboard');
+
+// Local Data Management (FR-9D.1)
+// Manages locally stored plans - export, import, convert to account
+Route::get('/local-data', \App\Livewire\LocalData\Manager::class)->name('local-data');
 
 // Umamusume roster (Blade view) - provide Umamusume data so the Blade template has $umamusume
 Route::get('/characters', function () {
