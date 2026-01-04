@@ -1,5 +1,5 @@
 ---
-applyTo: '**'
+applyTo: "**"
 ---
 
 # Livewire Standardization Project Memory
@@ -55,19 +55,19 @@ Total count: 16 Livewire classes + 16 corresponding views
 ### High-Priority Conversion Targets
 
 1. **SkillRow** (HIGH priority)
-   - Source: resources/views/components/partials/skill-row.blade.php
-   - Target: App\Livewire\Plans\SkillRow
-   - Reason: add/remove rows with validation
+    - Source: resources/views/components/partials/skill-row.blade.php
+    - Target: App\Livewire\Plans\SkillRow
+    - Reason: add/remove rows with validation
 
 2. **TrainingYear** (HIGH priority)
-   - Source: resources/views/components/partials/training-year.blade.php
-   - Target: App\Livewire\Plans\TrainingYear
-   - Reason: per-year state management
+    - Source: resources/views/components/partials/training-year.blade.php
+    - Target: App\Livewire\Plans\TrainingYear
+    - Reason: per-year state management
 
 3. **CharacterList** (HIGH priority)
-   - Source: resources/views/characters.blade.php
-   - Target: App\Livewire\Characters\CharacterList
-   - Reason: character roster with modals
+    - Source: resources/views/characters.blade.php
+    - Target: App\Livewire\Characters\CharacterList
+    - Reason: character roster with modals
 
 ## Solutions Repository
 
@@ -163,4 +163,6 @@ php artisan make:request <Feature>/<FormName>Request --no-interaction
 
 Last updated: October 28, 2025 (Session 3 - Complete Livewire v3 Migration)
 
-````
+```
+
+```

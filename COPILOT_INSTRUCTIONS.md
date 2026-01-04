@@ -1,3 +1,7 @@
+---
+inclusion: always
+---
+
 # Uma Musume Career Planner - Copilot Instructions
 
 ## Overview
@@ -5,6 +9,10 @@
 Laravel 12+ app for tracking Uma Musume character progression with dual storage (local/account), turn-by-turn stats, skill management, and career analytics.
 
 **Stack**: Laravel 12+, PHP 8.2+, Livewire 3, Alpine.js, TailwindCSS v4, Vite 7
+
+## Primary Instructions
+
+- Follow `AGENTS.md` for repo-specific workflow, guardrails, and test expectations.
 
 ## Key Features
 
@@ -22,7 +30,7 @@ composer install && npm install && php artisan migrate --seed
 # Dev
 composer run dev  # All services
 # Test
-php artisan test && npm run playwright:test
+php artisan test && npm run test && npm run playwright:test && npm run test:a11y
 # Format
 vendor/bin/pint --dirty && npm run prettier:fix
 ```
