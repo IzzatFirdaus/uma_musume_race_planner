@@ -8,6 +8,7 @@
 --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,16 +25,19 @@
 
     {{-- Dynamic title and meta description --}}
     <title>{{ $title ?? config('app.name', 'Uma Musume Race Planner') }}</title>
-    <meta name="description" content="{{ $metaDescription ?? 'Uma Musume Planner — create and manage training plans for Umamusume characters' }}">
+    <meta name="description"
+        content="{{ $metaDescription ?? 'Uma Musume Planner — create and manage training plans for Umamusume characters' }}">
 
     {{-- Third-party CSS Dependencies (from CDN) --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     {{-- Google Font: M PLUS Rounded 1c (moved from CSS @import for better performance) --}}
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600;700&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600;700&display=swap">
 
     {{-- Favicons and Touch Icons --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('uploads/app_logo/uma_musume_race_planner_logo_32.ico') }}" sizes="32x32">
+    <link rel="icon" type="image/x-icon" href="{{ asset('uploads/app_logo/uma_musume_race_planner_logo_32.ico') }}"
+        sizes="32x32">
     <link rel="apple-touch-icon" href="{{ asset('uploads/app_logo/uma_musume_race_planner_logo_256.png') }}">
 
     {{-- Custom Theme Color using environment variable with fallback --}}
@@ -96,8 +100,11 @@
     {{-- Chart.js for data visualization --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    {{-- Vite Asset Bundling - loads app's local CSS and JS files --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Bootstrap JS for modals and other interactivity - must load before Vite bundle --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{-- Vite CSS only in head --}}
+    @vite(['resources/css/app.css'])
 
     {{-- Per-page styles hook --}}
     @stack('styles')
@@ -112,7 +119,7 @@
     <a class="visually-hidden-focusable" href="#main-content">Skip to content</a>
 
     {{-- Navbar - prefer Livewire component with Blade fallback --}}
-    @if(class_exists(\Livewire\Livewire::class))
+    @if (class_exists(\Livewire\Livewire::class))
         <livewire:layout.navbar />
     @else
         @include('layouts.partials.navbar')
@@ -124,18 +131,12 @@
     </main>
 
     {{-- Global Message Box Modal for user notifications --}}
-    <div class="modal fade"
-         id="messageBoxModal"
-         tabindex="-1"
-         role="dialog"
-         aria-hidden="true"
-         aria-labelledby="messageBoxLabel">
+    <div class="modal fade" id="messageBoxModal" tabindex="-1" role="dialog" aria-hidden="true"
+        aria-labelledby="messageBoxLabel">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-body text-center alert alert-success mb-0"
-                     id="messageBoxBody"
-                     role="status"
-                     aria-live="polite">
+                <div class="modal-body text-center alert alert-success mb-0" id="messageBoxBody" role="status"
+                    aria-live="polite">
                 </div>
             </div>
         </div>
@@ -144,14 +145,14 @@
     {{-- Footer - prefer Blade partial for consistent rendering --}}
     @include('layouts.partials.footer')
 
-    {{-- SweetAlert2 for notifications and modals --}}
-    {{-- Bootstrap JS for modals and other interactivity --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
     {{-- Per-page scripts hook --}}
     @stack('scripts')
 
-    {{-- Livewire Scripts --}}
-    @livewireScripts
+    {{-- Vite JS (includes Livewire and Alpine bundled) --}}
+    @vite(['resources/js/app.js'])
+
+    {{-- Livewire Script Config (Livewire/Alpine are bundled via Vite) --}}
+    @livewireScriptConfig
 </body>
+
 </html>
