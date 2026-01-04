@@ -26,16 +26,16 @@ class SkillReferenceFactory extends Factory
             'Corner-heavy tracks',
         ];
 
-        // Tag grouping based on stat type
+        // Tag grouping - max 5 characters to fit column constraint
         $tagMapping = [
-            'Speed' => 'speed',
-            'Acceleration' => 'acceleration',
-            'Recovery' => 'recovery',
-            'Passive' => 'passive',
-            'Debuff' => 'debuff',
-            'Starting Gate' => 'starting_gate',
-            'Lane Change' => 'lane_change',
-            'Observation' => 'observation',
+            'Speed' => 'spd',
+            'Acceleration' => 'acc',
+            'Recovery' => 'rec',
+            'Passive' => 'pas',
+            'Debuff' => 'deb',
+            'Starting Gate' => 'gate',
+            'Lane Change' => 'lane',
+            'Observation' => 'obs',
         ];
 
         return [
