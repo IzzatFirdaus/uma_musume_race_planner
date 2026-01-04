@@ -14,6 +14,10 @@ class PlanDetails extends Component
     // Plan properties
     public $planId = null;
 
+    public ?string $localUuid = null;
+
+    public string $storageMode = 'account';
+
     #[Validate('required|string|max:255')]
     public $plan_title = '';
 
@@ -66,6 +70,9 @@ class PlanDetails extends Component
     public $growth_rate_guts = 0;
 
     public $growth_rate_wit = 0;
+
+    // Trainee image path
+    public ?string $traineeImagePath = null;
 
     // Collections for related data
     public $planAttributes = [];
@@ -159,6 +166,24 @@ class PlanDetails extends Component
     }
 
     /**
+     * Handle trainee image saved event from TraineeImageHandler component.
+     */
+    #[On('trainee-image-saved')]
+    public function onTraineeImageSaved(array $payload): void
+    {
+        $this->traineeImagePath = $payload['path'] ?? null;
+    }
+
+    /**
+     * Handle trainee image cleared event from TraineeImageHandler component.
+     */
+    #[On('trainee-image-cleared')]
+    public function onTraineeImageCleared(): void
+    {
+        $this->traineeImagePath = null;
+    }
+
+    /**
      * Save the plan details after validation.
      */
     public function save(): void
@@ -213,6 +238,7 @@ class PlanDetails extends Component
                 'growth_rate_power' => $this->growth_rate_power,
                 'growth_rate_guts' => $this->growth_rate_guts,
                 'growth_rate_wit' => $this->growth_rate_wit,
+                'trainee_image_path' => $this->traineeImagePath,
             ]);
 
             // Persist skills (delete all and recreate, or update-by-id)
@@ -270,6 +296,8 @@ class PlanDetails extends Component
     private function assignPlanProperties(Plan $plan): void
     {
         $this->planId = $plan->id;
+        $this->localUuid = $plan->local_uuid;
+        $this->storageMode = $plan->storage_mode?->value ?? 'account';
         $this->plan_title = $plan->plan_title ?? '';
         $this->name = $plan->name ?? '';
         $this->career_stage = $plan->career_stage ?? '';
@@ -293,6 +321,7 @@ class PlanDetails extends Component
         $this->growth_rate_power = $plan->growth_rate_power ?? 0;
         $this->growth_rate_guts = $plan->growth_rate_guts ?? 0;
         $this->growth_rate_wit = $plan->growth_rate_wit ?? 0;
+        $this->traineeImagePath = $plan->trainee_image_path;
         $this->planAttributes = $plan->attributes->toArray();
         $this->skills = $plan->skills->map(function ($skill) {
             return [

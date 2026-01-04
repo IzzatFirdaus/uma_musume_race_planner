@@ -12,9 +12,14 @@ class GuideStickyNav extends Component
     public array $sections = [
         ['id' => 'welcome', 'label' => 'Welcome'],
         ['id' => 'dashboard', 'label' => 'Dashboard'],
-        ['id' => 'create-edit', 'label' => 'Plan Editor'],
-        ['id' => 'ai-help', 'label' => 'AI Assistant'],
-        ['id' => 'faq', 'label' => 'FAQ'],
+        ['id' => 'plan-editor', 'label' => 'Plan Editor'],
+        ['id' => 'skills', 'label' => 'Skills'],
+        ['id' => 'races', 'label' => 'Races'],
+        ['id' => 'goals', 'label' => 'Goals'],
+        ['id' => 'export-import', 'label' => 'Export/Import'],
+        ['id' => 'local-data', 'label' => 'Local Data'],
+        ['id' => 'characters', 'label' => 'Characters'],
+        ['id' => 'keyboard', 'label' => 'Shortcuts'],
         ['id' => 'glossary', 'label' => 'Glossary'],
     ];
 

@@ -6,81 +6,76 @@ namespace App\Livewire\LocalData;
 
 use App\Enums\StorageMode;
 use App\Models\Plan;
-use App\Services\ConvertLocalRunService;
-use App\Services\ExportService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 /**
  * Local Data Manager Page Component
  *
- * Manages locally stored plans - view, export, import, convert to account.
- * Implements FR-9D.1 through FR-9D.6.
+ * Manages locally stored plans in browser localStorage.
+ * Implements Requirements 56B.1-56B.8:
+ * - 56B.1: Access from Dashboard or navigation
+ * - 56B.2: Display all Local_Runs with storage info
+ * - 56B.3: Export All action
+ * - 56B.4: Import action with conflict resolution
+ * - 56B.5: Purge All with double-confirmation
+ * - 56B.6: Convert All to Account (authenticated)
+ * - 56B.7: Display storage statistics
+ * - 56B.8: Selective export
  */
 #[Layout('components.layout')]
 #[Title('Local Data Management')]
 class Manager extends Component
 {
-    use WithPagination;
+    // Modal states
+    public bool $showPurgeStep1 = false;
 
-    public bool $showDeleteConfirmation = false;
+    public bool $showPurgeStep2 = false;
 
     public bool $showBulkConvertModal = false;
 
-    public ?string $selectedPlanId = null;
+    public bool $showImportModal = false;
 
+    public bool $showConvertResultsModal = false;
+
+    // Import state
+    public string $conflictResolution = 'skip';
+
+    public array $importPreview = [];
+
+    public bool $importInProgress = false;
+
+    // Convert results
+    public array $convertResults = [
+        'converted' => 0,
+        'failed' => 0,
+        'errors' => [],
+    ];
+
+    // Purge confirmation text
+    public string $purgeConfirmText = '';
+
+    // Search query for filtering local runs
     public string $searchQuery = '';
 
-    /**
-     * Get local plans with pagination.
-     */
-    #[Computed]
-    public function localPlans()
-    {
-        $query = Plan::where('storage_mode', StorageMode::Local)
-            ->orderBy('updated_at', 'desc');
+    // Selected runs for selective export
+    public array $selectedRuns = [];
 
-        if ($this->searchQuery) {
-            $query->where(function ($q) {
-                $q->where('name', 'like', "%{$this->searchQuery}%")
-                    ->orWhere('plan_title', 'like', "%{$this->searchQuery}%");
-            });
-        }
+    // Storage stats (populated from client-side)
+    public int $storageUsed = 0;
 
-        return $query->paginate(10);
-    }
+    public int $storageAvailable = 5242880; // 5MB default
 
-    /**
-     * Get total local plans count.
-     */
-    #[Computed]
-    public function totalLocalPlans(): int
-    {
-        return Plan::where('storage_mode', StorageMode::Local)->count();
-    }
+    public int $runCount = 0;
 
-    /**
-     * Get approximate storage used (rough estimate).
-     */
-    #[Computed]
-    public function approximateStorageUsed(): string
-    {
-        $count = $this->totalLocalPlans;
-        // Rough estimate: ~2KB per plan on average
-        $bytes = $count * 2048;
+    public int $percentUsed = 0;
 
-        if ($bytes < 1024) {
-            return $bytes . ' B';
-        } elseif ($bytes < 1048576) {
-            return round($bytes / 1024, 1) . ' KB';
-        } else {
-            return round($bytes / 1048576, 2) . ' MB';
-        }
-    }
+    public bool $isNearQuota = false;
 
     /**
      * Check if user is authenticated.
@@ -92,85 +87,127 @@ class Manager extends Component
     }
 
     /**
-     * Export all local runs as JSON.
-     * Implements FR-9D.3.
+     * Get the current user ID.
      */
-    public function exportAllAsJson(): void
+    #[Computed]
+    public function userId(): ?int
     {
-        $plans = Plan::where('storage_mode', StorageMode::Local)
-            ->with(['skills', 'goals', 'turns', 'racePredictions', 'careerSnapshots'])
-            ->get();
-
-        $exportData = [
-            'schema_version' => '1.0.0',
-            'exported_at' => now()->toIso8601String(),
-            'plans' => $plans->toArray(),
-        ];
-
-        $this->dispatch('download-json', [
-            'filename' => 'uma-planner-local-data-' . now()->format('Y-m-d') . '.json',
-            'data' => json_encode($exportData, JSON_PRETTY_PRINT),
-        ]);
-
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => "Exported {$plans->count()} local plan(s) to JSON",
-        ]);
+        return Auth::id();
     }
 
     /**
-     * Show delete all confirmation modal.
-     * Implements FR-9D.5.
+     * Format bytes to human-readable string.
      */
-    public function confirmDeleteAll(): void
+    public function formatBytes(int $bytes): string
     {
-        $this->showDeleteConfirmation = true;
+        if ($bytes === 0) {
+            return '0 B';
+        }
+        $k = 1024;
+        $sizes = ['B', 'KB', 'MB', 'GB'];
+        $i = (int) floor(log($bytes) / log($k));
+
+        return round($bytes / pow($k, $i), 2).' '.$sizes[$i];
     }
 
     /**
-     * Cancel delete all.
+     * Update storage stats from client-side.
+     * Called via Alpine.js when localStorage data changes.
      */
-    public function cancelDeleteAll(): void
+    #[On('storage-stats-updated')]
+    public function updateStorageStats(int $used, int $available, int $count, int $percent, bool $nearQuota): void
     {
-        $this->showDeleteConfirmation = false;
+        $this->storageUsed = $used;
+        $this->storageAvailable = $available;
+        $this->runCount = $count;
+        $this->percentUsed = $percent;
+        $this->isNearQuota = $nearQuota;
     }
 
     /**
-     * Delete all local runs.
-     * Implements FR-9D.5.
+     * Show first step of purge confirmation (Req 56B.5).
      */
-    public function deleteAllLocalRuns(): void
+    public function showPurgeConfirmation(): void
     {
-        $count = Plan::where('storage_mode', StorageMode::Local)->count();
+        $this->showPurgeStep1 = true;
+        $this->showPurgeStep2 = false;
+        $this->purgeConfirmText = '';
+    }
 
-        Plan::where('storage_mode', StorageMode::Local)->delete();
+    /**
+     * Proceed to second step of purge confirmation.
+     */
+    public function proceedToPurgeStep2(): void
+    {
+        $this->showPurgeStep1 = false;
+        $this->showPurgeStep2 = true;
+    }
 
-        $this->showDeleteConfirmation = false;
+    /**
+     * Cancel purge operation.
+     */
+    public function cancelPurge(): void
+    {
+        $this->showPurgeStep1 = false;
+        $this->showPurgeStep2 = false;
+        $this->purgeConfirmText = '';
+    }
 
+    /**
+     * Execute purge after double-confirmation (Req 56B.5).
+     */
+    public function executePurge(): void
+    {
+        if (strtoupper($this->purgeConfirmText) !== 'DELETE') {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Please type DELETE to confirm',
+            ]);
+
+            return;
+        }
+
+        // Dispatch event to client-side to clear localStorage
+        $this->dispatch('execute-purge-local-storage');
+
+        $this->showPurgeStep2 = false;
+        $this->purgeConfirmText = '';
+    }
+
+    /**
+     * Handle purge completion from client-side.
+     */
+    #[On('purge-completed')]
+    public function handlePurgeCompleted(int $count): void
+    {
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => "Deleted {$count} local plan(s)",
         ]);
 
-        unset($this->localPlans);
-        unset($this->totalLocalPlans);
+        // Reset stats
+        $this->runCount = 0;
+        $this->storageUsed = 0;
+        $this->percentUsed = 0;
+        $this->isNearQuota = false;
     }
 
     /**
-     * Show bulk convert modal.
-     * Implements FR-9D.6.
+     * Show bulk convert modal (Req 56B.6).
      */
     public function showBulkConvert(): void
     {
-        if (!$this->isAuthenticated) {
+        if (! $this->isAuthenticated) {
             $this->dispatch('toast', [
                 'type' => 'warning',
                 'message' => 'Please sign in to convert local plans to your account',
             ]);
+
             return;
         }
 
         $this->showBulkConvertModal = true;
+        $this->convertResults = ['converted' => 0, 'failed' => 0, 'errors' => []];
     }
 
     /**
@@ -182,103 +219,299 @@ class Manager extends Component
     }
 
     /**
-     * Convert all local runs to account.
-     * Implements FR-9D.6.
+     * Execute bulk convert - dispatches to client to get data.
      */
-    public function convertAllToAccount(): void
+    public function executeBulkConvert(): void
     {
-        if (!$this->isAuthenticated) {
+        if (! $this->isAuthenticated) {
+            return;
+        }
+
+        // Dispatch event to client-side to get all local runs
+        $this->dispatch('get-local-runs-for-convert');
+    }
+
+    /**
+     * Receive local runs from client and convert them to account.
+     */
+    #[On('convert-local-runs')]
+    public function convertLocalRuns(array $runs): void
+    {
+        if (! $this->isAuthenticated) {
             return;
         }
 
         $userId = Auth::id();
         $converted = 0;
+        $failed = 0;
+        $errors = [];
+        $convertedUuids = [];
 
-        Plan::where('storage_mode', StorageMode::Local)
-            ->chunk(50, function ($plans) use ($userId, &$converted) {
-                foreach ($plans as $plan) {
-                    $plan->update([
-                        'storage_mode' => StorageMode::Account,
-                        'user_id' => $userId,
-                        'local_uuid' => null,
-                    ]);
-                    $converted++;
-                }
-            });
+        foreach ($runs as $runData) {
+            try {
+                // Create new plan in database
+                $plan = Plan::create([
+                    'user_id' => $userId,
+                    'storage_mode' => StorageMode::Account,
+                    'local_uuid' => $runData['uuid'] ?? null,
+                    'plan_title' => $runData['title'] ?? 'Untitled Plan',
+                    'name' => $runData['character_name'] ?? '',
+                    'status' => ucfirst($runData['status'] ?? 'in_progress'),
+                    'career_stage' => $runData['career_stage'] ?? 'junior',
+                    'current_turn' => $runData['current_turn'] ?? 1,
+                    'speed' => $runData['speed'] ?? 0,
+                    'stamina' => $runData['stamina'] ?? 0,
+                    'power' => $runData['power'] ?? 0,
+                    'guts' => $runData['guts'] ?? 0,
+                    'wit' => $runData['wit'] ?? 0,
+                    'mood' => $runData['mood'] ?? 'normal',
+                    'energy' => $runData['energy'] ?? 100,
+                    'notes' => $runData['notes'] ?? '',
+                ]);
+
+                $convertedUuids[] = $runData['uuid'];
+                $converted++;
+            } catch (\Exception $e) {
+                $failed++;
+                $errors[] = ($runData['title'] ?? 'Unknown').': '.$e->getMessage();
+                Log::error('Failed to convert local run', [
+                    'uuid' => $runData['uuid'] ?? 'unknown',
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $this->convertResults = [
+            'converted' => $converted,
+            'failed' => $failed,
+            'errors' => $errors,
+        ];
+
+        // Tell client to remove converted runs from localStorage
+        if (count($convertedUuids) > 0) {
+            $this->dispatch('remove-converted-runs', ['uuids' => $convertedUuids]);
+        }
 
         $this->showBulkConvertModal = false;
-
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => "Converted {$converted} plan(s) to your account",
-        ]);
-
-        unset($this->localPlans);
-        unset($this->totalLocalPlans);
+        $this->showConvertResultsModal = true;
     }
 
     /**
-     * Delete a single local plan.
+     * Close convert results modal.
      */
-    public function deletePlan(int $planId): void
+    public function closeConvertResults(): void
     {
-        $plan = Plan::where('id', $planId)
-            ->where('storage_mode', StorageMode::Local)
-            ->first();
+        $this->showConvertResultsModal = false;
+    }
 
-        if ($plan) {
-            $plan->delete();
+    /**
+     * Show import modal (Req 56B.4).
+     */
+    public function showImport(): void
+    {
+        $this->showImportModal = true;
+        $this->importPreview = [];
+        $this->conflictResolution = 'skip';
+    }
 
+    /**
+     * Cancel import.
+     */
+    public function cancelImport(): void
+    {
+        $this->showImportModal = false;
+        $this->importPreview = [];
+    }
+
+    /**
+     * Execute import with selected conflict resolution.
+     */
+    public function executeImport(): void
+    {
+        // Dispatch to client-side to execute import with conflict resolution
+        $this->dispatch('execute-import', ['conflictResolution' => $this->conflictResolution]);
+    }
+
+    /**
+     * Handle import completion from client-side.
+     */
+    #[On('import-completed')]
+    public function handleImportCompleted(int $imported, int $skipped, array $errors): void
+    {
+        $this->showImportModal = false;
+
+        if (count($errors) > 0) {
+            $this->dispatch('toast', [
+                'type' => 'warning',
+                'message' => "Imported {$imported} plan(s), skipped {$skipped}, errors: ".count($errors),
+            ]);
+        } else {
             $this->dispatch('toast', [
                 'type' => 'success',
-                'message' => "Deleted plan: {$plan->name}",
+                'message' => "Imported {$imported} plan(s), skipped {$skipped}",
             ]);
-
-            unset($this->localPlans);
-            unset($this->totalLocalPlans);
         }
     }
 
     /**
-     * Convert a single plan to account.
+     * Toggle selection of a run for selective export.
      */
-    public function convertToAccount(int $planId): void
+    public function toggleRunSelection(string $uuid): void
     {
-        if (!$this->isAuthenticated) {
+        if (in_array($uuid, $this->selectedRuns)) {
+            $this->selectedRuns = array_values(array_diff($this->selectedRuns, [$uuid]));
+        } else {
+            $this->selectedRuns[] = $uuid;
+        }
+    }
+
+    /**
+     * Select all runs.
+     */
+    public function selectAllRuns(): void
+    {
+        $this->dispatch('select-all-runs');
+    }
+
+    /**
+     * Deselect all runs.
+     */
+    public function deselectAllRuns(): void
+    {
+        $this->selectedRuns = [];
+    }
+
+    /**
+     * Update selected runs from client.
+     */
+    #[On('update-selected-runs')]
+    public function updateSelectedRuns(array $uuids): void
+    {
+        $this->selectedRuns = $uuids;
+    }
+
+    /**
+     * Export selected runs (Req 56B.8).
+     */
+    public function exportSelected(): void
+    {
+        if (empty($this->selectedRuns)) {
+            $this->dispatch('toast', [
+                'type' => 'warning',
+                'message' => 'Please select at least one plan to export',
+            ]);
+
+            return;
+        }
+
+        $this->dispatch('export-selected-runs', ['uuids' => $this->selectedRuns]);
+    }
+
+    /**
+     * Export all runs (Req 56B.3).
+     */
+    public function exportAll(): void
+    {
+        $this->dispatch('export-all-runs');
+    }
+
+    /**
+     * Handle export completion.
+     */
+    #[On('export-completed')]
+    public function handleExportCompleted(int $count): void
+    {
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => "Exported {$count} plan(s) to JSON",
+        ]);
+    }
+
+    /**
+     * Delete a single local run.
+     */
+    public function deleteRun(string $uuid): void
+    {
+        $this->dispatch('delete-local-run', ['uuid' => $uuid]);
+    }
+
+    /**
+     * Handle single run deletion completion.
+     */
+    #[On('run-deleted')]
+    public function handleRunDeleted(string $title): void
+    {
+        $this->dispatch('toast', [
+            'type' => 'success',
+            'message' => "Deleted plan: {$title}",
+        ]);
+
+        // Remove from selected if it was selected
+        $this->selectedRuns = array_values(array_filter($this->selectedRuns, fn ($uuid) => $uuid !== $title));
+    }
+
+    /**
+     * Convert a single run to account.
+     */
+    public function convertSingleRun(string $uuid): void
+    {
+        if (! $this->isAuthenticated) {
             $this->dispatch('toast', [
                 'type' => 'warning',
                 'message' => 'Please sign in to convert plans to your account',
             ]);
+
             return;
         }
 
-        $plan = Plan::where('id', $planId)
-            ->where('storage_mode', StorageMode::Local)
-            ->first();
-
-        if ($plan) {
-            $plan->update([
-                'storage_mode' => StorageMode::Account,
-                'user_id' => Auth::id(),
-                'local_uuid' => null,
-            ]);
-
-            $this->dispatch('toast', [
-                'type' => 'success',
-                'message' => "Converted plan to account: {$plan->name}",
-            ]);
-
-            unset($this->localPlans);
-            unset($this->totalLocalPlans);
-        }
+        $this->dispatch('get-single-run-for-convert', ['uuid' => $uuid]);
     }
 
     /**
-     * Update search and reset pagination.
+     * Receive single run from client and convert to account.
      */
-    public function updatedSearchQuery(): void
+    #[On('convert-single-run')]
+    public function convertSingleRunData(array $runData): void
     {
-        $this->resetPage();
+        if (! $this->isAuthenticated) {
+            return;
+        }
+
+        try {
+            $userId = Auth::id();
+
+            Plan::create([
+                'user_id' => $userId,
+                'storage_mode' => StorageMode::Account,
+                'local_uuid' => $runData['uuid'] ?? null,
+                'plan_title' => $runData['title'] ?? 'Untitled Plan',
+                'name' => $runData['character_name'] ?? '',
+                'status' => ucfirst($runData['status'] ?? 'in_progress'),
+                'career_stage' => $runData['career_stage'] ?? 'junior',
+                'current_turn' => $runData['current_turn'] ?? 1,
+                'speed' => $runData['speed'] ?? 0,
+                'stamina' => $runData['stamina'] ?? 0,
+                'power' => $runData['power'] ?? 0,
+                'guts' => $runData['guts'] ?? 0,
+                'wit' => $runData['wit'] ?? 0,
+                'mood' => $runData['mood'] ?? 'normal',
+                'energy' => $runData['energy'] ?? 100,
+                'notes' => $runData['notes'] ?? '',
+            ]);
+
+            // Remove from localStorage
+            $this->dispatch('remove-converted-runs', ['uuids' => [$runData['uuid']]]);
+
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Converted plan to account: '.($runData['title'] ?? 'Untitled'),
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Failed to convert plan: '.$e->getMessage(),
+            ]);
+        }
     }
 
     public function render()

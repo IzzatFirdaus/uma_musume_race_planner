@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard;
 
+use App\Enums\StorageMode;
 use App\Models\ActivityLog;
 use App\Models\Plan;
+use App\Models\Strategy;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -17,16 +19,14 @@ class PlanList extends Component
     use AuthorizesRequests;
     use WithPagination;
 
-    // Career Mode: 72 half-month turns, training, racing, rest, recreation, skill acquisition, mood, energy, fans, goals, rebirth/veteran unlocks.
-    // Support cards and veteran system: Trainers select support cards and two veteran Umamusume for stat/skill boosts per Career.
-    // Skills: Use official categories (Speed, Acceleration, Recovery, Passive, Debuff, Starting Gate, Lane Change, Observation) and activation conditions (style, distance, position, stamina, timing).
-    // Skill activation probability is influenced by Wit stat.
-    // Daily reset: 12:00 AM JST (global server matches JP schedule).
-    // Gacha: Paid Carats, Scout banners, Goddess Statues for star piece exchange, as per global mechanics.
-    // Platform: iOS, Android, PC (Steam), cross-platform link, global events match JP.
-    // Resource usage: Steam ~11 GB, Mobile ~6 GB.
-    // UI and logic must use authentic terms: “Career Mode”, “Skill Points (SP)”, “Mood”, “Energy”, “Fans”, “Support Cards”, “Veteran”, “Rebirth”, “Scouts”, “Goddess Statue”.
+    // Status filter: 'all', 'Active', 'Planning', 'Finished'
     public string $currentFilter = 'all';
+
+    // Storage mode filter: 'all', 'local', 'account' (Req 56.4)
+    public string $storageModeFilter = 'all';
+
+    // Strategy filter: null or strategy_id (Req 3.1)
+    public ?int $strategyFilter = null;
 
     protected string $paginationTheme = 'bootstrap';
 
@@ -40,6 +40,36 @@ class PlanList extends Component
     public function filterPlansByStatus(string $filter): void
     {
         $this->currentFilter = $filter;
+        $this->resetPage();
+    }
+
+    /**
+     * Set storage mode filter (Req 56.4)
+     */
+    public function setStorageModeFilter(string $mode): void
+    {
+        $this->storageModeFilter = $mode;
+        $this->resetPage();
+    }
+
+    /**
+     * Set strategy filter (Req 3.1)
+     */
+    public function setStrategyFilter(?int $strategyId): void
+    {
+        $this->strategyFilter = $strategyId;
+        $this->resetPage();
+    }
+
+    /**
+     * Clear all filters
+     */
+    public function clearFilters(): void
+    {
+        $this->currentFilter = 'all';
+        $this->storageModeFilter = 'all';
+        $this->strategyFilter = null;
+        $this->resetPage();
     }
 
     #[On('refreshPlans')]
@@ -67,6 +97,33 @@ class PlanList extends Component
         $this->redirect(route('plans.edit', $planId));
     }
 
+    /**
+     * Duplicate a plan (Req 3.4)
+     */
+    #[On('duplicatePlan')]
+    public function duplicatePlan(int $id): void
+    {
+        try {
+            $plan = Plan::findOrFail($id);
+            $newPlan = $plan->replicate();
+            $newPlan->name = $plan->name.' (Copy)';
+            $newPlan->status = 'Planning';
+            $newPlan->save();
+
+            // Log the duplication
+            ActivityLog::create([
+                'description' => "Duplicated plan: {$plan->name}",
+                'icon_class' => 'bi-copy',
+                'timestamp' => now(),
+            ]);
+
+            $this->dispatch('plan-duplicated', ['message' => "Plan '{$plan->name}' duplicated successfully!"]);
+            $this->resetPage();
+        } catch (\Exception $e) {
+            $this->dispatch('plan-error', ['message' => 'Failed to duplicate plan: '.$e->getMessage()]);
+        }
+    }
+
     #[On('deletePlan')]
     public function deletePlan(int $id): void
     {
@@ -91,20 +148,62 @@ class PlanList extends Component
         }
     }
 
+    /**
+     * Get all strategies for filter dropdown (Req 3.1)
+     */
+    #[Computed]
+    public function strategies(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Strategy::orderBy('label')->get();
+    }
+
+    /**
+     * Get storage mode counts for filter badges (Req 56.4)
+     */
+    #[Computed]
+    public function storageCounts(): array
+    {
+        return [
+            'all' => Plan::count(),
+            'local' => Plan::where('storage_mode', StorageMode::Local)->count(),
+            'account' => Plan::where('storage_mode', StorageMode::Account)->count(),
+        ];
+    }
+
+    /**
+     * Check if any filters are active
+     */
+    #[Computed]
+    public function hasActiveFilters(): bool
+    {
+        return $this->currentFilter !== 'all'
+            || $this->storageModeFilter !== 'all'
+            || $this->strategyFilter !== null;
+    }
+
     public function render()
     {
         $query = Plan::query()
             ->with([
-                // Use official stat names and relationships for Umamusume: Pretty Derby global server
                 'attributes' => fn ($query) => $query->whereIn('attribute_name', ['SPEED', 'STAMINA', 'POWER', 'GUTS', 'WIT']),
                 'mood',
                 'condition',
                 'strategy',
-                // 'supportCards' and 'veteranUmaMusume' removed due to missing model/relationship
             ])->orderByDesc('id');
 
+        // Apply status filter
         if ($this->currentFilter !== 'all') {
             $query->where('status', $this->currentFilter);
+        }
+
+        // Apply storage mode filter (Req 56.4)
+        if ($this->storageModeFilter !== 'all') {
+            $query->where('storage_mode', $this->storageModeFilter);
+        }
+
+        // Apply strategy filter (Req 3.1)
+        if ($this->strategyFilter !== null) {
+            $query->where('strategy_id', $this->strategyFilter);
         }
 
         $plans = $query->paginate(10);
@@ -112,11 +211,7 @@ class PlanList extends Component
         // If there are no plans, create a single seeded plan for non-production
         // environments so E2E test runs (Playwright) can rely on a predictable
         // initial state. We avoid auto-creating sample data in production.
-        if ($plans->count() === 0 && ! app()->environment('production')) {
-            // Create a deterministic, schema-valid fallback plan for non-production
-            // environments (tests / Playwright) so the initial UI has at least one
-            // visible row. We explicitly set enum-like fields to values that match
-            // the SQLite CHECK constraints used in tests (e.g. 'junior').
+        if ($plans->count() === 0 && ! app()->environment('production') && ! $this->hasActiveFilters) {
             Plan::factory()->create([
                 'career_stage' => 'junior',
                 'class' => 'beginner',
@@ -129,9 +224,11 @@ class PlanList extends Component
         }
 
         return view('livewire.dashboard.plan-list', [
-            // Use authentic Umamusume: Pretty Derby global server terminology in UI
             'plans' => $plans,
             'counts' => $this->planCounts(),
+            'storageCounts' => $this->storageCounts(),
+            'strategies' => $this->strategies(),
+            'hasActiveFilters' => $this->hasActiveFilters,
         ]);
     }
 

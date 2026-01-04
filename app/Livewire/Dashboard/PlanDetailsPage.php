@@ -4,15 +4,34 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard;
 
+use App\Models\Plan;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
+/**
+ * Plan Details Page Component
+ *
+ * Handles viewing and editing of Account runs (database-stored plans).
+ * Routes: /plans/{id}, /plans/{id}/view, /plans/{id}/edit
+ *
+ * Requirements: 4.1, 4.2 - Plan viewing with tabbed interface
+ * Requirements: 5.3, 76.4, 76.5 - Dirty state tracking
+ */
+#[Layout('components.layout')]
 class PlanDetailsPage extends Component
 {
     // Plan properties
     public $planId = null;
 
-    public $isEditMode = false; // Track if we're in edit mode
+    public bool $isEditMode = false; // Track if we're in edit mode
+
+    public string $storageMode = 'account'; // Storage mode indicator
+
+    // Dirty state tracking (Req 5.3, 76.4, 76.5)
+    public bool $isDirty = false;
+
+    public array $originalState = [];
 
     public $plan_title = '';
 
@@ -78,6 +97,14 @@ class PlanDetailsPage extends Component
     // UI state
     public $isLoading = false;
 
+    public $notFound = false;
+
+    /**
+     * Mount the component with plan ID.
+     * Determines view/edit mode based on current route.
+     *
+     * @param  int|string  $planId  The plan ID (numeric for account runs)
+     */
     public function mount($planId): void
     {
         $this->planId = $planId;
@@ -85,6 +112,7 @@ class PlanDetailsPage extends Component
         // Determine mode based on current route
         $currentRoute = request()->route()->getName();
         $this->isEditMode = ($currentRoute === 'plans.edit');
+        $this->storageMode = 'account';
 
         $this->loadPlan($this->planId);
     }
@@ -92,8 +120,10 @@ class PlanDetailsPage extends Component
     public function loadPlan($planId): void
     {
         $this->isLoading = true;
+        $this->notFound = false;
+
         try {
-            $plan = \App\Models\Plan::with([
+            $plan = Plan::with([
                 'attributes',
                 'skills.skillReference',
                 'racePredictions',
@@ -107,6 +137,7 @@ class PlanDetailsPage extends Component
             ])->findOrFail($planId);
 
             $this->planId = $plan->id;
+            $this->storageMode = $plan->storage_mode?->value ?? 'account';
             $this->plan_title = $plan->plan_title ?? '';
             $this->name = $plan->name ?? '';
             $this->career_stage = $plan->career_stage ?? '';
@@ -133,19 +164,26 @@ class PlanDetailsPage extends Component
 
             // Load related data
             $this->planAttributes = $plan->attributes->toArray();
-            $this->skills = $plan->skills->map(function ($skill) {
-                return [
-                    'skill_name' => $skill->skillReference->skill_name ?? '',
-                    'sp_cost' => $skill->sp_cost ?? 0,
-                    'acquired' => $skill->acquired ?? 'no',
-                    'tag' => $skill->tag ?? '',
-                    'notes' => $skill->notes ?? '',
-                ];
-            })->toArray();
+            $this->skills = $plan->skills->map(fn ($skill) => [
+                'skill_name' => $skill->skillReference->skill_name ?? '',
+                'sp_cost' => $skill->sp_cost ?? 0,
+                'acquired' => $skill->acquired ?? 'no',
+                'tag' => $skill->tag ?? '',
+                'notes' => $skill->notes ?? '',
+            ])->toArray();
             $this->racePredictions = $plan->racePredictions->toArray();
             $this->goals = $plan->goals->toArray();
             $this->terrainGrades = $plan->terrainGrades->toArray();
             $this->distanceGrades = $plan->distanceGrades->toArray();
+
+            // Store original state for dirty tracking (Req 5.3, 76.4, 76.5)
+            $this->originalState = $this->captureCurrentState();
+            $this->isDirty = false;
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            $this->notFound = true;
+            $this->isLoading = false;
+
+            return;
         } catch (\Exception $e) {
             $this->dispatch('show-error', message: 'Failed to load plan: '.$e->getMessage());
         }
@@ -188,6 +226,51 @@ class PlanDetailsPage extends Component
         ]);
     }
 
+    /**
+     * Capture current state for dirty tracking comparison.
+     */
+    private function captureCurrentState(): array
+    {
+        return [
+            'plan_title' => $this->plan_title,
+            'name' => $this->name,
+            'career_stage' => $this->career_stage,
+            'class' => $this->class,
+            'race_name' => $this->race_name,
+            'turn_before' => $this->turn_before,
+            'goal' => $this->goal,
+            'strategy_id' => $this->strategy_id,
+            'mood_id' => $this->mood_id,
+            'condition_id' => $this->condition_id,
+            'energy' => $this->energy,
+            'race_day' => $this->race_day,
+            'acquire_skill' => $this->acquire_skill,
+            'total_available_skill_points' => $this->total_available_skill_points,
+            'status' => $this->status,
+        ];
+    }
+
+    /**
+     * Mark the form as dirty when FormTabs reports changes.
+     */
+    #[On('formTabs:dirty')]
+    public function markDirty(): void
+    {
+        $this->isDirty = true;
+    }
+
+    /**
+     * Restore draft data from localStorage (Req 57.2).
+     * Called from JavaScript when user chooses to restore a draft.
+     */
+    #[On('restore-draft')]
+    public function restoreDraft(array $formData): void
+    {
+        // Hydrate FormTabs with the draft data
+        $this->dispatch('formTabs:hydrate', data: $formData);
+        $this->isDirty = true;
+    }
+
     public function save(): void
     {
         // Prevent saving in view mode
@@ -203,13 +286,23 @@ class PlanDetailsPage extends Component
     }
 
     /**
+     * Reset dirty state after successful save.
+     * Also clears drafts (Req 57.6).
+     */
+    #[On('plan-saved')]
+    public function onPlanSaved(): void
+    {
+        $this->isDirty = false;
+    }
+
+    /**
      * Receive state from FormTabs and persist to database.
      */
     #[On('formTabs:state')]
     public function receiveFormTabsState(array $data): void
     {
         try {
-            $plan = \App\Models\Plan::findOrFail($this->planId);
+            $plan = Plan::findOrFail($this->planId);
 
             // Normalize booleans to DB expectations
             $raceDay = ! empty($data['race_day']);
@@ -378,6 +471,9 @@ class PlanDetailsPage extends Component
 
             // Refresh visible state
             $this->loadPlan($plan->id);
+
+            // Reset dirty state after successful save
+            $this->isDirty = false;
 
             $this->dispatch('plan-saved', message: 'Plan saved successfully!');
         } catch (\Exception $e) {
