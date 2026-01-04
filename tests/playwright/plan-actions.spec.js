@@ -17,8 +17,8 @@ test.describe("Plan actions (view, edit, delete)", () => {
         const firstRow = rows.first();
 
         // VIEW DETAILS - Navigate to the new plan details page
-    const viewBtn = firstRow.locator(".view-details-btn[data-id]");
-    let planId = await viewBtn.getAttribute("data-id");
+        const viewBtn = firstRow.locator(".view-details-btn[data-id]");
+        let planId = await viewBtn.getAttribute("data-id");
 
         // Click the view button to navigate to the plan view page
         await viewBtn.click();
@@ -49,23 +49,31 @@ test.describe("Plan actions (view, edit, delete)", () => {
         );
 
         // Navigate to edit mode using the Edit Plan button
-    // Click without waiting for navigation to finish (handle SPA or plain navigation)
-    await page.getByRole("link", { name: "Edit Plan" }).click({ noWaitAfter: true });
+        // Click without waiting for navigation to finish (handle SPA or plain navigation)
+        await page
+            .getByRole("link", { name: "Edit Plan" })
+            .click({ noWaitAfter: true });
 
         // The navigation to edit may be SPA-like; wait for the edit page UI instead
-        await page.waitForSelector('h5:has-text("Edit Plan")', { timeout: 10000 });
+        await page.waitForSelector('h5:has-text("Edit Plan")', {
+            timeout: 10000,
+        });
         await expect(page.locator('h5:has-text("Edit Plan")')).toBeVisible();
-        await expect(page.locator('.badge:has-text("Edit Mode")')).toBeVisible();
+        await expect(
+            page.locator('.badge:has-text("Edit Mode")'),
+        ).toBeVisible();
 
         // Verify fields are now editable (no readonly attribute)
         await expect(
             page.locator('input[name="plan_title"]'),
         ).not.toHaveAttribute("readonly");
 
-    // Navigate back to dashboard - some runs are SPA-like; click without waiting
-    // for navigation and explicitly wait for the dashboard UI to appear.
-    await page.getByRole("link", { name: "Back to Dashboard" }).click({ noWaitAfter: true });
-    await page.waitForSelector("#plan-list-body", { timeout: 10000 });
+        // Navigate back to dashboard - some runs are SPA-like; click without waiting
+        // for navigation and explicitly wait for the dashboard UI to appear.
+        await page
+            .getByRole("link", { name: "Back to Dashboard" })
+            .click({ noWaitAfter: true });
+        await page.waitForSelector("#plan-list-body", { timeout: 10000 });
 
         // Re-query rows after navigation (old reference may be stale)
         const freshRows = page.locator("#plan-list-body tr");
@@ -82,9 +90,11 @@ test.describe("Plan actions (view, edit, delete)", () => {
         });
         await expect(page.locator('h5:has-text("Edit Plan")')).toBeVisible();
 
-    // Navigate back to dashboard for delete test (wait for plan list to re-appear)
-    await page.getByRole("link", { name: "Back to Dashboard" }).click({ noWaitAfter: true });
-    await page.waitForSelector("#plan-list-body", { timeout: 10000 });
+        // Navigate back to dashboard for delete test (wait for plan list to re-appear)
+        await page
+            .getByRole("link", { name: "Back to Dashboard" })
+            .click({ noWaitAfter: true });
+        await page.waitForSelector("#plan-list-body", { timeout: 10000 });
         await page.waitForSelector("#planDetailsModal", {
             state: "hidden",
             timeout: 5000,
@@ -97,8 +107,8 @@ test.describe("Plan actions (view, edit, delete)", () => {
         expect(beforeCount).toBeGreaterThan(0);
 
         // DELETE - click the delete button for the plan to trigger SweetAlert2
-    const deleteBtn = page.locator(`.delete-btn[data-id="${planId}"]`);
-    await expect(deleteBtn).toBeVisible({ timeout: 5000 });
+        const deleteBtn = page.locator(`.delete-btn[data-id="${planId}"]`);
+        await expect(deleteBtn).toBeVisible({ timeout: 5000 });
 
         // Allow native confirm dialogs to be auto-accepted if SweetAlert2 is not present.
         page.once("dialog", (dialog) => dialog.accept());
@@ -106,22 +116,26 @@ test.describe("Plan actions (view, edit, delete)", () => {
         await deleteBtn.click();
 
         // Wait for SweetAlert2 popup (confirmation dialog) if present; otherwise native confirm was used.
-        const swalPopup = await page.waitForSelector(".swal2-popup", { timeout: 5000 }).catch(() => null);
+        const swalPopup = await page
+            .waitForSelector(".swal2-popup", { timeout: 5000 })
+            .catch(() => null);
         if (swalPopup) {
             await expect(page.locator(".swal2-popup")).toBeVisible();
             // Confirm deletion in SweetAlert2
             await page.locator(".swal2-confirm").click();
         }
 
-    // Wait for SweetAlert2 popup (confirmation dialog) - allow more time for async operations
-    await page.waitForSelector(".swal2-popup", { timeout: 10000 });
+        // Wait for SweetAlert2 popup (confirmation dialog) - allow more time for async operations
+        await page.waitForSelector(".swal2-popup", { timeout: 10000 });
         await expect(page.locator(".swal2-popup")).toBeVisible();
 
         // Confirm deletion
         await page.locator(".swal2-confirm").click();
 
         // Wait for the specific deleted plan row to be removed (more robust than raw row counts)
-        await expect(page.locator(`.delete-btn[data-id="${planId}"]`)).toHaveCount(0, {
+        await expect(
+            page.locator(`.delete-btn[data-id="${planId}"]`),
+        ).toHaveCount(0, {
             timeout: 7000,
         });
     });
