@@ -16,9 +16,17 @@ use Illuminate\Support\Facades\Route;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| API routes are now public and do not require authentication.
+| API routes with optional authentication for read operations.
 |
 */
+
+/**
+ * Health check endpoint for connection state monitoring
+ * Requirements: 78.2
+ */
+Route::get('health', function () {
+    return response()->json(['status' => 'ok'], 200);
+})->name('api.health');
 
 /**
  * API Version 1 Routes
@@ -46,11 +54,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::delete('/{stat}', [StatProgressController::class, 'destroy'])->name('destroy');
     });
 
-    // Skill routes for plans
+    // Skill routes for plans - order matters: specific routes before parameterized routes
     Route::prefix('plans/{plan}/skills')->name('plans.skills.')->group(function (): void {
+        Route::get('/totals', [SkillController::class, 'totals'])->name('totals');
         Route::get('/', [SkillController::class, 'forPlan'])->name('index');
         Route::post('/', [SkillController::class, 'store'])->name('store');
-        Route::get('/totals', [SkillController::class, 'totals'])->name('totals');
+        Route::get('/{skill}', [SkillController::class, 'show'])->name('show');
         Route::put('/{skill}', [SkillController::class, 'update'])->name('update');
         Route::delete('/{skill}', [SkillController::class, 'destroy'])->name('destroy');
     });
@@ -69,16 +78,21 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('dashboard/activities', [DashboardController::class, 'getActivities'])
         ->name('dashboard.activities');
 
-    // UmaMusume API routes (full CRUD)
-    Route::apiResource('uma-musume', UmaMusumeController::class);
-    Route::get('uma-musume-search', [UmaMusumeController::class, 'search'])
-        ->name('uma-musume.search');
+    // UmaMusume API routes - search must come before apiResource
+    Route::get('umamusume/search', [UmaMusumeController::class, 'search'])
+        ->name('umamusume.search');
+    Route::apiResource('umamusume', UmaMusumeController::class);
 
-    // Export routes
+    // Export routes - plan-specific exports
+    Route::get('plans/{plan}/export/preview', [ExportController::class, 'preview'])
+        ->name('plans.export.preview');
+    Route::get('plans/{plan}/export/{format}', [ExportController::class, 'exportPlan'])
+        ->where('format', 'json|csv|markdown')
+        ->name('plans.export');
+
+    // Bulk export routes
     Route::prefix('export')->name('export.')->group(function (): void {
         Route::get('formats', [ExportController::class, 'formats'])->name('formats');
-        Route::get('career-run/{plan}', [ExportController::class, 'exportPlan'])->name('plan');
-        Route::get('career-run/{plan}/preview', [ExportController::class, 'preview'])->name('preview');
-        Route::post('bulk', [ExportController::class, 'exportBulk'])->name('bulk');
+        Route::get('plans', [ExportController::class, 'exportBulk'])->name('plans');
     });
 });

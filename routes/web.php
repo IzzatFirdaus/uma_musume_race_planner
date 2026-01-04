@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 
 use App\Livewire\Dashboard\PlanDetailsPage;
-use App\Models\Umamusume;
+use App\Livewire\Plans\LocalPlanView;
 use Illuminate\Support\Facades\Route;
 
 // RESTful routes for plans. Use existing Livewire page `PlanDetailsPage` for show/edit
@@ -15,6 +15,19 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('plans')->name('plans.')->group(function () {
     // GET /plans -> plans.index (dashboard contains the plan list)
     Route::view('/', 'dashboard')->name('index');
+
+    // Local plan routes (Req 56.2, 56.3, 56.5)
+    // Routes for plans stored in localStorage, identified by UUID
+    Route::prefix('local')->name('local.')->group(function () {
+        // GET /plans/local/{uuid} -> plans.local.show (view mode)
+        Route::get('/{uuid}', LocalPlanView::class)->name('show');
+
+        // GET /plans/local/{uuid}/view -> plans.local.view (explicit view mode)
+        Route::get('/{uuid}/view', LocalPlanView::class)->name('view');
+
+        // GET /plans/local/{uuid}/edit -> plans.local.edit (edit mode)
+        Route::get('/{uuid}/edit', LocalPlanView::class)->name('edit');
+    });
 
     // GET /plans/{planId} -> plans.show (view mode)
     // Historically some views and links use the name `plans.view`.
@@ -43,12 +56,13 @@ Route::view('/dashboard', 'dashboard')->name('dashboard');
 // Manages locally stored plans - export, import, convert to account
 Route::get('/local-data', \App\Livewire\LocalData\Manager::class)->name('local-data');
 
-// Umamusume roster (Blade view) - provide Umamusume data so the Blade template has $umamusume
-Route::get('/characters', function () {
-    $umamusume = Umamusume::query()->orderBy('name')->get();
+// Import Wizard (FR-6B / Requirements 68.1-68.10)
+// Multi-step wizard for importing career plans from JSON files
+Route::get('/import', \App\Livewire\Import\ImportWizard::class)->name('import');
 
-    return view('characters', compact('umamusume'));
-})->name('characters');
+// Umamusume roster (Livewire page component)
+// Requirements: 11.1-11.6 - Character roster browsing with filtering
+Route::get('/characters', \App\Livewire\Characters\CharacterList::class)->name('characters');
 
 // Application guide page (Blade view)
 Route::view('/guide', 'guide')->name('guide');
@@ -60,5 +74,6 @@ Route::post('/logout', function () {
     auth()->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
+
     return redirect('/');
 })->name('logout');
