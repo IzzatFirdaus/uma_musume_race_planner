@@ -9,8 +9,9 @@
     ],
     "license": "MIT",
     "require": {
-    "php": "^8.2",
-    "laravel/framework": "^12.0 || ^13.0",
+        "php": "^8.2",
+        "laravel/framework": "^12.0 || ^13.0",
+        "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6"
     },
@@ -37,7 +38,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Tests\\Generators\\": "tests/Generators/"
         }
     },
     "scripts": {
@@ -78,6 +80,11 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": [
+                "[PKSA-365x-2zjk-pt47]"
+            ]
         }
     },
     "minimum-stability": "stable",
