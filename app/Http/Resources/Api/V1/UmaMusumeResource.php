@@ -50,7 +50,7 @@ class UmaMusumeResource extends JsonResource
 
             // API metadata
             '_links' => [
-                'self' => route('api.v1.uma-musume.show', $this->id),
+                'self' => route('api.v1.umamusume.show', $this->id),
             ],
         ];
     }

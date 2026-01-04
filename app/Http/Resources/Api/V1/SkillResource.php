@@ -27,6 +27,7 @@ class SkillResource extends JsonResource
             'id' => $this->id,
             'plan_id' => $this->plan_id,
             'skill_reference_id' => $this->skill_reference_id,
+            'skill_name' => $this->skillReference?->skill_name ?? $this->whenLoaded('skillReference', fn () => $this->skillReference->skill_name),
             'status' => $this->status?->value,
             'turn_acquired' => $this->turn_acquired,
             'sp_cost' => $this->sp_cost,

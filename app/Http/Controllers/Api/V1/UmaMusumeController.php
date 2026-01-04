@@ -38,9 +38,9 @@ class UmaMusumeController extends Controller
 
     /**
      * Store a newly created character.
-     * POST /api/v1/uma-musume
+     * POST /api/v1/umamusume
      */
-    public function store(Request $request): UmaMusumeResource
+    public function store(Request $request): UmaMusumeResource|JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -66,13 +66,13 @@ class UmaMusumeController extends Controller
         ]);
 
         // Generate UUID if not provided
-        if (!isset($validated['id'])) {
+        if (! isset($validated['id'])) {
             $validated['id'] = Str::uuid()->toString();
         }
 
         $character = $this->umaMusumeService->create($validated);
 
-        return new UmaMusumeResource($character);
+        return (new UmaMusumeResource($character))->response()->setStatusCode(201);
     }
 
     /**
@@ -83,7 +83,7 @@ class UmaMusumeController extends Controller
     {
         $character = $this->umaMusumeService->findById($id);
 
-        if (!$character) {
+        if (! $character) {
             return response()->json([
                 'error' => 'Character not found',
                 'message' => "No Uma Musume found with ID: {$id}",
@@ -101,7 +101,7 @@ class UmaMusumeController extends Controller
     {
         $character = $this->umaMusumeService->findById($id);
 
-        if (!$character) {
+        if (! $character) {
             return response()->json([
                 'error' => 'Character not found',
                 'message' => "No Uma Musume found with ID: {$id}",
@@ -144,7 +144,7 @@ class UmaMusumeController extends Controller
     {
         $character = $this->umaMusumeService->findById($id);
 
-        if (!$character) {
+        if (! $character) {
             return response()->json([
                 'error' => 'Character not found',
                 'message' => "No Uma Musume found with ID: {$id}",
@@ -158,10 +158,18 @@ class UmaMusumeController extends Controller
 
     /**
      * Search characters by name.
-     * GET /api/v1/uma-musume/search?q={query}
+     * GET /api/v1/umamusume/search?q={query}
      */
     public function search(Request $request): JsonResponse
     {
+        // Validate query parameter - return 422 with proper structure if missing
+        if (! $request->has('q') || $request->input('q') === null || $request->input('q') === '') {
+            return response()->json([
+                'message' => 'The q field is required.',
+                'errors' => ['q' => ['The q field is required.']],
+            ], 422);
+        }
+
         $validated = $request->validate([
             'q' => 'required|string|min:1|max:100',
             'limit' => 'nullable|integer|min:1|max:50',

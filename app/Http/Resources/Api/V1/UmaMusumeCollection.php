@@ -34,7 +34,7 @@ class UmaMusumeCollection extends ResourceCollection
                 'timestamp' => now()->toISOString(),
             ],
             'links' => [
-                'self' => route('api.v1.uma-musume.index'),
+                'self' => route('api.v1.umamusume.index'),
                 'first' => $this->url(1),
                 'last' => $this->url($this->lastPage()),
                 'prev' => $this->previousPageUrl(),

@@ -25,15 +25,16 @@ class ExportController extends Controller
 
     /**
      * Export a single plan.
-     * GET /api/v1/export/career-run/{plan}
+     * GET /api/v1/plans/{plan}/export/{format}
      */
-    public function exportPlan(Plan $plan, Request $request): Response|JsonResponse
+    public function exportPlan(Plan $plan, Request $request, ?string $format = null): Response|JsonResponse
     {
-        $format = $request->input('format', 'json');
+        // Format can come from route parameter or query string
+        $format = $format ?? $request->input('format', 'json');
         $download = $request->boolean('download', true);
 
         $validFormats = ['json', 'csv', 'markdown', 'md'];
-        if (!in_array($format, $validFormats, true)) {
+        if (! \in_array($format, $validFormats, true)) {
             return response()->json([
                 'error' => 'Invalid format',
                 'message' => 'Format must be one of: json, csv, markdown, md',
@@ -53,45 +54,36 @@ class ExportController extends Controller
         };
 
         $contentType = match ($format) {
-            'csv' => 'text/csv',
-            'markdown', 'md' => 'text/markdown',
+            'csv' => 'text/csv; charset=UTF-8',
+            'markdown', 'md' => 'text/markdown; charset=UTF-8',
             default => 'application/json',
         };
 
-        if ($download) {
-            $safeFileName = preg_replace('/[^a-z0-9_]/i', '_', $plan->plan_title ?? 'plan');
-            $fileName = "{$safeFileName}_{$plan->id}.{$extension}";
+        // For JSON format, return structured response
+        if ($format === 'json') {
+            $data = json_decode($content, true);
 
-            return new Response($content, 200, [
+            return response()->json($data, 200, [
                 'Content-Type' => $contentType,
-                'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
             ]);
         }
 
-        return response()->json([
-            'data' => [
-                'content' => $content,
-                'format' => $format,
-                'size' => strlen($content),
-            ],
-            'meta' => [
-                'plan_id' => $plan->id,
-                'plan_title' => $plan->plan_title,
-                'schema_version' => $this->exportService->getSchemaVersion(),
-            ],
+        // For CSV and Markdown, return raw content
+        return new Response($content, 200, [
+            'Content-Type' => $contentType,
         ]);
     }
 
     /**
      * Get export preview.
-     * GET /api/v1/export/career-run/{plan}/preview
+     * GET /api/v1/plans/{plan}/export/preview
      */
     public function preview(Plan $plan, Request $request): JsonResponse
     {
         $format = $request->input('format', 'json');
 
         $validFormats = ['json', 'csv', 'markdown', 'md'];
-        if (!in_array($format, $validFormats, true)) {
+        if (! \in_array($format, $validFormats, true)) {
             return response()->json([
                 'error' => 'Invalid format',
                 'message' => 'Format must be one of: json, csv, markdown, md',
@@ -111,17 +103,33 @@ class ExportController extends Controller
 
     /**
      * Export multiple plans.
-     * POST /api/v1/export/bulk
+     * GET /api/v1/export/plans?ids=1,2,3
      */
     public function exportBulk(Request $request): Response|JsonResponse
     {
-        $validated = $request->validate([
-            'plan_ids' => 'required|array|min:1|max:50',
-            'plan_ids.*' => 'required|integer|exists:plans,id',
-            'format' => 'nullable|string|in:json',
-        ]);
+        // Support both comma-separated string and array format
+        $idsInput = $request->input('ids');
 
-        $plans = Plan::whereIn('id', $validated['plan_ids'])->get();
+        if (empty($idsInput)) {
+            return response()->json([
+                'message' => 'The ids field is required.',
+                'errors' => ['ids' => ['The ids field is required.']],
+            ], 422);
+        }
+
+        // Parse comma-separated IDs
+        $planIds = \is_array($idsInput)
+            ? $idsInput
+            : array_filter(array_map('intval', explode(',', $idsInput)));
+
+        if (empty($planIds)) {
+            return response()->json([
+                'message' => 'The ids field is required.',
+                'errors' => ['ids' => ['The ids field is required.']],
+            ], 422);
+        }
+
+        $plans = Plan::whereIn('id', $planIds)->get();
 
         if ($plans->isEmpty()) {
             return response()->json([
@@ -130,30 +138,9 @@ class ExportController extends Controller
             ], 404);
         }
 
-        $content = $this->exportService->plansToJson($plans);
+        $exportData = $this->exportService->plansToArray($plans);
 
-        $download = $request->boolean('download', true);
-
-        if ($download) {
-            $fileName = 'plans_export_' . now()->format('Y-m-d_His') . '.json';
-
-            return new Response($content, 200, [
-                'Content-Type' => 'application/json',
-                'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
-            ]);
-        }
-
-        return response()->json([
-            'data' => [
-                'content' => $content,
-                'format' => 'json',
-                'size' => strlen($content),
-                'count' => $plans->count(),
-            ],
-            'meta' => [
-                'schema_version' => $this->exportService->getSchemaVersion(),
-            ],
-        ]);
+        return response()->json($exportData);
     }
 
     /**

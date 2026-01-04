@@ -200,6 +200,16 @@ class Plan extends Model
     }
 
     /**
+     * Get the user that owns the plan.
+     *
+     * @return BelongsTo<\App\Models\User, \App\Models\Plan>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * Get the attributes for the plan.
      *
      * @return HasMany<\App\Models\Attribute, \App\Models\Plan>
@@ -336,9 +346,72 @@ class Plan extends Model
     }
 
     /**
+     * Get the unified run key for this plan.
+     * Returns `local:<uuid>` for local runs or `account:<id>` for account runs.
+     * Implements Requirements 56.1, 56.4: Dual identifier support.
+     */
+    public function getRunKey(): string
+    {
+        return $this->isLocal()
+            ? "local:{$this->local_uuid}"
+            : "account:{$this->id}";
+    }
+
+    /**
+     * Get the route URL for viewing/editing this plan.
+     * Returns `/plans/local/{uuid}` for local runs or `/plans/{id}` for account runs.
+     * Implements Requirements 56.1, 56.4: Route strategy for dual storage modes.
+     *
+     * @param  string  $action  'view' or 'edit'
+     */
+    public function getRunRoute(string $action = 'view'): string
+    {
+        $suffix = $action === 'edit' ? '/edit' : '';
+
+        return $this->isLocal()
+            ? "/plans/local/{$this->local_uuid}{$suffix}"
+            : "/plans/{$this->id}{$suffix}";
+    }
+
+    /**
+     * Parse a run key and return the storage mode and identifier.
+     *
+     * @return array{mode: string, identifier: string}|null
+     */
+    public static function parseRunKey(string $runKey): ?array
+    {
+        if (preg_match('/^(local|account):(.+)$/', $runKey, $matches)) {
+            return [
+                'mode' => $matches[1],
+                'identifier' => $matches[2],
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * Find a plan by its run key.
+     */
+    public static function findByRunKey(string $runKey): ?self
+    {
+        $parsed = self::parseRunKey($runKey);
+
+        if (! $parsed) {
+            return null;
+        }
+
+        if ($parsed['mode'] === 'local') {
+            return self::where('local_uuid', $parsed['identifier'])->first();
+        }
+
+        return self::find((int) $parsed['identifier']);
+    }
+
+    /**
      * Scope to filter by storage mode.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<Plan> $query
+     * @param  \Illuminate\Database\Eloquent\Builder<Plan>  $query
      * @return \Illuminate\Database\Eloquent\Builder<Plan>
      */
     public function scopeStorageMode($query, StorageMode $mode)
@@ -349,7 +422,7 @@ class Plan extends Model
     /**
      * Scope to filter local plans only.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<Plan> $query
+     * @param  \Illuminate\Database\Eloquent\Builder<Plan>  $query
      * @return \Illuminate\Database\Eloquent\Builder<Plan>
      */
     public function scopeLocal($query)
@@ -360,7 +433,7 @@ class Plan extends Model
     /**
      * Scope to filter account plans only.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<Plan> $query
+     * @param  \Illuminate\Database\Eloquent\Builder<Plan>  $query
      * @return \Illuminate\Database\Eloquent\Builder<Plan>
      */
     public function scopeAccount($query)

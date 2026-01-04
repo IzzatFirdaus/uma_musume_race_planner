@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Events\PlanCreated;
+use App\Events\PlanUpdated;
 use App\Models\ActivityLog;
 use App\Models\Plan;
 use App\Models\SkillReference;
@@ -38,6 +40,8 @@ class PlanService
             $this->syncSkills($plan, $validated['skills'] ?? []);
             $this->logActivity("New plan created: {$plan->plan_title}", 'bi-person-plus');
 
+            event(new PlanCreated($plan));
+
             return $plan;
         });
     }
@@ -56,6 +60,8 @@ class PlanService
             $plan = $this->createBasicPlan($validated);
             $this->createDefaultAttributes($plan);
             $this->logActivity("New plan created: {$plan->plan_title}", 'bi-person-plus');
+
+            event(new PlanCreated($plan));
 
             return $plan;
         });
@@ -77,6 +83,8 @@ class PlanService
             $this->updatePlanData($request, $plan, $validated);
             $this->updatePlanRelations($plan, $validated);
             $this->logActivity("Plan updated: {$plan->plan_title}", 'bi-arrow-repeat');
+
+            event(new PlanUpdated($plan));
 
             return $plan;
         });
@@ -114,7 +122,7 @@ class PlanService
     private function createPlanWithData(array $planData): Plan
     {
         $planData['trainee_image_path'] = null;
-        $planData['user_id'] = 1; // Public user ID
+        $planData['user_id'] = auth()->id() ?? 1; // Use authenticated user or fallback to public user
 
         return Plan::create($planData);
     }
@@ -128,7 +136,7 @@ class PlanService
     private function createBasicPlan(array $validated): Plan
     {
         return Plan::create([
-            'user_id' => 1, // Public user ID
+            'user_id' => auth()->id() ?? 1, // Use authenticated user or fallback to public user
             'name' => $validated['trainee_name'],
             'plan_title' => $validated['trainee_name']."'s New Plan",
             'career_stage' => $validated['career_stage'],
@@ -179,8 +187,13 @@ class PlanService
     private function createPlanRelations(Plan $plan, array $validated): void
     {
         $relations = [
-            'attributes', 'goals', 'racePredictions', 'turns',
-            'terrainGrades', 'distanceGrades', 'styleGrades',
+            'attributes',
+            'goals',
+            'racePredictions',
+            'turns',
+            'terrainGrades',
+            'distanceGrades',
+            'styleGrades',
         ];
 
         foreach ($relations as $relation) {
@@ -217,8 +230,13 @@ class PlanService
     private function updatePlanRelations(Plan $plan, array $validated): void
     {
         $relations = [
-            'attributes', 'goals', 'racePredictions', 'turns',
-            'terrainGrades', 'distanceGrades', 'styleGrades',
+            'attributes',
+            'goals',
+            'racePredictions',
+            'turns',
+            'terrainGrades',
+            'distanceGrades',
+            'styleGrades',
         ];
 
         foreach ($relations as $relation) {

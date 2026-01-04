@@ -65,7 +65,7 @@ class SkillController extends Controller
     public function search(Request $request): JsonResponse
     {
         // Rate limiting: 60 requests per minute per IP
-        $key = 'skill-search:' . $request->ip();
+        $key = 'skill-search:'.$request->ip();
         if (RateLimiter::tooManyAttempts($key, 60)) {
             $seconds = RateLimiter::availableIn($key);
 
@@ -78,6 +78,14 @@ class SkillController extends Controller
 
         RateLimiter::hit($key, 60);
 
+        // Validate query parameter - return 422 with proper structure if missing
+        if (! $request->has('q') || $request->input('q') === null || $request->input('q') === '') {
+            return response()->json([
+                'message' => 'The q field is required.',
+                'errors' => ['q' => ['The q field is required.']],
+            ], 422);
+        }
+
         $validated = $request->validate([
             'q' => 'required|string|min:1|max:100',
             'limit' => 'nullable|integer|min:1|max:50',
@@ -89,7 +97,7 @@ class SkillController extends Controller
         $skills = $this->skillService->search($query, $limit);
 
         return response()->json([
-            'data' => $skills->map(fn($skill) => [
+            'data' => $skills->map(fn ($skill) => [
                 'id' => $skill->id,
                 'name' => $skill->skill_name,
                 'description' => $skill->description,
@@ -113,7 +121,7 @@ class SkillController extends Controller
 
         if ($status) {
             $skillStatus = SkillStatus::tryFrom($status);
-            if (!$skillStatus) {
+            if (! $skillStatus) {
                 return response()->json([
                     'error' => 'Invalid status',
                     'message' => 'Status must be one of: acquired, skipped, suggested',
@@ -136,6 +144,23 @@ class SkillController extends Controller
     }
 
     /**
+     * Get a single skill.
+     * GET /api/v1/plans/{plan}/skills/{skill}
+     */
+    public function show(Plan $plan, Skill $skill): SkillResource|JsonResponse
+    {
+        // Verify the skill belongs to the plan
+        if ($skill->plan_id !== $plan->id) {
+            return response()->json([
+                'error' => 'Skill not found',
+                'message' => 'The skill does not belong to this plan.',
+            ], 404);
+        }
+
+        return new SkillResource($skill->load('skillReference'));
+    }
+
+    /**
      * Add a skill to a plan.
      * POST /api/v1/plans/{plan}/skills
      */
@@ -151,10 +176,19 @@ class SkillController extends Controller
             'notes' => 'nullable|string|max:1000',
         ]);
 
+        // Additional validation: turn_acquired required when status is acquired
+        $status = SkillStatus::tryFrom($validated['status']);
+        if ($status === SkillStatus::Acquired && empty($validated['turn_acquired'])) {
+            return response()->json([
+                'message' => 'The turn acquired field is required when status is acquired.',
+                'errors' => ['turn_acquired' => ['The turn acquired field is required when status is acquired.']],
+            ], 422);
+        }
+
         try {
             $skill = $this->skillService->addToPlan($plan, $validated);
 
-            return new SkillResource($skill->load('skillReference'));
+            return (new SkillResource($skill->load('skillReference')))->response()->setStatusCode(201);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
                 'error' => 'Validation failed',

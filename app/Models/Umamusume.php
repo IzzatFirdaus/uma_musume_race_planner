@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -32,6 +33,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Umamusume extends Model
 {
+    use HasFactory;
+
     public $incrementing = false;
 
     protected $table = 'umamusume';
@@ -41,9 +44,27 @@ class Umamusume extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'name', 'nickname', 'team', 'release_batch', 'cv', 'birthday', 'height_cm', 'weight',
-        'three_sizes', 'images', 'rarity', 'growth_rates', 'aptitudes', 'base_stats', 'unique_skill',
-        'skills', 'career_goals', 'tags', 'ui', 'links',
+        'id',
+        'name',
+        'nickname',
+        'team',
+        'release_batch',
+        'cv',
+        'birthday',
+        'height_cm',
+        'weight',
+        'three_sizes',
+        'images',
+        'rarity',
+        'growth_rates',
+        'aptitudes',
+        'base_stats',
+        'unique_skill',
+        'skills',
+        'career_goals',
+        'tags',
+        'ui',
+        'links',
     ];
 
     protected function casts(): array

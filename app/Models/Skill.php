@@ -122,7 +122,7 @@ class Skill extends Model
     /**
      * Scope to filter by status.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<Skill> $query
+     * @param  \Illuminate\Database\Eloquent\Builder<Skill>  $query
      * @return \Illuminate\Database\Eloquent\Builder<Skill>
      */
     public function scopeStatus($query, SkillStatus $status)
@@ -133,7 +133,7 @@ class Skill extends Model
     /**
      * Scope to filter acquired skills only.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<Skill> $query
+     * @param  \Illuminate\Database\Eloquent\Builder<Skill>  $query
      * @return \Illuminate\Database\Eloquent\Builder<Skill>
      */
     public function scopeAcquired($query)
@@ -144,11 +144,71 @@ class Skill extends Model
     /**
      * Scope to filter suggested skills only.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<Skill> $query
+     * @param  \Illuminate\Database\Eloquent\Builder<Skill>  $query
      * @return \Illuminate\Database\Eloquent\Builder<Skill>
      */
     public function scopeSuggested($query)
     {
         return $query->where('status', SkillStatus::Suggested);
+    }
+
+    /**
+     * Get the SP cost as an integer.
+     * Implements Requirements 6.7: SP calculation support.
+     */
+    public function getSpCostInt(): int
+    {
+        return (int) ($this->sp_cost ?? 0);
+    }
+
+    /**
+     * Validate that turn_acquired is set when status is Acquired.
+     * Implements Requirements 6.5: turn_acquired required when status=acquired.
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function validateTurnAcquired(): void
+    {
+        if ($this->status === SkillStatus::Acquired && $this->turn_acquired === null) {
+            throw new \InvalidArgumentException(
+                'turn_acquired is required when skill status is Acquired'
+            );
+        }
+    }
+
+    /**
+     * Check if turn_acquired is valid (1-78 range).
+     * Implements Requirements 6.5: Valid turn range validation.
+     */
+    public function hasTurnAcquiredInRange(): bool
+    {
+        if ($this->turn_acquired === null) {
+            return true; // null is valid for non-acquired skills
+        }
+
+        return $this->turn_acquired >= 1 && $this->turn_acquired <= 78;
+    }
+
+    /**
+     * Boot method for model events.
+     */
+    protected static function booted(): void
+    {
+        // Validate turn_acquired on save
+        static::saving(function (self $skill): void {
+            // Clear turn_acquired if status is not Acquired
+            if ($skill->status !== SkillStatus::Acquired) {
+                $skill->turn_acquired = null;
+            }
+
+            // Validate turn_acquired range if set
+            if ($skill->turn_acquired !== null) {
+                if ($skill->turn_acquired < 1 || $skill->turn_acquired > 78) {
+                    throw new \InvalidArgumentException(
+                        'turn_acquired must be between 1 and 78'
+                    );
+                }
+            }
+        });
     }
 }

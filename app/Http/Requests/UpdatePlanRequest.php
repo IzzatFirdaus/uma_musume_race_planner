@@ -47,6 +47,9 @@ class UpdatePlanRequest extends FormRequest
             'goals' => 'sometimes|nullable|array',
             'goals.*.goal' => 'required|string|max:255',
             'goals.*.result' => 'nullable|string|max:255',
+
+            // Image validation: jpg/png/webp, max 2MB
+            'trainee_image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
     }
 }

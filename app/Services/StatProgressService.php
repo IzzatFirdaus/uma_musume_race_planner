@@ -120,7 +120,7 @@ class StatProgressService
             ->orderBy('turn_number', 'desc')
             ->first();
 
-        if (!$latestTurn) {
+        if (! $latestTurn) {
             return [
                 'speed' => 0,
                 'stamina' => 0,
@@ -150,16 +150,17 @@ class StatProgressService
             ->selectRaw('AVG(speed) as speed, AVG(stamina) as stamina, AVG(power) as power, AVG(guts) as guts, AVG(wit) as wit')
             ->first();
 
-        if (!$averages) {
+        if (! $averages) {
             return array_fill_keys(self::STAT_ATTRIBUTES, 0);
         }
 
+        // Cast to float to handle SQLite returning strings for AVG()
         return [
-            'speed' => round($averages->speed ?? 0, 1),
-            'stamina' => round($averages->stamina ?? 0, 1),
-            'power' => round($averages->power ?? 0, 1),
-            'guts' => round($averages->guts ?? 0, 1),
-            'wit' => round($averages->wit ?? 0, 1),
+            'speed' => round((float) ($averages->speed ?? 0), 1),
+            'stamina' => round((float) ($averages->stamina ?? 0), 1),
+            'power' => round((float) ($averages->power ?? 0), 1),
+            'guts' => round((float) ($averages->guts ?? 0), 1),
+            'wit' => round((float) ($averages->wit ?? 0), 1),
         ];
     }
 

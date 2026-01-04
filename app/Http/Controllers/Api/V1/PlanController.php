@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\PlanCreated;
+use App\Events\PlanUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
@@ -64,6 +66,8 @@ class PlanController extends Controller
             $this->createDefaultAttributes($plan);
             $this->logPlanCreation($plan);
 
+            event(new PlanCreated($plan));
+
             return $plan;
         });
 
@@ -76,7 +80,8 @@ class PlanController extends Controller
      */
     public function show(Plan $plan): PlanResource
     {
-        // UPDATED: Authorization removed
+        $this->authorize('view', $plan);
+
         return new PlanResource($plan->load($this->getRelationshipsToLoad()));
     }
 
@@ -88,6 +93,7 @@ class PlanController extends Controller
      */
     public function update(UpdatePlanRequest $request, Plan $plan): PlanResource
     {
+        $this->authorize('update', $plan);
         $validated = $request->validated();
         $this->performPlanUpdate($request, $plan, $validated);
 
@@ -100,7 +106,7 @@ class PlanController extends Controller
      */
     public function destroy(Plan $plan): JsonResponse
     {
-        // UPDATED: Authorization removed
+        $this->authorize('delete', $plan);
         $planTitle = $plan->plan_title;
 
         DB::transaction(function () use ($plan, $planTitle): void {
@@ -126,7 +132,7 @@ class PlanController extends Controller
      */
     public function progressChart(Plan $plan): JsonResponse
     {
-        // UPDATED: Authorization removed
+        $this->authorize('view', $plan);
         $turns = $plan->turns()->orderBy('turn_number')->get(['turn_number as turn', 'speed', 'stamina', 'power', 'guts', 'wit']);
 
         return response()->json(['success' => true, 'data' => $turns]);
@@ -138,7 +144,7 @@ class PlanController extends Controller
      */
     public function export(Plan $plan): Response
     {
-        // UPDATED: Authorization removed
+        $this->authorize('view', $plan);
         $plan->load($this->getRelationshipsToLoad());
         $safeFileName = preg_replace('/[^a-z0-9_]/i', '_', $plan->plan_title ? $plan->plan_title : 'plan');
         $fileName = "{$safeFileName}_{$plan->id}.txt";
@@ -156,8 +162,17 @@ class PlanController extends Controller
     {
         // UPDATED: 'user' relationship removed from eager loading
         return [
-            'attributes', 'skills.skillReference', 'racePredictions', 'goals', 'turns',
-            'terrainGrades', 'distanceGrades', 'styleGrades', 'mood', 'condition', 'strategy',
+            'attributes',
+            'skills.skillReference',
+            'racePredictions',
+            'goals',
+            'turns',
+            'terrainGrades',
+            'distanceGrades',
+            'styleGrades',
+            'mood',
+            'condition',
+            'strategy',
         ];
     }
 
@@ -170,6 +185,8 @@ class PlanController extends Controller
             $this->syncSkills($plan, $validated['skills'] ?? []);
             $this->logPlanCreation($plan);
 
+            event(new PlanCreated($plan));
+
             return $plan;
         });
     }
@@ -177,7 +194,7 @@ class PlanController extends Controller
     private function createPlanWithData(array $planData): Plan
     {
         $planData['trainee_image_path'] = null;
-        $planData['user_id'] = self::PUBLIC_USER_ID;
+        $planData['user_id'] = auth()->id() ?? self::PUBLIC_USER_ID;
 
         return Plan::create($planData);
     }
@@ -192,7 +209,13 @@ class PlanController extends Controller
     private function createPlanRelations(Plan $plan, array $validated): void
     {
         $this->createRelations($plan, $validated, [
-            'attributes', 'goals', 'racePredictions', 'turns', 'terrainGrades', 'distanceGrades', 'styleGrades',
+            'attributes',
+            'goals',
+            'racePredictions',
+            'turns',
+            'terrainGrades',
+            'distanceGrades',
+            'styleGrades',
         ]);
     }
 
@@ -229,7 +252,7 @@ class PlanController extends Controller
     private function createQuickPlan(array $validated): Plan
     {
         return Plan::create([
-            'user_id' => self::PUBLIC_USER_ID, // UPDATED: Assign to the default public user
+            'user_id' => auth()->id() ?? self::PUBLIC_USER_ID,
             'name' => $validated['trainee_name'],
             'plan_title' => $validated['trainee_name']."'s New Plan",
             'career_stage' => $validated['career_stage'],
@@ -262,6 +285,8 @@ class PlanController extends Controller
                 'description' => "Plan updated: {$plan->plan_title}",
                 'icon_class' => 'bi-arrow-repeat',
             ]);
+
+            event(new PlanUpdated($plan));
         });
     }
 
@@ -278,7 +303,13 @@ class PlanController extends Controller
     private function updatePlanRelations(Plan $plan, array $validated): void
     {
         $relations = [
-            'attributes', 'goals', 'racePredictions', 'turns', 'terrainGrades', 'distanceGrades', 'styleGrades',
+            'attributes',
+            'goals',
+            'racePredictions',
+            'turns',
+            'terrainGrades',
+            'distanceGrades',
+            'styleGrades',
         ];
         foreach ($relations as $relation) {
             if (isset($validated[$relation])) {
