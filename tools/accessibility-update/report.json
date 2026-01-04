@@ -1,18 +1,18 @@
 {
-  "updated_files": [
-    "tailwind.config.js",
-    "resources/css/app.css",
-    "resources/views/components/input.blade.php",
-    "resources/views/components/button.blade.php",
-    "resources/views/components/layout.blade.php",
-    "resources/views/dashboard.blade.php",
-    "tools/accessibility-update/PR_DESCRIPTION.md"
-  ],
-  "tests_added": [],
-  "axe_violations_before": "N/A",
-  "axe_violations_after": "N/A",
-  "pint_pass": null,
-  "phpunit_pass": null,
-  "status": "failed",
-  "notes": "Playwright accessibility tests failed: net::ERR_CONNECTION_REFUSED (dev server was not running). No axe violation counts available. Please re-run tests with the dev server running on http://localhost:8000 or the correct baseUrl."
+    "updated_files": [
+        "tailwind.config.js",
+        "resources/css/app.css",
+        "resources/views/components/input.blade.php",
+        "resources/views/components/button.blade.php",
+        "resources/views/components/layout.blade.php",
+        "resources/views/dashboard.blade.php",
+        "tools/accessibility-update/PR_DESCRIPTION.md"
+    ],
+    "tests_added": [],
+    "axe_violations_before": "N/A",
+    "axe_violations_after": "N/A",
+    "pint_pass": null,
+    "phpunit_pass": null,
+    "status": "failed",
+    "notes": "Playwright accessibility tests failed: net::ERR_CONNECTION_REFUSED (dev server was not running). No axe violation counts available. Please re-run tests with the dev server running on http://localhost:8000 or the correct baseUrl."
 }
