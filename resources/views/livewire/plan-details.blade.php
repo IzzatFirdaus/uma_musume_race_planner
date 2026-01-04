@@ -1,10 +1,9 @@
-
 <div class="modal fade" id="planDetailsModal" tabindex="-1" aria-labelledby="planDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="planDetailsModalLabel">
-                    @if($plan_title)
+                    @if ($plan_title)
                         Plan Details: {{ $plan_title }}
                     @else
                         Plan Details
@@ -14,61 +13,62 @@
             </div>
 
             <div class="modal-body">
-                {{-- Bootstrap Tab Navigation --}}
-                <ul class="nav nav-tabs mb-3" id="planTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="attributes-tab" data-bs-toggle="tab"
-                            data-bs-target="#attributes-pane" type="button" role="tab"
-                            aria-controls="attributes-pane" aria-selected="true">
-                            Attributes
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="skills-tab" data-bs-toggle="tab"
-                            data-bs-target="#skills-pane" type="button" role="tab"
-                            aria-controls="skills-pane" aria-selected="false">
-                            Skills
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="predictions-tab" data-bs-toggle="tab"
-                            data-bs-target="#predictions-pane" type="button" role="tab"
-                            aria-controls="predictions-pane" aria-selected="false">
-                            Race Predictions
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="goals-tab" data-bs-toggle="tab"
-                            data-bs-target="#goals-pane" type="button" role="tab"
-                            aria-controls="goals-pane" aria-selected="false">
-                            Goals
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="support-cards-tab" data-bs-toggle="tab"
-                            data-bs-target="#support-cards-pane" type="button" role="tab"
-                            aria-controls="support-cards-pane" aria-selected="false">
-                            Support Cards
-                        </button>
-                    </li>
-                </ul>
+                {{-- Bootstrap Tab Navigation (Req 14.3 - Horizontal scrolling on mobile) --}}
+                <div class="tabs-scroll-container -mx-3 px-3 sm:mx-0 sm:px-0">
+                    <ul class="nav nav-tabs tabs-scroll-list mb-3" id="planTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="attributes-tab" data-bs-toggle="tab"
+                                data-bs-target="#attributes-pane" type="button" role="tab"
+                                aria-controls="attributes-pane" aria-selected="true">
+                                Attributes
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills-pane"
+                                type="button" role="tab" aria-controls="skills-pane" aria-selected="false">
+                                Skills
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="predictions-tab" data-bs-toggle="tab"
+                                data-bs-target="#predictions-pane" type="button" role="tab"
+                                aria-controls="predictions-pane" aria-selected="false">
+                                Race Predictions
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals-pane"
+                                type="button" role="tab" aria-controls="goals-pane" aria-selected="false">
+                                Goals
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="support-cards-tab" data-bs-toggle="tab"
+                                data-bs-target="#support-cards-pane" type="button" role="tab"
+                                aria-controls="support-cards-pane" aria-selected="false">
+                                Support Cards
+                            </button>
+                        </li>
+                    </ul>
+                </div>
 
                 {{-- Tab Content --}}
                 <div class="tab-content" id="planTabsContent">
                     {{-- Attributes Tab --}}
                     <div class="tab-pane fade show active" id="attributes-pane" role="tabpanel"
                         aria-labelledby="attributes-tab" tabindex="0">
-                        @if(empty($planAttributes))
+                        @if (empty($planAttributes))
                             <div class="text-center text-muted p-4">
                                 <p>No attributes data available</p>
                             </div>
                         @else
                             <div class="row">
-                                @foreach($planAttributes ?? [] as $index => $attribute)
+                                @foreach ($planAttributes ?? [] as $index => $attribute)
                                     <div class="col-md-6 col-lg-4 mb-3">
                                         <div class="card">
                                             <div class="card-body">
-                                                <h6 class="card-title">{{ $attribute['attribute_name'] ?? 'Unknown' }}</h6>
+                                                <h6 class="card-title">{{ $attribute['attribute_name'] ?? 'Unknown' }}
+                                                </h6>
                                                 <div class="mb-2">
                                                     <label class="form-label">Value</label>
                                                     <input type="number" class="form-control"
@@ -98,8 +98,8 @@
                     </div>
 
                     {{-- Skills Tab --}}
-                    <div class="tab-pane fade" id="skills-pane" role="tabpanel"
-                        aria-labelledby="skills-tab" tabindex="0">
+                    <div class="tab-pane fade" id="skills-pane" role="tabpanel" aria-labelledby="skills-tab"
+                        tabindex="0">
                         <livewire:plans.skills-editor :planId="$planId" :skills="$skills" />
                     </div>
 
@@ -110,8 +110,8 @@
                     </div>
 
                     {{-- Goals Tab --}}
-                    <div class="tab-pane fade" id="goals-pane" role="tabpanel"
-                        aria-labelledby="goals-tab" tabindex="0">
+                    <div class="tab-pane fade" id="goals-pane" role="tabpanel" aria-labelledby="goals-tab"
+                        tabindex="0">
                         <livewire:plans.goals-editor :planId="$planId" :goals="$goals" />
                     </div>
 
