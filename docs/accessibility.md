@@ -89,9 +89,9 @@ All form inputs must have associated labels:
 
 <!-- ✅ Error descriptions linked via aria-describedby -->
 <label for="password">Password</label>
-<input 
-  type="password" 
-  id="password" 
+<input
+  type="password"
+  id="password"
   name="password"
   aria-describedby="password-error"
 />
@@ -104,9 +104,9 @@ All form inputs must have associated labels:
 
 ```blade
 <!-- Use the accessible input component -->
-<x-input 
-  name="email" 
-  type="email" 
+<x-input
+  name="email"
+  type="email"
   label="Email Address"
   error="{{ $errors->first('email') }}"
 />
@@ -353,7 +353,7 @@ npx playwright test tests/playwright/accessibility.spec.ts --grep "axe violation
 ### Button Component (`x-button`)
 
 ```blade
-<x-button 
+<x-button
   type="button"          <!-- button|submit|reset -->
   variant="primary"      <!-- primary|secondary|danger|ghost -->
   size="md"              <!-- sm|md|lg|icon -->
@@ -447,9 +447,9 @@ npx playwright test tests/playwright/accessibility.spec.ts --grep "axe violation
 ```blade
 <button class="custom-button">Click me</button>
 <!-- OR if must use div: -->
-<div 
-  class="custom-button" 
-  role="button" 
+<div
+  class="custom-button"
+  role="button"
   tabindex="0"
   @keydown.enter="action()"
   @keydown.space="action()"

@@ -13,9 +13,9 @@ Uma Musume Planner is a comprehensive tool for tracking and managing your Uma Mu
 1. Navigate to **Characters** from the main menu
 2. Click **Add Character**
 3. Fill in the character details:
-   - Name (English and Japanese)
-   - Aptitude grades for Style, Distance, and Track
-   - Growth rate bonuses for each stat
+    - Name (English and Japanese)
+    - Aptitude grades for Style, Distance, and Track
+    - Growth rate bonuses for each stat
 4. Optionally upload a character image
 5. Click **Save**
 
@@ -50,10 +50,10 @@ The Dashboard shows:
 
 Plans can be stored in two ways:
 
-| Mode | Description | Persistence |
-|------|-------------|-------------|
-| **Local** | Stored in your browser | This device only |
-| **Account** | Stored in database | All devices (requires login) |
+| Mode        | Description            | Persistence                  |
+| ----------- | ---------------------- | ---------------------------- |
+| **Local**   | Stored in your browser | This device only             |
+| **Account** | Stored in database     | All devices (requires login) |
 
 Look for the badge on each plan indicating its storage mode.
 
@@ -118,19 +118,19 @@ The summary panel shows:
 
 1. Go to the **Skills** tab in plan details
 2. Use the search box to find skills
-   - Search works in English and Japanese
-   - Use keyboard: ↑/↓ to navigate, Enter to select
+    - Search works in English and Japanese
+    - Use keyboard: ↑/↓ to navigate, Enter to select
 3. Select a skill from the dropdown
 
 ### Skill Status
 
 Each skill has one of three statuses:
 
-| Status | Meaning | Turn Required |
-|--------|---------|---------------|
-| **Acquired** | You have this skill | Yes |
-| **Suggested** | Planning to get | No |
-| **Skipped** | Decided not to get | No |
+| Status        | Meaning             | Turn Required |
+| ------------- | ------------------- | ------------- |
+| **Acquired**  | You have this skill | Yes           |
+| **Suggested** | Planning to get     | No            |
+| **Skipped**   | Decided not to get  | No            |
 
 ### SP Tracking
 
@@ -149,10 +149,10 @@ The skill panel shows:
 1. Go to the **Racing** tab
 2. Click **Add Race**
 3. Enter race details:
-   - Race name
-   - Distance category
-   - Track type
-   - Venue
+    - Race name
+    - Distance category
+    - Track type
+    - Venue
 4. Drag to reorder race priority
 
 ### Goals
@@ -182,10 +182,10 @@ Capture your run's state at important moments:
 1. Open a plan or select multiple plans
 2. Click **Export**
 3. Choose format:
-   - **JSON**: For backup or transfer
-   - **CSV**: For spreadsheet analysis
-   - **Markdown**: For sharing/documentation
-   - **Excel**: Full spreadsheet with multiple sheets
+    - **JSON**: For backup or transfer
+    - **CSV**: For spreadsheet analysis
+    - **Markdown**: For sharing/documentation
+    - **Excel**: Full spreadsheet with multiple sheets
 4. Preview the export
 5. Click **Download** or **Copy to Clipboard**
 
@@ -196,8 +196,8 @@ Capture your run's state at important moments:
 3. The system auto-detects the format
 4. Review the field mapping preview
 5. Choose import target:
-   - **Local Storage**: No account needed
-   - **Account**: Requires login
+    - **Local Storage**: No account needed
+    - **Account**: Requires login
 6. Click **Import**
 7. Review the results report
 
@@ -225,13 +225,13 @@ Toggle dark mode using the sun/moon icon in the navigation bar.
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| **Ctrl+S** | Save current form |
-| **Esc** | Close modal/panel |
-| **↑/↓** | Navigate autocomplete |
-| **Enter** | Select autocomplete item |
-| **Tab** | Navigate between fields |
+| Shortcut   | Action                   |
+| ---------- | ------------------------ |
+| **Ctrl+S** | Save current form        |
+| **Esc**    | Close modal/panel        |
+| **↑/↓**    | Navigate autocomplete    |
+| **Enter**  | Select autocomplete item |
+| **Tab**    | Navigate between fields  |
 
 ---
 

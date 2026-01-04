@@ -6,13 +6,13 @@ This guide covers migrating data from the five legacy Uma Musume tracking applic
 
 ### Supported Legacy Formats
 
-| Source Application | Format | Priority |
-|--------------------|--------|----------|
-| uma-run-tracker | JSON | Primary |
-| umamusume-tracker | JSON/API | Secondary |
-| uma-tracker | SQLite/MySQL | Secondary |
-| uma_musume_race_planner | MySQL dump | Tertiary |
-| uma-tracker-form | CSV export | Tertiary |
+| Source Application      | Format       | Priority  |
+| ----------------------- | ------------ | --------- |
+| uma-run-tracker         | JSON         | Primary   |
+| umamusume-tracker       | JSON/API     | Secondary |
+| uma-tracker             | SQLite/MySQL | Secondary |
+| uma_musume_race_planner | MySQL dump   | Tertiary  |
+| uma-tracker-form        | CSV export   | Tertiary  |
 
 ---
 
@@ -52,45 +52,54 @@ The primary import format from the uma-run-tracker application:
 
 ```json
 {
-  "schema_version": "1.0.0",
-  "exported_at": "2025-01-03T12:00:00Z",
-  "runs": [
-    {
-      "id": "uuid-string",
-      "character": {
-        "name": "Special Week",
-        "name_jp": "スペシャルウィーク"
-      },
-      "year": "classic",
-      "status": "ongoing",
-      "class": "open",
-      "current_turn": 45,
-      "sp_available": 350,
-      "stamina_pct": 85,
-      "stats": [
-        { "turn": 1, "speed": 150, "stamina": 120, "power": 130, "guts": 100, "wit": 110 }
-      ],
-      "skills": [
-        { "name": "Last Legs", "status": "acquired", "turn_acquired": 15 }
-      ],
-      "goals": [
-        { "description": "Win Japan Cup", "achieved": false }
-      ],
-      "created_at": "2025-01-01T10:00:00Z"
-    }
-  ]
+    "schema_version": "1.0.0",
+    "exported_at": "2025-01-03T12:00:00Z",
+    "runs": [
+        {
+            "id": "uuid-string",
+            "character": {
+                "name": "Special Week",
+                "name_jp": "スペシャルウィーク"
+            },
+            "year": "classic",
+            "status": "ongoing",
+            "class": "open",
+            "current_turn": 45,
+            "sp_available": 350,
+            "stamina_pct": 85,
+            "stats": [
+                {
+                    "turn": 1,
+                    "speed": 150,
+                    "stamina": 120,
+                    "power": 130,
+                    "guts": 100,
+                    "wit": 110
+                }
+            ],
+            "skills": [
+                {
+                    "name": "Last Legs",
+                    "status": "acquired",
+                    "turn_acquired": 15
+                }
+            ],
+            "goals": [{ "description": "Win Japan Cup", "achieved": false }],
+            "created_at": "2025-01-01T10:00:00Z"
+        }
+    ]
 }
 ```
 
 ### Field Mapping
 
-| Legacy Field | Canonical Field | Notes |
-|--------------|-----------------|-------|
-| `sp_available` | `total_sp_available` | Renamed |
-| `stamina_pct` | `stamina_percentage` | Renamed |
-| `turn` | `turn_number` | In stat_progress |
-| `class` | `uma_class` | Enum mapping |
-| `status` | `status` | Direct mapping |
+| Legacy Field   | Canonical Field      | Notes            |
+| -------------- | -------------------- | ---------------- |
+| `sp_available` | `total_sp_available` | Renamed          |
+| `stamina_pct`  | `stamina_percentage` | Renamed          |
+| `turn`         | `turn_number`        | In stat_progress |
+| `class`        | `uma_class`          | Enum mapping     |
+| `status`       | `status`             | Direct mapping   |
 
 ### Running JSON Import
 
@@ -154,12 +163,12 @@ php artisan migrate:legacy-mysql path/to/dump.sql
 
 ### Table Mapping
 
-| Legacy Table | Target Table | Notes |
-|--------------|--------------|-------|
-| `characters` | `uma_musumes` | Field mapping applied |
-| `runs` | `career_runs` | Status enum converted |
-| `stats` | `stat_progress` | Turn field renamed |
-| `skills` | `skill_career_runs` | Status enum converted |
+| Legacy Table | Target Table        | Notes                 |
+| ------------ | ------------------- | --------------------- |
+| `characters` | `uma_musumes`       | Field mapping applied |
+| `runs`       | `career_runs`       | Status enum converted |
+| `stats`      | `stat_progress`     | Turn field renamed    |
+| `skills`     | `skill_career_runs` | Status enum converted |
 
 ---
 

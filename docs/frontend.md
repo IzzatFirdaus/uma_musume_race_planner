@@ -96,16 +96,16 @@ The application supports two distinct storage modes:
 
 ```json
 {
-  "dependencies": {
-    "alpinejs": "^3.x",
-    "tailwindcss": "^4.x",
-    "vite": "^5.x"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.x",
-    "vitest": "^1.x",
-    "fast-check": "^3.x"
-  }
+    "dependencies": {
+        "alpinejs": "^3.x",
+        "tailwindcss": "^4.x",
+        "vite": "^5.x"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.x",
+        "vitest": "^1.x",
+        "fast-check": "^3.x"
+    }
 }
 ```
 
@@ -126,12 +126,12 @@ The application supports two distinct storage modes:
 
 ```javascript
 const STORAGE_KEYS = {
-  LOCAL_RUNS: 'uma_local_runs',           // LocalRunsStore
-  DRAFTS: 'uma_drafts',                   // Record<string, DraftState>
-  PREFERENCES: 'uma_preferences',          // UserPreferences
-  DISMISSED_TOOLTIPS: 'uma_dismissed_tips', // string[]
-  RECENT_SEARCHES: 'uma_recent_searches',  // string[]
-  SAVED_VIEWS: 'uma_saved_views',          // SavedView[]
+    LOCAL_RUNS: "uma_local_runs", // LocalRunsStore
+    DRAFTS: "uma_drafts", // Record<string, DraftState>
+    PREFERENCES: "uma_preferences", // UserPreferences
+    DISMISSED_TOOLTIPS: "uma_dismissed_tips", // string[]
+    RECENT_SEARCHES: "uma_recent_searches", // string[]
+    SAVED_VIEWS: "uma_saved_views", // SavedView[]
 };
 ```
 
@@ -157,43 +157,43 @@ The application uses distinct routing patterns for each storage mode:
 
 ### Page Components (Livewire Full-Page)
 
-| Component | Route | Description |
-|-----------|-------|-------------|
-| `Dashboard` | `/`, `/dashboard` | Main landing page with plan list, stats panel, activity log |
-| `PlanView` | `/plans/{id}` | Read-only plan details (Account runs, numeric ID) |
-| `PlanEdit` | `/plans/{id}/edit` | Full-screen plan editor (Account runs) |
-| `LocalPlanView` | `/plans/local/{uuid}` | Read-only plan details (Local runs, UUID) |
-| `LocalPlanEdit` | `/plans/local/{uuid}/edit` | Full-screen plan editor (Local runs) |
-| `CharacterList` | `/characters` | Browsable character roster with filtering |
-| `GuidePage` | `/guide` | Application usage guide with sticky navigation |
-| `ImportWizard` | `/import` | Multi-step import flow with preview |
-| `LocalDataManager` | `/local-data` | Local storage management interface |
+| Component          | Route                      | Description                                                 |
+| ------------------ | -------------------------- | ----------------------------------------------------------- |
+| `Dashboard`        | `/`, `/dashboard`          | Main landing page with plan list, stats panel, activity log |
+| `PlanView`         | `/plans/{id}`              | Read-only plan details (Account runs, numeric ID)           |
+| `PlanEdit`         | `/plans/{id}/edit`         | Full-screen plan editor (Account runs)                      |
+| `LocalPlanView`    | `/plans/local/{uuid}`      | Read-only plan details (Local runs, UUID)                   |
+| `LocalPlanEdit`    | `/plans/local/{uuid}/edit` | Full-screen plan editor (Local runs)                        |
+| `CharacterList`    | `/characters`              | Browsable character roster with filtering                   |
+| `GuidePage`        | `/guide`                   | Application usage guide with sticky navigation              |
+| `ImportWizard`     | `/import`                  | Multi-step import flow with preview                         |
+| `LocalDataManager` | `/local-data`              | Local storage management interface                          |
 
 ### Reusable Livewire Components
 
-| Component | Purpose | Key Props |
-|-----------|---------|-----------|
-| `PlanList` | Displays filterable plan cards | `filters`, `sortBy`, `storageMode` |
-| `PlanCard` | Individual plan summary | `plan`, `expanded`, `storageMode` |
-| `InlineEditor` | Quick-edit panel in list | `planId`, `storageMode` |
-| `SkillsEditor` | Skill table with autocomplete | `skills`, `totalSpAvailable` |
-| `TurnsEditor` | Turn-by-turn stat entry | `turns`, `careerStage` |
-| `AttributesDisplay` | Stat visualization | `stats`, `showCircular` |
-| `AptitudeGrades` | Grade selector grid | `aptitudes`, `editable` |
-| `RacePredictions` | Race planning table | `predictions`, `snapshots` |
-| `GoalsEditor` | Goal checklist | `goals` |
+| Component           | Purpose                        | Key Props                          |
+| ------------------- | ------------------------------ | ---------------------------------- |
+| `PlanList`          | Displays filterable plan cards | `filters`, `sortBy`, `storageMode` |
+| `PlanCard`          | Individual plan summary        | `plan`, `expanded`, `storageMode`  |
+| `InlineEditor`      | Quick-edit panel in list       | `planId`, `storageMode`            |
+| `SkillsEditor`      | Skill table with autocomplete  | `skills`, `totalSpAvailable`       |
+| `TurnsEditor`       | Turn-by-turn stat entry        | `turns`, `careerStage`             |
+| `AttributesDisplay` | Stat visualization             | `stats`, `showCircular`            |
+| `AptitudeGrades`    | Grade selector grid            | `aptitudes`, `editable`            |
+| `RacePredictions`   | Race planning table            | `predictions`, `snapshots`         |
+| `GoalsEditor`       | Goal checklist                 | `goals`                            |
 
 ### Alpine.js Components
 
-| Component | Purpose | State |
-|-----------|---------|-------|
-| `x-dropdown` | Generic dropdown menu | `open` |
-| `x-modal` | Modal dialog wrapper | `show`, `onClose` |
-| `x-tabs` | Tab navigation | `activeTab` |
-| `x-tooltip` | Hover/click tooltips | `visible`, `content` |
-| `x-dark-mode` | Theme toggle | `dark` (persisted) |
-| `x-toast` | Notification stack | `toasts[]` |
-| `x-confirm` | Confirmation dialog | `show`, `message`, `onConfirm` |
+| Component     | Purpose               | State                          |
+| ------------- | --------------------- | ------------------------------ |
+| `x-dropdown`  | Generic dropdown menu | `open`                         |
+| `x-modal`     | Modal dialog wrapper  | `show`, `onClose`              |
+| `x-tabs`      | Tab navigation        | `activeTab`                    |
+| `x-tooltip`   | Hover/click tooltips  | `visible`, `content`           |
+| `x-dark-mode` | Theme toggle          | `dark` (persisted)             |
+| `x-toast`     | Notification stack    | `toasts[]`                     |
+| `x-confirm`   | Confirmation dialog   | `show`, `message`, `onConfirm` |
 
 ## Data Models
 
@@ -205,66 +205,66 @@ The primary entity representing a training career run:
 
 ```typescript
 interface CareerRun {
-  // Identifiers
-  id: number | null;       // Database ID for Account runs, null for Local runs
-  uuid: string;            // Client-generated UUID for Local runs
-  storage_mode: 'local' | 'account';
-  
-  // Basic Info
-  title: string;
-  character_id: number | null;
-  character_name: string;
-  status: 'in_progress' | 'completed' | 'archived';
-  career_stage: 'junior' | 'classic' | 'senior';
-  current_turn: number;
-  
-  // Current Stats
-  speed: number;
-  stamina: number;
-  power: number;
-  guts: number;
-  wit: number;
-  
-  // Growth Rates
-  speed_growth: number;
-  stamina_growth: number;
-  power_growth: number;
-  guts_growth: number;
-  wit_growth: number;
-  
-  // Aptitudes (SS, S, A, B, C, D, E, F, G)
-  turf_aptitude: AptitudeGrade;
-  dirt_aptitude: AptitudeGrade;
-  sprint_aptitude: AptitudeGrade;
-  mile_aptitude: AptitudeGrade;
-  medium_aptitude: AptitudeGrade;
-  long_aptitude: AptitudeGrade;
-  nige_aptitude: AptitudeGrade;    // Front Runner
-  senkou_aptitude: AptitudeGrade;  // Pace Chaser
-  sashi_aptitude: AptitudeGrade;   // Late Surger
-  oikomi_aptitude: AptitudeGrade;  // End Closer
-  
-  // Status
-  mood: 'great' | 'good' | 'normal' | 'bad' | 'awful';
-  conditions: Condition[];
-  energy: number;
-  total_sp_available: number;
-  stamina_percentage: number;
-  
-  // Relations
-  skills: Skill[];
-  turns: Turn[];
-  goals: Goal[];
-  race_predictions: RacePrediction[];
-  support_cards: SupportCard[];
-  snapshots: RaceSnapshot[];
-  
-  // Metadata
-  strategy: Strategy | null;
-  notes: string;
-  image_path: string | null;
-  created_at: string;
-  updated_at: string;
+    // Identifiers
+    id: number | null; // Database ID for Account runs, null for Local runs
+    uuid: string; // Client-generated UUID for Local runs
+    storage_mode: "local" | "account";
+
+    // Basic Info
+    title: string;
+    character_id: number | null;
+    character_name: string;
+    status: "in_progress" | "completed" | "archived";
+    career_stage: "junior" | "classic" | "senior";
+    current_turn: number;
+
+    // Current Stats
+    speed: number;
+    stamina: number;
+    power: number;
+    guts: number;
+    wit: number;
+
+    // Growth Rates
+    speed_growth: number;
+    stamina_growth: number;
+    power_growth: number;
+    guts_growth: number;
+    wit_growth: number;
+
+    // Aptitudes (SS, S, A, B, C, D, E, F, G)
+    turf_aptitude: AptitudeGrade;
+    dirt_aptitude: AptitudeGrade;
+    sprint_aptitude: AptitudeGrade;
+    mile_aptitude: AptitudeGrade;
+    medium_aptitude: AptitudeGrade;
+    long_aptitude: AptitudeGrade;
+    nige_aptitude: AptitudeGrade; // Front Runner
+    senkou_aptitude: AptitudeGrade; // Pace Chaser
+    sashi_aptitude: AptitudeGrade; // Late Surger
+    oikomi_aptitude: AptitudeGrade; // End Closer
+
+    // Status
+    mood: "great" | "good" | "normal" | "bad" | "awful";
+    conditions: Condition[];
+    energy: number;
+    total_sp_available: number;
+    stamina_percentage: number;
+
+    // Relations
+    skills: Skill[];
+    turns: Turn[];
+    goals: Goal[];
+    race_predictions: RacePrediction[];
+    support_cards: SupportCard[];
+    snapshots: RaceSnapshot[];
+
+    // Metadata
+    strategy: Strategy | null;
+    notes: string;
+    image_path: string | null;
+    created_at: string;
+    updated_at: string;
 }
 ```
 
@@ -274,17 +274,40 @@ Skills are categorized by type and tier, with SS tier reserved for maximum stat 
 
 ```typescript
 interface Skill {
-  id: string;
-  name: string;
-  name_jp: string | null;
-  sp_cost: number;
-  tier: 'G-' | 'G' | 'G+' | 'F-' | 'F' | 'F+' | 'E-' | 'E' | 'E+' | 
-        'D-' | 'D' | 'D+' | 'C-' | 'C' | 'C+' | 'B-' | 'B' | 'B+' | 
-        'A-' | 'A' | 'A+' | 'S-' | 'S' | 'S+' | 'SS';
-  type: 'speed' | 'stamina' | 'power' | 'guts' | 'wit' | 'debuff';
-  status: 'acquired' | 'skipped' | 'suggested';
-  turn_acquired: number | null;
-  notes: string;
+    id: string;
+    name: string;
+    name_jp: string | null;
+    sp_cost: number;
+    tier:
+        | "G-"
+        | "G"
+        | "G+"
+        | "F-"
+        | "F"
+        | "F+"
+        | "E-"
+        | "E"
+        | "E+"
+        | "D-"
+        | "D"
+        | "D+"
+        | "C-"
+        | "C"
+        | "C+"
+        | "B-"
+        | "B"
+        | "B+"
+        | "A-"
+        | "A"
+        | "A+"
+        | "S-"
+        | "S"
+        | "S+"
+        | "SS";
+    type: "speed" | "stamina" | "power" | "guts" | "wit" | "debuff";
+    status: "acquired" | "skipped" | "suggested";
+    turn_acquired: number | null;
+    notes: string;
 }
 ```
 
@@ -294,19 +317,27 @@ Turn-by-turn progression tracking with milestone support:
 
 ```typescript
 interface Turn {
-  id: string;
-  turn_number: number;
-  career_year: 'junior' | 'classic' | 'senior';
-  training_type: 'speed' | 'stamina' | 'power' | 'guts' | 'wit' | 'rest' | 'race' | null;
-  speed: number;
-  stamina: number;
-  power: number;
-  guts: number;
-  wit: number;
-  energy: number;
-  notes: string;
-  is_milestone: boolean;
-  milestone_name: string | null; // e.g., "Summer Camp", "URA Finale"
+    id: string;
+    turn_number: number;
+    career_year: "junior" | "classic" | "senior";
+    training_type:
+        | "speed"
+        | "stamina"
+        | "power"
+        | "guts"
+        | "wit"
+        | "rest"
+        | "race"
+        | null;
+    speed: number;
+    stamina: number;
+    power: number;
+    guts: number;
+    wit: number;
+    energy: number;
+    notes: string;
+    is_milestone: boolean;
+    milestone_name: string | null; // e.g., "Summer Camp", "URA Finale"
 }
 ```
 
@@ -323,8 +354,8 @@ interface Turn {
 ```typescript
 // Hard max at 1200
 function validateStat(rawValue: number): boolean {
-  const HARD_MAX = 1200;
-  return rawValue >= 0 && rawValue <= HARD_MAX;
+    const HARD_MAX = 1200;
+    return rawValue >= 0 && rawValue <= HARD_MAX;
 }
 ```
 
@@ -345,33 +376,33 @@ The application uses game-accurate colors for stats, grades, and UI elements:
 ```javascript
 // Stat colors (game-accurate)
 const statColors = {
-  speed: '#3399ff',    // Blue
-  stamina: '#33cc99',  // Green
-  power: '#ff4d4d',    // Red
-  guts: '#ffa500',     // Orange
-  wit: '#9933ff',      // Purple
+    speed: "#3399ff", // Blue
+    stamina: "#33cc99", // Green
+    power: "#ff4d4d", // Red
+    guts: "#ffa500", // Orange
+    wit: "#9933ff", // Purple
 };
 
 // Aptitude grade colors
 const gradeColors = {
-  SS: '#e5e7eb',  // Platinum/Light Gray
-  S: '#ffd700',   // Gold
-  A: '#ef4444',   // Red
-  B: '#f97316',   // Orange
-  C: '#22c55e',   // Green
-  D: '#3b82f6',   // Blue
-  E: '#a855f7',   // Purple
-  F: '#6b7280',   // Gray
-  G: '#9ca3af',   // Dark Gray
+    SS: "#e5e7eb", // Platinum/Light Gray
+    S: "#ffd700", // Gold
+    A: "#ef4444", // Red
+    B: "#f97316", // Orange
+    C: "#22c55e", // Green
+    D: "#3b82f6", // Blue
+    E: "#a855f7", // Purple
+    F: "#6b7280", // Gray
+    G: "#9ca3af", // Dark Gray
 };
 
 // Mood colors
 const moodColors = {
-  great: '#22c55e',   // +4%
-  good: '#84cc16',    // +2%
-  normal: '#6b7280',  // 0%
-  bad: '#f97316',     // -2%
-  awful: '#ef4444',   // -4%
+    great: "#22c55e", // +4%
+    good: "#84cc16", // +2%
+    normal: "#6b7280", // 0%
+    bad: "#f97316", // -2%
+    awful: "#ef4444", // -4%
 };
 ```
 
@@ -437,13 +468,13 @@ Plan Editor
 A game-inspired visual component for displaying stats:
 
 ```html
-<div 
-  x-data="{ 
+<div
+    x-data="{ 
     value: {{ $value }}, 
     max: {{ $max ?? 1200 }},
     animatedValue: 0 
   }"
-  x-init="
+    x-init="
     $nextTick(() => {
       if (!$store.preferences.reducedMotion) {
         // Animate from 0 to value over 1 second
@@ -462,9 +493,9 @@ A game-inspired visual component for displaying stats:
       }
     })
   "
-  class="relative w-24 h-24"
+    class="relative w-24 h-24"
 >
-  <!-- SVG circular progress implementation -->
+    <!-- SVG circular progress implementation -->
 </div>
 ```
 
@@ -604,23 +635,23 @@ The application employs a comprehensive testing approach:
 
 ```javascript
 // tests/e2e/critical-flows.spec.js
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Critical User Flows', () => {
-    test('Dashboard loads and displays plans', async ({ page }) => {
-        await page.goto('/dashboard');
-        await expect(page.getByTestId('plan-list')).toBeVisible();
-        await expect(page.getByTestId('stats-panel')).toBeVisible();
+test.describe("Critical User Flows", () => {
+    test("Dashboard loads and displays plans", async ({ page }) => {
+        await page.goto("/dashboard");
+        await expect(page.getByTestId("plan-list")).toBeVisible();
+        await expect(page.getByTestId("stats-panel")).toBeVisible();
     });
-    
-    test('Create local plan flow', async ({ page }) => {
-        await page.goto('/dashboard');
-        await page.getByTestId('plan-create-button').click();
-        
-        await page.getByTestId('plan-title-input').fill('Test Plan');
-        await page.getByTestId('storage-mode-local').click();
-        await page.getByTestId('plan-submit-button').click();
-        
+
+    test("Create local plan flow", async ({ page }) => {
+        await page.goto("/dashboard");
+        await page.getByTestId("plan-create-button").click();
+
+        await page.getByTestId("plan-title-input").fill("Test Plan");
+        await page.getByTestId("storage-mode-local").click();
+        await page.getByTestId("plan-submit-button").click();
+
         // Local runs use UUID in /plans/local/{uuid} route
         await expect(page).toHaveURL(/\/plans\/local\/[a-f0-9-]+\/edit/);
     });
@@ -631,16 +662,16 @@ test.describe('Critical User Flows', () => {
 
 ```javascript
 // tests/e2e/accessibility.spec.js
-import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
-test('Dashboard meets WCAG AA', async ({ page }) => {
-    await page.goto('/dashboard');
-    
+test("Dashboard meets WCAG AA", async ({ page }) => {
+    await page.goto("/dashboard");
+
     const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa'])
+        .withTags(["wcag2a", "wcag2aa"])
         .analyze();
-    
+
     expect(results.violations).toEqual([]);
 });
 ```
@@ -734,14 +765,14 @@ app/
 
 ```javascript
 // Global error boundary for JavaScript errors
-window.addEventListener('error', (event) => {
-    console.error('JavaScript error:', event.error);
+window.addEventListener("error", (event) => {
+    console.error("JavaScript error:", event.error);
     // Report to monitoring service if configured
 });
 
 // Livewire error handling
-document.addEventListener('livewire:init', () => {
-    Livewire.hook('request', ({ fail }) => {
+document.addEventListener("livewire:init", () => {
+    Livewire.hook("request", ({ fail }) => {
         fail(({ status, preventDefault }) => {
             if (status === 0) {
                 // Network error
@@ -765,7 +796,7 @@ trait HandlesErrors
             'component' => get_class($this),
             'message' => $e->getMessage(),
         ]);
-        
+
         $this->dispatch('toast', [
             'type' => 'error',
             'message' => __('An error occurred. Please try again.'),

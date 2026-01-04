@@ -95,58 +95,58 @@ This document outlines the consolidation of five legacy Uma Musume tracking appl
 
 ### Core Features (Must Have)
 
-| Feature | Source | Priority |
-|---------|--------|----------|
-| Character CRUD | All | P0 |
-| Career Run Management | All | P0 |
-| Turn-by-turn Stat Logging | All | P0 |
-| Skill Management | All | P0 |
-| Excel Export | uma-tracker | P0 |
-| Dark Mode | uma-run-tracker | P0 |
-| Responsive Design | All | P0 |
+| Feature                   | Source          | Priority |
+| ------------------------- | --------------- | -------- |
+| Character CRUD            | All             | P0       |
+| Career Run Management     | All             | P0       |
+| Turn-by-turn Stat Logging | All             | P0       |
+| Skill Management          | All             | P0       |
+| Excel Export              | uma-tracker     | P0       |
+| Dark Mode                 | uma-run-tracker | P0       |
+| Responsive Design         | All             | P0       |
 
 ### Enhanced Features (Should Have)
 
-| Feature | Source | Priority |
-|---------|--------|----------|
-| Stat Progression Charts | uma_musume_race_planner | P1 |
-| Image Upload | uma_musume_race_planner | P1 |
-| Activity Logging | uma_musume_race_planner | P1 |
-| Skill Autocomplete (Accessible) | uma_musume_race_planner | P1 |
-| Quick Create Modal | uma_musume_race_planner | P1 |
-| CSV Export | umamusume-tracker | P1 |
-| Text/Markdown Export | uma-run-tracker | P1 |
-| Import Wizard (JSON/CSV) | uma-run-tracker | P1 |
-| Dual Editing Modes | uma_musume_race_planner | P1 |
-| Race-day Snapshots | New | P1 |
-| Local + Account Storage | uma-run-tracker | P1 |
-| Export Preview + Copy | uma-tracker | P1 |
+| Feature                         | Source                  | Priority |
+| ------------------------------- | ----------------------- | -------- |
+| Stat Progression Charts         | uma_musume_race_planner | P1       |
+| Image Upload                    | uma_musume_race_planner | P1       |
+| Activity Logging                | uma_musume_race_planner | P1       |
+| Skill Autocomplete (Accessible) | uma_musume_race_planner | P1       |
+| Quick Create Modal              | uma_musume_race_planner | P1       |
+| CSV Export                      | umamusume-tracker       | P1       |
+| Text/Markdown Export            | uma-run-tracker         | P1       |
+| Import Wizard (JSON/CSV)        | uma-run-tracker         | P1       |
+| Dual Editing Modes              | uma_musume_race_planner | P1       |
+| Race-day Snapshots              | New                     | P1       |
+| Local + Account Storage         | uma-run-tracker         | P1       |
+| Export Preview + Copy           | uma-tracker             | P1       |
 
 ### Nice to Have Features
 
-| Feature | Source | Priority |
-|---------|--------|----------|
-| REST API | umamusume-tracker | P2 |
-| Snapshot Comparison | New | P2 |
-| Race Predictions | uma_musume_race_planner | P1 |
-| Goal Tracking | uma_musume_race_planner | P1 |
-| Internationalization | uma-run-tracker | P3 |
+| Feature              | Source                  | Priority |
+| -------------------- | ----------------------- | -------- |
+| REST API             | umamusume-tracker       | P2       |
+| Snapshot Comparison  | New                     | P2       |
+| Race Predictions     | uma_musume_race_planner | P1       |
+| Goal Tracking        | uma_musume_race_planner | P1       |
+| Internationalization | uma-run-tracker         | P3       |
 
 ## Technical Architecture
 
 ### Stack Decision
 
-| Layer | Technology | Rationale |
-|-------|------------|-----------|
-| Backend | Laravel 12+ | Current project base, mature ecosystem |
-| PHP | 8.2+ | Type safety, performance |
-| Database | MySQL/MariaDB | Production-ready, existing data |
-| Frontend | Livewire v3 | Server-driven, less JS complexity |
-| Styling | Tailwind CSS v4 | Utility-first, consistent design |
-| Interactivity | Alpine.js | Lightweight, Livewire integration |
-| Charts | Chart.js | Lightweight, good documentation |
-| Export | Laravel Excel | Production-proven in uma-tracker |
-| Testing | Pest + Playwright | Modern testing, E2E coverage |
+| Layer         | Technology        | Rationale                              |
+| ------------- | ----------------- | -------------------------------------- |
+| Backend       | Laravel 12+       | Current project base, mature ecosystem |
+| PHP           | 8.2+              | Type safety, performance               |
+| Database      | MySQL/MariaDB     | Production-ready, existing data        |
+| Frontend      | Livewire v3       | Server-driven, less JS complexity      |
+| Styling       | Tailwind CSS v4   | Utility-first, consistent design       |
+| Interactivity | Alpine.js         | Lightweight, Livewire integration      |
+| Charts        | Chart.js          | Lightweight, good documentation        |
+| Export        | Laravel Excel     | Production-proven in uma-tracker       |
+| Testing       | Pest + Playwright | Modern testing, E2E coverage           |
 
 ### Directory Structure
 
@@ -276,13 +276,13 @@ Each legacy application stores data differently. Import scripts will:
 
 ### Supported Import Formats
 
-| Source | Format | Support |
-|--------|--------|---------|
-| uma_musume_race_planner | MySQL dump | Full |
-| umamusume-tracker | SQLite/MySQL | Full |
-| uma-tracker | MySQL | Full |
-| uma-run-tracker | JSON files | Full |
-| uma-tracker-form | MySQL | Full |
+| Source                  | Format       | Support |
+| ----------------------- | ------------ | ------- |
+| uma_musume_race_planner | MySQL dump   | Full    |
+| umamusume-tracker       | SQLite/MySQL | Full    |
+| uma-tracker             | MySQL        | Full    |
+| uma-run-tracker         | JSON files   | Full    |
+| uma-tracker-form        | MySQL        | Full    |
 
 ## Testing Strategy
 
@@ -328,14 +328,14 @@ Each legacy application stores data differently. Import scripts will:
 
 ## Timeline
 
-| Phase | Duration | Deliverables |
-|-------|----------|--------------|
-| Phase 1 | 2 weeks | Database schema, models, seeders |
-| Phase 2 | 2 weeks | Services, exports, imports |
-| Phase 3 | 3 weeks | Livewire components, Blade components |
-| Phase 4 | 2 weeks | Feature completion, integration |
-| Phase 5 | 1 week | Polish, testing, deployment |
-| **Total** | **10 weeks** | Production-ready application |
+| Phase     | Duration     | Deliverables                          |
+| --------- | ------------ | ------------------------------------- |
+| Phase 1   | 2 weeks      | Database schema, models, seeders      |
+| Phase 2   | 2 weeks      | Services, exports, imports            |
+| Phase 3   | 3 weeks      | Livewire components, Blade components |
+| Phase 4   | 2 weeks      | Feature completion, integration       |
+| Phase 5   | 1 week       | Polish, testing, deployment           |
+| **Total** | **10 weeks** | Production-ready application          |
 
 ## Success Criteria
 
@@ -384,13 +384,13 @@ Each legacy application stores data differently. Import scripts will:
 
 ## Risks and Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Data loss during migration | High | Backup all legacy data, test imports thoroughly |
-| Feature regression | Medium | Comprehensive test suite, feature parity checklist |
-| Performance degradation | Medium | Performance benchmarks, optimization phase |
-| Scope creep | Medium | Strict prioritization, phase gates |
-| Accessibility issues | Medium | Early accessibility testing, WCAG checklist |
+| Risk                       | Impact | Mitigation                                         |
+| -------------------------- | ------ | -------------------------------------------------- |
+| Data loss during migration | High   | Backup all legacy data, test imports thoroughly    |
+| Feature regression         | Medium | Comprehensive test suite, feature parity checklist |
+| Performance degradation    | Medium | Performance benchmarks, optimization phase         |
+| Scope creep                | Medium | Strict prioritization, phase gates                 |
+| Accessibility issues       | Medium | Early accessibility testing, WCAG checklist        |
 
 ## Appendix
 

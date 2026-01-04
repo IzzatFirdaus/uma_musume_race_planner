@@ -125,41 +125,41 @@ After completing 3+ conversions, generate:
 
 ```json
 {
-  "verified": {
-    "laravel_version": "12.x",
-    "php_version": "8.2.x",
-    "livewire_version": "3.6",
-    "livewire_component_count": 10,
-    "view_livewire_count": 10
-  },
-  "inventory": [
-    {
-      "source_path": "resources/views/plans/skill-editor.blade.php",
-      "suggested_livewire_class": "app/Livewire/Plans/SkillEditor.php",
-      "suggested_livewire_view": "resources/views/livewire/plans/skill-editor.blade.php",
-      "category": "Form/List Editor"
-    }
-  ],
-  "changes": [
-    {
-      "file_added": "app/Livewire/Plans/SkillEditor.php",
-      "file_removed": null,
-      "file_modified": "resources/views/plans/plan-details.blade.php",
-      "test_added": "tests/Feature/Livewire/SkillEditorTest.php"
-    }
-  ],
-  "commands_run": [
-    "php artisan make:livewire Plans/SkillEditor --no-interaction",
-    "php artisan make:test Feature/Livewire/SkillEditorTest --no-interaction",
-    "vendor/bin/pint --dirty",
-    "npm run build",
-    "php artisan test"
-  ],
-  "tests": {
-    "run_status": "PASS",
-    "failures": []
-  },
-  "notes": "Successfully converted 3 high-priority components. All tests passing. Ready for next batch."
+    "verified": {
+        "laravel_version": "12.x",
+        "php_version": "8.2.x",
+        "livewire_version": "3.6",
+        "livewire_component_count": 10,
+        "view_livewire_count": 10
+    },
+    "inventory": [
+        {
+            "source_path": "resources/views/plans/skill-editor.blade.php",
+            "suggested_livewire_class": "app/Livewire/Plans/SkillEditor.php",
+            "suggested_livewire_view": "resources/views/livewire/plans/skill-editor.blade.php",
+            "category": "Form/List Editor"
+        }
+    ],
+    "changes": [
+        {
+            "file_added": "app/Livewire/Plans/SkillEditor.php",
+            "file_removed": null,
+            "file_modified": "resources/views/plans/plan-details.blade.php",
+            "test_added": "tests/Feature/Livewire/SkillEditorTest.php"
+        }
+    ],
+    "commands_run": [
+        "php artisan make:livewire Plans/SkillEditor --no-interaction",
+        "php artisan make:test Feature/Livewire/SkillEditorTest --no-interaction",
+        "vendor/bin/pint --dirty",
+        "npm run build",
+        "php artisan test"
+    ],
+    "tests": {
+        "run_status": "PASS",
+        "failures": []
+    },
+    "notes": "Successfully converted 3 high-priority components. All tests passing. Ready for next batch."
 }
 ```
 
@@ -258,19 +258,19 @@ class SkillRow extends Component
 ```blade
 <div class="skill-row space-y-2">
     <div class="flex gap-2">
-        <input 
-            type="text" 
-            wire:model.live="name" 
+        <input
+            type="text"
+            wire:model.live="name"
             placeholder="Skill name"
             class="flex-1 px-3 py-2 border rounded"
         />
-        <input 
-            type="number" 
-            wire:model.live="spCost" 
+        <input
+            type="number"
+            wire:model.live="spCost"
             placeholder="SP cost"
             class="w-20 px-3 py-2 border rounded"
         />
-        <button 
+        <button
             wire:click="saveSkill"
             wire:loading.attr="disabled"
             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -278,7 +278,7 @@ class SkillRow extends Component
             <span wire:loading.remove>Save</span>
             <span wire:loading>Saving...</span>
         </button>
-        <button 
+        <button
             wire:click="removeSkill"
             wire:loading.attr="disabled"
             class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"

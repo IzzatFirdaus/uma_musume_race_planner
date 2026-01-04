@@ -146,10 +146,10 @@ Reusable confirmation dialog with focus trap and keyboard support.
 **Usage:**
 
 ```blade
-<livewire:common.confirm-modal 
-    title="Delete Plan" 
-    message="Are you sure?" 
-    :danger="true" 
+<livewire:common.confirm-modal
+    title="Delete Plan"
+    message="Are you sure?"
+    :danger="true"
 />
 ```
 

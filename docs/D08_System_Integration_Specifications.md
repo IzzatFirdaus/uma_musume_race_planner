@@ -32,37 +32,37 @@ flowchart TB
         LWClient["Livewire Client"]
         LS["localStorage"]
     end
-    
+
     subgraph Transport["Transport Layer"]
         Wire["Wire Protocol"]
         HTTP["HTTP/JSON API"]
         Events["Browser Events"]
     end
-    
+
     subgraph Backend["Backend Layer"]
         LWServer["Livewire Server"]
         API["Internal API"]
         Services["Service Layer"]
     end
-    
+
     subgraph Storage["Storage Layer"]
         DB[(MySQL)]
         Cache["Redis Cache"]
     end
-    
+
     Alpine <--> Events
     Alpine <--> HTTP
     LWClient <--> Wire
     Alpine <--> LS
-    
+
     Wire <--> LWServer
     HTTP <--> API
-    
+
     LWServer <--> Services
     API <--> Services
     Services <--> DB
     Services <--> Cache
-    
+
     style Frontend fill:#e3f2fd
     style Backend fill:#f3e5f5
     style Storage fill:#e8f5e9
@@ -82,7 +82,7 @@ sequenceDiagram
     participant LWClient as Livewire Client
     participant Server as Laravel Server
     participant LWServer as Livewire Server
-    
+
     Browser->>LWClient: User action
     LWClient->>LWClient: Serialize state
     LWClient->>Server: POST /livewire/update
@@ -111,7 +111,7 @@ classDiagram
         +addSkill(skillId)
         +removeSkill(skillId)
     }
-    
+
     class CareerRun {
         +int id
         +string title
@@ -120,18 +120,18 @@ classDiagram
         +json stats
         +json aptitudes
     }
-    
+
     PlanEditor --> CareerRun : manages
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `id` | int\|string | Plan ID (numeric for Account, UUID for Local) |
-| `mode` | string | 'edit' or 'view' |
-| `plan` | CareerRun\|Array | Model or array for Local mode |
-| `skills` | Collection | Skill models collection |
-| `form` | array | Input field mirror |
-| `isDirty` | bool | Unsaved changes flag |
+| Property  | Type             | Description                                   |
+| --------- | ---------------- | --------------------------------------------- |
+| `id`      | int\|string      | Plan ID (numeric for Account, UUID for Local) |
+| `mode`    | string           | 'edit' or 'view'                              |
+| `plan`    | CareerRun\|Array | Model or array for Local mode                 |
+| `skills`  | Collection       | Skill models collection                       |
+| `form`    | array            | Input field mirror                            |
+| `isDirty` | bool             | Unsaved changes flag                          |
 
 **Dehydration Rules:**
 
@@ -148,13 +148,13 @@ flowchart LR
         Alpine["Alpine.js"]
         Input["Search Input"]
     end
-    
+
     subgraph API["Internal API"]
         Endpoint["/internal/skills/search"]
         Cache["Redis Cache"]
         DB[(Database)]
     end
-    
+
     Input -->|"debounce 300ms"| Alpine
     Alpine -->|"GET ?q=..."| Endpoint
     Endpoint --> Cache
@@ -166,39 +166,39 @@ flowchart LR
 
 #### 2.3.1 Skill Search Endpoint
 
-| Property | Value |
-|----------|-------|
+| Property     | Value                     |
+| ------------ | ------------------------- |
 | **Endpoint** | `/internal/skills/search` |
-| **Method** | `GET` |
-| **Cache** | 1 hour |
+| **Method**   | `GET`                     |
+| **Cache**    | 1 hour                    |
 
 **Parameters:**
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `q` | string | Yes | - | Search query |
-| `limit` | int | No | 10 | Max results |
-| `type` | string | No | - | Filter by skill type |
+| Parameter | Type   | Required | Default | Description          |
+| --------- | ------ | -------- | ------- | -------------------- |
+| `q`       | string | Yes      | -       | Search query         |
+| `limit`   | int    | No       | 10      | Max results          |
+| `type`    | string | No       | -       | Filter by skill type |
 
 **Response Format:**
 
 ```json
 {
-  "data": [
-    {
-      "id": 101,
-      "name": "Concentration",
-      "name_jp": "コンセントレーション",
-      "sp_cost": 140,
-      "type": "wit",
-      "tier": "B",
-      "description": "Start slightly better..."
+    "data": [
+        {
+            "id": 101,
+            "name": "Concentration",
+            "name_jp": "コンセントレーション",
+            "sp_cost": 140,
+            "type": "wit",
+            "tier": "B",
+            "description": "Start slightly better..."
+        }
+    ],
+    "meta": {
+        "total": 1,
+        "query": "concentration"
     }
-  ],
-  "meta": {
-    "total": 1,
-    "query": "concentration"
-  }
 }
 ```
 
@@ -217,13 +217,13 @@ flowchart TD
         Drafts["uma_drafts<br/>(Unsaved Changes)"]
         Prefs["uma_preferences<br/>(User Settings)"]
     end
-    
+
     subgraph Alpine["Alpine.js Stores"]
         RunStore["$store.localRuns"]
         DraftStore["$store.drafts"]
         PrefStore["$store.preferences"]
     end
-    
+
     Runs <--> RunStore
     Drafts <--> DraftStore
     Prefs <--> PrefStore
@@ -238,12 +238,12 @@ erDiagram
     LOCAL_STORAGE ||--o{ RUN : contains
     RUN ||--o{ SKILL : has
     RUN ||--o{ TURN : tracks
-    
+
     LOCAL_STORAGE {
         string schema_version
         datetime last_modified
     }
-    
+
     RUN {
         uuid uuid PK
         string title
@@ -256,14 +256,14 @@ erDiagram
         json stats
         json aptitudes
     }
-    
+
     SKILL {
         int id
         string name
         string status
         int turn_acquired
     }
-    
+
     TURN {
         int turn_number
         json stats
@@ -317,24 +317,24 @@ flowchart LR
         Input["User Input"]
         Dirty["Dirty Flag"]
     end
-    
+
     subgraph Draft["Draft System"]
         Watcher["Change Watcher"]
         Serialize["Serialize State"]
         Store["localStorage.drafts"]
     end
-    
+
     subgraph Recovery["Recovery"]
         Load["Page Load"]
         Check["Check Drafts"]
         Restore["Restore State"]
     end
-    
+
     Input --> Watcher
     Dirty --> Watcher
     Watcher -->|"debounce 1s"| Serialize
     Serialize --> Store
-    
+
     Load --> Check
     Check --> Store
     Store --> Restore
@@ -344,19 +344,19 @@ flowchart LR
 
 ```json
 {
-  "local:550e8400-e29b-41d4-a716-446655440000": {
-    "timestamp": 1704283200,
-    "formData": {
-      "speed": 805,
-      "notes": "Just added a turn"
+    "local:550e8400-e29b-41d4-a716-446655440000": {
+        "timestamp": 1704283200,
+        "formData": {
+            "speed": 805,
+            "notes": "Just added a turn"
+        }
+    },
+    "account:123": {
+        "timestamp": 1704283100,
+        "formData": {
+            "title": "Updated title"
+        }
     }
-  },
-  "account:123": {
-    "timestamp": 1704283100,
-    "formData": {
-      "title": "Updated title"
-    }
-  }
 }
 ```
 
@@ -364,11 +364,11 @@ flowchart LR
 
 ```json
 {
-  "dark_mode": true,
-  "default_storage_mode": "local",
-  "auto_save_interval": 30,
-  "show_japanese_names": true,
-  "compact_view": false
+    "dark_mode": true,
+    "default_storage_mode": "local",
+    "auto_save_interval": 30,
+    "show_japanese_names": true,
+    "compact_view": false
 }
 ```
 
@@ -385,21 +385,21 @@ flowchart TD
         JS["JavaScript"]
         Network["Network"]
     end
-    
+
     subgraph Bus["Event Bus (Window)"]
         Dispatch["dispatchEvent()"]
     end
-    
+
     subgraph Listeners["Event Listeners"]
         Toast["Toast Component"]
         Form["Form Component"]
         Banner["Status Banner"]
     end
-    
+
     LW -->|"$dispatch"| Dispatch
     JS -->|"CustomEvent"| Dispatch
     Network -->|"online/offline"| Dispatch
-    
+
     Dispatch --> Toast
     Dispatch --> Form
     Dispatch --> Banner
@@ -415,25 +415,25 @@ sequenceDiagram
     participant Window as Window
     participant Toast as Toast Component
     participant Form as Form Component
-    
+
     Source->>Window: dispatch('toast', {type, message})
     Window->>Toast: Event received
     Toast->>Toast: Show notification
-    
+
     Source->>Window: dispatch('plan-saved', {id, mode})
     Window->>Form: Event received
     Form->>Form: Clear dirty state
     Form->>Form: Update UI
 ```
 
-| Event Name | Payload | Source | Target | Description |
-|------------|---------|--------|--------|-------------|
-| `toast` | `{ type, message }` | Livewire/JS | Alpine Toast | Triggers a popup notification |
-| `plan-saved` | `{ id, mode }` | Livewire | Alpine | Signals form save success, clears dirty state |
-| `plan-deleted` | `{ id }` | Livewire | Alpine | Signals plan deletion |
-| `connection-lost` | `null` | Network | UI | Triggers offline warning banner |
-| `connection-restored` | `null` | Network | UI | Triggers re-sync prompt |
-| `draft-recovered` | `{ planId }` | Alpine | Form | Notifies draft was restored |
+| Event Name            | Payload             | Source      | Target       | Description                                   |
+| --------------------- | ------------------- | ----------- | ------------ | --------------------------------------------- |
+| `toast`               | `{ type, message }` | Livewire/JS | Alpine Toast | Triggers a popup notification                 |
+| `plan-saved`          | `{ id, mode }`      | Livewire    | Alpine       | Signals form save success, clears dirty state |
+| `plan-deleted`        | `{ id }`            | Livewire    | Alpine       | Signals plan deletion                         |
+| `connection-lost`     | `null`              | Network     | UI           | Triggers offline warning banner               |
+| `connection-restored` | `null`              | Network     | UI           | Triggers re-sync prompt                       |
+| `draft-recovered`     | `{ planId }`        | Alpine      | Form         | Notifies draft was restored                   |
 
 ### 4.3 Livewire Events
 
@@ -445,18 +445,18 @@ flowchart LR
         SkillsEditor["SkillsEditor"]
         SPCounter["SP Counter"]
     end
-    
+
     QuickCreate -->|"refreshPlanList"| PlanList
     SkillsEditor -->|"skillAdded"| SPCounter
     SkillsEditor -->|"skillRemoved"| SPCounter
 ```
 
-| Event Name | Payload | Listener | Description |
-|------------|---------|----------|-------------|
-| `refreshPlanList` | `null` | PlanList | Reloads the list (e.g., after Quick Create) |
-| `skillAdded` | `{ skill_id, sp_cost }` | SkillsEditor | Updates SP totals |
-| `skillRemoved` | `{ skill_id, sp_cost }` | SkillsEditor | Updates SP totals |
-| `turnUpdated` | `{ turn_number }` | TurnTracker | Refreshes turn display |
+| Event Name        | Payload                 | Listener     | Description                                 |
+| ----------------- | ----------------------- | ------------ | ------------------------------------------- |
+| `refreshPlanList` | `null`                  | PlanList     | Reloads the list (e.g., after Quick Create) |
+| `skillAdded`      | `{ skill_id, sp_cost }` | SkillsEditor | Updates SP totals                           |
+| `skillRemoved`    | `{ skill_id, sp_cost }` | SkillsEditor | Updates SP totals                           |
+| `turnUpdated`     | `{ turn_number }`       | TurnTracker  | Refreshes turn display                      |
 
 ### 4.4 Event Implementation Examples
 
@@ -475,8 +475,7 @@ public function save(): void
 **Listening in Alpine:**
 
 ```html
-<div x-data="{ dirty: false }"
-     x-on:plan-saved.window="dirty = false">
+<div x-data="{ dirty: false }" x-on:plan-saved.window="dirty = false">
     <!-- Form content -->
 </div>
 ```
@@ -494,24 +493,24 @@ flowchart TD
         Auth["Auth Session"]
         Input["User Input"]
     end
-    
+
     subgraph Validation["Security Layers"]
         CSRFCheck["CSRF Middleware"]
         AuthCheck["Auth Middleware"]
         Sanitize["Input Sanitization"]
         CSP["CSP Headers"]
     end
-    
+
     subgraph Protected["Protected Resources"]
         API["API Endpoints"]
         LW["Livewire Actions"]
         DB["Database"]
     end
-    
+
     CSRF --> CSRFCheck
     Auth --> AuthCheck
     Input --> Sanitize
-    
+
     CSRFCheck --> API
     AuthCheck --> API
     Sanitize --> LW
@@ -528,7 +527,7 @@ sequenceDiagram
     participant Meta as Meta Tag
     participant Request as HTTP Request
     participant Server as Laravel
-    
+
     Browser->>Meta: Read csrf-token
     Meta-->>Browser: Token value
     Browser->>Request: Add X-CSRF-TOKEN header
@@ -540,17 +539,18 @@ sequenceDiagram
 **Implementation:**
 
 ```html
-<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 ```
 
 ```javascript
 // Automatic for Livewire
 // Manual for fetch:
-fetch('/api/endpoint', {
-    method: 'POST',
+fetch("/api/endpoint", {
+    method: "POST",
     headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-    }
+        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
+            .content,
+    },
 });
 ```
 
@@ -566,13 +566,13 @@ flowchart LR
         Style["style-src"]
         Img["img-src"]
     end
-    
+
     subgraph Allowed["Allowed Sources"]
         Self["'self'"]
         Eval["'unsafe-eval'"]
         Inline["'unsafe-inline'"]
     end
-    
+
     Script --> Self
     Script --> Eval
     Script --> Inline
@@ -582,12 +582,12 @@ flowchart LR
     Img --> Self
 ```
 
-| Directive | Value | Reason |
-|-----------|-------|--------|
-| `script-src` | 'self', 'unsafe-eval', 'unsafe-inline' | Required for Alpine/Livewire |
-| `connect-src` | 'self' | No external API calls allowed |
-| `style-src` | 'self', 'unsafe-inline' | TailwindCSS inline styles |
-| `img-src` | 'self', data: | Local images and data URIs |
+| Directive     | Value                                  | Reason                        |
+| ------------- | -------------------------------------- | ----------------------------- |
+| `script-src`  | 'self', 'unsafe-eval', 'unsafe-inline' | Required for Alpine/Livewire  |
+| `connect-src` | 'self'                                 | No external API calls allowed |
+| `style-src`   | 'self', 'unsafe-inline'                | TailwindCSS inline styles     |
+| `img-src`     | 'self', data:                          | Local images and data URIs    |
 
 ### 5.4 Input Sanitization
 
@@ -598,30 +598,30 @@ flowchart TD
         LSInput["localStorage Data"]
         FileInput["File Upload"]
     end
-    
+
     subgraph Sanitization["Sanitization Layer"]
         Eloquent["Eloquent Escaping"]
         Manual["Manual Sanitization"]
         Validation["Laravel Validation"]
     end
-    
+
     subgraph Output["Safe Output"]
         DB["Database"]
         View["Blade View"]
     end
-    
+
     LWInput --> Eloquent --> DB
     LSInput --> Manual --> Validation --> DB
     FileInput --> Validation --> DB
-    
+
     DB --> View
 ```
 
-| Source | Sanitization Method | Notes |
-|--------|---------------------|-------|
-| Livewire | Automatic via Eloquent | Built-in protection |
-| localStorage | Manual sanitization required | Treat as untrusted |
-| File Upload | Validation + virus scan | Strict file type checking |
+| Source       | Sanitization Method          | Notes                     |
+| ------------ | ---------------------------- | ------------------------- |
+| Livewire     | Automatic via Eloquent       | Built-in protection       |
+| localStorage | Manual sanitization required | Treat as untrusted        |
+| File Upload  | Validation + virus scan      | Strict file type checking |
 
 ---
 
@@ -646,16 +646,16 @@ stateDiagram-v2
 ```mermaid
 flowchart TD
     Action["User Action"]
-    
+
     Action --> Check{"Online?"}
-    
+
     Check -->|"Yes"| Server["Send to Server"]
     Check -->|"No"| Queue["Queue Locally"]
-    
+
     Server --> Success{"Success?"}
     Success -->|"Yes"| Done["Complete"]
     Success -->|"No"| Queue
-    
+
     Queue --> Store["Store in localStorage"]
     Store --> Watch["Watch for Connection"]
     Watch --> Online{"Online?"}
@@ -671,17 +671,17 @@ flowchart TB
     subgraph Parent["Parent Component"]
         State["Shared State"]
     end
-    
+
     subgraph Children["Child Components"]
         C1["SkillsEditor"]
         C2["StatsDisplay"]
         C3["TurnTracker"]
     end
-    
+
     State -->|"@entangle"| C1
     State -->|"@entangle"| C2
     State -->|"@entangle"| C3
-    
+
     C1 -->|"$dispatch"| State
     C2 -->|"$dispatch"| State
     C3 -->|"$dispatch"| State
@@ -691,7 +691,7 @@ flowchart TB
 
 ## Document History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2026-01-03 | Development Team | Initial draft |
-| 2.0 | 2026-01-03 | Development Team | Added Mermaid diagrams, expanded specifications |
+| Version | Date       | Author           | Changes                                         |
+| ------- | ---------- | ---------------- | ----------------------------------------------- |
+| 1.0     | 2026-01-03 | Development Team | Initial draft                                   |
+| 2.0     | 2026-01-03 | Development Team | Added Mermaid diagrams, expanded specifications |

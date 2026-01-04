@@ -20,13 +20,13 @@ The Uma Musume Career Planner is a web application that enables players of Uma M
 
 ### 1.3 Definitions and Acronyms
 
-| Term | Definition |
-|------|------------|
-| Plan/Career Run | A career run record tracking an Uma Musume character's training progression |
-| Uma Musume | A horse girl character from the Uma Musume: Pretty Derby game |
-| SP (Skill Points) | Points earned from races and events, spent to purchase skills |
-| Stat Max | Maximum stat value (1200) - hard cap, no values above allowed |
-| URA Finale | The final race series at the end of Senior Year |
+| Term              | Definition                                                                  |
+| ----------------- | --------------------------------------------------------------------------- |
+| Plan/Career Run   | A career run record tracking an Uma Musume character's training progression |
+| Uma Musume        | A horse girl character from the Uma Musume: Pretty Derby game               |
+| SP (Skill Points) | Points earned from races and events, spent to purchase skills               |
+| Stat Max          | Maximum stat value (1200) - hard cap, no values above allowed               |
+| URA Finale        | The final race series at the end of Senior Year                             |
 
 ---
 
@@ -54,17 +54,17 @@ By consolidating five legacy tracking applications into one modern platform, we 
 
 ### 2.3 Business Objectives
 
-| Objective | Success Metric |
-|-----------|----------------|
-| User Adoption | Active users tracking plans |
+| Objective      | Success Metric                   |
+| -------------- | -------------------------------- |
+| User Adoption  | Active users tracking plans      |
 | Data Migration | Successful import of legacy data |
-| Accessibility | WCAG AA compliance |
-| Performance | Page load < 2 seconds |
-| Reliability | 99% uptime for Account mode |
+| Accessibility  | WCAG AA compliance               |
+| Performance    | Page load < 2 seconds            |
+| Reliability    | 99% uptime for Account mode      |
 
 ### 2.4 Value Proposition (Mermaid)
 
-```mermaid
+````mermaid
 mindmap
   root((Uma Musume Career Planner))
     Unified Platform
@@ -273,7 +273,7 @@ pie title Requirements by Priority
     "P1 - High" : 18
     "P2 - Medium" : 8
     "P3 - Low" : 5
-```
+````
 
 ---
 
@@ -281,32 +281,32 @@ pie title Requirements by Priority
 
 ### 5.1 Data Validation Rules
 
-| Rule ID | Rule Description |
-|---------|------------------|
-| BV-1 | Plan title is required and cannot be empty |
-| BV-2 | Stat values must be between 1 and 2000 |
-| BV-3 | Turn numbers must be between 1 and 78 |
-| BV-4 | Skill status "Acquired" requires turn_acquired value |
-| BV-5 | Energy level must be between 0 and 100 |
+| Rule ID | Rule Description                                     |
+| ------- | ---------------------------------------------------- |
+| BV-1    | Plan title is required and cannot be empty           |
+| BV-2    | Stat values must be between 1 and 2000               |
+| BV-3    | Turn numbers must be between 1 and 78                |
+| BV-4    | Skill status "Acquired" requires turn_acquired value |
+| BV-5    | Energy level must be between 0 and 100               |
 
 ### 5.2 Calculation Rules
 
-| Rule ID | Rule Description |
-|---------|------------------|
-| BC-1 | Effective stat = raw if ≤1200, else 1200 + (raw-1200)*0.5 |
-| BC-2 | Acquired SP = sum of sp_cost where status = acquired |
-| BC-3 | Mood modifiers: Great +4%, Good +2%, Normal 0%, Bad -2%, Awful -4% |
-| BC-4 | Aptitude effectiveness: SS=120%, S=110%, A=100%, B=90%, C=80%, D=70%, E=60%, F=50%, G=40% |
+| Rule ID | Rule Description                                                                          |
+| ------- | ----------------------------------------------------------------------------------------- |
+| BC-1    | Effective stat = raw if ≤1200, else 1200 + (raw-1200)\*0.5                                |
+| BC-2    | Acquired SP = sum of sp_cost where status = acquired                                      |
+| BC-3    | Mood modifiers: Great +4%, Good +2%, Normal 0%, Bad -2%, Awful -4%                        |
+| BC-4    | Aptitude effectiveness: SS=120%, S=110%, A=100%, B=90%, C=80%, D=70%, E=60%, F=50%, G=40% |
 
 ### 5.3 Storage Rules
 
-| Rule ID | Rule Description |
-|---------|------------------|
-| BS-1 | Local runs use UUID identifiers |
-| BS-2 | Account runs use database integer IDs |
-| BS-3 | Local runs are fully functional offline |
-| BS-4 | Account runs require network connectivity to save |
-| BS-5 | Drafts are always saved to localStorage regardless of storage mode |
+| Rule ID | Rule Description                                                   |
+| ------- | ------------------------------------------------------------------ |
+| BS-1    | Local runs use UUID identifiers                                    |
+| BS-2    | Account runs use database integer IDs                              |
+| BS-3    | Local runs are fully functional offline                            |
+| BS-4    | Account runs require network connectivity to save                  |
+| BS-5    | Drafts are always saved to localStorage regardless of storage mode |
 
 ---
 
@@ -333,7 +333,7 @@ User enters: Title, Character, Storage Mode
 
 ### 6.2 Plan Creation Flow (Mermaid)
 
-```mermaid
+````mermaid
 flowchart TD
     A[User clicks Create Plan] --> B[Quick Create Modal Opens]
     B --> C[User enters Title, Character, Storage Mode]
@@ -367,11 +367,11 @@ For each plan:
     ▼
 Show results report
 
-```
+````
 
 ### 6.4 Local to Account Conversion Flow (Mermaid)
 
-```mermaid
+````mermaid
 flowchart TD
     A[User logs in] --> B{Has Local runs?}
     B -->|Yes| C[Show Claim Plans modal]
@@ -522,3 +522,4 @@ flowchart BT
 |---------|------|--------|---------|
 | 1.0 | 2026-01-03 | System | Initial draft |
 | 2.0 | 2026-01-03 | System | Added Mermaid diagrams, updated structure |
+````

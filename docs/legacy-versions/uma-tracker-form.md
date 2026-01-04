@@ -59,57 +59,57 @@ uma-tracker-form/
 
 ### umamusume_progress
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INT, PK, AUTO | Unique identifier |
-| observation_number | INT | Observation sequence |
-| umamusume_name | VARCHAR(100) | Character name |
-| career_stage | VARCHAR(100) | Current career stage |
-| umamusume_class | VARCHAR(50) | Character class |
-| race_name | VARCHAR(100) | Current race |
-| turns_before_race | INT | Turns until race |
-| race_objective | TEXT | Race goal |
-| speed | INT | Speed stat |
-| stamina | INT | Stamina stat |
-| power | INT | Power stat |
-| guts | INT | Guts stat |
-| wit | INT | Wit stat |
-| current_skill_points | INT | Available SP |
-| conditions | VARCHAR(255) | Current conditions |
-| track_turf_apt | CHAR(1) | Turf aptitude grade |
-| track_dirt_apt | CHAR(1) | Dirt aptitude grade |
-| dist_sprint_apt | CHAR(1) | Sprint aptitude |
-| dist_mile_apt | CHAR(1) | Mile aptitude |
-| dist_medium_apt | CHAR(1) | Medium aptitude |
-| dist_long_apt | CHAR(1) | Long aptitude |
-| style_front_apt | CHAR(1) | Front-runner aptitude |
-| style_pace_apt | CHAR(1) | Pace-maker aptitude |
-| style_late_apt | CHAR(1) | Late-runner aptitude |
-| style_end_apt | CHAR(1) | End-runner aptitude |
-| growth_speed | TINYINT | Speed growth bonus |
-| growth_guts | TINYINT | Guts growth bonus |
-| energy_percentage | TINYINT | Current energy % |
-| mood | VARCHAR(50) | Current mood |
-| observation_timestamp | TIMESTAMP | Record timestamp |
+| Field                 | Type          | Description           |
+| --------------------- | ------------- | --------------------- |
+| id                    | INT, PK, AUTO | Unique identifier     |
+| observation_number    | INT           | Observation sequence  |
+| umamusume_name        | VARCHAR(100)  | Character name        |
+| career_stage          | VARCHAR(100)  | Current career stage  |
+| umamusume_class       | VARCHAR(50)   | Character class       |
+| race_name             | VARCHAR(100)  | Current race          |
+| turns_before_race     | INT           | Turns until race      |
+| race_objective        | TEXT          | Race goal             |
+| speed                 | INT           | Speed stat            |
+| stamina               | INT           | Stamina stat          |
+| power                 | INT           | Power stat            |
+| guts                  | INT           | Guts stat             |
+| wit                   | INT           | Wit stat              |
+| current_skill_points  | INT           | Available SP          |
+| conditions            | VARCHAR(255)  | Current conditions    |
+| track_turf_apt        | CHAR(1)       | Turf aptitude grade   |
+| track_dirt_apt        | CHAR(1)       | Dirt aptitude grade   |
+| dist_sprint_apt       | CHAR(1)       | Sprint aptitude       |
+| dist_mile_apt         | CHAR(1)       | Mile aptitude         |
+| dist_medium_apt       | CHAR(1)       | Medium aptitude       |
+| dist_long_apt         | CHAR(1)       | Long aptitude         |
+| style_front_apt       | CHAR(1)       | Front-runner aptitude |
+| style_pace_apt        | CHAR(1)       | Pace-maker aptitude   |
+| style_late_apt        | CHAR(1)       | Late-runner aptitude  |
+| style_end_apt         | CHAR(1)       | End-runner aptitude   |
+| growth_speed          | TINYINT       | Speed growth bonus    |
+| growth_guts           | TINYINT       | Guts growth bonus     |
+| energy_percentage     | TINYINT       | Current energy %      |
+| mood                  | VARCHAR(50)   | Current mood          |
+| observation_timestamp | TIMESTAMP     | Record timestamp      |
 
 ### learned_skills
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INT, PK, AUTO | Unique identifier |
-| progress_id | INT, FK | Reference to progress |
-| skill_name | VARCHAR(100) | Skill name |
-| acquired | TINYINT | Acquisition status |
-| notes | TEXT | Additional notes |
+| Field       | Type          | Description           |
+| ----------- | ------------- | --------------------- |
+| id          | INT, PK, AUTO | Unique identifier     |
+| progress_id | INT, FK       | Reference to progress |
+| skill_name  | VARCHAR(100)  | Skill name            |
+| acquired    | TINYINT       | Acquisition status    |
+| notes       | TEXT          | Additional notes      |
 
 ### available_skills
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INT, PK, AUTO | Unique identifier |
-| progress_id | INT, FK | Reference to progress |
-| skill_name | VARCHAR(100) | Skill name |
-| skill_cost | INT | SP cost |
+| Field       | Type          | Description           |
+| ----------- | ------------- | --------------------- |
+| id          | INT, PK, AUTO | Unique identifier     |
+| progress_id | INT, FK       | Reference to progress |
+| skill_name  | VARCHAR(100)  | Skill name            |
+| skill_cost  | INT           | SP cost               |
 
 ## MVC Architecture
 

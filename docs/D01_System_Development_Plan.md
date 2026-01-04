@@ -22,14 +22,14 @@ This System Development Plan outlines the approach for consolidating five legacy
 
 ### 1.2 Source Applications
 
-| Application | Stack | Key Features |
-|-------------|-------|--------------|
-| uma_musume_race_planner | PHP + MySQL + Bootstrap | Most feature-complete |
-| umamusume-tracker | Laravel 12 + React | Best API design |
-| uma-tracker | Laravel 11 + Blade | Closest to target stack |
-| uma-run-tracker | Static HTML + JS | Best accessibility |
-| uma-tracker-form | Native PHP + MVC | Simplest implementation |
-| uma-musume-planner-laravel | Laravel | Target repository |
+| Application                | Stack                   | Key Features            |
+| -------------------------- | ----------------------- | ----------------------- |
+| uma_musume_race_planner    | PHP + MySQL + Bootstrap | Most feature-complete   |
+| umamusume-tracker          | Laravel 12 + React      | Best API design         |
+| uma-tracker                | Laravel 11 + Blade      | Closest to target stack |
+| uma-run-tracker            | Static HTML + JS        | Best accessibility      |
+| uma-tracker-form           | Native PHP + MVC        | Simplest implementation |
+| uma-musume-planner-laravel | Laravel                 | Target repository       |
 
 ---
 
@@ -71,37 +71,37 @@ Requirements 80-87 are tracked separately:
 
 ### 3.1 Backend
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Framework | Laravel | 12+ |
-| Frontend Reactivity | Livewire | 3 |
-| PHP Version | PHP | 8.2+ |
-| Database | MySQL/MariaDB/SQLite | - |
+| Component           | Technology           | Version |
+| ------------------- | -------------------- | ------- |
+| Framework           | Laravel              | 12+     |
+| Frontend Reactivity | Livewire             | 3       |
+| PHP Version         | PHP                  | 8.2+    |
+| Database            | MySQL/MariaDB/SQLite | -       |
 
 ### 3.2 Frontend
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Client Interactivity | Alpine.js | Latest |
-| Styling | TailwindCSS | v4 |
-| Build Tool | Vite | Latest |
+| Component            | Technology  | Version |
+| -------------------- | ----------- | ------- |
+| Client Interactivity | Alpine.js   | Latest  |
+| Styling              | TailwindCSS | v4      |
+| Build Tool           | Vite        | Latest  |
 
 ### 3.3 Testing
 
-| Type | Tool |
-|------|------|
-| Backend Unit/Feature | Pest |
-| JavaScript Unit | Vitest |
-| E2E | Playwright |
-| Accessibility | axe-core |
+| Type                 | Tool       |
+| -------------------- | ---------- |
+| Backend Unit/Feature | Pest       |
+| JavaScript Unit      | Vitest     |
+| E2E                  | Playwright |
+| Accessibility        | axe-core   |
 
 ### 3.4 Storage
 
-| Mode | Technology |
-|------|------------|
-| Local Runs (MVP) | localStorage |
+| Mode                | Technology                |
+| ------------------- | ------------------------- |
+| Local Runs (MVP)    | localStorage              |
 | Local Runs (Target) | IndexedDB via localforage |
-| Account Runs | MySQL/MariaDB/SQLite |
+| Account Runs        | MySQL/MariaDB/SQLite      |
 
 ---
 
@@ -279,13 +279,13 @@ gantt
 
 ### 6.1 Roles
 
-| Role | Responsibilities |
-|------|------------------|
-| Project Lead | Overall coordination, stakeholder communication |
-| Backend Developer | Laravel, Livewire, database, services |
-| Frontend Developer | Alpine.js, TailwindCSS, Blade components |
-| QA Engineer | Testing, accessibility verification |
-| DevOps | CI/CD, deployment, monitoring |
+| Role               | Responsibilities                                |
+| ------------------ | ----------------------------------------------- |
+| Project Lead       | Overall coordination, stakeholder communication |
+| Backend Developer  | Laravel, Livewire, database, services           |
+| Frontend Developer | Alpine.js, TailwindCSS, Blade components        |
+| QA Engineer        | Testing, accessibility verification             |
+| DevOps             | CI/CD, deployment, monitoring                   |
 
 ---
 
@@ -325,17 +325,17 @@ Each task is complete when:
 
 ### 8.1 Identified Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| localStorage quota limits | Medium | High | Implement quota warnings, plan IndexedDB migration |
-| Legacy data incompatibility | Medium | Medium | Version exports, implement migration adapters |
-| Accessibility regression | Low | High | Automated axe-core tests in CI |
-| Performance degradation | Low | Medium | Lazy loading, virtualization for large lists |
-| Browser compatibility | Low | Low | Target modern browsers, progressive enhancement |
+| Risk                        | Probability | Impact | Mitigation                                         |
+| --------------------------- | ----------- | ------ | -------------------------------------------------- |
+| localStorage quota limits   | Medium      | High   | Implement quota warnings, plan IndexedDB migration |
+| Legacy data incompatibility | Medium      | Medium | Version exports, implement migration adapters      |
+| Accessibility regression    | Low         | High   | Automated axe-core tests in CI                     |
+| Performance degradation     | Low         | Medium | Lazy loading, virtualization for large lists       |
+| Browser compatibility       | Low         | Low    | Target modern browsers, progressive enhancement    |
 
 ### 8.2 Risk Matrix (Mermaid)
 
-```mermaid
+````mermaid
 quadrantChart
     title Risk Assessment Matrix
     x-axis Low Probability --> High Probability
@@ -480,3 +480,4 @@ flowchart TD
 |---------|------|--------|---------|
 | 1.0 | 2026-01-03 | System | Initial draft |
 | 2.0 | 2026-01-03 | System | Added Mermaid diagrams, updated structure |
+````

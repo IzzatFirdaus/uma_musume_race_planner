@@ -25,8 +25,8 @@ Error responses follow Laravel's standard format:
 
 ```json
 {
-  "message": "Error description",
-  "errors": { "field": ["validation error"] }
+    "message": "Error description",
+    "errors": { "field": ["validation error"] }
 }
 ```
 
@@ -36,29 +36,29 @@ Error responses follow Laravel's standard format:
 
 ### Plans (Career Runs)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/plans` | List all plans with pagination |
-| POST | `/plans` | Create a new plan |
-| GET | `/plans/{id}` | Get plan details |
-| PUT | `/plans/{id}` | Update a plan |
-| DELETE | `/plans/{id}` | Delete a plan |
-| POST | `/plans/quick` | Quick create with minimal fields |
-| GET | `/plans/{id}/progress-chart` | Get chart data for stat progression |
+| Method | Endpoint                     | Description                         |
+| ------ | ---------------------------- | ----------------------------------- |
+| GET    | `/plans`                     | List all plans with pagination      |
+| POST   | `/plans`                     | Create a new plan                   |
+| GET    | `/plans/{id}`                | Get plan details                    |
+| PUT    | `/plans/{id}`                | Update a plan                       |
+| DELETE | `/plans/{id}`                | Delete a plan                       |
+| POST   | `/plans/quick`               | Quick create with minimal fields    |
+| GET    | `/plans/{id}/progress-chart` | Get chart data for stat progression |
 
 #### Create Plan Request
 
 ```json
 {
-  "uma_musume_id": 1,
-  "year": "junior",
-  "status": "ongoing",
-  "uma_class": "debut",
-  "scenario": "URA",
-  "storage_mode": "account",
-  "current_turn": 1,
-  "total_sp_available": 0,
-  "stamina_percentage": 100
+    "uma_musume_id": 1,
+    "year": "junior",
+    "status": "ongoing",
+    "uma_class": "debut",
+    "scenario": "URA",
+    "storage_mode": "account",
+    "current_turn": 1,
+    "total_sp_available": 0,
+    "stamina_percentage": 100
 }
 ```
 
@@ -66,28 +66,28 @@ Error responses follow Laravel's standard format:
 
 ### Stat Progress
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/plans/{plan}/stats` | List all stat entries for a plan |
-| POST | `/plans/{plan}/stats` | Add a stat entry |
-| GET | `/plans/{plan}/stats/{id}` | Get single stat entry |
-| PUT | `/plans/{plan}/stats/{id}` | Update stat entry |
-| DELETE | `/plans/{plan}/stats/{id}` | Delete stat entry |
-| GET | `/plans/{plan}/stats/totals` | Get stat totals |
-| GET | `/plans/{plan}/stats/averages` | Get stat averages |
-| GET | `/plans/{plan}/stats/chart` | Get chart-ready data |
-| GET | `/plans/{plan}/stats/summary` | Get comprehensive summary |
+| Method | Endpoint                       | Description                      |
+| ------ | ------------------------------ | -------------------------------- |
+| GET    | `/plans/{plan}/stats`          | List all stat entries for a plan |
+| POST   | `/plans/{plan}/stats`          | Add a stat entry                 |
+| GET    | `/plans/{plan}/stats/{id}`     | Get single stat entry            |
+| PUT    | `/plans/{plan}/stats/{id}`     | Update stat entry                |
+| DELETE | `/plans/{plan}/stats/{id}`     | Delete stat entry                |
+| GET    | `/plans/{plan}/stats/totals`   | Get stat totals                  |
+| GET    | `/plans/{plan}/stats/averages` | Get stat averages                |
+| GET    | `/plans/{plan}/stats/chart`    | Get chart-ready data             |
+| GET    | `/plans/{plan}/stats/summary`  | Get comprehensive summary        |
 
 #### Add Stat Entry Request
 
 ```json
 {
-  "turn_number": 1,
-  "speed": 150,
-  "stamina": 120,
-  "power": 130,
-  "guts": 100,
-  "wit": 110
+    "turn_number": 1,
+    "speed": 150,
+    "stamina": 120,
+    "power": 130,
+    "guts": 100,
+    "wit": 110
 }
 ```
 
@@ -108,15 +108,15 @@ Error responses follow Laravel's standard format:
 
 ### Skills
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/skills` | List all skill references |
-| GET | `/skills/search?q={query}` | Search skills (EN + JP) |
-| GET | `/plans/{plan}/skills` | List skills for a plan |
-| POST | `/plans/{plan}/skills` | Add skill to plan |
-| PUT | `/plans/{plan}/skills/{id}` | Update skill status |
-| DELETE | `/plans/{plan}/skills/{id}` | Remove skill from plan |
-| GET | `/plans/{plan}/skills/totals` | Get SP totals |
+| Method | Endpoint                      | Description               |
+| ------ | ----------------------------- | ------------------------- |
+| GET    | `/skills`                     | List all skill references |
+| GET    | `/skills/search?q={query}`    | Search skills (EN + JP)   |
+| GET    | `/plans/{plan}/skills`        | List skills for a plan    |
+| POST   | `/plans/{plan}/skills`        | Add skill to plan         |
+| PUT    | `/plans/{plan}/skills/{id}`   | Update skill status       |
+| DELETE | `/plans/{plan}/skills/{id}`   | Remove skill from plan    |
+| GET    | `/plans/{plan}/skills/totals` | Get SP totals             |
 
 #### Skill Search
 
@@ -128,20 +128,20 @@ Response:
 
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "name": "Last Legs",
-      "name_jp": "ラストスパート",
-      "type": "speed",
-      "sp_cost": 40
+    "data": [
+        {
+            "id": 1,
+            "name": "Last Legs",
+            "name_jp": "ラストスパート",
+            "type": "speed",
+            "sp_cost": 40
+        }
+    ],
+    "meta": {
+        "query": "last",
+        "count": 1,
+        "cached": true
     }
-  ],
-  "meta": {
-    "query": "last",
-    "count": 1,
-    "cached": true
-  }
 }
 ```
 
@@ -149,10 +149,10 @@ Response:
 
 ```json
 {
-  "skill_id": 1,
-  "status": "acquired",
-  "turn_acquired": 15,
-  "notes": "Acquired during Classic year"
+    "skill_id": 1,
+    "status": "acquired",
+    "turn_acquired": 15,
+    "notes": "Acquired during Classic year"
 }
 ```
 
@@ -164,16 +164,16 @@ Note: `turn_acquired` is required when status is `acquired`.
 
 ```json
 {
-  "data": {
-    "acquired_total": 450,
-    "suggested_total": 200,
-    "skipped_total": 80,
-    "skill_count": {
-      "acquired": 12,
-      "suggested": 5,
-      "skipped": 2
+    "data": {
+        "acquired_total": 450,
+        "suggested_total": 200,
+        "skipped_total": 80,
+        "skill_count": {
+            "acquired": 12,
+            "suggested": 5,
+            "skipped": 2
+        }
     }
-  }
 }
 ```
 
@@ -181,29 +181,34 @@ Note: `turn_acquired` is required when status is `acquired`.
 
 ### Uma Musume (Characters)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/uma-musume` | List all characters |
-| POST | `/uma-musume` | Create character |
-| GET | `/uma-musume/{id}` | Get character details |
-| PUT | `/uma-musume/{id}` | Update character |
-| DELETE | `/uma-musume/{id}` | Delete character |
-| GET | `/uma-musume-search?q={query}` | Search characters |
+| Method | Endpoint                       | Description           |
+| ------ | ------------------------------ | --------------------- |
+| GET    | `/uma-musume`                  | List all characters   |
+| POST   | `/uma-musume`                  | Create character      |
+| GET    | `/uma-musume/{id}`             | Get character details |
+| PUT    | `/uma-musume/{id}`             | Update character      |
+| DELETE | `/uma-musume/{id}`             | Delete character      |
+| GET    | `/uma-musume-search?q={query}` | Search characters     |
 
 #### Create Character Request
 
 ```json
 {
-  "name": "Special Week",
-  "name_jp": "スペシャルウィーク",
-  "aptitude_style": { "front": "A", "pace": "B", "late": "C", "end": "D" },
-  "aptitude_distance": { "sprint": "E", "mile": "B", "medium": "A", "long": "S" },
-  "aptitude_track": { "turf": "A", "dirt": "C" },
-  "growth_speed": 10,
-  "growth_stamina": 20,
-  "growth_power": 0,
-  "growth_guts": 10,
-  "growth_wit": 0
+    "name": "Special Week",
+    "name_jp": "スペシャルウィーク",
+    "aptitude_style": { "front": "A", "pace": "B", "late": "C", "end": "D" },
+    "aptitude_distance": {
+        "sprint": "E",
+        "mile": "B",
+        "medium": "A",
+        "long": "S"
+    },
+    "aptitude_track": { "turf": "A", "dirt": "C" },
+    "growth_speed": 10,
+    "growth_stamina": 20,
+    "growth_power": 0,
+    "growth_guts": 10,
+    "growth_wit": 0
 }
 ```
 
@@ -211,12 +216,12 @@ Note: `turn_acquired` is required when status is `acquired`.
 
 ### Export
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/export/formats` | List available export formats |
-| GET | `/export/career-run/{id}?format={format}` | Export plan data |
-| GET | `/export/career-run/{id}/preview?format={format}` | Preview export |
-| POST | `/export/bulk` | Export multiple plans |
+| Method | Endpoint                                          | Description                   |
+| ------ | ------------------------------------------------- | ----------------------------- |
+| GET    | `/export/formats`                                 | List available export formats |
+| GET    | `/export/career-run/{id}?format={format}`         | Export plan data              |
+| GET    | `/export/career-run/{id}/preview?format={format}` | Preview export                |
+| POST   | `/export/bulk`                                    | Export multiple plans         |
 
 #### Available Formats
 
@@ -229,11 +234,11 @@ Note: `turn_acquired` is required when status is `acquired`.
 
 ```json
 {
-  "data": {
-    "format": "markdown",
-    "content": "# Career Run: Special Week\n\n## Stats\n...",
-    "estimated_size": "2.4 KB"
-  }
+    "data": {
+        "format": "markdown",
+        "content": "# Career Run: Special Week\n\n## Stats\n...",
+        "estimated_size": "2.4 KB"
+    }
 }
 ```
 
@@ -241,18 +246,18 @@ Note: `turn_acquired` is required when status is `acquired`.
 
 ### Dashboard
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/dashboard/stats` | Get dashboard statistics |
-| GET | `/dashboard/activities` | Get recent activities |
+| Method | Endpoint                | Description              |
+| ------ | ----------------------- | ------------------------ |
+| GET    | `/dashboard/stats`      | Get dashboard statistics |
+| GET    | `/dashboard/activities` | Get recent activities    |
 
 ---
 
 ### Autosuggest
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/autosuggest?type={type}&q={query}` | Generic autosuggest |
+| Method | Endpoint                             | Description         |
+| ------ | ------------------------------------ | ------------------- |
+| GET    | `/autosuggest?type={type}&q={query}` | Generic autosuggest |
 
 Types: `skill`, `character`, `race`
 
@@ -271,10 +276,10 @@ Types: `skill`, `character`, `race`
 
 ## Error Codes
 
-| Code | Description |
-|------|-------------|
-| 400 | Bad Request - Invalid parameters |
-| 404 | Not Found - Resource doesn't exist |
-| 422 | Validation Error - Check errors field |
-| 429 | Too Many Requests - Rate limited |
-| 500 | Server Error |
+| Code | Description                           |
+| ---- | ------------------------------------- |
+| 400  | Bad Request - Invalid parameters      |
+| 404  | Not Found - Resource doesn't exist    |
+| 422  | Validation Error - Check errors field |
+| 429  | Too Many Requests - Rate limited      |
+| 500  | Server Error                          |

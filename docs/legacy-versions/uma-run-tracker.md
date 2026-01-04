@@ -108,12 +108,12 @@ uma-run-tracker/
 ### Attributes
 
 | Attribute | Value Range | Grade |
-|-----------|-------------|-------|
-| SPEED | 0-1200 | A-G |
-| STAMINA | 0-1200 | A-G |
-| POWER | 0-1200 | A-G |
-| GUTS | 0-1200 | A-G |
-| WIT | 0-1200 | A-G |
+| --------- | ----------- | ----- |
+| SPEED     | 0-1200      | A-G   |
+| STAMINA   | 0-1200      | A-G   |
+| POWER     | 0-1200      | A-G   |
+| GUTS      | 0-1200      | A-G   |
+| WIT       | 0-1200      | A-G   |
 
 ### Visual Components
 
@@ -123,34 +123,34 @@ uma-run-tracker/
 
 ## JavaScript Modules
 
-| Module | Purpose |
-|--------|---------|
-| `script.js` | Main form logic, save/load, export |
-| `chart.js` | Stat visualization charts |
-| `dashboard.js` | Dashboard summary logic |
-| `export.js` | File export functionality |
-| `glossary.js` | Glossary accordion behavior |
-| `onboarding.js` | First-time user onboarding |
-| `plan-editor.js` | Plan editing functionality |
+| Module           | Purpose                            |
+| ---------------- | ---------------------------------- |
+| `script.js`      | Main form logic, save/load, export |
+| `chart.js`       | Stat visualization charts          |
+| `dashboard.js`   | Dashboard summary logic            |
+| `export.js`      | File export functionality          |
+| `glossary.js`    | Glossary accordion behavior        |
+| `onboarding.js`  | First-time user onboarding         |
+| `plan-editor.js` | Plan editing functionality         |
 
 ## HTML Components
 
 Reusable HTML partials for consistent UI:
 
-| Component | Description |
-|-----------|-------------|
-| `aptitude-badge.html` | Aptitude grade display |
-| `chart.html` | Chart container |
-| `dashboard-summary.html` | Dashboard overview |
-| `export-modal.html` | Export dialog |
-| `glossary-accordion.html` | Expandable glossary |
-| `goals-badge.html` | Goal status indicator |
-| `header.html` | Page header |
-| `onboarding-modal.html` | Welcome/tutorial modal |
-| `plan-form.html` | Main plan entry form |
-| `sidebar.html` | Navigation sidebar |
-| `skill-card.html` | Skill display card |
-| `stat-bar.html` | Stat progress bar |
+| Component                 | Description            |
+| ------------------------- | ---------------------- |
+| `aptitude-badge.html`     | Aptitude grade display |
+| `chart.html`              | Chart container        |
+| `dashboard-summary.html`  | Dashboard overview     |
+| `export-modal.html`       | Export dialog          |
+| `glossary-accordion.html` | Expandable glossary    |
+| `goals-badge.html`        | Goal status indicator  |
+| `header.html`             | Page header            |
+| `onboarding-modal.html`   | Welcome/tutorial modal |
+| `plan-form.html`          | Main plan entry form   |
+| `sidebar.html`            | Navigation sidebar     |
+| `skill-card.html`         | Skill display card     |
+| `stat-bar.html`           | Stat progress bar      |
 
 ## Features to Migrate
 

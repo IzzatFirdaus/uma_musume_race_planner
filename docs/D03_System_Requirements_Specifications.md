@@ -39,16 +39,16 @@ This specification covers:
 
 ### 1.3 Requirement Priorities
 
-| Priority | Description |
-| -------- | ----------- |
-| P0 (Critical) | Core functionality required for MVP launch |
-| P1 (High) | Important features for complete user experience |
-| P2 (Medium) | Enhanced features for power users |
-| P3 (Low) | Future enhancements |
+| Priority      | Description                                     |
+| ------------- | ----------------------------------------------- |
+| P0 (Critical) | Core functionality required for MVP launch      |
+| P1 (High)     | Important features for complete user experience |
+| P2 (Medium)   | Enhanced features for power users               |
+| P3 (Low)      | Future enhancements                             |
 
 ### 1.4 Requirements Overview
 
-```mermaid
+````mermaid
 mindmap
   root((System Requirements))
     Functional
@@ -661,14 +661,14 @@ erDiagram
     CareerRun ||--o{ Goal : sets
     CareerRun ||--o{ RaceSnapshot : captures
     Skill ||--o{ SkillCareerRun : referenced_by
-    
+
     UmaMusume {
         int id PK
         string name
         string name_jp
         string image_path
     }
-    
+
     CareerRun {
         int id PK
         uuid uuid
@@ -678,7 +678,7 @@ erDiagram
         string title
         enum status
     }
-    
+
     StatProgress {
         int id PK
         int career_run_id FK
@@ -689,7 +689,7 @@ erDiagram
         int guts
         int wit
     }
-    
+
     Skill {
         int id PK
         string name
@@ -806,7 +806,7 @@ flowchart LR
         BR9[BR-9: Storage Modes]
         BR10[BR-10: Accessibility]
     end
-    
+
     subgraph System Requirements
         SR1[REQ-1,3,4]
         SR2[REQ-2,5]
@@ -819,7 +819,7 @@ flowchart LR
         SR9[REQ-56,57,78]
         SR10[NFR-3,6]
     end
-    
+
     BR1 --> SR1
     BR2 --> SR2
     BR3 --> SR3
@@ -881,3 +881,4 @@ flowchart LR
 | ------- | ---- | ------ | ------- |
 | 1.0 | 2026-01-03 | System | Initial draft |
 | 2.0 | 2026-01-03 | System | Added Mermaid diagrams, standardized formatting, added canonical field names reference |
+````

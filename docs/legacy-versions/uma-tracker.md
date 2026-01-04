@@ -111,50 +111,50 @@ uma-tracker/
 
 ### UmaMusume
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | int, PK | Unique identifier |
-| name | string | Character name |
-| image_url | string | Character image URL |
-| aptitude_style | json | Running style suitabilities |
-| aptitude_distance | json | Distance suitabilities |
-| aptitude_track | json | Track suitabilities |
-| growth_speed | int | Speed growth bonus % |
-| growth_stamina | int | Stamina growth bonus % |
+| Field             | Type    | Description                 |
+| ----------------- | ------- | --------------------------- |
+| id                | int, PK | Unique identifier           |
+| name              | string  | Character name              |
+| image_url         | string  | Character image URL         |
+| aptitude_style    | json    | Running style suitabilities |
+| aptitude_distance | json    | Distance suitabilities      |
+| aptitude_track    | json    | Track suitabilities         |
+| growth_speed      | int     | Speed growth bonus %        |
+| growth_stamina    | int     | Stamina growth bonus %      |
 
 ### CareerRun
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | int, PK | Unique identifier |
-| uma_musume_id | int, FK | Character reference |
-| year | enum | Career year (Junior/Classic/Senior) |
-| status | enum | Run status (Ongoing/Finished/Failed) |
-| uma_class | enum | Current class (Debut to Legend) |
-| current_turn | int | Current turn number |
-| total_sp_available | int | Available SP |
+| Field              | Type    | Description                          |
+| ------------------ | ------- | ------------------------------------ |
+| id                 | int, PK | Unique identifier                    |
+| uma_musume_id      | int, FK | Character reference                  |
+| year               | enum    | Career year (Junior/Classic/Senior)  |
+| status             | enum    | Run status (Ongoing/Finished/Failed) |
+| uma_class          | enum    | Current class (Debut to Legend)      |
+| current_turn       | int     | Current turn number                  |
+| total_sp_available | int     | Available SP                         |
 
 ### StatProgress
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field         | Type    | Description          |
+| ------------- | ------- | -------------------- |
 | career_run_id | int, FK | Career run reference |
-| speed | int | Speed stat value |
-| stamina | int | Stamina stat value |
-| power | int | Power stat value |
-| guts | int | Guts stat value |
-| wit | int | Wit stat value |
-| turn_number | int | Turn number |
+| speed         | int     | Speed stat value     |
+| stamina       | int     | Stamina stat value   |
+| power         | int     | Power stat value     |
+| guts          | int     | Guts stat value      |
+| wit           | int     | Wit stat value       |
+| turn_number   | int     | Turn number          |
 
 ## Blade Components
 
-| Component | Description |
-|-----------|-------------|
-| `<x-uma::skill-card>` | Interactive skill management card |
-| `<x-uma::stamina-bar>` | Animated stamina gauge |
-| `<x-uma::stat-radial>` | Circular stat progress indicator |
+| Component                 | Description                                |
+| ------------------------- | ------------------------------------------ |
+| `<x-uma::skill-card>`     | Interactive skill management card          |
+| `<x-uma::stamina-bar>`    | Animated stamina gauge                     |
+| `<x-uma::stat-radial>`    | Circular stat progress indicator           |
 | `<x-uma::aptitude-badge>` | Style/distance/track suitability indicator |
-| `<x-uma::training-log>` | Turn history timeline |
+| `<x-uma::training-log>`   | Turn history timeline                      |
 
 ## API Endpoints
 

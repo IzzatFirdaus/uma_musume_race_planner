@@ -71,16 +71,16 @@ uma_musume_race_planner/
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `handle_plan_crud.php` | POST | Create, Update, Delete plans |
-| `get_plans.php` | GET | List all plans |
-| `get_plan_section.php` | GET | Get specific plan section |
-| `get_activities.php` | GET | Get activity log |
-| `get_autosuggest.php` | GET | Autocomplete suggestions |
-| `get_skill_reference.php` | GET | Skill reference data |
-| `get_stats.php` | GET | Dashboard statistics |
-| `export_plan_data.php` | GET | Export plan as text |
+| Endpoint                  | Method | Description                  |
+| ------------------------- | ------ | ---------------------------- |
+| `handle_plan_crud.php`    | POST   | Create, Update, Delete plans |
+| `get_plans.php`           | GET    | List all plans               |
+| `get_plan_section.php`    | GET    | Get specific plan section    |
+| `get_activities.php`      | GET    | Get activity log             |
+| `get_autosuggest.php`     | GET    | Autocomplete suggestions     |
+| `get_skill_reference.php` | GET    | Skill reference data         |
+| `get_stats.php`           | GET    | Dashboard statistics         |
+| `export_plan_data.php`    | GET    | Export plan as text          |
 
 ## Features to Migrate
 

@@ -12,43 +12,43 @@ This document tracks the conversion strategy to standardize frontend implementat
 
 ## Technology Stack (Verified)
 
-| Component | Version | Path | Notes |
-|-----------|---------|------|-------|
-| Laravel | ^12.0 | `composer.json` | Framework |
-| PHP | ^8.2 | `composer.json` | Language |
-| Livewire | ^3.6 | `composer.json` | Reactive component framework |
-| Tailwind CSS | ^4.0.0 | `package.json`, `tailwind.config.js` | Styling |
-| Vite | ^7.0.4 | `package.json`, `vite.config.js` | Asset bundling |
-| Alpine.js | Implicit (via Livewire) | Included with Livewire v3 | Minimal JS interactions |
-| Testing | PHPUnit v11, Jest, Playwright | `phpunit.xml`, `package.json` | Test frameworks |
+| Component    | Version                       | Path                                 | Notes                        |
+| ------------ | ----------------------------- | ------------------------------------ | ---------------------------- |
+| Laravel      | ^12.0                         | `composer.json`                      | Framework                    |
+| PHP          | ^8.2                          | `composer.json`                      | Language                     |
+| Livewire     | ^3.6                          | `composer.json`                      | Reactive component framework |
+| Tailwind CSS | ^4.0.0                        | `package.json`, `tailwind.config.js` | Styling                      |
+| Vite         | ^7.0.4                        | `package.json`, `vite.config.js`     | Asset bundling               |
+| Alpine.js    | Implicit (via Livewire)       | Included with Livewire v3            | Minimal JS interactions      |
+| Testing      | PHPUnit v11, Jest, Playwright | `phpunit.xml`, `package.json`        | Test frameworks              |
 
 ---
 
 ## Existing Livewire Components (Already Standardized)
 
-| Class Name | View Path | Category | Notes |
-|------------|-----------|----------|-------|
-| `Dashboard` | `resources/views/livewire/dashboard/` | Page Component | Main dashboard |
-| `FormTabs` | `resources/views/livewire/form-tabs.blade.php` | Form/Tabs | Form tab navigation |
-| `GuideStickyNav` | `resources/views/livewire/guide-sticky-nav.blade.php` | Navigation | Sticky guide nav |
-| `Layout/*` | `resources/views/livewire/layout/` | Layout | Layout wrappers |
-| `PlanDetails` | `resources/views/livewire/plan-details.blade.php` | Data Display | Plan details view |
-| `QuickCreatePlan` | `resources/views/livewire/quick-create-plan.blade.php` | Form/Modal | Quick plan creation |
+| Class Name        | View Path                                              | Category       | Notes               |
+| ----------------- | ------------------------------------------------------ | -------------- | ------------------- |
+| `Dashboard`       | `resources/views/livewire/dashboard/`                  | Page Component | Main dashboard      |
+| `FormTabs`        | `resources/views/livewire/form-tabs.blade.php`         | Form/Tabs      | Form tab navigation |
+| `GuideStickyNav`  | `resources/views/livewire/guide-sticky-nav.blade.php`  | Navigation     | Sticky guide nav    |
+| `Layout/*`        | `resources/views/livewire/layout/`                     | Layout         | Layout wrappers     |
+| `PlanDetails`     | `resources/views/livewire/plan-details.blade.php`      | Data Display   | Plan details view   |
+| `QuickCreatePlan` | `resources/views/livewire/quick-create-plan.blade.php` | Form/Modal     | Quick plan creation |
 
 ---
 
 ## Conversion Mapping
 
-| Source Path | Suggested Livewire Class | Suggested Livewire View | Category |
-|-------------|---------------------------|--------------------------|----------|
-| `resources/views/components/alert.blade.php` | `App\Livewire\Components\Alert` | `resources/views/livewire/components/alert.blade.php` | Component |
-| `resources/views/components/button.blade.php` | `App\Livewire\Components\Button` | `resources/views/livewire/components/button.blade.php` | Component |
-| `resources/views/components/input.blade.php` | `App\Livewire\Components\Input` | `resources/views/livewire/components/input.blade.php` | Component |
-| `resources/views/components/layout.blade.php` | `App\Livewire\Components\Layout` | `resources/views/livewire/components/layout.blade.php` | Component |
-| `resources/views/dashboard/partials/` | `App\Livewire\Dashboard\Partials` | `resources/views/livewire/dashboard/partials/` | Dashboard |
-| `resources/views/modals/plan-details.blade.php` | `App\Livewire\Modals\PlanDetails` | `resources/views/livewire/modals/plan-details.blade.php` | Modal |
-| `resources/views/modals/quick-create-plan.blade.php` | `App\Livewire\Modals\QuickCreatePlan` | `resources/views/livewire/modals/quick-create-plan.blade.php` | Modal |
-| `resources/views/plans/partials/` | `App\Livewire\Plans\Partials` | `resources/views/livewire/plans/partials/` | Plans |
+| Source Path                                          | Suggested Livewire Class              | Suggested Livewire View                                       | Category  |
+| ---------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------- | --------- |
+| `resources/views/components/alert.blade.php`         | `App\Livewire\Components\Alert`       | `resources/views/livewire/components/alert.blade.php`         | Component |
+| `resources/views/components/button.blade.php`        | `App\Livewire\Components\Button`      | `resources/views/livewire/components/button.blade.php`        | Component |
+| `resources/views/components/input.blade.php`         | `App\Livewire\Components\Input`       | `resources/views/livewire/components/input.blade.php`         | Component |
+| `resources/views/components/layout.blade.php`        | `App\Livewire\Components\Layout`      | `resources/views/livewire/components/layout.blade.php`        | Component |
+| `resources/views/dashboard/partials/`                | `App\Livewire\Dashboard\Partials`     | `resources/views/livewire/dashboard/partials/`                | Dashboard |
+| `resources/views/modals/plan-details.blade.php`      | `App\Livewire\Modals\PlanDetails`     | `resources/views/livewire/modals/plan-details.blade.php`      | Modal     |
+| `resources/views/modals/quick-create-plan.blade.php` | `App\Livewire\Modals\QuickCreatePlan` | `resources/views/livewire/modals/quick-create-plan.blade.php` | Modal     |
+| `resources/views/plans/partials/`                    | `App\Livewire\Plans\Partials`         | `resources/views/livewire/plans/partials/`                    | Plans     |
 
 ---
 
@@ -64,12 +64,12 @@ This document tracks the conversion strategy to standardize frontend implementat
 
 ### ✅ Converted Components
 
-| Component | Class | View | Status | Tests | Notes |
-|-----------|-------|------|--------|-------|-------|
-| Skill Editor | `App\Livewire\Skills\SkillEditor` | `resources/views/livewire/skills/skill-editor.blade.php` | ✅ COMPLETE | 4 tests (PASS) | Validates skills, dispatches events |
-| Skill Row | `App\Livewire\Plans\SkillRow` | `resources/views/livewire/plans/skill-row.blade.php` | ✅ SKELETON | 2 tests (PASS) | Skeleton created, ready for logic |
-| Training Year | `App\Livewire\Plans\TrainingYear` | `resources/views/livewire/plans/training-year.blade.php` | ✅ SKELETON | 2 tests (PASS) | Skeleton created, ready for logic |
-| Character List | `App\Livewire\Characters\CharacterList` | `resources/views/livewire/characters/character-list.blade.php` | ✅ SKELETON | 2 tests (PASS) | Skeleton created, ready for logic |
+| Component      | Class                                   | View                                                           | Status      | Tests          | Notes                               |
+| -------------- | --------------------------------------- | -------------------------------------------------------------- | ----------- | -------------- | ----------------------------------- |
+| Skill Editor   | `App\Livewire\Skills\SkillEditor`       | `resources/views/livewire/skills/skill-editor.blade.php`       | ✅ COMPLETE | 4 tests (PASS) | Validates skills, dispatches events |
+| Skill Row      | `App\Livewire\Plans\SkillRow`           | `resources/views/livewire/plans/skill-row.blade.php`           | ✅ SKELETON | 2 tests (PASS) | Skeleton created, ready for logic   |
+| Training Year  | `App\Livewire\Plans\TrainingYear`       | `resources/views/livewire/plans/training-year.blade.php`       | ✅ SKELETON | 2 tests (PASS) | Skeleton created, ready for logic   |
+| Character List | `App\Livewire\Characters\CharacterList` | `resources/views/livewire/characters/character-list.blade.php` | ✅ SKELETON | 2 tests (PASS) | Skeleton created, ready for logic   |
 
 ### Implementation Details
 

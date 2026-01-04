@@ -25,31 +25,31 @@ This document provides a map of the source code structure for the Uma Musume Car
 
 ### 1.1 Architecture Overview
 
-```mermaid
+````mermaid
 flowchart TB
     subgraph Presentation["Presentation Layer"]
         Blade["Blade Templates"]
         Livewire["Livewire Components"]
         Alpine["Alpine.js"]
     end
-    
+
     subgraph Application["Application Layer"]
         Controllers["Controllers"]
         Services["Services"]
         Actions["Actions"]
     end
-    
+
     subgraph Domain["Domain Layer"]
         Models["Eloquent Models"]
         Enums["Enums"]
     end
-    
+
     subgraph Infrastructure["Infrastructure Layer"]
         Database[(Database)]
         Cache["Cache"]
         Storage["File Storage"]
     end
-    
+
     Blade --> Livewire
     Livewire --> Alpine
     Livewire --> Services
@@ -58,7 +58,7 @@ flowchart TB
     Models --> Enums
     Models --> Database
     Services --> Cache
-    
+
     style Presentation fill:#e3f2fd
     style Application fill:#f3e5f5
     style Domain fill:#e8f5e9
@@ -73,13 +73,13 @@ flowchart TB
 ```mermaid
 flowchart TD
     Root["/"]
-    
+
     Root --> App["app/"]
     Root --> Database["database/"]
     Root --> Resources["resources/"]
     Root --> Routes["routes/"]
     Root --> Tests["tests/"]
-    
+
     App --> Actions["Actions/"]
     App --> Enums["Enums/"]
     App --> Http["Http/"]
@@ -87,19 +87,19 @@ flowchart TD
     App --> Models["Models/"]
     App --> Services["Services/"]
     App --> View["View/"]
-    
+
     Database --> Factories["factories/"]
     Database --> Migrations["migrations/"]
     Database --> Seeders["seeders/"]
-    
+
     Resources --> CSS["css/"]
     Resources --> JS["js/"]
     Resources --> Views["views/"]
-```
+````
 
 ### 2.2 Directory Details
 
-```text
+````text
 /
 ├── app/
 │   ├── Actions/        # Fortify/Jetstream Actions (Auth)
@@ -140,28 +140,28 @@ classDiagram
         Local
         Account
     }
-    
+
     class RunStatus {
         <<enumeration>>
         InProgress
         Completed
         Archived
     }
-    
+
     class CareerStage {
         <<enumeration>>
         Junior
         Classic
         Senior
     }
-    
+
     class SkillStatus {
         <<enumeration>>
         Acquired
         Skipped
         Suggested
     }
-    
+
     class AptitudeGrade {
         <<enumeration>>
         SS : 120%
@@ -196,25 +196,25 @@ classDiagram
         +delete(CareerRun run) bool
         +calculateEffectiveStats(int rawValue) int
     }
-    
+
     class SkillService {
         +search(string query) Collection
         +getByType(string type) Collection
         +attachToRun(CareerRun run, Skill skill) void
     }
-    
+
     class LocalRunStorageService {
         +validateSchema(array json) bool
         +generateUuid() string
         +convertToAccount(array localRun) CareerRun
     }
-    
+
     class ImportService {
         +import(UploadedFile file, StorageMode target) ImportResult
         +detectFormat(UploadedFile file) ImportFormat
         +validate(array data) ValidationResult
     }
-    
+
     CareerRunService --> SkillService : uses
     ImportService --> LocalRunStorageService : uses
     ImportService --> CareerRunService : uses
@@ -240,17 +240,17 @@ flowchart TD
         PlanEditor["PlanEditor<br/>Main editor"]
         QuickCreate["QuickCreate<br/>Modal form"]
     end
-    
+
     subgraph Skills["App\Livewire\Skills"]
         SkillSearch["SkillSearch<br/>Autocomplete"]
         SkillList["SkillList<br/>Attached skills"]
     end
-    
+
     subgraph Stats["App\Livewire\Stats"]
         StatsDisplay["StatsDisplay<br/>Current stats"]
         StatsChart["StatsChart<br/>Progress chart"]
     end
-    
+
     PlanEditor --> SkillList
     PlanEditor --> StatsDisplay
     PlanEditor --> StatsChart
@@ -285,7 +285,7 @@ classDiagram
         +goals() HasMany
         +racePredictions() HasMany
     }
-    
+
     class StatProgress {
         +int id
         +int career_run_id
@@ -297,7 +297,7 @@ classDiagram
         +int wit
         +careerRun() BelongsTo
     }
-    
+
     class Skill {
         +int id
         +string name
@@ -307,14 +307,14 @@ classDiagram
         +SkillTier tier
         +careerRuns() BelongsToMany
     }
-    
+
     class UmaMusume {
         +int id
         +string name
         +string name_jp
         +careerRuns() HasMany
     }
-    
+
     CareerRun "1" --> "*" StatProgress
     CareerRun "*" --> "*" Skill
     UmaMusume "1" --> "*" CareerRun
@@ -330,25 +330,25 @@ flowchart TD
     subgraph Entry["Entry Point"]
         AppJS["resources/js/app.js"]
     end
-    
+
     subgraph Alpine["Alpine.js"]
         Init["Alpine Init"]
         Stores["Alpine Stores"]
         Components["Alpine Components"]
     end
-    
+
     subgraph Stores["Stores"]
         LocalRuns["$store.localRuns"]
         Preferences["$store.preferences"]
         Drafts["$store.drafts"]
     end
-    
+
     subgraph Events["Global Events"]
         Toast["toast"]
         ConnectionLost["connection-lost"]
         PlanSaved["plan-saved"]
     end
-    
+
     AppJS --> Init
     Init --> Stores
     Init --> Components
@@ -382,12 +382,12 @@ flowchart LR
         Components["@tailwind components"]
         Utilities["@tailwind utilities"]
     end
-    
+
     subgraph Custom["Custom Classes"]
         StatColors["Stat Colors<br/>.text-stat-speed<br/>.text-stat-stamina"]
         GameUI["Game UI<br/>.aptitude-badge<br/>.skill-card"]
     end
-    
+
     Tailwind --> Custom
 ```text
 | Custom Class | Purpose |
@@ -412,7 +412,7 @@ flowchart LR
 flowchart TD
     Input["Raw Stat Value"]
     Check{"> 1200?"}
-    
+
     Input --> Check
     Check -->|"No"| Return1["Return raw value"]
     Check -->|"Yes"| Calculate["1200 + floor((raw - 1200) / 2)"]
@@ -429,12 +429,12 @@ flowchart TD
 ```mermaid
 flowchart TD
     File["Uploaded File"]
-    
+
     File --> Ext{"Extension?"}
     Ext -->|".json"| JSON["Check JSON structure"]
     Ext -->|".csv"| CSV["Return CSV format"]
     Ext -->|"other"| Unknown["Return Unknown"]
-    
+
     JSON --> Schema{"Has schema_version?"}
     Schema -->|"Yes"| Standard["Return Standard JSON"]
     Schema -->|"No"| Legacy["Return Legacy JSON"]
@@ -455,7 +455,7 @@ flowchart LR
         PlansLocal["/plans/local/{uuid}"]
         PlansId["/plans/{id}"]
     end
-    
+
     subgraph API["API Routes (api.php)"]
         SkillSearch["/internal/skills/search"]
         Import["/api/plans/import"]
@@ -504,13 +504,13 @@ flowchart LR
         Methods["Methods: camelCase<br/>calculateStats()"]
         Properties["Properties: camelCase<br/>$currentTurn"]
     end
-    
+
     subgraph JS["JavaScript Naming"]
         Functions["Functions: camelCase<br/>handleSubmit()"]
         Variables["Variables: camelCase<br/>isLoading"]
         Constants["Constants: UPPER_SNAKE<br/>MAX_TURNS"]
     end
-    
+
     subgraph DB["Database Naming"]
         Tables["Tables: snake_case plural<br/>career_runs"]
         Columns["Columns: snake_case<br/>turn_number"]
@@ -561,3 +561,4 @@ pie title Test Distribution
 |---------|------|--------|---------|
 | 1.0 | 2026-01-03 | Development Team | Initial draft |
 | 2.0 | 2026-01-03 | Development Team | Added Mermaid diagrams, expanded documentation |
+````

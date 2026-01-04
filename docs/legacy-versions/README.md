@@ -4,13 +4,13 @@ This directory documents the various iterations of the Uma Musume tracking appli
 
 ## Version Overview
 
-| Version | Tech Stack | Status | Key Features |
-|---------|------------|--------|--------------|
+| Version                                                 | Tech Stack              | Status | Key Features                                   |
+| ------------------------------------------------------- | ----------------------- | ------ | ---------------------------------------------- |
 | [uma_musume_race_planner](./uma_musume_race_planner.md) | PHP + MySQL + Bootstrap | Legacy | Full plan management, dark mode, image uploads |
-| [umamusume-tracker](./umamusume-tracker.md) | Laravel 12 + React | Legacy | API-first, React client, CSV/XLSX export |
-| [uma-tracker](./uma-tracker.md) | Laravel 11 + Blade | Legacy | Excel export, Blade components, Livewire |
-| [uma-run-tracker](./uma-run-tracker.md) | Static HTML + JS | Legacy | Offline-first, local storage, markdown export |
-| [uma-tracker-form](./uma-tracker-form.md) | Native PHP + MVC | Legacy | Simple form entry, CSRF protection |
+| [umamusume-tracker](./umamusume-tracker.md)             | Laravel 12 + React      | Legacy | API-first, React client, CSV/XLSX export       |
+| [uma-tracker](./uma-tracker.md)                         | Laravel 11 + Blade      | Legacy | Excel export, Blade components, Livewire       |
+| [uma-run-tracker](./uma-run-tracker.md)                 | Static HTML + JS        | Legacy | Offline-first, local storage, markdown export  |
+| [uma-tracker-form](./uma-tracker-form.md)               | Native PHP + MVC        | Legacy | Simple form entry, CSRF protection             |
 
 ## Consolidation Target
 

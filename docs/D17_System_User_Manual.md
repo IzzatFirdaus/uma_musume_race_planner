@@ -21,7 +21,7 @@
 
 ## 1. Introduction
 
-Welcome to the **Uma Musume Career Planner**, your comprehensive tool for planning, tracking, and analyzing your training runs in *Uma Musume: Pretty Derby*.
+Welcome to the **Uma Musume Career Planner**, your comprehensive tool for planning, tracking, and analyzing your training runs in _Uma Musume: Pretty Derby_.
 
 This manual guides you through using the application, managing your training plans, and understanding the data provided.
 
@@ -50,13 +50,13 @@ mindmap
 
 ### 1.2 Key Features
 
-| Feature | Description |
-|---------|-------------|
+| Feature                | Description                                               |
+| ---------------------- | --------------------------------------------------------- |
 | **Dual Storage Modes** | Choose between Local (browser) or Account (cloud) storage |
-| **Skill Management** | Search, track, and manage skills with SP calculations |
-| **Turn Tracking** | Log stats turn-by-turn with visual progress charts |
-| **Import/Export** | Backup and restore your data in JSON format |
-| **Offline Support** | Continue working even without internet connection |
+| **Skill Management**   | Search, track, and manage skills with SP calculations     |
+| **Turn Tracking**      | Log stats turn-by-turn with visual progress charts        |
+| **Import/Export**      | Backup and restore your data in JSON format               |
+| **Offline Support**    | Continue working even without internet connection         |
 
 ---
 
@@ -74,34 +74,34 @@ flowchart TB
         L3["Works offline"]
         L4["Risk: Browser cache clear"]
     end
-    
+
     subgraph Account["🟣 Account Mode"]
         A1["Login required"]
         A2["Cloud sync"]
         A3["Access anywhere"]
         A4["Secure backup"]
     end
-    
+
     Local -->|"Convert"| Account
 ```
 
 #### Local Mode (No Login Required)
 
-| Aspect | Details |
-|--------|---------|
-| **Pros** | Instant start, no account needed, works offline |
-| **Cons** | Data stays on this browser/device only. If you clear browser cache, data is lost |
-| **Best for** | Quick tests, anonymous usage |
-| **Indicator** | Orange "Local" badge |
+| Aspect        | Details                                                                          |
+| ------------- | -------------------------------------------------------------------------------- |
+| **Pros**      | Instant start, no account needed, works offline                                  |
+| **Cons**      | Data stays on this browser/device only. If you clear browser cache, data is lost |
+| **Best for**  | Quick tests, anonymous usage                                                     |
+| **Indicator** | Orange "Local" badge                                                             |
 
 #### Account Mode (Login Required)
 
-| Aspect | Details |
-|--------|---------|
-| **Pros** | Data syncs across devices, secure cloud backup, never lost |
-| **Cons** | Requires internet connection |
-| **Best for** | Long-term tracking, accessing data on phone and PC |
-| **Indicator** | Purple "Account" badge |
+| Aspect        | Details                                                    |
+| ------------- | ---------------------------------------------------------- |
+| **Pros**      | Data syncs across devices, secure cloud backup, never lost |
+| **Cons**      | Requires internet connection                               |
+| **Best for**  | Long-term tracking, accessing data on phone and PC         |
+| **Indicator** | Purple "Account" badge                                     |
 
 > **Tip:** You can start in Local Mode and convert your plans to Account Mode later by signing up!
 
@@ -115,7 +115,7 @@ flowchart TD
         List["📋 Plan List<br/>Your Training Logs"]
         Filters["🔍 Filters<br/>Status, Strategy"]
     end
-    
+
     Stats --> List
     Recent --> List
     Filters --> List
@@ -123,12 +123,12 @@ flowchart TD
 
 The **Dashboard** is your home base:
 
-| Section | Description |
-|---------|-------------|
-| **Stats Panel** | Shows how many active and completed plans you have |
-| **Recent Activity** | Shows your latest edits |
-| **Plan List** | Your training logs with filtering options |
-| **Filters** | Sort by Status (In Progress/Completed) or Strategy |
+| Section             | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| **Stats Panel**     | Shows how many active and completed plans you have |
+| **Recent Activity** | Shows your latest edits                            |
+| **Plan List**       | Your training logs with filtering options          |
+| **Filters**         | Sort by Status (In Progress/Completed) or Strategy |
 
 ---
 
@@ -142,7 +142,7 @@ sequenceDiagram
     participant Dashboard
     participant Form
     participant Storage
-    
+
     User->>Dashboard: Click "Create Plan"
     Dashboard->>Form: Open creation form
     User->>Form: Enter title
@@ -173,16 +173,16 @@ flowchart LR
         Skills["⭐ Skills<br/>Skill Management"]
         Turns["📈 Turns<br/>Progress Tracking"]
     end
-    
+
     General --> Attributes --> Skills --> Turns
 ```
 
-| Tab | Purpose |
-|-----|---------|
-| **General** | Update status (Junior/Classic/Senior), Mood, and Energy |
+| Tab            | Purpose                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| **General**    | Update status (Junior/Classic/Senior), Mood, and Energy                                    |
 | **Attributes** | Enter your current Speed, Stamina, Power, Guts, and Wit. The circle fills up to 1200 (max) |
-| **Skills** | Search and add skills. Mark them as "Acquired" when you buy them in-game |
-| **Turns** | Log your stats turn-by-turn to see a progress chart |
+| **Skills**     | Search and add skills. Mark them as "Acquired" when you buy them in-game                   |
+| **Turns**      | Log your stats turn-by-turn to see a progress chart                                        |
 
 ### 3.3 Skill Management
 
@@ -191,32 +191,32 @@ flowchart TD
     Search["🔍 Search Skill<br/>(English or Japanese)"]
     Select["📋 Select from List"]
     Add["➕ Add to Plan"]
-    
+
     Search --> Select --> Add
-    
+
     Add --> Status{"Set Status"}
     Status --> Suggested["💭 Suggested<br/>Plan to get"]
     Status --> Acquired["✅ Acquired<br/>Already bought"]
     Status --> Skipped["❌ Skipped<br/>Decided against"]
-    
+
     Acquired --> Turn["Enter Turn Number"]
 ```
 
 **How to manage skills:**
 
-| Action | Steps |
-|--------|-------|
-| **Add Skill** | Type the skill name (English or Japanese). Select from the list |
-| **Set Status** | Choose Suggested, Acquired, or Skipped |
-| **Track Acquisition** | When marking as "Acquired", enter the turn number |
+| Action                | Steps                                                           |
+| --------------------- | --------------------------------------------------------------- |
+| **Add Skill**         | Type the skill name (English or Japanese). Select from the list |
+| **Set Status**        | Choose Suggested, Acquired, or Skipped                          |
+| **Track Acquisition** | When marking as "Acquired", enter the turn number               |
 
 **Skill Status Types:**
 
-| Status | Meaning |
-|--------|---------|
-| 💭 **Suggested** | You plan to get this skill |
-| ✅ **Acquired** | You bought it (enter the turn number!) |
-| ❌ **Skipped** | You decided against it |
+| Status           | Meaning                                |
+| ---------------- | -------------------------------------- |
+| 💭 **Suggested** | You plan to get this skill             |
+| ✅ **Acquired**  | You bought it (enter the turn number!) |
+| ❌ **Skipped**   | You decided against it                 |
 
 **SP Calculator:** The bottom of the Skills tab shows how much SP you have spent vs. how much you need.
 
@@ -242,14 +242,14 @@ flowchart LR
         E2["Click Export"]
         E3["Download .json file"]
     end
-    
+
     subgraph Import["Import Process"]
         I1["Go to Import page"]
         I2["Upload .json file"]
         I3["Review & Confirm"]
         I4["Data restored"]
     end
-    
+
     E3 -.->|"Transfer file"| I2
 ```
 
@@ -277,7 +277,7 @@ sequenceDiagram
     participant Server
     participant Database
     participant LocalStorage
-    
+
     User->>User: Log in
     User->>LocalData: Find local plan
     User->>LocalData: Click "Convert to Account"
@@ -305,13 +305,13 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     Issue["Issue Encountered"]
-    
+
     Issue --> Type{"What type?"}
-    
+
     Type -->|"Connection"| Conn["Connection Lost"]
     Type -->|"Data"| Data["Missing Data"]
     Type -->|"Search"| Search["Skill Not Found"]
-    
+
     Conn --> ConnFix["Wait for reconnect<br/>Draft auto-saved"]
     Data --> DataFix["Check browser<br/>Same browser?<br/>Incognito?"]
     Search --> SearchFix["Try Japanese name<br/>Check spelling"]
@@ -319,13 +319,13 @@ flowchart TD
 
 ### 5.2 Issue Solutions
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| **"Connection Lost"** | Internet dropped while editing Account plan | App enters Offline Mode. Changes saved as "Draft" on device. When internet returns, you'll be asked to save the draft |
-| **Missing Local Data** | Different browser or cleared cache | Ensure you're using the same browser. Incognito mode deletes data when closed |
-| **Skill Not Found** | Name mismatch | Try typing part of the Japanese name if the English name isn't working |
-| **Stats Not Saving** | Form not submitted | Make sure to click "Save" after making changes |
-| **Slow Performance** | Too many plans | Archive old completed plans to improve loading speed |
+| Issue                  | Cause                                       | Solution                                                                                                              |
+| ---------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **"Connection Lost"**  | Internet dropped while editing Account plan | App enters Offline Mode. Changes saved as "Draft" on device. When internet returns, you'll be asked to save the draft |
+| **Missing Local Data** | Different browser or cleared cache          | Ensure you're using the same browser. Incognito mode deletes data when closed                                         |
+| **Skill Not Found**    | Name mismatch                               | Try typing part of the Japanese name if the English name isn't working                                                |
+| **Stats Not Saving**   | Form not submitted                          | Make sure to click "Save" after making changes                                                                        |
+| **Slow Performance**   | Too many plans                              | Archive old completed plans to improve loading speed                                                                  |
 
 ### 5.3 Offline Mode
 
@@ -357,19 +357,19 @@ When your internet connection drops:
 ```mermaid
 flowchart LR
     Help["Need Help?"]
-    
+
     Help --> Docs["📚 Documentation<br/>Read the docs"]
     Help --> FAQ["❓ FAQ<br/>Common questions"]
     Help --> GitHub["🐙 GitHub<br/>Report bugs"]
     Help --> Contact["📧 Contact<br/>Email support"]
 ```
 
-| Resource | Description |
-|----------|-------------|
+| Resource          | Description                                     |
+| ----------------- | ----------------------------------------------- |
 | **Documentation** | Full system documentation in the `/docs` folder |
-| **FAQ** | Frequently asked questions on the Help page |
-| **GitHub** | Report bugs or request features |
-| **Contact** | Email support for urgent issues |
+| **FAQ**           | Frequently asked questions on the Help page     |
+| **GitHub**        | Report bugs or request features                 |
+| **Contact**       | Email support for urgent issues                 |
 
 ### 6.2 Reporting Bugs
 
@@ -386,28 +386,28 @@ When reporting a bug, please include:
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl + S` | Save current plan |
-| `Ctrl + N` | Create new plan |
-| `Esc` | Close modal/dialog |
+| Shortcut   | Action             |
+| ---------- | ------------------ |
+| `Ctrl + S` | Save current plan  |
+| `Ctrl + N` | Create new plan    |
+| `Esc`      | Close modal/dialog |
 
 ### Status Icons
 
-| Icon | Meaning |
-|------|---------|
-| 🟠 | Local Mode |
-| 🟣 | Account Mode |
-| 🟢 | In Progress |
-| ✅ | Completed |
-| 📦 | Archived |
-| ⚠️ | Unsaved Changes |
+| Icon | Meaning         |
+| ---- | --------------- |
+| 🟠   | Local Mode      |
+| 🟣   | Account Mode    |
+| 🟢   | In Progress     |
+| ✅   | Completed       |
+| 📦   | Archived        |
+| ⚠️   | Unsaved Changes |
 
 ---
 
 ## Document History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2026-01-03 | Development Team | Initial draft |
-| 2.0 | 2026-01-03 | Development Team | Added Mermaid diagrams, expanded content |
+| Version | Date       | Author           | Changes                                  |
+| ------- | ---------- | ---------------- | ---------------------------------------- |
+| 1.0     | 2026-01-03 | Development Team | Initial draft                            |
+| 2.0     | 2026-01-03 | Development Team | Added Mermaid diagrams, expanded content |
