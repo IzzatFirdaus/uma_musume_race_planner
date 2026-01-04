@@ -13,8 +13,8 @@ import { escapeHtml } from "./utils.js";
 // --- Local third-party libraries (bundle via Vite) ---
 // SweetAlert2 is present in package.json; import and expose to window so
 // existing inline scripts and legacy code using `window.Swal` continue to work.
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 window.Swal = Swal;
 
 // --- Global variables ---
@@ -265,12 +265,20 @@ function setupGlobalEventListeners() {
         // If a plain anchor points to a plans/*/edit URL and is clicked, force a
         // full-page navigation so tests waiting for a load event are reliable.
         try {
-            const anchor = target.closest && target.closest('a[href]');
+            const anchor = target.closest && target.closest("a[href]");
             if (anchor) {
-                const href = anchor.getAttribute('href') || '';
-                if (href.includes('/plans/') && href.endsWith('/edit') && anchor.textContent?.trim().includes('Edit Plan')) {
+                const href = anchor.getAttribute("href") || "";
+                if (
+                    href.includes("/plans/") &&
+                    href.endsWith("/edit") &&
+                    anchor.textContent?.trim().includes("Edit Plan")
+                ) {
                     // Use assign to ensure a full navigation entry
-                    window.location.assign(href.startsWith('http') ? href : `${APP_PUBLIC_PATH || ''}${href}`);
+                    window.location.assign(
+                        href.startsWith("http")
+                            ? href
+                            : `${APP_PUBLIC_PATH || ""}${href}`,
+                    );
                     event.preventDefault();
                     return;
                 }
@@ -290,9 +298,9 @@ function setupGlobalEventListeners() {
         // expect a normal navigation do not flake when the DOM was client
         // rendered by JS.
         if (target.closest(".edit-btn")) {
-            const btn = target.closest('.edit-btn');
+            const btn = target.closest(".edit-btn");
             // If the button is wrapped in an anchor or already has an href, prefer that
-            const anchor = btn.closest('a[href]');
+            const anchor = btn.closest("a[href]");
             if (anchor) {
                 // Let the browser handle the navigation or Livewire handle wire:click
                 return;
@@ -301,7 +309,7 @@ function setupGlobalEventListeners() {
             // Otherwise, fallback to explicit full-page navigation using the app path
             const id = btn.dataset?.id;
             if (id) {
-                const dest = `${APP_PUBLIC_PATH || ''}/plans/${id}/edit`;
+                const dest = `${APP_PUBLIC_PATH || ""}/plans/${id}/edit`;
                 // Use location.assign to create a proper navigation entry
                 window.location.assign(dest);
                 // Prevent other handlers from running

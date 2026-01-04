@@ -90,3 +90,18 @@
     background-color: #f1f3f4;
     color: #495057;
 }
+
+/* Additional aptitude grade styles for SS grade */
+.grade-SS {
+    background-color: #e5e7eb;
+    color: #374151;
+    font-weight: bold;
+}
+
+/* Aptitude grade badge styling */
+.aptitude-grade {
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}

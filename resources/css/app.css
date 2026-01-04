@@ -12,63 +12,286 @@
 /* Accessibility: prefer focus-visible and reduced motion rules */
 /* Visible focus for keyboard users (non-destructive - complements Tailwind focus utilities) */
 :focus {
-	outline-offset: 2px;
+    outline-offset: 2px;
 }
 
 /* Prefer focus-visible for browsers that support it */
 :where(:focus-visible) {
-	outline: 2px solid var(--color-secondary);
-	outline-offset: 2px;
-	box-shadow: 0 0 0 0.2rem rgb(149 117 205 / 25%);
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0.2rem rgb(149 117 205 / 25%);
 }
 
 /* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
-	*, *::before, *::after {
-		animation-duration: 0.001ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.001ms !important;
-		scroll-behavior: auto !important;
-	}
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Manual reduced motion toggle class (Task 30.3 - Accessibility) */
+/* Applied via Alpine.js preferences store when user enables "Reduce Motion" */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* Disable specific component animations when reduced motion is active */
+.reduce-motion .circular-progress-animated,
+.reduce-motion .stat-chart-animated {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Provide instant state changes instead of animations */
+.reduce-motion [x-transition],
+.reduce-motion .transition,
+.reduce-motion .animate-spin,
+.reduce-motion .animate-pulse,
+.reduce-motion .animate-bounce {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* ==========================================================================
+   Responsive Design Utilities (Req 14, 52)
+   ========================================================================== */
+
+/* Touch-friendly targets - minimum 44px (Req 14.4, 52.1) */
+.touch-target {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Prevent unwanted browser behaviors on touch (Req 52.6) */
+.touch-action-manipulation {
+    touch-action: manipulation;
+}
+
+.touch-action-pan-y {
+    touch-action: pan-y;
+}
+
+.touch-action-pan-x {
+    touch-action: pan-x;
+}
+
+/* Mobile-first single column layout (Req 14.1) */
+@media (max-width: 767px) {
+    /* Force single column on mobile */
+    .mobile-single-col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mobile-single-col > * {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Stack grid items vertically on mobile */
+    .mobile-stack {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Full width buttons on mobile */
+    .mobile-full-width {
+        width: 100%;
+    }
+
+    /* Reduce padding on mobile */
+    .mobile-compact-padding {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Hide on mobile */
+    .mobile-hidden {
+        display: none !important;
+    }
+}
+
+/* Show only on mobile */
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none !important;
+    }
+}
+
+/* Horizontal scrolling tabs container (Req 14.3) */
+.tabs-scroll-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+}
+
+.tabs-scroll-container::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabs-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabs-scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+}
+
+.dark .tabs-scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Tab list for horizontal scrolling */
+.tabs-scroll-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+    padding-bottom: 0.5rem;
+}
+
+.tabs-scroll-list > * {
+    flex-shrink: 0;
+}
+
+/* Responsive viewport support (Req 14.5 - 320px to 2560px) */
+@media (min-width: 320px) {
+    .container-responsive {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 640px) {
+    .container-responsive {
+        max-width: 640px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container-responsive {
+        max-width: 768px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container-responsive {
+        max-width: 1024px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container-responsive {
+        max-width: 1280px;
+    }
+}
+
+@media (min-width: 1536px) {
+    .container-responsive {
+        max-width: 1536px;
+    }
+}
+
+@media (min-width: 2560px) {
+    .container-responsive {
+        max-width: 2560px;
+    }
+}
+
+/* Alpine.js x-cloak directive - hide elements until Alpine initializes */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Touch-friendly tab buttons (Req 14.4, 52.1) */
+.nav-tabs .nav-link {
+    min-height: 44px;
+    padding: 0.625rem 1rem;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 767px) {
+    .nav-tabs .nav-link {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Form controls touch-friendly sizing on mobile */
+@media (max-width: 767px) {
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        padding: 0.625rem 0.75rem;
+    }
+
+    .btn {
+        min-height: 44px;
+        padding: 0.625rem 1rem;
+    }
+
+    /* Checkbox and radio touch targets */
+    .form-check {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
 }
 
 /* Ensure the skip link is visually hidden but appears on focus (compatibility) */
 .sr-only.focus:not-sr-only,
 .sr-only.focus\:not-sr-only,
 .sr-only:focus:not(.not-sr-only) {
-	position: absolute !important;
-	left: 1rem !important;
-	top: 1rem !important;
-	width: auto !important;
-	height: auto !important;
-	padding: 0.5rem 0.75rem !important;
-	background: var(--color-primary) !important;
-	color: var(--color-text-light) !important;
-	border-radius: 0.375rem !important;
-	z-index: 9999 !important;
+    position: absolute !important;
+    left: 1rem !important;
+    top: 1rem !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0.5rem 0.75rem !important;
+    background: var(--color-primary) !important;
+    color: var(--color-text-light) !important;
+    border-radius: 0.375rem !important;
+    z-index: 9999 !important;
 }
 
-	/* Visual utility used in other layout files: visually-hidden-focusable
+/* Visual utility used in other layout files: visually-hidden-focusable
 		 provides the same behavior as .sr-only but becomes visible on focus. */
-	.visually-hidden-focusable {
-		position: absolute !important;
-		left: -10000px !important;
-		top: auto !important;
-		width: 1px !important;
-		height: 1px !important;
-		overflow: hidden !important;
-	}
-	.visually-hidden-focusable:focus,
-	.visually-hidden-focusable:active {
-		position: static !important;
-		width: auto !important;
-		height: auto !important;
-		left: 1rem !important;
-		top: 1rem !important;
-		padding: 0.5rem 0.75rem !important;
-		background: var(--color-primary) !important;
-		color: var(--color-text-light) !important;
-		border-radius: 0.375rem !important;
-		z-index: 9999 !important;
-	}
-
+.visually-hidden-focusable {
+    position: absolute !important;
+    left: -10000px !important;
+    top: auto !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+}
+.visually-hidden-focusable:focus,
+.visually-hidden-focusable:active {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    left: 1rem !important;
+    top: 1rem !important;
+    padding: 0.5rem 0.75rem !important;
+    background: var(--color-primary) !important;
+    color: var(--color-text-light) !important;
+    border-radius: 0.375rem !important;
+    z-index: 9999 !important;
+}
