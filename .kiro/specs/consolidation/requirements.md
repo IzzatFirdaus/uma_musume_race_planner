@@ -24,12 +24,12 @@ This consolidation spec defines the **target architecture** and **canonical sche
 
 ### Field Name Mapping (UI Label → Canonical DB Field)
 
-| UI Label | Canonical Field | Notes |
-|----------|-----------------|-------|
-| SP Balance | `total_sp_available` | Use canonical in code, UI label for display |
-| Stamina % | `stamina_percentage` | |
-| Turn | `turn_number` | In StatProgress table |
-| Current Turn | `current_turn` | In CareerRun table |
+| UI Label     | Canonical Field      | Notes                                       |
+| ------------ | -------------------- | ------------------------------------------- |
+| SP Balance   | `total_sp_available` | Use canonical in code, UI label for display |
+| Stamina %    | `stamina_percentage` |                                             |
+| Turn         | `turn_number`        | In StatProgress table                       |
+| Current Turn | `current_turn`       | In CareerRun table                          |
 
 ### Route Strategy (Adopted from Frontend Spec)
 
@@ -45,12 +45,12 @@ This consolidation spec defines the **target architecture** and **canonical sche
 
 ### Domain Glossary
 
-| UI Term | Domain Entity | Database Table | Notes |
-|---------|---------------|----------------|-------|
-| Plan | CareerRun | `career_runs` | UI uses "Plan" for user-friendliness |
-| Character | UmaMusume | `uma_musumes` | Horse girl character |
-| Turn | StatProgress | `stat_progress` | Single turn's stat snapshot |
-| Skill Entry | SkillCareerRun | `skill_career_runs` | Pivot with status + turn |
+| UI Term     | Domain Entity  | Database Table      | Notes                                |
+| ----------- | -------------- | ------------------- | ------------------------------------ |
+| Plan        | CareerRun      | `career_runs`       | UI uses "Plan" for user-friendliness |
+| Character   | UmaMusume      | `uma_musumes`       | Horse girl character                 |
+| Turn        | StatProgress   | `stat_progress`     | Single turn's stat snapshot          |
+| Skill Entry | SkillCareerRun | `skill_career_runs` | Pivot with status + turn             |
 
 ### Schema Field Naming Standards
 
@@ -69,12 +69,12 @@ This consolidation spec defines the **target architecture** and **canonical sche
 
 All code, migrations, ERD, and Livewire bindings MUST use these exact names:
 
-| Entity | Table | Key Columns |
-| ------ | ----- | ----------- |
-| StatProgress | `stat_progress` | `career_run_id`, `turn_number`, `speed`, `stamina`, `power`, `guts`, `wit` |
-| CareerRun | `career_runs` | `total_sp_available` (not `total_sp`), `stamina_percentage` |
-| SkillCareerRun | `skill_career_runs` | `career_run_id`, `skill_id`, `status`, `turn_acquired` |
-| ActivityLog | `activity_logs` | `user_id` (nullable), `model_type`, `model_id` |
+| Entity         | Table               | Key Columns                                                                |
+| -------------- | ------------------- | -------------------------------------------------------------------------- |
+| StatProgress   | `stat_progress`     | `career_run_id`, `turn_number`, `speed`, `stamina`, `power`, `guts`, `wit` |
+| CareerRun      | `career_runs`       | `total_sp_available` (not `total_sp`), `stamina_percentage`                |
+| SkillCareerRun | `skill_career_runs` | `career_run_id`, `skill_id`, `status`, `turn_acquired`                     |
+| ActivityLog    | `activity_logs`     | `user_id` (nullable), `model_type`, `model_id`                             |
 
 Foreign key pattern: `{singular_table}_id` (e.g., `career_run_id`, not `run_id`)
 

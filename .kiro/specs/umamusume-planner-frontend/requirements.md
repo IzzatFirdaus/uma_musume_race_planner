@@ -789,7 +789,7 @@ Requirements are prioritized as follows:
 
 #### Acceptance Criteria
 
-1. THE System SHALL use Laravel's localization features (__(), trans()) for all user-facing strings
+1. THE System SHALL use Laravel's localization features (\_\_(), trans()) for all user-facing strings
 2. THE System SHALL store translations in language files rather than hardcoding text in views
 3. THE System SHALL support both English and Japanese text for game-specific terms (already in glossary)
 4. THE System SHALL use relative date/time formatting that respects locale settings

@@ -213,381 +213,366 @@ app/Livewire/
 │   ├── SnapshotDetail.php        # View snapshot (immutable)
 │   └── SnapshotCompare.php       # Side-by-side comparison (P2)
 ├── Export/
-│   ├── ExportModal.php           # Export options modal
-│   ├── ExportPreview.php         # Preview with format switching
-│   └── CopyToClipboard.php       # Copy panel with toast
+│   ├── ExportModal.php           # Export format selector
+│   ├── ExportProgress.php        # Export progress indicator
+│   └── ExportHistory.php         # Past exports list
 ├── Import/
-│   ├── ImportWizard.php          # Upload → detect → preview → confirm
-│   ├── ImportPreview.php         # Field mapping preview
-│   └── ImportResults.php         # Results report
-├── Auth/
-│   ├── ConvertRunModal.php       # Convert single local run to account
-│   ├── BulkConvertModal.php      # Bulk convert local runs
-│   └── DuplicateResolver.php     # Per-duplicate resolution UI
-├── LocalData/
-│   ├── Manager.php               # Local data management page/modal
-│   ├── RunList.php               # List local runs with storage info
-│   └── ImportExport.php          # Export all / Import JSON
-└── Common/
-    ├── DarkModeToggle.php        # Theme toggle with persistence
-    ├── ConfirmModal.php          # Confirmation dialog with focus trap
-    ├── Toast.php                 # Notification toast with aria-live
-    ├── SkeletonLoader.php        # Loading skeleton component
-    ├── DirtyStateWarning.php     # Unsaved changes warning
-    └── AccessibleDropdown.php    # Listbox pattern dropdown
+│   ├── ImportModal.php           # Import file upload
+│   ├── ImportPreview.php         # Preview before import
+│   └── ImportProgress.php        # Import progress indicator
+└── Shared/
+    ├── Modal.php                 # Base modal component
+    ├── Toast.php                 # Toast notifications
+    ├── ConfirmDialog.php         # Confirmation dialogs
+    └── LoadingSpinner.php        # Loading states
 ```
 
 ### Blade Components
 
-```
+```text
 resources/views/components/
 ├── layout/
-│   ├── app.blade.php             # Main layout
-│   ├── navigation.blade.php      # Nav bar
-│   ├── sidebar.blade.php         # Side navigation
-│   └── footer.blade.php          # Footer
+│   ├── app.blade.php             # Main app layout
+│   ├── guest.blade.php           # Guest layout
+│   └── navigation.blade.php      # Navigation bar
+├── umamusume/
+│   ├── skill-card.blade.php      # Skill display card
+│   ├── stamina-bar.blade.php     # Stamina visual meter
+│   ├── aptitude-inputs.blade.php # Aptitude form inputs
+│   └── growth-rate-inputs.blade.php # Growth rate inputs
 ├── forms/
 │   ├── input.blade.php           # Text input
 │   ├── select.blade.php          # Select dropdown
-│   ├── textarea.blade.php        # Textarea
-│   ├── checkbox.blade.php        # Checkbox
-│   └── file-upload.blade.php     # File upload
-├── buttons/
-│   ├── primary.blade.php         # Primary button
-│   ├── secondary.blade.php       # Secondary button
-│   ├── danger.blade.php          # Danger button
-│   └── icon.blade.php            # Icon button
-├── umamusume/
-│   ├── stat-bar.blade.php        # Stat progress bar
-│   ├── aptitude-badge.blade.php  # Aptitude grade badge
-│   ├── skill-card.blade.php      # Skill display card
-│   ├── stamina-gauge.blade.php   # Stamina indicator
-│   └── growth-indicator.blade.php # Growth rate display
-└── common/
-    ├── card.blade.php            # Card container
-    ├── modal.blade.php           # Modal dialog
-    ├── table.blade.php           # Data table
-    ├── badge.blade.php           # Status badge
-    └── empty-state.blade.php     # Empty state display
+│   ├── checkbox.blade.php        # Checkbox input
+│   ├── textarea.blade.php        # Textarea input
+│   └── label.blade.php           # Form label
+├── ui/
+│   ├── button.blade.php          # Button component
+│   ├── badge.blade.php           # Badge component
+│   ├── card.blade.php            # Card container
+│   ├── alert.blade.php           # Alert messages
+│   └── tabs.blade.php            # Tab navigation
+└── icons/
+    ├── speed.blade.php           # Speed stat icon
+    ├── stamina.blade.php         # Stamina stat icon
+    ├── power.blade.php           # Power stat icon
+    ├── guts.blade.php            # Guts stat icon
+    └── wit.blade.php             # Wit stat icon
 ```
 
-## Service Layer Design
+## Service Layer
 
-### Services
+### Core Services
 
-```php
+```text
 app/Services/
-├── UmaMusumeService.php          # Character business logic
 ├── CareerRunService.php          # Career run business logic
 ├── StatProgressService.php       # Stat tracking logic
-├── SkillService.php              # Skill management logic (with search caching)
-├── SnapshotService.php           # Race-day snapshot creation (immutable)
-├── ExportService.php             # Export generation with preview
-├── ImportService.php             # Data import handling (with target selection)
-├── ActivityLogService.php        # Activity logging (user-scoped + local)
-├── ChartDataService.php          # Chart data preparation
-├── ImageProcessingService.php    # Image upload, EXIF strip, thumbnail
-├── LocalRunStorageService.php    # Serialize/deserialize local schema, versioning
-├── ConvertLocalRunService.php    # Convert local run → DB models (single + bulk)
-├── DuplicateDetectionService.php # Find duplicates during convert/import
-└── ConflictDetectionService.php  # Optimistic locking / versioning
+├── SkillManagementService.php    # Skill acquisition logic
+├── StorageService.php            # Local/Account storage abstraction
+├── ExportService.php             # Export to JSON/CSV/Excel/MD
+├── ImportService.php             # Import from legacy formats
+├── SnapshotService.php           # Snapshot creation/comparison
+└── ActivityLogService.php        # Activity logging
 ```
 
-### Local Storage Schema
+## Storage Architecture
 
-```typescript
-// Local storage schema (versioned)
-interface LocalCareerRun {
-  schema_version: string;        // e.g., "1.0.0"
-  id: string;                    // UUID (permanent, not temporary)
-  created_at: string;            // ISO timestamp
-  updated_at: string;            // ISO timestamp
-  career_run: {
-    uma_musume_id: string;       // UUID reference to local character
-    title: string;
-    scenario: string;
-    year: string;
-    status: string;
-    uma_class: string;
-    current_turn: number;
-    current_race: string | null;
-    total_sp_available: number;
-    stamina_percentage: number;
-    mood: string | null;
-    conditions: string | null;
-    notes: string | null;
-  };
-  stat_progress: StatProgressEntry[];
-  skills: SkillEntry[];
-  goals: GoalEntry[];
-  race_predictions: RacePredictionEntry[];
-  snapshots: SnapshotEntry[];
-  activity_log: ActivityLogEntry[];  // Local activity log
-}
+### Dual Storage Mode
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    Storage Abstraction                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────────┐         ┌──────────────────┐         │
+│  │   Local Storage  │         │ Account Storage  │         │
+│  ├──────────────────┤         ├──────────────────┤         │
+│  │ • Browser        │         │ • Database       │         │
+│  │ • localStorage   │         │ • User-scoped    │         │
+│  │ • UUID-based     │         │ • Auth required  │         │
+│  │ • No auth needed │         │ • Persistent     │         │
+│  │ • Convertible    │         │ • Shareable      │         │
+│  └──────────────────┘         └──────────────────┘         │
+│           │                            │                    │
+│           └────────────┬───────────────┘                    │
+│                        │                                    │
+│                        ▼                                    │
+│              ┌──────────────────┐                          │
+│              │  Unified API     │                          │
+│              │  (same methods)  │                          │
+│              └──────────────────┘                          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Import Adapters
+### Storage Mode Logic
 
-```php
-app/Services/Import/
-├── ImportAdapterInterface.php    # Contract for import adapters
-├── ImportTarget.php              # Enum: Local | Account
-├── JsonImportAdapter.php         # JSON format (uma-run-tracker) - PRIMARY
-├── CsvImportAdapter.php          # CSV format - SECONDARY
-├── UmaRunTrackerJsonImporter.php # Specific format from uma-run-tracker
-├── LegacyMySqlAdapter.php        # Direct MySQL dump (P2+)
-└── FormatDetector.php            # Auto-detect import format
-```
+- **Local Mode**: `storage_mode = 'local'`, `user_id = null`, `local_uuid` generated
+- **Account Mode**: `storage_mode = 'account'`, `user_id` set, `local_uuid = null`
+- **Conversion**: Copy local run to account, update `storage_mode` and `user_id`
 
-### Export Classes
+## Export/Import Formats
 
-```php
-app/Exports/
-├── CareerRunExport.php           # Full career run export
-├── StatProgressExport.php        # Stats-only export
-├── SkillsExport.php              # Skills-only export
-└── MultiSheetExport.php          # Combined multi-sheet export
-```
+### Export Formats
 
-## API Design (Optional)
+1. **JSON** - Full data structure, machine-readable
+2. **CSV** - Flat stat progression, spreadsheet-compatible
+3. **Excel** - Multi-sheet workbook with formatting
+4. **Markdown** - Human-readable report format
 
-### RESTful Endpoints
+### Import Sources
 
-```
-GET    /api/v1/uma-musume              # List characters
+1. **Legacy Tracker v1** - JSON format
+2. **Legacy Tracker v2** - CSV format
+3. **Legacy Tracker v3** - Excel format
+4. **Legacy Tracker v4** - Custom XML format
+5. **Legacy Tracker v5** - JSON with different schema
+
+## API Routes
+
+### RESTful API v1
+
+```text
+GET    /api/v1/uma-musume              # List all characters
+GET    /api/v1/uma-musume/{id}         # Get character details
 POST   /api/v1/uma-musume              # Create character
-GET    /api/v1/uma-musume/{id}         # Get character
 PUT    /api/v1/uma-musume/{id}         # Update character
 DELETE /api/v1/uma-musume/{id}         # Delete character
 
-GET    /api/v1/plans                  # List plans
-POST   /api/v1/plans                  # Create plan
-GET    /api/v1/plans/{id}             # Get plan
-PUT    /api/v1/plans/{id}             # Update plan
-DELETE /api/v1/plans/{id}             # Delete plan
-POST   /api/v1/plans/import           # Import plans
-GET    /api/v1/plans/export           # Export plans
+GET    /api/v1/career-runs             # List career runs
+GET    /api/v1/career-runs/{id}        # Get run details
+POST   /api/v1/career-runs             # Create run
+PUT    /api/v1/career-runs/{id}        # Update run
+DELETE /api/v1/career-runs/{id}        # Delete run
 
-POST   /api/v1/plans/{id}/stats       # Add stat entry
-GET    /api/v1/plans/{id}/stats       # Get stat history
-PUT    /api/v1/plans/{id}/stats/{statId}  # Update stat
+GET    /api/v1/skills                  # List skills
+GET    /api/v1/skills/search           # Search skills (EN+JP)
 
-POST   /api/v1/plans/{id}/skills      # Add skill
-PUT    /api/v1/plans/{id}/skills/{skillId}  # Update skill status
-DELETE /api/v1/plans/{id}/skills/{skillId}  # Remove skill
+POST   /api/v1/career-runs/{id}/stats  # Log stat progress
+POST   /api/v1/career-runs/{id}/skills # Acquire/skip skill
+POST   /api/v1/career-runs/{id}/snapshot # Create snapshot
 
-GET    /api/v1/skills                  # List all skills
-GET    /api/v1/skills/search           # Search skills
-
-GET    /api/v1/export/career-run/{id}  # Export career run
+GET    /api/v1/export/{id}             # Export run
+POST   /api/v1/import                  # Import data
 ```
 
-## Database Migrations
+## Enums
 
-### Migration Order
+### Core Enums
 
-1. `create_uma_musumes_table`
-2. `create_skills_table`
-3. `create_career_runs_table`
-4. `create_stat_progress_table`
-5. `create_skill_career_runs_table`
-6. `create_race_predictions_table`
-7. `create_goals_table`
-8. `create_activity_logs_table`
+```php
+enum StorageMode: string {
+    case LOCAL = 'local';
+    case ACCOUNT = 'account';
+}
 
-### Indexes
+enum CareerYear: string {
+    case JUNIOR = 'junior';
+    case CLASSIC = 'classic';
+    case SENIOR = 'senior';
+}
 
-```sql
--- Performance indexes (consistent naming)
-CREATE INDEX idx_career_runs_uma_musume_id ON career_runs(uma_musume_id);
-CREATE INDEX idx_career_runs_user_id ON career_runs(user_id);
-CREATE INDEX idx_career_runs_status ON career_runs(status);
-CREATE INDEX idx_career_runs_scenario ON career_runs(scenario);
-CREATE UNIQUE INDEX idx_stat_progress_run_turn ON stat_progress(career_run_id, turn_number);
-CREATE INDEX idx_skill_career_runs_career_run_id ON skill_career_runs(career_run_id);
-CREATE INDEX idx_skill_career_runs_skill_id ON skill_career_runs(skill_id);
-CREATE UNIQUE INDEX idx_skill_career_runs_composite ON skill_career_runs(career_run_id, skill_id);
-CREATE INDEX idx_activity_logs_user_id ON activity_logs(user_id);
-CREATE INDEX idx_activity_logs_created_at ON activity_logs(created_at);
-CREATE INDEX idx_activity_logs_model ON activity_logs(model_type, model_id);
-CREATE INDEX idx_skills_name ON skills(name);
-CREATE INDEX idx_skills_name_jp ON skills(name_jp);
-CREATE INDEX idx_race_predictions_career_run_id ON race_predictions(career_run_id);
-CREATE INDEX idx_goals_career_run_id ON goals(career_run_id);
-CREATE INDEX idx_career_snapshots_career_run_id ON career_snapshots(career_run_id);
-CREATE INDEX idx_career_snapshots_turn_number ON career_snapshots(turn_number);
+enum CareerStatus: string {
+    case ONGOING = 'ongoing';
+    case FINISHED = 'finished';
+    case FAILED = 'failed';
+}
+
+enum UmaClass: string {
+    case DEBUT = 'debut';
+    case PRE_OPEN = 'pre_open';
+    case OPEN = 'open';
+    case GRADE_3 = 'grade_3';
+    case GRADE_2 = 'grade_2';
+    case GRADE_1 = 'grade_1';
+    case LEGEND = 'legend';
+}
+
+enum SkillStatus: string {
+    case ACQUIRED = 'acquired';
+    case SKIPPED = 'skipped';
+    case SUGGESTED = 'suggested';
+}
+
+enum SkillType: string {
+    case SPEED = 'speed';
+    case ACCELERATION = 'acceleration';
+    case RECOVERY = 'recovery';
+    case POSITION = 'position';
+    case STAMINA = 'stamina';
+    case DEBUFF = 'debuff';
+    case UNIQUE = 'unique';
+}
+
+enum Aptitude: string {
+    case S = 'S';
+    case A = 'A';
+    case B = 'B';
+    case C = 'C';
+    case D = 'D';
+    case E = 'E';
+    case F = 'F';
+    case G = 'G';
+}
 ```
 
-## Search Contract (Internal API)
+## Events
 
-### Skill Search Endpoint
-
-Used by Livewire `SkillSearch` component.
+### Domain Events
 
 ```text
-GET /internal/skills/search?q={query}&limit={limit}
-
-Query params:
-- q: Search term (matches name OR name_jp, partial match)
-- limit: Max results (default 10, max 50)
-
-Response:
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "Last Legs",
-      "name_jp": "ラストスパート",
-      "type": "speed",
-      "sp_cost": 40,
-      "icon": "speed-icon.svg"
-    }
-  ],
-  "meta": {
-    "query": "last",
-    "count": 1,
-    "cached": true
-  }
-}
-
-Performance:
-- Rate limited: 60 requests/minute per IP
-- Cached: 5 minute TTL
-- Response time: < 200ms
+app/Events/
+├── CareerRunCreated.php          # Fired when run created
+├── CareerRunUpdated.php          # Fired when run updated
+├── CareerRunCompleted.php        # Fired when run finished/failed
+├── StatProgressLogged.php        # Fired when stats logged
+├── SkillAcquired.php             # Fired when skill acquired
+├── SnapshotCreated.php           # Fired when snapshot created
+└── StorageModeConverted.php      # Fired when local→account
 ```
 
-### Character Search Endpoint
+## Jobs
+
+### Background Jobs
 
 ```text
-GET /internal/uma-musume/search?q={query}&limit={limit}
-
-Response shape same as skills, returns id, name, name_jp, thumbnail_path
+app/Jobs/
+├── ExportCareerRunJob.php        # Export run to file
+├── ImportLegacyDataJob.php       # Import from legacy format
+├── GenerateThumbnailJob.php      # Generate image thumbnail
+└── CleanupOldExportsJob.php      # Cleanup old export files
 ```
 
-## UI/UX Design
+## Policies
 
-### Theme Implementation Strategy
+### Authorization Policies
 
-Use Tailwind `dark:` classes for most styling, with CSS custom properties for game-specific palette tokens.
-
-```javascript
-// tailwind.config.js
-module.exports = {
-  darkMode: 'class', // Toggle via class on <html>
-  theme: {
-    extend: {
-      colors: {
-        // Stat colors (consistent across themes)
-        'stat-speed': '#3b82f6',    // blue
-        'stat-stamina': '#f97316',  // orange
-        'stat-power': '#ef4444',    // red
-        'stat-guts': '#eab308',     // yellow
-        'stat-wit': '#22c55e',      // green
-        
-        // Aptitude grade colors
-        'grade-s': '#fbbf24',       // gold
-        'grade-a': '#f472b6',       // pink
-        'grade-b': '#60a5fa',       // light blue
-        'grade-c': '#4ade80',       // green
-        'grade-d': '#a78bfa',       // purple
-        'grade-e': '#94a3b8',       // gray
-        'grade-f': '#78716c',       // stone
-        'grade-g': '#57534e',       // dark stone
-        
-        // Uma Musume accent (game-inspired)
-        'uma-primary': '#e94560',
-        'uma-secondary': '#7d2b8b',
-      }
-    }
-  }
-}
-```
-
-### Color Palette (Dark Mode)
-
-```css
-:root.dark {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-card: #0f3460;
-  --text-primary: #eaeaea;
-  --text-secondary: #a0a0a0;
-  --accent-primary: #e94560;
-  --accent-secondary: #7d2b8b;
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --error: #ef4444;
-}
-```
-
-### Color Palette (Light Mode)
-
-```css
-:root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --accent-primary: #e94560;
-  --accent-secondary: #7d2b8b;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --error: #dc2626;
-}
-```
-
-### Theme Toggle Behavior
-
-1. Check `localStorage.theme` on page load
-2. If not set, check `prefers-color-scheme`
-3. Apply `dark` class to `<html>` element
-4. Toggle persists to `localStorage`
-5. System preference changes detected via `matchMedia` listener
-
-### Responsive Breakpoints
-
-```css
-/* Mobile first */
-@media (min-width: 640px) { /* sm */ }
-@media (min-width: 768px) { /* md */ }
-@media (min-width: 1024px) { /* lg */ }
-@media (min-width: 1280px) { /* xl */ }
-```
-
-### Animation & Motion
-
-```css
-/* Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+```text
+app/Policies/
+├── UmaMusumePolicy.php           # Character authorization
+├── CareerRunPolicy.php           # Run authorization (storage-aware)
+└── SnapshotPolicy.php            # Snapshot authorization
 ```
 
 ## Testing Strategy
 
-### Test Categories
+### Test Coverage
 
-```
+```text
 tests/
-├── Unit/
-│   ├── Models/
-│   ├── Services/
-│   └── Helpers/
 ├── Feature/
 │   ├── Livewire/
+│   │   ├── CareerRunListTest.php
+│   │   ├── StatLoggerTest.php
+│   │   ├── SkillManagerTest.php
+│   │   └── StorageConversionTest.php
 │   ├── Api/
-│   └── Export/
+│   │   ├── UmaMusumeApiTest.php
+│   │   └── CareerRunApiTest.php
+│   └── Services/
+│       ├── ExportServiceTest.php
+│       └── ImportServiceTest.php
+├── Unit/
+│   ├── Models/
+│   │   ├── UmaMusumeTest.php
+│   │   └── CareerRunTest.php
+│   └── Enums/
+│       └── StorageModeTest.php
 └── Browser/
-    └── Playwright/
+    └── CareerRunFlowTest.php     # Playwright E2E test
 ```
 
-### Coverage Targets
+## Performance Considerations
 
-- Unit tests: 90%+ coverage
-- Feature tests: 80%+ coverage
-- Critical paths: 100% coverage
+### Optimization Strategies
+
+1. **Lazy Loading**: Use `wire:init` for heavy components (charts, tables)
+2. **Caching**: Cache skill lists, character data (Redis)
+3. **Pagination**: Paginate run lists, stat tables
+4. **Eager Loading**: Prevent N+1 queries on relationships
+5. **Database Indexing**: Index foreign keys, search fields
+6. **Asset Optimization**: Lazy load images, use thumbnails
+
+### Database Indexes
+
+```sql
+-- CareerRun indexes
+INDEX idx_career_runs_user_storage (user_id, storage_mode);
+INDEX idx_career_runs_local_uuid (local_uuid);
+INDEX idx_career_runs_status (status);
+
+-- StatProgress indexes
+INDEX idx_stat_progress_run_turn (career_run_id, turn_number);
+
+-- SkillCareerRun indexes
+INDEX idx_skill_career_run_status (career_run_id, status);
+
+-- Skills indexes
+INDEX idx_skills_name (name);
+INDEX idx_skills_name_jp (name_jp);
+FULLTEXT INDEX ft_skills_search (name, name_jp, description);
+```
+
+## Security Considerations
+
+### Security Measures
+
+1. **Authorization**: Policy-based access control for account runs
+2. **CSRF Protection**: Laravel's built-in CSRF tokens
+3. **XSS Prevention**: Blade's automatic escaping
+4. **SQL Injection**: Eloquent ORM parameterized queries
+5. **File Upload**: Validate image types, sizes, sanitize filenames
+6. **API Rate Limiting**: Throttle API requests
+7. **Local Storage**: Encrypt sensitive data in localStorage
+
+## Accessibility (WCAG 2.1 AA)
+
+### Accessibility Features
+
+1. **Keyboard Navigation**: Full keyboard support, focus indicators
+2. **Screen Reader**: ARIA labels, semantic HTML
+3. **Color Contrast**: Minimum 4.5:1 contrast ratio
+4. **Focus Management**: Proper focus trapping in modals
+5. **Error Messages**: Clear, descriptive error messages
+6. **Form Labels**: All inputs have associated labels
+7. **Skip Links**: Skip to main content link
+
+## Deployment
+
+### Deployment Checklist
+
+- [ ] Run migrations: `php artisan migrate --force`
+- [ ] Seed skills database: `php artisan db:seed --class=SkillSeeder`
+- [ ] Build assets: `npm run build`
+- [ ] Optimize: `php artisan optimize`
+- [ ] Cache config: `php artisan config:cache`
+- [ ] Cache routes: `php artisan route:cache`
+- [ ] Cache views: `php artisan view:cache`
+- [ ] Set up queue worker: `php artisan queue:work`
+- [ ] Set up scheduler: Add cron job for `php artisan schedule:run`
+- [ ] Configure storage: `php artisan storage:link`
+
+## Future Enhancements (Phase 2)
+
+### Planned Features
+
+1. **AI Skill Recommendations**: ML-based skill suggestions
+2. **Stat Trend Visualization**: Interactive charts with Chart.js
+3. **Snapshot Comparison**: Side-by-side race-day comparisons
+4. **Collaborative Runs**: Share runs with other users
+5. **Mobile App**: React Native companion app
+6. **Real-time Sync**: WebSocket-based live updates
+7. **Advanced Analytics**: Statistical analysis, meta reports
+8. **Custom Scenarios**: Support for non-URA scenarios
+
+---
+
+## Revision History
+
+| Version | Date       | Author | Changes                 |
+| ------- | ---------- | ------ | ----------------------- |
+| 1.0     | 2024-01-XX | Team   | Initial design document |
+
+---
+
+**End of Design Document**

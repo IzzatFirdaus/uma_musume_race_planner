@@ -23,7 +23,7 @@ graph TB
         WEB[Web Browser]
         API_CLIENT[API Client]
     end
-    
+
     subgraph "Laravel Application"
         subgraph "HTTP Layer"
             ROUTES[Routes]
@@ -32,28 +32,28 @@ graph TB
             REQUESTS[Form Requests]
             RESOURCES[API Resources]
         end
-        
+
         subgraph "Business Layer"
             SERVICES[Services]
             EVENTS[Events]
             LISTENERS[Listeners]
             JOBS[Jobs]
         end
-        
+
         subgraph "Data Layer"
             MODELS[Eloquent Models]
             POLICIES[Policies]
             FACTORIES[Factories]
         end
     end
-    
+
     subgraph "Infrastructure"
         DB[(Database)]
         CACHE[(Cache)]
         STORAGE[(File Storage)]
         QUEUE[Queue]
     end
-    
+
     WEB --> ROUTES
     API_CLIENT --> ROUTES
     ROUTES --> MIDDLEWARE
@@ -85,7 +85,7 @@ sequenceDiagram
     participant L as Listener
     participant CA as Cache
     participant RS as Resource
-    
+
     C->>R: HTTP Request
     R->>M: Route Match
     M->>M: Auth Check
@@ -116,19 +116,19 @@ class PlanController extends Controller
     public function __construct(
         private PlanService $planService
     ) {}
-    
+
     // GET /api/v1/plans
     public function index(Request $request): PlanCollection;
-    
+
     // GET /api/v1/plans/{plan}
     public function show(Plan $plan): PlanResource;
-    
+
     // POST /api/v1/plans
     public function store(StorePlanRequest $request): PlanResource;
-    
+
     // PUT /api/v1/plans/{plan}
     public function update(UpdatePlanRequest $request, Plan $plan): PlanResource;
-    
+
     // DELETE /api/v1/plans/{plan}
     public function destroy(Plan $plan): Response;
 }
@@ -143,7 +143,7 @@ class AutosuggestController extends Controller
 {
     // GET /api/v1/autosuggest/skills?q={query}
     public function skills(Request $request): JsonResponse;
-    
+
     // GET /api/v1/autosuggest/characters?q={query}
     public function characters(Request $request): JsonResponse;
 }
@@ -161,22 +161,22 @@ class PlanService
     public function __construct(
         private CacheService $cacheService
     ) {}
-    
+
     // Create plan with related entities
     public function create(array $data, User $user): Plan;
-    
+
     // Update plan and related entities
     public function update(Plan $plan, array $data): Plan;
-    
+
     // Soft delete plan
     public function delete(Plan $plan): bool;
-    
+
     // Get paginated plans for user
     public function getForUser(User $user, array $filters = []): LengthAwarePaginator;
-    
+
     // Get plan with all relations
     public function getWithRelations(Plan $plan): Plan;
-    
+
 }
 ```
 
@@ -189,13 +189,13 @@ class CacheService
 {
     // Clear plan-related caches
     public function clearPlanCache(Plan $plan): void;
-    
+
     // Clear user's plan list cache
     public function clearUserPlanListCache(User $user): void;
-    
+
     // Cache skill search results
     public function cacheSkillSearch(string $query, array $results): void;
-    
+
     // Get cached skill search results
     public function getSkillSearchCache(string $query): ?array;
 }
@@ -210,13 +210,13 @@ class ExportService
 {
     // Export plan to Excel format
     public function toExcel(Plan $plan): string;
-    
+
     // Export plan to CSV format
     public function toCsv(Plan $plan): string;
-    
+
     // Export plan to Markdown format
     public function toMarkdown(Plan $plan): string;
-    
+
     // Bulk export multiple plans
     public function bulkExport(Collection $plans, string $format): string;
 }
@@ -231,13 +231,13 @@ class ImportService
 {
     // Detect format from uploaded file
     public function detectFormat(UploadedFile $file): string;
-    
+
     // Validate import data (dry run)
     public function validate(array $data): ImportValidationResult;
-    
+
     // Execute import into database
     public function import(array $data, User $user): ImportResult;
-    
+
     // Generate error report
     public function generateErrorReport(ImportValidationResult $result): string;
 }
@@ -325,7 +325,7 @@ class PlanResource extends JsonResource
             'notes' => $this->notes,
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
-            
+
             // Relations (when loaded)
             'umamusume' => new UmamusumeResource($this->whenLoaded('umamusume')),
             'attributes' => new AttributeResource($this->whenLoaded('attributes')),
@@ -404,7 +404,7 @@ class ClearPlanCache
     public function __construct(
         private CacheService $cacheService
     ) {}
-    
+
     public function handle(PlanCreated|PlanUpdated $event): void
     {
         $this->cacheService->clearPlanCache($event->plan);
@@ -427,13 +427,13 @@ class PlanPolicy
     {
         return $user->id === $plan->user_id;
     }
-    
+
     // User can update their own plans
     public function update(User $user, Plan $plan): bool
     {
         return $user->id === $plan->user_id;
     }
-    
+
     // User can delete their own plans
     public function delete(User $user, Plan $plan): bool
     {
@@ -444,36 +444,36 @@ class PlanPolicy
 
 ## Data Models
 
-### Naming Convention Note
+### Current Database Schema
 
-The database uses canonical domain names from the consolidation spec, while the API and Laravel models use user-friendly names. Each model explicitly sets `$table` to map to the canonical table name:
+The database uses the existing schema with the following key tables:
 
-| Laravel Model | Database Table | API Route | Model Config |
-|---------------|----------------|-----------|--------------|
-| `Plan` | `career_runs` | `/api/v1/plans` | `$table = 'career_runs'` |
-| `Turn` | `stat_progress` | - | `$table = 'stat_progress'` |
-| `Skill` | `skill_career_runs` | - | `$table = 'skill_career_runs'` |
-
-Foreign keys follow the pattern `{singular_table}_id` (e.g., `career_run_id`, not `plan_id`).
+| Laravel Model    | Database Table     | API Route       | Notes                        |
+| ---------------- | ------------------ | --------------- | ---------------------------- |
+| `Plan`           | `plans`            | `/api/v1/plans` | Main training run entity     |
+| `Turn`           | `turns`            | -               | Stat progression by turn     |
+| `Skill`          | `skills`           | -               | Skills associated with plans |
+| `Goal`           | `goals`            | -               | Training objectives          |
+| `RacePrediction` | `race_predictions` | -               | Race planning entries        |
+| `ActivityLog`    | `activity_log`     | -               | User action history          |
 
 ### Entity Relationship Diagram
 
 ```mermaid
 erDiagram
-    users ||--o{ career_runs : "owns"
-    users ||--o{ activity_logs : "generates"
-    uma_musumes ||--o{ career_runs : "featured in"
-    career_runs ||--o| attributes : "has"
-    career_runs ||--o{ skill_career_runs : "has"
-    career_runs ||--o{ goals : "has"
-    career_runs ||--o{ stat_progress : "has"
-    career_runs ||--o{ race_predictions : "has"
-    career_runs ||--o{ activity_logs : "tracked by"
-    skill_references ||--o{ skill_career_runs : "references"
-    moods ||--o{ career_runs : "affects"
-    conditions ||--o{ career_runs : "affects"
-    strategies ||--o{ career_runs : "uses"
-    
+    users ||--o{ plans : "owns"
+    users ||--o{ activity_log : "generates"
+    plans ||--o| attributes : "has"
+    plans ||--o{ skills : "has"
+    plans ||--o{ goals : "has"
+    plans ||--o{ turns : "has"
+    plans ||--o{ race_predictions : "has"
+    plans ||--o{ activity_log : "tracked by"
+    skill_reference ||--o{ skills : "references"
+    moods ||--o{ plans : "affects"
+    conditions ||--o{ plans : "affects"
+    strategies ||--o{ plans : "uses"
+
     users {
         bigint id PK
         string name
@@ -484,146 +484,121 @@ erDiagram
         timestamps created_at
         timestamps updated_at
     }
-    
-    uma_musumes {
-        bigint id PK
-        string name
-        string name_jp
-        string image_path
-        json aptitude_grades
-        json growth_rates
-        timestamps created_at
-        timestamps updated_at
-        timestamp deleted_at
-    }
-    
-    career_runs {
+
+    plans {
         bigint id PK
         bigint user_id FK
-        bigint uma_musume_id FK
-        string title
-        string trainee_name
-        string trainee_image
-        string scenario
-        string status
-        integer current_turn
-        integer total_sp_available
-        integer stamina_percentage
-        text notes
+        string plan_title
+        int turn_before
+        string race_name
+        string name
+        enum career_stage
+        enum class
+        string time_of_day
+        string month
+        int total_available_skill_points
+        enum acquire_skill
         bigint mood_id FK
         bigint condition_id FK
+        tinyint energy
+        enum race_day
+        string goal
         bigint strategy_id FK
+        int growth_rate_speed
+        int growth_rate_stamina
+        int growth_rate_power
+        int growth_rate_guts
+        int growth_rate_wit
+        enum status
+        string source
+        string trainee_image_path
+        timestamp deleted_at
         timestamps created_at
         timestamps updated_at
-        timestamp deleted_at
     }
-    
+
     attributes {
         bigint id PK
-        bigint career_run_id FK
-        integer speed
-        integer stamina
-        integer power
-        integer guts
-        integer wit
-        timestamps created_at
-        timestamps updated_at
+        bigint plan_id FK
+        string attribute_name
+        int value
+        string grade
     }
-    
-    skill_career_runs {
+
+    skills {
         bigint id PK
-        bigint career_run_id FK
+        bigint plan_id FK
         bigint skill_reference_id FK
-        string status
-        integer turn_acquired
+        string sp_cost
+        enum acquired
+        string tag
         text notes
-        timestamps created_at
-        timestamps updated_at
     }
-    
-    skill_references {
+
+    skill_reference {
         bigint id PK
-        string name
-        string name_jp
-        string type
-        integer sp_cost
+        string skill_name UK
         text description
-        timestamps created_at
-        timestamps updated_at
+        string stat_type
+        text best_for
+        string tag
     }
-    
+
     goals {
         bigint id PK
-        bigint career_run_id FK
-        string description
-        string target_value
-        boolean achieved
-        integer turn_achieved
-        timestamps created_at
-        timestamps updated_at
+        bigint plan_id FK
+        string goal
+        string result
     }
-    
-    stat_progress {
+
+    turns {
         bigint id PK
-        bigint career_run_id FK
-        integer turn_number
-        integer speed
-        integer stamina
-        integer power
-        integer guts
-        integer wit
-        timestamps created_at
-        timestamps updated_at
+        bigint plan_id FK
+        int turn_number
+        int speed
+        int stamina
+        int power
+        int guts
+        int wit
     }
-    
+
     race_predictions {
         bigint id PK
-        bigint career_run_id FK
+        bigint plan_id FK
         string race_name
-        string distance_category
-        string track_type
         string venue
-        integer predicted_pos
-        integer actual_pos
-        integer sort_order
-        text notes
-        json snapshot
-        timestamps created_at
-        timestamps updated_at
+        string ground
+        string distance
+        string track_condition
+        string direction
+        string speed
+        string stamina
+        string power
+        string guts
+        string wit
+        text comment
     }
-    
-    activity_logs {
+
+    activity_log {
         bigint id PK
-        bigint user_id FK
-        string model_type
-        bigint model_id
-        string action
-        json changes
-        timestamps created_at
+        timestamp timestamp
+        text description
+        string icon_class
     }
-    
+
     moods {
         bigint id PK
-        string name
-        string icon
-        timestamps created_at
-        timestamps updated_at
+        string label UK
     }
-    
+
     conditions {
         bigint id PK
-        string name
-        string effect
-        timestamps created_at
-        timestamps updated_at
+        string label UK
     }
-    
+
     strategies {
         bigint id PK
-        string name
-        string description
-        timestamps created_at
-        timestamps updated_at
+        string label UK
     }
 ```
 
@@ -637,37 +612,52 @@ namespace App\Models;
 class Plan extends Model
 {
     use HasFactory, SoftDeletes;
-    
-    // Maps to canonical 'career_runs' table per consolidation spec
-    protected $table = 'career_runs';
-    
+
+    // Uses existing 'plans' table
+    protected $table = 'plans';
+
     protected $fillable = [
         'user_id',
-        'umamusume_id',
-        'title',
-        'trainee_name',
-        'trainee_image',
-        'scenario',
-        'status',
-        'current_turn',
-        'total_sp_available',
-        'stamina_percentage',
-        'notes',
+        'plan_title',
+        'turn_before',
+        'race_name',
+        'name',
+        'career_stage',
+        'class',
+        'time_of_day',
+        'month',
+        'total_available_skill_points',
+        'acquire_skill',
         'mood_id',
         'condition_id',
+        'energy',
+        'race_day',
+        'goal',
         'strategy_id',
+        'growth_rate_speed',
+        'growth_rate_stamina',
+        'growth_rate_power',
+        'growth_rate_guts',
+        'growth_rate_wit',
+        'status',
+        'source',
+        'trainee_image_path',
     ];
-    
+
     protected $casts = [
-        'current_turn' => 'integer',
-        'total_sp_available' => 'integer',
-        'stamina_percentage' => 'integer',
+        'turn_before' => 'integer',
+        'total_available_skill_points' => 'integer',
+        'energy' => 'integer',
+        'growth_rate_speed' => 'integer',
+        'growth_rate_stamina' => 'integer',
+        'growth_rate_power' => 'integer',
+        'growth_rate_guts' => 'integer',
+        'growth_rate_wit' => 'integer',
     ];
-    
+
     // Relationships
     public function user(): BelongsTo;
-    public function umamusume(): BelongsTo;
-    public function attributes(): HasOne;
+    public function attributes(): HasMany;
     public function skills(): HasMany;
     public function goals(): HasMany;
     public function turns(): HasMany;
@@ -676,11 +666,10 @@ class Plan extends Model
     public function condition(): BelongsTo;
     public function strategy(): BelongsTo;
     public function activityLogs(): MorphMany;
-    
+
     // Scopes
     public function scopeForUser(Builder $query, User $user): Builder;
-    public function scopeOngoing(Builder $query): Builder;
-    public function scopeFinished(Builder $query): Builder;
+    public function scopeByStatus(Builder $query, string $status): Builder;
 }
 ```
 
@@ -692,39 +681,35 @@ namespace App\Models;
 class Skill extends Model
 {
     use HasFactory;
-    
-    // Maps to canonical 'skill_career_runs' pivot table per consolidation spec
-    protected $table = 'skill_career_runs';
-    
+
+    // Uses existing 'skills' table
+    protected $table = 'skills';
+
     protected $fillable = [
-        'career_run_id',  // FK to career_runs table
+        'plan_id',
         'skill_reference_id',
-        'status',
-        'turn_acquired',
+        'sp_cost',
+        'acquired',
+        'tag',
         'notes',
     ];
-    
-    protected $casts = [
-        'turn_acquired' => 'integer',
-    ];
-    
+
     // Status constants
-    const STATUS_ACQUIRED = 'acquired';
-    const STATUS_SKIPPED = 'skipped';
-    const STATUS_SUGGESTED = 'suggested';
-    
+    const ACQUIRED_YES = 'yes';
+    const ACQUIRED_NO = 'no';
+
     // Relationships
-    public function careerRun(): BelongsTo;  // Alias: plan() for API compatibility
+    public function plan(): BelongsTo;
     public function skillReference(): BelongsTo;
-    
-    // Validation: turn_acquired required when status is acquired
+
+    // Validation: acquired skills should have sp_cost
     public static function boot()
     {
         parent::boot();
-        
+
         static::saving(function ($skill) {
-            if ($skill->status === self::STATUS_ACQUIRED && !$skill->turn_acquired) {
-                throw new ValidationException('turn_acquired is required when status is acquired');
+            if ($skill->acquired === self::ACQUIRED_YES && !$skill->sp_cost) {
+                throw new ValidationException('sp_cost is required when skill is acquired');
             }
         });
     }
@@ -734,133 +719,131 @@ class Skill extends Model
 ### Database Indexes
 
 ```sql
--- career_runs table indexes (Plan model maps to this table)
-CREATE INDEX career_runs_user_id_index ON career_runs(user_id);
-CREATE INDEX career_runs_uma_musume_id_index ON career_runs(uma_musume_id);
-CREATE INDEX career_runs_status_index ON career_runs(status);
-CREATE INDEX career_runs_created_at_index ON career_runs(created_at);
-CREATE INDEX career_runs_user_status_index ON career_runs(user_id, status);
+-- plans table indexes
+CREATE INDEX plans_user_id_index ON plans(user_id);
+CREATE INDEX plans_name_index ON plans(name);
+CREATE INDEX plans_status_index ON plans(status);
+CREATE INDEX plans_created_at_index ON plans(created_at);
+CREATE INDEX plans_user_status_index ON plans(user_id, status);
 
--- skill_career_runs table indexes (Skill model maps to this table)
-CREATE INDEX skill_career_runs_career_run_id_index ON skill_career_runs(career_run_id);
-CREATE INDEX skill_career_runs_skill_reference_id_index ON skill_career_runs(skill_reference_id);
-CREATE INDEX skill_career_runs_status_index ON skill_career_runs(status);
+-- skills table indexes
+CREATE INDEX skills_plan_id_index ON skills(plan_id);
+CREATE INDEX skills_skill_reference_id_index ON skills(skill_reference_id);
+CREATE INDEX skills_acquired_index ON skills(acquired);
 
--- skill_references table indexes
-CREATE INDEX skill_references_name_index ON skill_references(name);
-CREATE INDEX skill_references_name_jp_index ON skill_references(name_jp);
-CREATE FULLTEXT INDEX skill_references_search ON skill_references(name, name_jp);
+-- skill_reference table indexes
+CREATE INDEX skill_reference_skill_name_index ON skill_reference(skill_name);
+CREATE FULLTEXT INDEX skill_reference_search ON skill_reference(skill_name, description);
 
--- stat_progress table indexes (Turn model maps to this table)
-CREATE INDEX stat_progress_career_run_id_index ON stat_progress(career_run_id);
-CREATE INDEX stat_progress_turn_number_index ON stat_progress(turn_number);
-CREATE UNIQUE INDEX stat_progress_career_run_turn_unique ON stat_progress(career_run_id, turn_number);
+-- turns table indexes
+CREATE INDEX turns_plan_id_index ON turns(plan_id);
+CREATE INDEX turns_turn_number_index ON turns(turn_number);
+CREATE UNIQUE INDEX turns_plan_turn_unique ON turns(plan_id, turn_number);
 
--- activity_logs table indexes
-CREATE INDEX activity_logs_user_id_index ON activity_logs(user_id);
-CREATE INDEX activity_logs_model_index ON activity_logs(model_type, model_id);
-CREATE INDEX activity_logs_created_at_index ON activity_logs(created_at);
+-- activity_log table indexes
+CREATE INDEX activity_log_timestamp_index ON activity_log(timestamp);
+CREATE INDEX activity_log_description_index ON activity_log(description(255));
 ```
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+_A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
 ### Property 1: User Data Isolation
 
-*For any* authenticated user and any plan in the system, the user SHALL only be able to access, modify, or delete plans where `plan.user_id` equals their own user ID. Attempting to access another user's plan SHALL result in a 403 Forbidden response.
+_For any_ authenticated user and any plan in the system, the user SHALL only be able to access, modify, or delete plans where `plan.user_id` equals their own user ID. Attempting to access another user's plan SHALL result in a 403 Forbidden response.
 
-**Validates: FR-BE-2.1, FR-BE-2.9, FR-BE-9.3, FR-BE-10.4**
+**Validates: Requirements 2.1, 2.6, 9.3**
 
 ### Property 2: Plan CRUD Round-Trip
 
-*For any* valid plan data, creating a plan via POST, then retrieving it via GET, SHALL return data equivalent to the original input (with server-generated fields like `id`, `created_at` added). Similarly, updating a plan via PUT SHALL result in the retrieved plan reflecting all changes.
+_For any_ valid plan data, creating a plan via POST, then retrieving it via GET, SHALL return data equivalent to the original input (with server-generated fields like `id`, `created_at` added). Similarly, updating a plan via PUT SHALL result in the retrieved plan reflecting all changes.
 
-**Validates: FR-BE-2.2, FR-BE-2.5, FR-BE-2.6, FR-BE-3.1**
+**Validates: Requirements 2.2, 2.4, 2.5, 3.1**
 
 ### Property 3: Soft Delete Behavior
 
-*For any* plan that is deleted via the API, the plan SHALL have its `deleted_at` timestamp set (not null), SHALL NOT appear in list queries, but SHALL still exist in the database. Related entities (skills, goals, turns) SHALL also be soft-deleted.
+_For any_ plan that is deleted via the API, the plan SHALL have its `deleted_at` timestamp set (not null), SHALL NOT appear in list queries, but SHALL still exist in the database. Related entities (skills, goals, turns) SHALL also be soft-deleted.
 
-**Validates: FR-BE-1.3, FR-BE-2.7, FR-BE-3.3**
+**Validates: Requirements 2.5, 3.3**
 
 ### Property 4: Event-Driven Cache Invalidation
 
-*For any* plan creation or update operation, the system SHALL dispatch the corresponding event (`PlanCreated` or `PlanUpdated`), and the cache listener SHALL invalidate the plan cache and user's plan list cache.
+_For any_ plan creation or update operation, the system SHALL dispatch the corresponding event (`PlanCreated` or `PlanUpdated`), and the cache listener SHALL invalidate the plan cache and user's plan list cache.
 
-**Validates: FR-BE-3.4, FR-BE-3.5, FR-BE-8.1**
+**Validates: Requirements 3.4, 3.5, 8.1**
 
 ### Property 5: Search Behavior
 
-*For any* search query string, the skill/character search SHALL return results where either the English name OR Japanese name contains the query (case-insensitive, partial match). Results SHALL be limited to 20 items maximum. An empty query or no matches SHALL return an empty array.
+_For any_ search query string, the skill search SHALL return results where the skill name contains the query (case-insensitive, partial match). Results SHALL be limited to 20 items maximum. An empty query or no matches SHALL return an empty array.
 
-**Validates: FR-BE-4.2, FR-BE-4.3, FR-BE-4.4, FR-BE-5.2, FR-BE-5.3**
+**Validates: Requirements 4.2, 4.3, 4.4, 5.2, 5.3**
 
 ### Property 6: Export/Import Round-Trip
 
-*For any* plan with complete data (attributes, skills, goals, turns, predictions), exporting to JSON and then importing SHALL produce a plan with equivalent data. The export SHALL include a `schema_version` field. This property also applies to CSV format for tabular data.
+_For any_ plan with complete data (skills, turns, goals), exporting to JSON and then importing SHALL produce a plan with equivalent data. The export SHALL include a `schema_version` field. This property also applies to CSV format for tabular data.
 
-**Validates: FR-BE-6.1, FR-BE-6.2, FR-BE-6.4, FR-BE-7.2, FR-BE-7.3**
+**Validates: Requirements 6.1, 6.2, 6.4, 7.2, 7.3**
 
 ### Property 7: Import Validation
 
-*For any* import data, dry-run validation SHALL report all errors without persisting any data. If validation fails, an error report SHALL be generated. Import results SHALL accurately report counts of created, updated, and skipped records matching actual database operations.
+_For any_ import data, dry-run validation SHALL report all errors without persisting any data. If validation fails, an error report SHALL be generated. Import results SHALL accurately report counts of created, updated, and skipped records matching actual database operations.
 
-**Validates: FR-BE-7.4, FR-BE-7.6, FR-BE-7.7, FR-BE-7.8**
+**Validates: Requirements 7.4, 7.6, 7.7, 7.8**
 
 ### Property 8: Duplicate Detection
 
-*For any* import containing data that matches an existing plan (same title, character, and created date), the system SHALL detect and report the duplicate, allowing the user to choose how to proceed.
+_For any_ import containing data that matches an existing plan (same title and created date), the system SHALL detect and report the duplicate, allowing the user to choose how to proceed.
 
-**Validates: FR-BE-7.6**
+**Validates: Requirements 7.6**
 
 ### Property 9: Activity Logging Completeness
 
-*For any* plan create, update, or delete operation, an activity log entry SHALL be created with the correct action type, user ID, and timestamp. Update logs SHALL include the changed fields.
+_For any_ plan create, update, or delete operation, an activity log entry SHALL be created with the correct action type and timestamp. Update logs SHALL include the changed fields.
 
-**Validates: FR-BE-10.1, FR-BE-10.2, FR-BE-10.3**
+**Validates: Requirements 10.1, 10.2, 10.3**
 
 ### Property 10: Stat Value Validation
 
-*For any* stat entry (speed, stamina, power, guts, wit), values outside the range 0-1200 SHALL be rejected with a validation error (hard max). Stats SHALL be returned ordered by `turn_number` ascending.
+_For any_ stat entry (speed, stamina, power, guts, wit), values outside the range 0-1200 SHALL be rejected with a validation error (hard max). Stats SHALL be returned ordered by `turn_number` ascending.
 
-**Validates: FR-BE-11.3, FR-BE-11.4, FR-BE-11.6**
+**Validates: Requirements 11.2, 11.3, 11.5**
 
 ### Property 11: Skill Status Validation
 
-*For any* skill with status `acquired`, the `turn_acquired` field SHALL be required and non-null. Skills with status `skipped` or `suggested` MAY have null `turn_acquired`. The status field SHALL only accept values: `acquired`, `skipped`, `suggested`.
+_For any_ skill with acquired status 'yes', the `sp_cost` field SHALL be required and non-null. Skills with acquired status 'no' MAY have null `sp_cost`. The acquired field SHALL only accept values: 'yes', 'no'.
 
-**Validates: FR-BE-12.1, FR-BE-12.2**
+**Validates: Requirements 12.1, 12.2**
 
 ### Property 12: SP Calculation Accuracy
 
-*For any* plan with skills, the acquired SP total SHALL equal the sum of `sp_cost` for all skills where `status = 'acquired'`. The suggested SP budget SHALL equal the sum of `sp_cost` for all skills where `status = 'suggested'`. These calculations SHALL be independent.
+_For any_ plan with skills, the acquired SP total SHALL equal the sum of `sp_cost` for all skills where `acquired = 'yes'`. The suggested SP budget SHALL equal the sum of `sp_cost` for all skills where `acquired = 'no'` but are marked as suggested. These calculations SHALL be independent.
 
-**Validates: FR-BE-12.3, FR-BE-12.4**
+**Validates: Requirements 12.3, 12.4**
 
 ### Property 13: Image Validation
 
-*For any* uploaded image file, the system SHALL reject files that are not jpg/png/webp, exceed 2MB, or have mismatched MIME type vs content. Valid images SHALL have EXIF metadata stripped and a thumbnail generated.
+_For any_ uploaded image file, the system SHALL reject files that are not jpg/png/webp, exceed 2MB, or have mismatched MIME type vs content. Valid images SHALL have EXIF metadata stripped and a thumbnail generated.
 
-**Validates: FR-BE-15.1, FR-BE-15.2, FR-BE-15.3, FR-BE-15.4, FR-BE-15.5**
+**Validates: Requirements 13.1, 13.2, 13.3, 13.4, 13.5**
 
 ### Property 14: Snapshot Immutability
 
-*For any* snapshot created from a plan's current state, the snapshot SHALL capture all stats, mood, conditions, skills, SP, and stamina. Once created, any attempt to update the snapshot SHALL be rejected. Snapshots SHALL be returned ordered by turn number and timestamp.
+_For any_ snapshot created from a plan's current state, the snapshot SHALL capture all stats, mood, conditions, skills, and SP. Once created, any attempt to update the snapshot SHALL be rejected. Snapshots SHALL be returned ordered by turn number and timestamp.
 
-**Validates: FR-BE-16.1, FR-BE-16.2, FR-BE-16.3, FR-BE-16.5**
+**Validates: Requirements 14.1, 14.2, 14.3, 14.5**
 
 ### Property 15: API Response Consistency
 
-*For any* API response, list endpoints SHALL include pagination metadata (total, per_page, current_page, last_page). Error responses SHALL use consistent format with `message` and `errors` fields. All responses SHALL include `Content-Type: application/json` header.
+_For any_ API response, list endpoints SHALL include pagination metadata (total, per_page, current_page, last_page). Error responses SHALL use consistent format with `message` and `errors` fields. All responses SHALL include `Content-Type: application/json` header.
 
-**Validates: FR-BE-17.2, FR-BE-17.3, FR-BE-17.4, FR-BE-17.5**
+**Validates: Requirements 15.2, 15.3, 15.4, 15.5**
 
 ### Property 16: Authentication Enforcement
 
-*For any* request to a protected endpoint without valid authentication, the API SHALL return 401 Unauthorized. Validation errors SHALL return 422 Unprocessable Entity with field-level error details.
+_For any_ request to a protected endpoint without valid authentication, the API SHALL return 401 Unauthorized. Validation errors SHALL return 422 Unprocessable Entity with field-level error details.
 
-**Validates: FR-BE-2.8, FR-BE-2.10**
+**Validates: Requirements 9.1, 9.5, 15.3**
 
 ## Error Handling
 
@@ -879,18 +862,18 @@ All API errors follow a consistent format:
 
 ### HTTP Status Codes
 
-| Code | Meaning | Usage |
-|------|---------|-------|
-| 200 | OK | Successful GET, PUT |
-| 201 | Created | Successful POST |
-| 204 | No Content | Successful DELETE |
-| 400 | Bad Request | Malformed request |
-| 401 | Unauthorized | Missing/invalid authentication |
-| 403 | Forbidden | Authenticated but not authorized |
-| 404 | Not Found | Resource doesn't exist |
-| 422 | Unprocessable Entity | Validation failed |
-| 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | Unexpected server error |
+| Code | Meaning               | Usage                            |
+| ---- | --------------------- | -------------------------------- |
+| 200  | OK                    | Successful GET, PUT              |
+| 201  | Created               | Successful POST                  |
+| 204  | No Content            | Successful DELETE                |
+| 400  | Bad Request           | Malformed request                |
+| 401  | Unauthorized          | Missing/invalid authentication   |
+| 403  | Forbidden             | Authenticated but not authorized |
+| 404  | Not Found             | Resource doesn't exist           |
+| 422  | Unprocessable Entity  | Validation failed                |
+| 429  | Too Many Requests     | Rate limit exceeded              |
+| 500  | Internal Server Error | Unexpected server error          |
 
 ### Exception Handling
 
@@ -905,7 +888,7 @@ class ApiException extends Exception
     ) {
         parent::__construct($message);
     }
-    
+
     public function render(): JsonResponse
     {
         return response()->json([
@@ -939,19 +922,19 @@ public function create(array $data, User $user): Plan
 {
     return DB::transaction(function () use ($data, $user) {
         $plan = Plan::create([...$data, 'user_id' => $user->id]);
-        
+
         if (isset($data['attributes'])) {
             $plan->attributes()->create($data['attributes']);
         }
-        
+
         if (isset($data['skills'])) {
             foreach ($data['skills'] as $skill) {
                 $plan->skills()->create($skill);
             }
         }
-        
+
         event(new PlanCreated($plan));
-        
+
         return $plan;
     });
 }
@@ -1024,16 +1007,16 @@ use Eris\TestTrait;
 
 /**
  * Feature: umamusume-planner-backend, Property 1: User Data Isolation
- * 
+ *
  * For any authenticated user and any plan in the system, the user SHALL only
  * be able to access plans where plan.user_id equals their own user ID.
- * 
+ *
  * Validates: Requirements 2.1, 2.7, 9.3, 10.4
  */
 class UserDataIsolationPropertyTest extends TestCase
 {
     use TestTrait;
-    
+
     public function test_user_can_only_access_own_plans(): void
     {
         $this->forAll(
@@ -1045,14 +1028,14 @@ class UserDataIsolationPropertyTest extends TestCase
         ->withMaxSize(100)
         ->then(function ($users) {
             [$owner, $otherUser] = $users;
-            
+
             $plan = Plan::factory()->for($owner)->create();
-            
+
             // Owner can access
             $this->actingAs($owner)
                 ->getJson("/api/v1/plans/{$plan->id}")
                 ->assertOk();
-            
+
             // Other user cannot access
             if ($owner->id !== $otherUser->id) {
                 $this->actingAs($otherUser)
@@ -1074,9 +1057,9 @@ class SkillTest extends TestCase
     public function test_acquired_skill_requires_turn_acquired(): void
     {
         $plan = Plan::factory()->create();
-        
+
         $this->expectException(ValidationException::class);
-        
+
         Skill::create([
             'career_run_id' => $plan->id,
             'skill_reference_id' => SkillReference::factory()->create()->id,
@@ -1084,18 +1067,18 @@ class SkillTest extends TestCase
             'turn_acquired' => null, // Should fail
         ]);
     }
-    
+
     public function test_suggested_skill_allows_null_turn_acquired(): void
     {
         $plan = Plan::factory()->create();
-        
+
         $skill = Skill::create([
             'career_run_id' => $plan->id,
             'skill_reference_id' => SkillReference::factory()->create()->id,
             'status' => 'suggested',
             'turn_acquired' => null,
         ]);
-        
+
         $this->assertNotNull($skill->id);
     }
 }
@@ -1120,7 +1103,7 @@ class PlanGenerator
             'stamina_percentage' => fake()->numberBetween(0, 100),
         ];
     }
-    
+
     public static function validStatData(): array
     {
         return [
@@ -1131,7 +1114,7 @@ class PlanGenerator
             'wit' => fake()->numberBetween(0, 2000),
         ];
     }
-    
+
     public static function invalidStatData(): array
     {
         return [
