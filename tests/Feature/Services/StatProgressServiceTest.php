@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Services;
 
+use App\Enums\StorageMode;
 use App\Models\Condition;
 use App\Models\Mood;
 use App\Models\Plan;
@@ -11,6 +12,8 @@ use App\Models\Strategy;
 use App\Models\Turn;
 use App\Services\StatProgressService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Tests\TestCase;
 
 /**
@@ -22,6 +25,7 @@ class StatProgressServiceTest extends TestCase
     use RefreshDatabase;
 
     protected StatProgressService $service;
+
     protected Plan $plan;
 
     protected function setUp(): void
@@ -39,6 +43,7 @@ class StatProgressServiceTest extends TestCase
             'class' => 'gold',
             'race_name' => 'Test Race',
             'status' => 'Planning',
+            'storage_mode' => StorageMode::Account,
             'mood_id' => Mood::first()?->id,
             'condition_id' => Condition::first()?->id,
             'strategy_id' => Strategy::first()?->id,
@@ -63,6 +68,7 @@ class StatProgressServiceTest extends TestCase
         $this->assertEquals(80, $turn->power);
         $this->assertEquals(70, $turn->guts);
         $this->assertEquals(60, $turn->wit);
+        $this->assertEquals(100, $turn->stamina_percentage);
     }
 
     public function test_log_turn_auto_increments_turn_number(): void
@@ -351,5 +357,224 @@ class StatProgressServiceTest extends TestCase
         ]);
 
         $this->assertEquals(6, $this->service->getNextTurnNumber($this->plan));
+    }
+
+    public function test_log_turn_in_local_mode_returns_array(): void
+    {
+        $localPlan = Plan::create([
+            'name' => 'Local Test Horse',
+            'plan_title' => 'Local Test Plan',
+            'career_stage' => 'junior',
+            'class' => 'beginner',
+            'race_name' => '',
+            'status' => 'Planning',
+            'storage_mode' => StorageMode::Local,
+            'local_uuid' => (string) Str::uuid(),
+            'mood_id' => Mood::first()?->id,
+            'condition_id' => Condition::first()?->id,
+            'strategy_id' => Strategy::first()?->id,
+        ]);
+
+        $result = $this->service->logTurn($localPlan, [
+            'turn_number' => 1,
+            'speed' => 100,
+            'stamina' => 90,
+            'power' => 80,
+            'guts' => 70,
+            'wit' => 60,
+            'stamina_percentage' => 85,
+        ]);
+
+        $this->assertIsArray($result);
+        $this->assertEquals(1, $result['turn_number']);
+        $this->assertEquals(100, $result['speed']);
+        $this->assertEquals(90, $result['stamina']);
+        $this->assertEquals(80, $result['power']);
+        $this->assertEquals(70, $result['guts']);
+        $this->assertEquals(60, $result['wit']);
+        $this->assertEquals(85, $result['stamina_percentage']);
+        $this->assertEquals(StorageMode::Local->value, $result['storage_mode']);
+    }
+
+    public function test_log_turn_in_account_mode_persists_to_database(): void
+    {
+        $accountPlan = Plan::create([
+            'name' => 'Account Test Horse',
+            'plan_title' => 'Account Test Plan',
+            'career_stage' => 'senior',
+            'class' => 'gold',
+            'race_name' => 'Test Race',
+            'status' => 'Planning',
+            'storage_mode' => StorageMode::Account,
+            'mood_id' => Mood::first()?->id,
+            'condition_id' => Condition::first()?->id,
+            'strategy_id' => Strategy::first()?->id,
+        ]);
+
+        $turn = $this->service->logTurn($accountPlan, [
+            'turn_number' => 1,
+            'speed' => 150,
+            'stamina' => 140,
+            'power' => 130,
+            'guts' => 120,
+            'wit' => 110,
+            'stamina_percentage' => 75,
+        ]);
+
+        $this->assertInstanceOf(Turn::class, $turn);
+        $this->assertDatabaseHas('turns', [
+            'id' => $turn->id,
+            'plan_id' => $accountPlan->id,
+            'turn_number' => 1,
+            'speed' => 150,
+            'stamina' => 140,
+            'power' => 130,
+            'guts' => 120,
+            'wit' => 110,
+            'stamina_percentage' => 75,
+        ]);
+    }
+
+    public function test_validate_stats_throws_exception_for_invalid_values(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Stat');
+
+        $this->service->logTurn($this->plan, [
+            'speed' => 1500, // Exceeds MAX_STAT_VALUE
+            'stamina' => 100,
+            'power' => 100,
+            'guts' => 100,
+            'wit' => 100,
+        ]);
+    }
+
+    public function test_validate_stats_throws_exception_for_negative_values(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Stat');
+
+        $this->service->logTurn($this->plan, [
+            'speed' => -10, // Below MIN_STAT_VALUE
+            'stamina' => 100,
+            'power' => 100,
+            'guts' => 100,
+            'wit' => 100,
+        ]);
+    }
+
+    public function test_validate_stamina_percentage_throws_exception_for_invalid_values(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Stamina percentage');
+
+        $this->service->logTurn($this->plan, [
+            'speed' => 100,
+            'stamina' => 100,
+            'power' => 100,
+            'guts' => 100,
+            'wit' => 100,
+            'stamina_percentage' => 150, // Exceeds 100
+        ]);
+    }
+
+    public function test_recalculate_totals_updates_plan(): void
+    {
+        $this->service->logTurn($this->plan, [
+            'turn_number' => 1,
+            'speed' => 100,
+            'stamina' => 90,
+            'power' => 80,
+            'guts' => 70,
+            'wit' => 60,
+            'stamina_percentage' => 85,
+        ]);
+
+        $totals = $this->service->recalculateTotals($this->plan);
+
+        $this->assertEquals(100, $totals['speed']);
+        $this->assertEquals(90, $totals['stamina']);
+        $this->assertEquals(80, $totals['power']);
+        $this->assertEquals(70, $totals['guts']);
+        $this->assertEquals(60, $totals['wit']);
+        $this->assertEquals(400, $totals['total']);
+        $this->assertEquals(85, $totals['stamina_percentage']);
+
+        $this->plan->refresh();
+        $this->assertEquals(400, $this->plan->total_available_skill_points);
+        $this->assertEquals(85, $this->plan->stamina_percentage);
+    }
+
+    public function test_recalculate_totals_with_no_turns_returns_zeros(): void
+    {
+        $emptyPlan = Plan::create([
+            'name' => 'Empty Plan',
+            'plan_title' => 'Empty Plan',
+            'career_stage' => 'junior',
+            'class' => 'beginner',
+            'race_name' => '',
+            'status' => 'Planning',
+            'storage_mode' => StorageMode::Account,
+            'mood_id' => Mood::first()?->id,
+            'condition_id' => Condition::first()?->id,
+            'strategy_id' => Strategy::first()?->id,
+        ]);
+
+        $totals = $this->service->recalculateTotals($emptyPlan);
+
+        $this->assertEquals(0, $totals['speed']);
+        $this->assertEquals(0, $totals['stamina']);
+        $this->assertEquals(0, $totals['power']);
+        $this->assertEquals(0, $totals['guts']);
+        $this->assertEquals(0, $totals['wit']);
+        $this->assertEquals(0, $totals['total']);
+        $this->assertEquals(100, $totals['stamina_percentage']); // Default
+    }
+
+    public function test_log_turn_includes_stamina_percentage(): void
+    {
+        $turn = $this->service->logTurn($this->plan, [
+            'turn_number' => 1,
+            'speed' => 100,
+            'stamina' => 100,
+            'power' => 100,
+            'guts' => 100,
+            'wit' => 100,
+            'stamina_percentage' => 50,
+        ]);
+
+        $this->assertEquals(50, $turn->stamina_percentage);
+    }
+
+    public function test_log_turn_defaults_stamina_percentage_to_100(): void
+    {
+        $turn = $this->service->logTurn($this->plan, [
+            'turn_number' => 1,
+            'speed' => 100,
+            'stamina' => 100,
+            'power' => 100,
+            'guts' => 100,
+            'wit' => 100,
+        ]);
+
+        $this->assertEquals(100, $turn->stamina_percentage);
+    }
+
+    public function test_update_turn_includes_stamina_percentage(): void
+    {
+        $turn = $this->service->logTurn($this->plan, [
+            'turn_number' => 1,
+            'speed' => 100,
+            'stamina' => 100,
+            'power' => 100,
+            'guts' => 100,
+            'wit' => 100,
+        ]);
+
+        $updated = $this->service->updateTurn($turn, [
+            'stamina_percentage' => 75,
+        ]);
+
+        $this->assertEquals(75, $updated->stamina_percentage);
     }
 }
