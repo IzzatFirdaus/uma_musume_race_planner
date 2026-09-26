@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Dashboard;
 
 use App\Models\Plan;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -103,7 +104,14 @@ class PlanDetailsPage extends Component
      * Mount the component with plan ID.
      * Determines view/edit mode based on current route.
      *
+     * Authorization: the route is behind the `auth` middleware, and ownership is
+     * checked here against PlanPolicy. A Livewire request is a real HTTP
+     * request, so it needs the same check any controller would perform —
+     * PlanPolicy being registered is not sufficient on its own.
+     *
      * @param  int|string  $planId  The plan ID (numeric for account runs)
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function mount($planId): void
     {
@@ -117,6 +125,18 @@ class PlanDetailsPage extends Component
         $this->loadPlan($this->planId);
     }
 
+    /**
+     * Load an Account plan, after enforcing the policy.
+     *
+     * The write path calls `update`; the read path calls `view`. Using the
+     * correct ability for the mode keeps a view-only plan from being editable
+     * through the same component.
+     *
+     * @param  int|string  $planId
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
     public function loadPlan($planId): void
     {
         $this->isLoading = true;
@@ -136,8 +156,11 @@ class PlanDetailsPage extends Component
                 'strategy',
             ])->findOrFail($planId);
 
+            $ability = $this->isEditMode ? 'update' : 'view';
+            Gate::authorize($ability, $plan);
+
             $this->planId = $plan->id;
-            $this->storageMode = $plan->storage_mode?->value ?? 'account';
+            $this->storageMode = $plan->storage_mode->value;
             $this->plan_title = $plan->plan_title ?? '';
             $this->name = $plan->name ?? '';
             $this->career_stage = $plan->career_stage ?? '';
@@ -297,12 +320,29 @@ class PlanDetailsPage extends Component
 
     /**
      * Receive state from FormTabs and persist to database.
+     *
+     * This is the actual write path, and it is reachable by dispatching a
+     * `formTabs:state` event directly against this component — bypassing the
+     * edit-mode check in save(). It therefore re-authorizes here rather than
+     * trusting the route or the earlier mount-time check.
+     *
+     * @param  array<string, mixed>  $data
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     #[On('formTabs:state')]
     public function receiveFormTabsState(array $data): void
     {
+        if (! $this->isEditMode) {
+            $this->dispatch('show-error', message: 'Cannot save changes in view mode.');
+
+            return;
+        }
+
         try {
             $plan = Plan::findOrFail($this->planId);
+
+            Gate::authorize('update', $plan);
 
             // Normalize booleans to DB expectations
             $raceDay = ! empty($data['race_day']);

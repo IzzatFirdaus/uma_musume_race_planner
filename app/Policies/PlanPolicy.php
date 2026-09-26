@@ -30,16 +30,9 @@ class PlanPolicy
     /**
      * Determine whether the user can view the plan.
      * Users can only view plans they own.
-     * Public plans (user_id = 1) can be viewed by anyone.
      */
     public function view(?User $user, Plan $plan): bool
     {
-        // Public plans (user_id = 1) can be viewed by anyone
-        if ($plan->user_id === 1) {
-            return true;
-        }
-
-        // Otherwise, user must be authenticated and own the plan
         return $user !== null && $user->id === $plan->user_id;
     }
 

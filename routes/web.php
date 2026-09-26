@@ -17,7 +17,9 @@ Route::prefix('plans')->name('plans.')->group(function () {
     Route::view('/', 'dashboard')->name('index');
 
     // Local plan routes (Req 56.2, 56.3, 56.5)
-    // Routes for plans stored in localStorage, identified by UUID
+    // Routes for plans stored in localStorage, identified by UUID.
+    // Deliberately public: a Local run has no server-side record, so there is
+    // nothing to authorize against. The payload never leaves the browser.
     Route::prefix('local')->name('local.')->group(function () {
         // GET /plans/local/{uuid} -> plans.local.show (view mode)
         Route::get('/{uuid}', LocalPlanView::class)->name('show');
@@ -29,17 +31,22 @@ Route::prefix('plans')->name('plans.')->group(function () {
         Route::get('/{uuid}/edit', LocalPlanView::class)->name('edit');
     });
 
-    // GET /plans/{planId} -> plans.show (view mode)
-    // Historically some views and links use the name `plans.view`.
-    // Provide an explicit /{planId}/view route named `plans.view` to preserve
-    // backwards compatibility with templates and Livewire components.
-    Route::get('/{planId}/view', PlanDetailsPage::class)->name('view');
+    // Account plan routes. These read and write a `Plan` row, so they require an
+    // authenticated session; ownership is then enforced in
+    // PlanDetailsPage::mount() through PlanPolicy. Without both, any anonymous
+    // visitor could open and edit any plan by ID.
+    Route::middleware('auth')->group(function () {
+        // Historically some views and links use the name `plans.view`.
+        // Provide an explicit /{planId}/view route named `plans.view` to preserve
+        // backwards compatibility with templates and Livewire components.
+        Route::get('/{planId}/view', PlanDetailsPage::class)->name('view');
 
-    // GET /plans/{planId} -> plans.show (view mode)
-    Route::get('/{planId}', PlanDetailsPage::class)->name('show');
+        // GET /plans/{planId} -> plans.show (view mode)
+        Route::get('/{planId}', PlanDetailsPage::class)->name('show');
 
-    // GET /plans/{planId}/edit -> plans.edit (edit mode)
-    Route::get('/{planId}/edit', PlanDetailsPage::class)->name('edit');
+        // GET /plans/{planId}/edit -> plans.edit (edit mode)
+        Route::get('/{planId}/edit', PlanDetailsPage::class)->name('edit');
+    });
 });
 
 // Root: serve the dashboard view at the base URL so tests visiting '/' see the plan list.
@@ -76,4 +83,4 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
 
     return redirect('/');
-})->name('logout');
+})->middleware('auth')->name('logout');

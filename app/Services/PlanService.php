@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\StorageMode;
 use App\Events\PlanCreated;
 use App\Events\PlanUpdated;
 use App\Models\ActivityLog;
+use App\Models\Condition;
+use App\Models\Mood;
 use App\Models\Plan;
 use App\Models\SkillReference;
+use App\Models\Strategy;
+use App\Models\Umamusume;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -22,6 +30,11 @@ use Throwable;
  */
 class PlanService
 {
+    public function __construct(
+        private readonly LocalRunStorageService $localRunStorageService,
+        private readonly UmaMusumeService $umaMusumeService,
+    ) {}
+
     /**
      * Create a detailed plan with all relationships.
      *
@@ -47,17 +60,51 @@ class PlanService
     }
 
     /**
-     * Create a quick plan with minimal data.
+     * Create a quick plan with minimal data, branching on storage_mode.
      *
-     * @param  array  $validated  The validated data
-     * @return Plan The created plan
+     * @param  array{
+     *     title: string,
+     *     character_id: string,
+     *     storage_mode: string,
+     *     career_stage?: string,
+     *     class?: string
+     * }  $validated
+     * @return array{
+     *     storage_mode: string,
+     *     redirect_url: string,
+     *     plan: Plan|null,
+     *     local_payload: array|null,
+     *     uuid: string|null
+     * }
      *
+     * @throws AuthorizationException
      * @throws Throwable
      */
-    public function createQuickPlan(array $validated): Plan
+    public function createQuickPlan(array $validated): array
     {
-        return DB::transaction(function () use ($validated) {
-            $plan = $this->createBasicPlan($validated);
+        $validated = $this->normalizeQuickPlanInput($validated);
+        $storageMode = StorageMode::from($validated['storage_mode']);
+        $character = $this->umaMusumeService->findOrFail($validated['character_id']);
+
+        if ($storageMode === StorageMode::Local) {
+            $payload = $this->localRunStorageService->buildQuickPlanPayload($validated, $character);
+            $uuid = $payload['id'];
+
+            return [
+                'storage_mode' => StorageMode::Local->value,
+                'redirect_url' => route('plans.local.edit', ['uuid' => $uuid]),
+                'plan' => null,
+                'local_payload' => $payload,
+                'uuid' => $uuid,
+            ];
+        }
+
+        if (! auth()->check()) {
+            throw new AuthorizationException('You must be signed in to create account plans.');
+        }
+
+        $plan = DB::transaction(function () use ($validated, $character): Plan {
+            $plan = $this->createAccountQuickPlan($validated, $character);
             $this->createDefaultAttributes($plan);
             $this->logActivity("New plan created: {$plan->plan_title}", 'bi-person-plus');
 
@@ -65,6 +112,34 @@ class PlanService
 
             return $plan;
         });
+
+        return [
+            'storage_mode' => StorageMode::Account->value,
+            'redirect_url' => route('plans.edit', ['planId' => $plan->id]),
+            'plan' => $plan,
+            'local_payload' => null,
+            'uuid' => null,
+        ];
+    }
+
+    /**
+     * Resolve a plan by numeric ID or local UUID.
+     *
+     * @throws ModelNotFoundException
+     */
+    public function getPlanByIdOrUuid(string|int $identifier): Plan
+    {
+        if (is_int($identifier) || (is_string($identifier) && ctype_digit($identifier))) {
+            return Plan::query()->findOrFail((int) $identifier);
+        }
+
+        if (Str::isUuid((string) $identifier)) {
+            return Plan::query()
+                ->where('local_uuid', $identifier)
+                ->firstOrFail();
+        }
+
+        throw (new ModelNotFoundException)->setModel(Plan::class, [(string) $identifier]);
     }
 
     /**
@@ -93,24 +168,47 @@ class PlanService
     /**
      * Delete a plan and cleanup associated resources.
      *
-     * @param  Plan  $plan  The plan to delete
+     * Local-mode plans stored only in the browser are removed client-side; when a
+     * Plan record exists (including converted runs), it is soft-deleted here.
      *
      * @throws Throwable
      */
     public function deletePlan(Plan $plan): void
     {
-        $planTitle = $plan->plan_title;
+        if ($plan->isLocal()) {
+            $this->deleteLocalPlanRecord($plan);
 
-        DB::transaction(function () use ($plan, $planTitle): void {
-            $imagePath = $plan->trainee_image_path;
-            $plan->delete(); // Soft delete
+            return;
+        }
 
-            if ($imagePath) {
-                Storage::disk('public')->delete($imagePath);
-            }
+        $this->deleteAccountPlan($plan);
+    }
 
-            $this->logActivity("Plan deleted: {$planTitle}", 'bi-trash');
-        });
+    /**
+     * Resolve the owner for a newly created Account plan.
+     *
+     * An Account plan is server-side data, so it must have a real owner. This
+     * previously fell back to user 1, but user 1 is the *public* user that
+     * PlanPolicy treats as world-readable — that fallback made an anonymous
+     * write indistinguishable from a deliberately public plan.
+     *
+     * Callers are expected to have already verified authentication before
+     * reaching a create path; this is the backstop that turns a missed check
+     * into a 403 rather than a silent public write.
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    private function resolveOwnerId(): int
+    {
+        $userId = auth()->id();
+
+        if ($userId === null) {
+            throw new \Illuminate\Auth\Access\AuthorizationException(
+                'You must be signed in to create an Account career run.'
+            );
+        }
+
+        return (int) $userId;
     }
 
     /**
@@ -122,31 +220,108 @@ class PlanService
     private function createPlanWithData(array $planData): Plan
     {
         $planData['trainee_image_path'] = null;
-        $planData['user_id'] = auth()->id() ?? 1; // Use authenticated user or fallback to public user
+        $planData['user_id'] = $this->resolveOwnerId();
 
         return Plan::create($planData);
     }
 
     /**
-     * Create a basic plan from quick create data.
+     * Create a basic account plan from quick create data.
      *
-     * @param  array  $validated  The validated data
-     * @return Plan The created plan
+     * @param  array{
+     *     title: string,
+     *     character_id: string,
+     *     storage_mode: string,
+     *     career_stage?: string,
+     *     class?: string
+     * }  $validated
      */
-    private function createBasicPlan(array $validated): Plan
+    private function createAccountQuickPlan(array $validated, Umamusume $character): Plan
     {
+        $growthRates = $character->growth_rates ?? [];
+
         return Plan::create([
-            'user_id' => auth()->id() ?? 1, // Use authenticated user or fallback to public user
-            'name' => $validated['trainee_name'],
-            'plan_title' => $validated['trainee_name']."'s New Plan",
-            'career_stage' => $validated['career_stage'],
-            'class' => $validated['traineeClass'],
-            'race_name' => $validated['race_name'] ?? '',
+            'user_id' => $this->resolveOwnerId(),
+            'name' => $character->name,
+            'plan_title' => $validated['title'],
+            'career_stage' => $validated['career_stage'] ?? 'junior',
+            'class' => $validated['class'] ?? 'beginner',
+            'race_name' => '',
             'status' => 'Planning',
-            'mood_id' => \App\Models\Mood::where('label', 'NORMAL')->value('id') ?? 1,
-            'strategy_id' => \App\Models\Strategy::where('label', 'PACE')->value('id') ?? 1,
-            'condition_id' => \App\Models\Condition::where('label', 'N/A')->value('id') ?? 1,
+            'storage_mode' => StorageMode::Account,
+            'acquire_skill' => 'NO',
+            'growth_rate_speed' => (int) ($growthRates['speed'] ?? 0),
+            'growth_rate_stamina' => (int) ($growthRates['stamina'] ?? 0),
+            'growth_rate_power' => (int) ($growthRates['power'] ?? 0),
+            'growth_rate_guts' => (int) ($growthRates['guts'] ?? 0),
+            'growth_rate_wit' => (int) ($growthRates['wisdom'] ?? $growthRates['wit'] ?? 0),
+            'mood_id' => Mood::query()->where('label', 'NORMAL')->value('id') ?? 1,
+            'strategy_id' => Strategy::query()->where('label', 'PACE')->value('id') ?? 1,
+            'condition_id' => Condition::query()->where('label', 'N/A')->value('id') ?? 1,
         ]);
+    }
+
+    /**
+     * Normalize quick-create input and support legacy field names.
+     *
+     * @param  array<string, mixed>  $validated
+     * @return array{
+     *     title: string,
+     *     character_id: string,
+     *     storage_mode: string,
+     *     career_stage: string,
+     *     class: string
+     * }
+     */
+    private function normalizeQuickPlanInput(array $validated): array
+    {
+        $title = trim((string) ($validated['title'] ?? $validated['trainee_name'] ?? ''));
+
+        return [
+            'title' => $title,
+            'character_id' => (string) ($validated['character_id'] ?? $validated['characterId'] ?? ''),
+            'storage_mode' => (string) ($validated['storage_mode'] ?? $validated['storageMode'] ?? StorageMode::Local->value),
+            'career_stage' => (string) ($validated['career_stage'] ?? $validated['careerStage'] ?? 'junior'),
+            'class' => (string) ($validated['class'] ?? $validated['traineeClass'] ?? 'beginner'),
+        ];
+    }
+
+    /**
+     * Delete an account-backed plan and cleanup associated resources.
+     */
+    private function deleteAccountPlan(Plan $plan): void
+    {
+        $planTitle = $plan->plan_title;
+
+        DB::transaction(function () use ($plan, $planTitle): void {
+            $imagePath = $plan->trainee_image_path;
+            $plan->delete();
+
+            if ($imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            $this->logActivity("Plan deleted: {$planTitle}", 'bi-trash');
+        });
+    }
+
+    /**
+     * Delete a local-mode plan record when one exists in the database.
+     */
+    private function deleteLocalPlanRecord(Plan $plan): void
+    {
+        $planTitle = $plan->plan_title ?? $plan->name;
+
+        DB::transaction(function () use ($plan, $planTitle): void {
+            $imagePath = $plan->trainee_image_path;
+            $plan->delete();
+
+            if ($imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            $this->logActivity("Local plan deleted: {$planTitle}", 'bi-trash');
+        });
     }
 
     /**
