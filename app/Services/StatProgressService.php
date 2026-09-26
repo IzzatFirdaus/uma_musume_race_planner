@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\StorageMode;
 use App\Models\Plan;
 use App\Models\Turn;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Throwable;
 
 /**
  * Stat Progress Service Class
@@ -21,6 +24,20 @@ class StatProgressService
      * Stat attribute names.
      */
     private const STAT_ATTRIBUTES = ['speed', 'stamina', 'power', 'guts', 'wit'];
+
+    /**
+     * Maximum stat value cap.
+     */
+    private const MAX_STAT_VALUE = 1200;
+
+    /**
+     * Minimum stat value.
+     */
+    private const MIN_STAT_VALUE = 0;
+
+    public function __construct(
+        private readonly LocalRunStorageService $localRunStorageService,
+    ) {}
 
     /**
      * Get all stat progress entries for a plan.
@@ -44,20 +61,54 @@ class StatProgressService
     }
 
     /**
-     * Log a new turn's stats.
+     * Log a new turn's stats with dual-storage branching.
+     *
+     * @param  Plan  $plan  The plan to log the turn for
+     * @param  array{
+     *     turn_number?: int,
+     *     speed: int,
+     *     stamina: int,
+     *     power: int,
+     *     guts: int,
+     *     wit: int,
+     *     stamina_percentage?: int
+     * }  $stats  The stat data for the turn
+     * @return array{
+     *     turn_number: int,
+     *     speed: int,
+     *     stamina: int,
+     *     power: int,
+     *     guts: int,
+     *     wit: int,
+     *     stamina_percentage: int,
+     *     storage_mode: string
+     * }|Turn The logged turn data (array for local, Turn model for account)
+     *
+     * @throws InvalidArgumentException
+     * @throws Throwable
      */
-    public function logTurn(Plan $plan, array $stats): Turn
+    public function logTurn(Plan $plan, array $stats): Turn|array
     {
-        $turnNumber = $stats['turn_number'] ?? $this->getNextTurnNumber($plan);
+        $this->validateStats($stats);
 
-        return $plan->turns()->create([
+        $turnNumber = $stats['turn_number'] ?? $this->getNextTurnNumber($plan);
+        $staminaPercentage = $stats['stamina_percentage'] ?? 100;
+
+        $turnData = [
             'turn_number' => $turnNumber,
             'speed' => $stats['speed'] ?? 0,
             'stamina' => $stats['stamina'] ?? 0,
             'power' => $stats['power'] ?? 0,
             'guts' => $stats['guts'] ?? 0,
             'wit' => $stats['wit'] ?? 0,
-        ]);
+            'stamina_percentage' => $staminaPercentage,
+        ];
+
+        if ($plan->storage_mode === StorageMode::Local) {
+            return $this->logTurnLocal($plan, $turnData);
+        }
+
+        return $this->logTurnAccount($plan, $turnData);
     }
 
     /**
@@ -65,12 +116,15 @@ class StatProgressService
      */
     public function updateTurn(Turn $turn, array $stats): Turn
     {
+        $this->validateStats($stats);
+
         $turn->update([
             'speed' => $stats['speed'] ?? $turn->speed,
             'stamina' => $stats['stamina'] ?? $turn->stamina,
             'power' => $stats['power'] ?? $turn->power,
             'guts' => $stats['guts'] ?? $turn->guts,
             'wit' => $stats['wit'] ?? $turn->wit,
+            'stamina_percentage' => $stats['stamina_percentage'] ?? $turn->stamina_percentage,
         ]);
 
         return $turn->fresh();
@@ -256,5 +310,125 @@ class StatProgressService
         }
 
         return $summary;
+    }
+
+    /**
+     * Recalculate stat totals and update the parent Plan record.
+     * This aggregates the latest turn's stats and updates the plan's current state.
+     *
+     * @param  Plan  $plan  The plan to recalculate totals for
+     * @return array{
+     *     speed: int,
+     *     stamina: int,
+     *     power: int,
+     *     guts: int,
+     *     wit: int,
+     *     total: int,
+     *     stamina_percentage: int
+     * } The recalculated totals
+     *
+     * @throws Throwable
+     */
+    public function recalculateTotals(Plan $plan): array
+    {
+        $totals = $this->getStatTotals($plan);
+        $latestTurn = $plan->turns()
+            ->orderBy('turn_number', 'desc')
+            ->first();
+
+        $staminaPercentage = $latestTurn?->stamina_percentage ?? 100;
+
+        DB::transaction(function () use ($plan, $totals, $staminaPercentage): void {
+            $plan->update([
+                'total_available_skill_points' => $totals['total'],
+                'stamina_percentage' => $staminaPercentage,
+            ]);
+        });
+
+        return [
+            'speed' => $totals['speed'],
+            'stamina' => $totals['stamina'],
+            'power' => $totals['power'],
+            'guts' => $totals['guts'],
+            'wit' => $totals['wit'],
+            'total' => $totals['total'],
+            'stamina_percentage' => $staminaPercentage,
+        ];
+    }
+
+    /**
+     * Validate stat data to ensure values are within allowed range.
+     *
+     * @param  array  $stats  The stats to validate
+     *
+     * @throws InvalidArgumentException
+     */
+    private function validateStats(array $stats): void
+    {
+        foreach (self::STAT_ATTRIBUTES as $stat) {
+            if (isset($stats[$stat])) {
+                $value = (int) $stats[$stat];
+                if ($value < self::MIN_STAT_VALUE || $value > self::MAX_STAT_VALUE) {
+                    throw new InvalidArgumentException(
+                        "Stat '{$stat}' must be between {self::MIN_STAT_VALUE} and {self::MAX_STAT_VALUE}, got {$value}."
+                    );
+                }
+            }
+        }
+
+        if (isset($stats['stamina_percentage'])) {
+            $value = (int) $stats['stamina_percentage'];
+            if ($value < 0 || $value > 100) {
+                throw new InvalidArgumentException(
+                    "Stamina percentage must be between 0 and 100, got {$value}."
+                );
+            }
+        }
+    }
+
+    /**
+     * Log a turn for local storage mode (delegates to LocalRunStorageService).
+     * Note: This returns the turn data structure for client-side persistence.
+     *
+     * @param  Plan  $plan  The plan to log the turn for
+     * @param  array  $turnData  The turn data
+     * @return array The turn data structure for local storage
+     */
+    private function logTurnLocal(Plan $plan, array $turnData): array
+    {
+        // For local storage, we return the data structure that the client
+        // will append to the stat_progress array in the local JSON payload.
+        // The actual persistence is handled client-side via IndexedDB/localStorage.
+        return [
+            'turn_number' => $turnData['turn_number'],
+            'speed' => $turnData['speed'],
+            'stamina' => $turnData['stamina'],
+            'power' => $turnData['power'],
+            'guts' => $turnData['guts'],
+            'wit' => $turnData['wit'],
+            'stamina_percentage' => $turnData['stamina_percentage'],
+            'storage_mode' => StorageMode::Local->value,
+        ];
+    }
+
+    /**
+     * Log a turn for account storage mode (persists to database).
+     *
+     * @param  Plan  $plan  The plan to log the turn for
+     * @param  array  $turnData  The turn data
+     * @return Turn The created Turn model
+     *
+     * @throws Throwable
+     */
+    private function logTurnAccount(Plan $plan, array $turnData): Turn
+    {
+        return DB::transaction(function () use ($plan, $turnData): Turn {
+            $turn = $plan->turns()->create($turnData);
+
+            // Recalculate totals after logging a new turn
+            $this->recalculateTotals($plan);
+
+            return $turn;
+        });
     }
 }

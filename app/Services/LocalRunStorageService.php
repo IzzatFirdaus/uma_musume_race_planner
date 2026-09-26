@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\StorageMode;
+use App\Models\Umamusume;
 use Illuminate\Support\Str;
 
 /**
@@ -73,6 +75,87 @@ class LocalRunStorageService
     }
 
     /**
+     * Build a quick-create local run payload for browser persistence.
+     *
+     * @param  array{
+     *     title: string,
+     *     character_id: string,
+     *     career_stage?: string,
+     *     class?: string
+     * }  $validated
+     * @return array{
+     *     schema_version: string,
+     *     id: string,
+     *     storage_mode: string,
+     *     character_id: string,
+     *     character_name: string,
+     *     created_at: string,
+     *     updated_at: string,
+     *     career_run: array<string, mixed>,
+     *     stat_progress: array<int, mixed>,
+     *     skills: array<int, mixed>,
+     *     goals: array<int, mixed>,
+     *     race_predictions: array<int, mixed>,
+     *     snapshots: array<int, mixed>,
+     *     activity_log: array<int, mixed>
+     * }
+     */
+    public function buildQuickPlanPayload(array $validated, ?Umamusume $character = null): array
+    {
+        $uuid = $this->generateUuid();
+        $payload = $this->createEmptyRun($uuid);
+
+        $characterName = $character?->name ?? $validated['title'];
+
+        $payload['storage_mode'] = StorageMode::Local->value;
+        $payload['character_id'] = $validated['character_id'];
+        $payload['character_name'] = $characterName;
+        $payload['career_run']['plan_title'] = $validated['title'];
+        $payload['career_run']['name'] = $characterName;
+        $payload['career_run']['career_stage'] = $validated['career_stage'] ?? 'junior';
+        $payload['career_run']['class'] = $validated['class'] ?? 'beginner';
+        $payload['career_run']['status'] = 'ongoing';
+        $payload['career_run']['current_turn'] = 1;
+        $payload['career_run']['total_sp_available'] = 0;
+        $payload['career_run']['stamina_percentage'] = 100;
+
+        if ($character !== null) {
+            $payload = $this->applyCharacterDefaults($payload, $character);
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Apply character growth rates and aptitudes to a local run payload.
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    private function applyCharacterDefaults(array $payload, Umamusume $character): array
+    {
+        $growthRates = $character->growth_rates;
+
+        if ($growthRates !== null) {
+            $payload['career_run']['growth_rates'] = [
+                'speed' => $growthRates['speed'] ?? 0,
+                'stamina' => $growthRates['stamina'] ?? 0,
+                'power' => $growthRates['power'] ?? 0,
+                'guts' => $growthRates['guts'] ?? 0,
+                'wit' => $growthRates['wisdom'] ?? $growthRates['wit'] ?? 0,
+            ];
+        }
+
+        $aptitudes = $character->aptitudes;
+
+        if ($aptitudes !== null) {
+            $payload['aptitudes'] = $aptitudes;
+        }
+
+        return $payload;
+    }
+
+    /**
      * Validate local run data structure.
      *
      * @return array{valid: bool, errors: array}
@@ -82,31 +165,31 @@ class LocalRunStorageService
         $errors = [];
 
         // Check required top-level fields
-        if (!isset($data['id'])) {
+        if (! isset($data['id'])) {
             $errors[] = 'Missing required field: id';
         }
 
-        if (!isset($data['schema_version'])) {
+        if (! isset($data['schema_version'])) {
             $errors[] = 'Missing required field: schema_version';
         }
 
-        if (!isset($data['career_run'])) {
+        if (! isset($data['career_run'])) {
             $errors[] = 'Missing required field: career_run';
         }
 
         // Validate UUID format
-        if (isset($data['id']) && !Str::isUuid($data['id'])) {
+        if (isset($data['id']) && ! Str::isUuid($data['id'])) {
             $errors[] = 'Invalid UUID format for id';
         }
 
         // Validate career_run structure
-        if (isset($data['career_run']) && !\is_array($data['career_run'])) {
+        if (isset($data['career_run']) && ! \is_array($data['career_run'])) {
             $errors[] = 'career_run must be an array';
         }
 
         // Validate arrays
         foreach (['stat_progress', 'skills', 'goals', 'race_predictions', 'snapshots', 'activity_log'] as $field) {
-            if (isset($data[$field]) && !\is_array($data[$field])) {
+            if (isset($data[$field]) && ! \is_array($data[$field])) {
                 $errors[] = "{$field} must be an array";
             }
         }
@@ -152,17 +235,17 @@ class LocalRunStorageService
             $run = &$data['career_run'];
 
             // Rename fields if using old names
-            if (isset($run['total_sp']) && !isset($run['total_sp_available'])) {
+            if (isset($run['total_sp']) && ! isset($run['total_sp_available'])) {
                 $run['total_sp_available'] = $run['total_sp'];
                 unset($run['total_sp']);
             }
 
-            if (isset($run['stamina_pct']) && !isset($run['stamina_percentage'])) {
+            if (isset($run['stamina_pct']) && ! isset($run['stamina_percentage'])) {
                 $run['stamina_percentage'] = $run['stamina_pct'];
                 unset($run['stamina_pct']);
             }
 
-            if (isset($run['turn']) && !isset($run['current_turn'])) {
+            if (isset($run['turn']) && ! isset($run['current_turn'])) {
                 $run['current_turn'] = $run['turn'];
                 unset($run['turn']);
             }
@@ -224,7 +307,8 @@ class LocalRunStorageService
             $bytes /= 1024;
             $i++;
         }
-        return \round($bytes, 2) . ' ' . $units[$i];
+
+        return \round($bytes, 2).' '.$units[$i];
     }
 
     /**
@@ -242,6 +326,7 @@ class LocalRunStorageService
     public function isApproachingQuota(int $currentSize, ?int $threshold = null): bool
     {
         $threshold = $threshold ?? $this->getQuotaWarningThreshold();
+
         return $currentSize >= $threshold;
     }
 

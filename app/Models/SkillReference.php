@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property string $skill_name
+ * @property string|null $name_jp
  * @property string|null $description
  * @property string|null $stat_type
  * @property string|null $best_for
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereBestFor($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereNameJp($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereSkillName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereStatType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SkillReference whereTag($value)
@@ -52,6 +54,7 @@ class SkillReference extends Model
      */
     protected $fillable = [
         'skill_name',
+        'name_jp',
         'description',
         'stat_type',
         'best_for',

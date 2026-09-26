@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $power
  * @property int $guts
  * @property int $wit
+ * @property int $stamina_percentage
  * @property-read \App\Models\Plan $plan
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Turn newModelQuery()
@@ -56,6 +57,7 @@ class Turn extends Model
         'power',
         'guts',
         'wit',
+        'stamina_percentage',
     ];
 
     /**
