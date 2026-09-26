@@ -36,3 +36,4 @@ Thumbs.db
 /tests/coverage/
 /package-lock.json
 /resources/assets/
+/.kilo/
