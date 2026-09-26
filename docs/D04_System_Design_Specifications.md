@@ -2,10 +2,10 @@
 
 ## Uma Musume Career Planner
 
-**Document Version:** 2.0
-**Date:** 2026-01-03
+**Document Version:** 3.0
+**Date:** 2026-07-03
 **Status:** Active
-**Last Updated:** 2026-01-03
+**Last Updated:** 2026-07-03
 
 ---
 
@@ -16,9 +16,14 @@
 3. [Component Design](#3-component-design)
 4. [Data Models](#4-data-models)
 5. [Service Layer Design](#5-service-layer-design)
-6. [UI/UX Design Specifications](#6-uiux-design-specifications)
-7. [Data Flow Specifications](#7-data-flow-specifications)
-8. [Appendices](#8-appendices)
+6. [Security Design](#6-security-design)
+7. [Performance & Scalability](#7-performance--scalability)
+8. [Error Handling & Logging](#8-error-handling--logging)
+9. [UI/UX Design Specifications](#9-uiux-design-specifications)
+10. [Data Flow Specifications](#10-data-flow-specifications)
+11. [Testing Strategy](#11-testing-strategy)
+12. [Third-Party Libraries](#12-third-party-libraries)
+13. [Appendices](#13-appendices)
 
 ---
 
@@ -26,134 +31,130 @@
 
 ### 1.1 Purpose
 
-This document provides detailed system design specifications for the Uma Musume Career Planner application. It describes the architecture, components, data models, and implementation patterns.
+This document defines the system design for the Uma Musume Career Planner. It translates the business requirements in D02 into implementation-oriented architecture, components, data models, services, and UI patterns, while staying traceable to the SRS in D03 and the SDP in D01.
 
-### 1.2 Scope
+### 1.2 Scope of Design
 
-This specification covers:
+This design covers the MVP scope and the extensibility needed for post-MVP evolution.
 
-- System architecture and technology stack
-- Component design and hierarchy
-- Data models and schemas
-- Service layer design
-- UI/UX specifications
+Covered:
 
-### 1.3 Referenced Documents
+- Browser-first Local mode and authenticated Account mode.
+- Core plan creation, editing, import, export, skill management, turn tracking, and dashboard flows.
+- Shared Livewire page components, reusable UI primitives, and service boundaries.
+- Data validation, schema versioning, logging, and migration paths for local data.
+- Accessibility, responsive layout, and testability requirements.
 
-- D01_System_Development_Plan
-- D02_Business_Requirements_Specifications
-- D03_System_Requirements_Specifications
+Out of scope:
+
+- Native iOS or Android applications.
+- Desktop applications or browser extensions.
+- Real-time collaborative editing.
+- Social, multiplayer, or community-sharing features beyond import/export.
+- Unspecified external APIs or integrations not required by D03.
+
+### 1.3 Relationship to BRS and SRS
+
+- D02 describes the business goals, MVP priorities, and user outcomes.
+- D03 translates those business needs into testable system requirements.
+- This SDS translates the SRS into concrete design decisions, implementation patterns, and component boundaries.
+
+Where D03 states what the system must do, this document explains how the Laravel application should do it.
+
+### 1.4 References
+
+- [D01_System_Development_Plan.md](D01_System_Development_Plan.md)
+- [D02_Business_Requirements_Specifications.md](D02_Business_Requirements_Specifications.md)
+- [D03_System_Requirements_Specifications.md](D03_System_Requirements_Specifications.md)
 
 ---
 
 ## 2. System Architecture
 
-### 2.1 Architecture Overview
+### 2.1 High-Level Architecture Diagram
 
-````mermaid
+```mermaid
+flowchart LR
+    Browser[Browser<br/>Blade + Livewire + Alpine]
+    WebServer[Nginx / Web Server]
+    AppServer[PHP-FPM<br/>Laravel 12]
+    DB[(Database<br/>MySQL / MariaDB / SQLite)]
+    Cache[(Redis / Cache Store)]
+    Storage[(Object Storage / Public Disk)]
+    Mail[Email / Notification Delivery]
+
+    Browser --> WebServer --> AppServer --> DB
+    AppServer --> Cache
+    AppServer --> Storage
+    AppServer --> Mail
+```
+
+The production deployment is browser driven and server rendered. The browser owns the immediate UI state; Laravel owns validation, authorization, persistence, and server-side workflows.
+
+### 2.2 Architecture Overview
+
+```mermaid
 flowchart TB
-    subgraph Browser["Browser Layer"]
-        Alpine["Alpine.js Components<br/>Dropdowns, Modals, Tabs"]
-        LWClient["Livewire Client<br/>PlanList, PlanEditor"]
-        LocalStorage["localStorage<br/>Local_Runs, Drafts, Prefs"]
+    subgraph BrowserLayer[Browser Layer]
+        Blade[Blade Views]
+        LivewireClient[Livewire Client]
+        Alpine[Alpine.js Micro-Interactions]
+        LocalStore[localStorage / IndexedDB]
     end
 
-    subgraph Server["Laravel Backend"]
-        LWServer["Livewire Server"]
-        Services["Services Layer"]
-        Models["Eloquent Models"]
+    subgraph LaravelLayer[Laravel Application Layer]
+        Pages[Livewire Page Components]
+        Widgets[Reusable Livewire Components]
+        Services[Service Layer]
+        Policies[Policies / Validation / Auth]
+        Logs[Activity Log / Notifications]
     end
 
-    subgraph Data["Data Layer"]
-        DB[(MySQL/MariaDB/SQLite)]
+    subgraph DataLayer[Data Layer]
+        Models[Eloquent Models]
+        DB[(Database)]
     end
 
-    Alpine <--> LWClient
-    LWClient <--> LocalStorage
-    LWClient <-->|Wire Protocol| LWServer
-    LWServer --> Services
+    Blade <--> LivewireClient
+    Alpine <--> LivewireClient
+    LivewireClient <--> LocalStore
+    LivewireClient <--> Pages
+    Pages --> Widgets
+    Pages --> Services
+    Services --> Policies
     Services --> Models
     Models --> DB
-```text
-**ASCII Diagram:**
-
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                        Browser Layer                             │
-├─────────────────────────────────────────────────────────────────┤
-│  Alpine.js Components          │  Livewire Components           │
-│  - Dropdowns, Modals           │  - PlanList, PlanEditor        │
-│  - Tabs, Tooltips              │  - SkillsEditor, TurnsEditor   │
-│  - Dark Mode Toggle            │  - Dashboard, CharacterList    │
-│  - Client-side validation      │  - ImportWizard, ExportPreview │
-├─────────────────────────────────────────────────────────────────┤
-│                     localStorage Layer                           │
-│  - Local_Runs (full plan data)                                  │
-│  - Draft autosave (form state)                                  │
-│  - User preferences (dark mode, dismissed tooltips)             │
-├─────────────────────────────────────────────────────────────────┤
-│                     Livewire Wire Protocol                       │
-├─────────────────────────────────────────────────────────────────┤
-│                        Laravel Backend                           │
-│  - Controllers (API routes)                                     │
-│  - Livewire Components (server-side)                            │
-│  - Services (CareerRunService, SkillService)                    │
-│  - Models (CareerRun, Skill, Character, Turn)                   │
-├─────────────────────────────────────────────────────────────────┤
-│                     Database (MySQL/MariaDB/SQLite)              │
-│  - Account_Runs (career_runs table)                             │
-│  - Reference data (characters, skills)                          │
-└─────────────────────────────────────────────────────────────────┘
-```text
-### 2.2 Technology Stack
-
-| Layer | Technology | Version |
-| ----- | ---------- | ------- |
-| Backend Framework | Laravel | 12+ |
-| Frontend Reactivity | Livewire | 3 |
-| Client Interactivity | Alpine.js | Latest |
-| Styling | TailwindCSS | v4 |
-| Build Tool | Vite | Latest |
-| PHP Runtime | PHP | 8.2+ |
-| Database | MySQL/MariaDB/SQLite | - |
+    Services --> Logs
+```
 
 ### 2.3 Storage Mode Architecture
+
+Storage mode is a first-class design concern.
+
+- Local mode stores plan data in the browser and works without authentication.
+- Account mode stores plan data in the database and requires authentication.
+- Conversion from Local to Account is handled by a dedicated service and UI flow.
+
+Data consistency notes:
+
+- Local mode does not provide cross-tab locking.
+- If the same local plan is edited in multiple tabs, the last save wins unless the UI detects a stale draft and prompts the user.
+- Account mode is server authoritative, but concurrent edits can still overwrite each other unless an explicit conflict check or optimistic locking strategy is added.
+- The current design should surface dirty-state warnings and conflict prompts rather than silently merging divergent edits.
 
 ```mermaid
 flowchart TD
     A[User Action] --> B{Authenticated?}
     B -->|No| C[Local Mode Only]
-    B -->|Yes| D{Choose Mode}
-    C --> E[localStorage]
+    B -->|Yes| D{Choose Storage Mode}
+    C --> E[Browser Storage]
     D -->|Local| E
     D -->|Account| F[(Database)]
-    E --> G[UUID Routes<br/>/plans/local/uuid]
-    F --> H[ID Routes<br/>/plans/id]
-```text
-**ASCII Diagram:**
+    E --> G[UUID Route<br/>/plans/local/{uuid}]
+    F --> H[ID Route<br/>/plans/{id}]
+```
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                     Storage Mode Decision                        │
-├─────────────────────────────────────────────────────────────────┤
-│   User Authenticated?                                            │
-│         │                                                        │
-│    ┌────┴────┐                                                   │
-│    │         │                                                   │
-│   No        Yes                                                  │
-│    │         │                                                   │
-│    ▼         ▼                                                   │
-│ Local_Run  Choose Mode                                           │
-│ (localStorage)  │                                                │
-│              ┌──┴──┐                                             │
-│              │     │                                             │
-│           Local  Account                                         │
-│              │     │                                             │
-│              ▼     ▼                                             │
-│         localStorage  Database                                   │
-└─────────────────────────────────────────────────────────────────┘
-```text
-### 2.4 Request Flow Architecture
+### 2.4 Request Flow
 
 ```mermaid
 sequenceDiagram
@@ -162,239 +163,250 @@ sequenceDiagram
     participant S as Service Layer
     participant D as Database/Store
 
-    U->>L: User Action
-    L->>S: Call Service
-    S->>D: Query/Persist
-    D-->>S: Return Data
-    S-->>L: Return Result
-    L-->>U: DOM Update
-```text
-**ASCII Diagram:**
+    U->>L: Submit action
+    L->>L: Validate input and state
+    L->>S: Invoke service
+    S->>D: Read / write data
+    D-->>S: Return result
+    S-->>L: Domain response
+    L-->>U: DOM update / toast / redirect
+```
 
-```text
-┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-│  Browser │───▶│ Livewire │───▶│ Service  │───▶│ Database │
-│  (User)  │    │Component │    │  Layer   │    │  /Store  │
-└──────────┘    └──────────┘    └──────────┘    └──────────┘
-      │               │               │               │
-      │  User Action  │               │               │
-      │──────────────▶│               │               │
-      │               │  Call Service │               │
-      │               │──────────────▶│               │
-      │               │               │  Query/Persist│
-      │               │               │──────────────▶│
-      │               │               │◀──────────────│
-      │               │◀──────────────│  Return Data  │
-      │◀──────────────│  Update View  │               │
-      │  DOM Update   │               │               │
-```text
+### 2.5 Error Handling Flow
+
+```mermaid
+flowchart TD
+    A[Request or UI Action] --> B{Validation passes?}
+    B -->|No| C[Return field errors]
+    B -->|Yes| D{Network or storage available?}
+    D -->|No| E[Show offline / storage error]
+    D -->|Yes| F{Database or persistence succeeds?}
+    F -->|No| G[Log exception and show retry message]
+    F -->|Yes| H[Persist result and emit success toast]
+```
+
+### 2.6 Local Storage Request Flow
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant LS as localStorage / IndexedDB
+    participant UI as Livewire + Alpine UI
+
+    B->>UI: User edits local plan
+    UI->>UI: Validate client state
+    UI->>LS: Read / write JSON payload
+    LS-->>UI: Return stored payload
+    UI-->>B: Update view, counters, and dirty state
+```
+
 ---
 
 ## 3. Component Design
 
-### 3.1 Page Components (Livewire Full-Page)
+### 3.1 Page Components
 
-| Component | Route | Description |
-| --------- | ----- | ----------- |
-| `Dashboard` | `/`, `/dashboard` | Main landing with plan list, stats, activity |
-| `PlanView` | `/plans/{id}` | Read-only plan details (Account) |
-| `PlanEdit` | `/plans/{id}/edit` | Full editor (Account) |
-| `LocalPlanView` | `/plans/local/{uuid}` | Read-only plan details (Local) |
-| `LocalPlanEdit` | `/plans/local/{uuid}/edit` | Full editor (Local) |
-| `CharacterList` | `/characters` | Character roster with filtering |
-| `GuidePage` | `/guide` | Usage guide with navigation |
-| `ImportWizard` | `/import` | Multi-step import flow |
-| `LocalDataManager` | `/local-data` | Local storage management |
+| Route | Component Class | Purpose | Notes |
+| --- | --- | --- | --- |
+| `/` and `/dashboard` | Blade dashboard shell with Livewire widgets | Main landing page with plan list, stats, activity, and quick actions | Dashboard should compose smaller Livewire widgets rather than hold all logic in one class. |
+| `/plans/{id}` and `/plans/{id}/view` | `App\Livewire\Dashboard\PlanDetailsPage` | Read-only Account plan view | Show mode should be read-only and share logic with edit mode through a base class or trait. |
+| `/plans/{id}/edit` | `App\Livewire\Dashboard\PlanDetailsPage` | Account plan editor | The edit route should share the same base class or trait as the view route. |
+| `/plans/local/{uuid}` and `/plans/local/{uuid}/view` | `App\Livewire\Plans\LocalPlanView` | Read-only Local plan view | `LocalPlanView` should share a base class or trait with Account counterparts for common loading, formatting, and dirty-state behavior. |
+| `/plans/local/{uuid}/edit` | `App\Livewire\Plans\LocalPlanView` or future `LocalPlanEdit` | Local plan editor | If `LocalPlanEdit` is introduced, it should reuse the same shared plan base class or trait. |
+| `/characters` | `App\Livewire\Characters\CharacterList` | Character roster browsing and filtering | Supports the shared canonical roster used by plan creation and editing. |
+| `/guide` | Blade guide page | Usage and navigation help | Primarily static content with sticky navigation. |
+| `/import` | `App\Livewire\Import\ImportWizard` | Multi-step import flow | The import wizard should own preview, validation, conflict resolution, and final execution. |
+| `/local-data` | `App\Livewire\LocalData\Manager` | Local storage management | Handles export, import, bulk conversion, purge, and storage statistics. |
 
 ### 3.2 Reusable Livewire Components
 
-| Component | Purpose | Key Props |
-| --------- | ------- | --------- |
-| `PlanList` | Filterable plan cards | `filters`, `sortBy`, `storageMode` |
-| `PlanCard` | Plan summary display | `plan`, `expanded`, `storageMode` |
-| `InlineEditor` | Quick-edit panel | `planId`, `storageMode` |
-| `SkillsEditor` | Skill table with autocomplete | `skills`, `totalSpAvailable` |
-| `TurnsEditor` | Turn-by-turn entry | `turns`, `careerStage` |
-| `AttributesDisplay` | Stat visualization | `stats`, `showCircular` |
-| `AptitudeGrades` | Grade selector grid | `aptitudes`, `editable` |
-| `RacePredictions` | Race planning table | `predictions`, `snapshots` |
-| `GoalsEditor` | Goal checklist | `goals` |
-| `LocalRunList` | List local runs with storage info | `runs`, `selectable` |
-| `StorageStats` | Display localStorage usage | `stats`, `showWarning` |
-| `ConvertModal` | Convert Local→Account flow | `runs`, `bulkMode` |
+| Component | Purpose | Props / Parameters | Public State / Key Fields |
+| --- | --- | --- | --- |
+| `App\Livewire\Dashboard\PlanList` | Filterable plan listing | `currentFilter`, `storageModeFilter`, `strategyFilter` | `public string $currentFilter`, `public string $storageModeFilter`, `public ?int $strategyFilter` |
+| `App\Livewire\Dashboard\StatsPanel` | Summary counters and high-level metrics | `counts`, `storageCounts` | Computed counters only; keep state minimal. |
+| `App\Livewire\Dashboard\RecentActivity` | Recent activity stream | `activities`, `limit` | `public int $limit` if paging or filtering is added. |
+| `App\Livewire\Dashboard\PlanInlineDetails` | Inline expand/collapse detail view | `planId`, `expanded` | `public int|null $expandedPlanId` or equivalent local state. |
+| `App\Livewire\QuickCreatePlan` | Quick create modal | `storageMode`, `defaultStage`, `characterId` | `public string $title`, `public string $storageMode`, `public ?int $characterId` |
+| `App\Livewire\Skills\SkillEditor` | Add, remove, and save skills | `skills` | `public array $skills = []` |
+| `App\Livewire\Skills\SkillSearch` | Skill autocomplete | `query`, `limit`, `planId` | `public string $query`, `public array $results = []` |
+| `App\Livewire\Plans\TrainingYear` | Group turns by career year | `year`, `turns` | `public int|string $year`, `public array|Collection $turns` |
+| `App\Livewire\Plans\SkillRow` | Individual skill row editor | `skill`, `index` | `public array $skill` or model-backed row state |
+| `App\Livewire\Common\Toast` | Notification stack | `type`, `message`, `duration` | `public array $toasts = []`, `public int $duration = 5000` |
+| `App\Livewire\Common\ConfirmModal` | Confirmation dialog | `message`, `confirmAction`, `cancelAction` | `public bool $show`, `public string $message` |
+| `App\Livewire\Common\DirtyStateWarning` | Dirty state prompt | `isDirty`, `message` | `public bool $isDirty`, `public bool $show` |
+| `App\Livewire\CareerRun\StorageModeIndicator` | Storage mode badge | `mode` | `public string|StorageMode $mode` |
+| `App\Livewire\CareerRun\ConvertToAccountButton` | Conversion action entry point | `runId`, `uuid` | `public bool $disabled` if auth or validation blocks action. |
+| `App\Livewire\Export\ExportModal` | Export configuration and execution | `plan`, `format` | `public string $format`, `public array $selectedIds = []` |
+| `App\Livewire\Auth\ConvertRunModal` | Authenticated conversion flow | `runs`, `bulkMode` | `public array $runs = []`, `public bool $bulkMode = false` |
 
 ### 3.3 Alpine.js Components
 
-| Component | Purpose | State |
-| --------- | ------- | ----- |
-| `x-dropdown` | Generic dropdown menu | `open` |
-| `x-modal` | Modal dialog wrapper | `show`, `onClose` |
-| `x-tabs` | Tab navigation | `activeTab` |
-| `x-tooltip` | Hover/click tooltips | `visible`, `content` |
-| `x-dark-mode` | Theme toggle | `dark` (persisted) |
-| `x-toast` | Notification stack | `toasts[]` |
-| `x-confirm` | Confirmation dialog | `show`, `message`, `onConfirm` |
+| Component | Purpose | Interaction | Used Within Livewire |
+| --- | --- | --- | --- |
+| `x-dropdown` | Context and menu dropdowns | Toggle open/close state, close on outside click, keyboard navigation | Yes, usually inside Livewire headers, filters, and action menus. |
+| `x-modal` | Modal dialog wrapper | Show/hide overlays, trap focus, handle Escape key | Yes, usually wraps Livewire forms or actions. |
+| `x-tabs` | Tab navigation | Set active tab and preserve panel visibility | Yes, commonly inside Livewire editors. |
+| `x-tooltip` | Hover or click tooltips | Display contextual help and small hints | Yes, often attached to Livewire form labels and badges. |
+| `x-dark-mode` | Theme toggle | Persist theme choice and sync DOM class | Yes, often mounted in the app layout rather than inside a single component. |
+| `x-toast` | Notification stack | Show ephemeral success, warning, and error messages | Yes, typically listens to Livewire events. |
+| `x-confirm` | Confirmation dialog | Require an explicit confirm action before destructive changes | Yes, often used with delete and purge actions. |
 
 ### 3.4 Component Hierarchy
 
 ```mermaid
 flowchart TD
-    subgraph AppLayout["App Layout"]
-        Navbar
-        MainContent["Main Content"]
-        ToastContainer["Toast Container"]
-        ModalContainer["Modal Container"]
-    end
+    AppLayout[App Layout]
+    Navbar[Navbar]
+    Main[Main Content]
+    Toasts[Toast Container]
+    Modals[Modal Container]
 
-    subgraph NavbarComponents["Navbar"]
-        Logo
-        NavLinks["Navigation Links"]
-        GlobalSearch["Global Search"]
-        DarkModeToggle["Dark Mode Toggle"]
-        UserMenu["User Menu"]
-    end
+    Dashboard[Dashboard Page]
+    PlanEditor[Plan Editor Page]
+    ImportWizard[Import Wizard Page]
+    LocalData[Local Data Manager]
 
-    subgraph DashboardPage["Dashboard"]
-        StatsPanel["Stats Panel"]
-        PlanList["Plan List"]
-        ActivityLog["Activity Log"]
-        QuickCreateModal["Quick Create Modal"]
-    end
+    Tabs[Form Tabs]
+    GeneralTab[General Tab]
+    AttributesTab[Attributes Tab]
+    AptitudesTab[Aptitudes Tab]
+    SkillsTab[Skills Tab]
+    RacesTab[Race Predictions Tab]
+    GoalsTab[Goals Tab]
+    TurnsTab[Turns Tab]
+    ActivityTab[Activity / Snapshot Tab]
 
-    subgraph PlanEditorPage["Plan Editor"]
-        Header["Header"]
-        FormTabs["Form Tabs"]
-        ActionBar["Action Bar"]
-        UnsavedIndicator["Unsaved Changes"]
-    end
+    StatBar[StatBar]
+    AptitudeGrid[Aptitude Grades Grid]
+    SkillEditor[SkillEditor]
+    SkillRow[SkillRow]
+    ConflictResolution[ConflictResolution]
+    ActivityLogItem[ActivityLogItem]
 
-    Navbar --> NavbarComponents
-    MainContent --> DashboardPage
-    MainContent --> PlanEditorPage
-```text
-**ASCII Diagram:**
+    AppLayout --> Navbar
+    AppLayout --> Main
+    AppLayout --> Toasts
+    AppLayout --> Modals
 
-```text
-App Layout
-├── Navbar
-│   ├── Logo
-│   ├── Navigation Links
-│   ├── Global Search (x-dropdown)
-│   ├── Dark Mode Toggle (x-dark-mode)
-│   └── User Menu (x-dropdown)
-├── Main Content
-│   └── [Page Component]
-├── Toast Container (x-toast)
-└── Modal Container (x-modal)
+    Main --> Dashboard
+    Main --> PlanEditor
+    Main --> ImportWizard
+    Main --> LocalData
 
-Dashboard
-├── Stats Panel
-├── Plan List (Livewire)
-│   ├── Filters Bar
-│   ├── Plan Cards[]
-│   │   └── Inline Editor (expandable)
-│   └── Pagination
-├── Activity Log
-└── Quick Create Modal (x-modal)
+    PlanEditor --> Tabs
+    Tabs --> GeneralTab
+    Tabs --> AttributesTab
+    Tabs --> AptitudesTab
+    Tabs --> SkillsTab
+    Tabs --> RacesTab
+    Tabs --> GoalsTab
+    Tabs --> TurnsTab
+    Tabs --> ActivityTab
 
-Plan Editor
-├── Header (title, status, storage badge)
-├── Form Tabs (x-tabs)
-│   ├── General Tab
-│   ├── Attributes Tab
-│   │   └── Circular Progress[]
-│   ├── Aptitude Grades Tab
-│   ├── Skills Tab
-│   │   └── Skills Editor (Livewire)
-│   ├── Race Predictions Tab
-│   │   └── Snapshots Timeline
-│   ├── Goals Tab
-│   └── Turns Tab
-│       └── Turns Editor (Livewire)
-├── Action Bar (Save, Export, Duplicate)
-└── Unsaved Changes Indicator
-```text
+    AttributesTab --> StatBar
+    AptitudesTab --> AptitudeGrid
+    SkillsTab --> SkillEditor
+    SkillsTab --> SkillRow
+    ImportWizard --> ConflictResolution
+    Dashboard --> ActivityLogItem
+```
+
+#### Import Wizard Flow
+
+```mermaid
+flowchart TD
+    Start[Upload File] --> Detect[Detect Format]
+    Detect --> Preview[Preview Parsed Data]
+    Preview --> Validate[Validate Rows and Relationships]
+    Validate --> Conflict{Conflicts?}
+    Conflict -->|No| Confirm[Confirm Import]
+    Conflict -->|Yes| Resolve[Resolve Conflicts]
+    Resolve --> Confirm
+    Confirm --> Execute[Execute Import]
+    Execute --> Report[Show Results Report]
+```
+
 ### 3.5 Blade Component Library
 
-```text
-resources/views/components/
-├── layout/
-│   ├── app.blade.php             # Main layout
-│   ├── navigation.blade.php      # Nav bar
-│   ├── sidebar.blade.php         # Side navigation
-│   └── footer.blade.php          # Footer
-├── forms/
-│   ├── input.blade.php           # Text input
-│   ├── select.blade.php          # Select dropdown
-│   ├── textarea.blade.php        # Textarea
-│   ├── checkbox.blade.php        # Checkbox
-│   └── file-upload.blade.php     # File upload
-├── buttons/
-│   ├── primary.blade.php         # Primary button
-│   ├── secondary.blade.php       # Secondary button
-│   ├── danger.blade.php          # Danger button
-│   └── icon.blade.php            # Icon button
-├── umamusume/
-│   ├── stat-bar.blade.php        # Stat progress bar
-│   ├── aptitude-badge.blade.php  # Aptitude grade badge
-│   ├── skill-card.blade.php      # Skill display card
-│   ├── stamina-gauge.blade.php   # Stamina indicator
-│   ├── circular-progress.blade.php # Circular stat display
-│   └── storage-badge.blade.php   # Local/Account indicator
-└── common/
-    ├── card.blade.php            # Card container
-    ├── modal.blade.php           # Modal dialog
-    ├── table.blade.php           # Data table
-    ├── badge.blade.php           # Status badge
-    ├── toast.blade.php           # Notification toast
-    └── empty-state.blade.php     # Empty state display
-```text
+All Blade components accept `class` and `data-testid` attributes.
+
+| Component | Purpose | Accepts Slot | Notes |
+| --- | --- | --- | --- |
+| `components/layout/app` | Main application shell | Yes | Owns the header, content area, toasts, and modal mount points. |
+| `components/layout/navigation` | Primary navigation bar | Yes | Hosts global links, search, and account actions. |
+| `components/layout/footer` | Footer content | Yes | Lightweight layout support. |
+| `components/forms/input` | Text input | No | Should forward validation styles and aria attributes. |
+| `components/forms/select` | Select dropdown | No | Use for enumerations and lookup tables. |
+| `components/forms/textarea` | Multi-line input | No | Used for notes and descriptions. |
+| `components/forms/checkbox` | Boolean input | No | Used for conversion and import toggles. |
+| `components/buttons/primary` | Primary action button | Yes | Used for save and create actions. |
+| `components/buttons/secondary` | Secondary action button | Yes | Used for cancel and back actions. |
+| `components/buttons/danger` | Destructive action button | Yes | Used for delete, purge, and clear actions. |
+| `components/common/card` | Generic card container | Yes | Used throughout dashboard and editor views. |
+| `components/common/modal` | Modal wrapper | Yes | Should support focus management and size variants. |
+| `components/common/table` | Tabular data container | Yes | Used for skills, turns, race predictions, and activity. |
+| `components/common/badge` | Status or label chip | Yes | Used for storage mode, run status, and skill state. |
+| `components/common/toast` | Notification toast | Yes | Can be paired with Livewire `Toast`. |
+| `components/common/empty-state` | Empty state illustration and copy | Yes | Used when no plans, skills, or local runs exist. |
+| `components/umamusume/stat-bar` | Single stat progress bar | No | Supports stat colors and cap display. |
+| `components/umamusume/aptitude-badge` | Aptitude grade badge | No | Shows letter grade and effectiveness percentage. |
+| `components/umamusume/storage-badge` | Local / Account storage badge | No | Identifies storage mode in lists and headers. |
+| `components/umamusume/skill-card` | Skill summary card | Yes | Used in skill lookup and plan detail views. |
+
 ---
 
 ## 4. Data Models
 
-### 4.1 Entity Relationship Diagram
+### 4.1 Entity Model Overview
+
+The business term is **Career Run**; the current Laravel implementation centers on the `Plan` model and its related tables. The SDS uses the business term where helpful and the implementation model where precision matters.
 
 ```mermaid
 erDiagram
-    UmaMusume ||--o{ CareerRun : has
-    CareerRun ||--o{ StatProgress : tracks
-    CareerRun ||--o{ SkillCareerRun : contains
-    CareerRun ||--o{ RacePrediction : plans
-    CareerRun ||--o{ Goal : sets
-    CareerRun ||--o{ CareerSnapshot : captures
-    Skill ||--o{ SkillCareerRun : referenced_by
-    RacePrediction ||--o| CareerSnapshot : triggers
+    UMAMUSUME ||--o{ PLAN : has
+    USER ||--o{ PLAN : owns
+    PLAN ||--o{ TURN : tracks
+    PLAN ||--o{ SKILL : contains
+    PLAN ||--o{ GOAL : sets
+    PLAN ||--o{ RACE_PREDICTION : plans
+    PLAN ||--o{ CAREER_SNAPSHOT : captures
+    RACE_PREDICTION ||--o| CAREER_SNAPSHOT : triggers
+    SKILL_REFERENCE ||--o{ SKILL : referenced_by
 
-    UmaMusume {
-        int id PK
+    UMAMUSUME {
+        string id PK
         string name
-        string name_jp
-        string image_path
-        string thumbnail_path
-        enum aptitude_turf
-        enum aptitude_dirt
-        int growth_speed
-        int growth_stamina
+        string nickname
+        json growth_rates
+        json aptitudes
+        json base_stats
+        json career_goals
+        json tags
     }
 
-    CareerRun {
+    PLAN {
         int id PK
-        uuid uuid
-        int uma_musume_id FK
         int user_id FK
+        int uma_musume_id FK
+        string local_uuid
         enum storage_mode
-        string title
-        enum status
+        string plan_title
         enum career_stage
-        int current_turn
-        int total_sp_available
+        enum status
+        int turn_before
+        int total_available_skill_points
         int stamina_percentage
+        int energy
+        string mood
+        string conditions
+        string strategy
+        text notes
+        string image_path
     }
 
-    StatProgress {
+    TURN {
         int id PK
-        int career_run_id FK
+        int plan_id FK
         int turn_number
         int speed
         int stamina
@@ -403,947 +415,666 @@ erDiagram
         int wit
     }
 
-    Skill {
+    SKILL_REFERENCE {
         int id PK
-        string name
-        string name_jp
-        int sp_cost
-        enum tier
-        enum type
+        string skill_name
+        string description
     }
 
-    SkillCareerRun {
+    SKILL {
         int id PK
-        int career_run_id FK
-        int skill_id FK
+        int plan_id FK
+        int skill_reference_id FK
         enum status
         int turn_acquired
+        int sp_cost
+        text notes
     }
 
-    Goal {
+    GOAL {
         int id PK
-        int career_run_id FK
-        string description
-        bool completed
+        int plan_id FK
+        string goal
+        bool result
     }
 
-    RacePrediction {
+    RACE_PREDICTION {
         int id PK
-        int career_run_id FK
+        int plan_id FK
         string race_name
-        enum distance_category
-        enum track_type
+        string distance_category
+        string track_type
+        string venue
+        string comment
     }
 
-    CareerSnapshot {
+    CAREER_SNAPSHOT {
         int id PK
-        int career_run_id FK
+        int plan_id FK
+        int race_prediction_id FK
         int turn_number
-        json stats
         json skills_snapshot
+        string mood
+        string conditions
+        text notes
     }
-```text
-**ASCII Diagram:**
+```
 
-```text
-┌─────────────────┐       ┌─────────────────┐
-│   UmaMusume     │       │     Skill       │
-├─────────────────┤       ├─────────────────┤
-│ id              │       │ id              │
-│ name            │       │ name            │
-│ name_jp         │       │ name_jp         │
-│ image_path      │       │ description     │
-│ thumbnail_path  │       │ type            │
-│ aptitude_*      │       │ sp_cost         │
-│ growth_*        │       │ tier            │
-└────────┬────────┘       └────────┬────────┘
-         │                         │
-         │ 1:N                     │ N:M
-         ▼                         │
-┌─────────────────────┐            │
-│     CareerRun       │◄───────────┘
-├─────────────────────┤     (via SkillCareerRun)
-│ id                  │
-│ uuid                │
-│ uma_musume_id       │
-│ user_id (nullable)  │
-│ storage_mode        │
-│ title               │
-│ status              │
-│ career_stage        │
-│ current_turn        │
-│ total_sp_available  │
-│ stamina_percentage  │
-└────────┬────────────┘
-         │
-    ┌────┴────┬───────┬────────┐
-    │         │       │        │
-    ▼         ▼       ▼        ▼
-┌───────────┐ ┌─────────────┐ ┌─────────┐
-│StatProgress│ │SkillCareerRun│ │  Goal   │
-├───────────┤ ├─────────────┤ ├─────────┤
-│ turn_number│ │ status      │ │description│
-│ speed     │ │ turn_acquired│ │completed│
-│ stamina   │ └─────────────┘ └─────────┘
-│ power     │
-│ guts      │
-│ wit       │
-└───────────┘
-```text
+`UmaMusume` remains a shared roster model rather than a user-specific record, so a `user_id` column is not required unless future product scope introduces per-user character customization.
+
 ### 4.2 Model Definitions
 
-#### 4.2.1 UmaMusume Model
+#### 4.2.1 Design Rules
+
+- Prefer `protected $guarded = [];` or a minimal guarded list for new models rather than adding large `$fillable` lists.
+- Keep validation in Form Request classes or Livewire validation rules, not in the model itself.
+- Use relationships with explicit return types for all foreign key associations.
+- Use casts for enums, JSON columns, and integer counters.
+
+#### 4.2.2 Career Run Model (Plan)
 
 ```php
-class UmaMusume extends Model
+class Plan extends Model
 {
-    use SoftDeletes;
+    protected $guarded = [];
 
-    protected $fillable = [
-        'name', 'name_jp', 'image_path', 'thumbnail_path',
-        'turf_aptitude', 'dirt_aptitude',
-        'sprint_aptitude', 'mile_aptitude', 'medium_aptitude', 'long_aptitude',
-        'nige_aptitude', 'senkou_aptitude', 'sashi_aptitude', 'oikomi_aptitude',
-        'speed_growth', 'stamina_growth', 'power_growth', 'guts_growth', 'wit_growth',
-    ];
-
-    protected $casts = [
-        'turf_aptitude' => AptitudeGrade::class,
-        'dirt_aptitude' => AptitudeGrade::class,
-        // ... other aptitudes
-        'speed_growth' => 'integer',
-        'stamina_growth' => 'integer',
-        'power_growth' => 'integer',
-        'guts_growth' => 'integer',
-        'wit_growth' => 'integer',
-    ];
-
-    public function careerRuns(): HasMany
-    {
-        return $this->hasMany(CareerRun::class);
-    }
-}
-```text
-#### 4.2.2 CareerRun Model
-
-```php
-class CareerRun extends Model
-{
-    use SoftDeletes;
-
-    protected $fillable = [
-        'uuid', 'uma_musume_id', 'user_id', 'storage_mode',
-        'title', 'status', 'career_stage', 'current_turn',
-        'speed', 'stamina', 'power', 'guts', 'wit',
-        'mood', 'conditions', 'energy',
-        'total_sp_available', 'stamina_percentage',
-        'strategy', 'notes', 'image_path',
-    ];
-
-    protected $casts = [
-        'storage_mode' => StorageMode::class,
-        'status' => RunStatus::class,
-        'career_stage' => CareerStage::class,
-        'mood' => Mood::class,
-        'conditions' => 'array',
-        'current_turn' => 'integer',
-        'total_sp_available' => 'integer',
-        'stamina_percentage' => 'integer',
-    ];
-
-    public function getRunKey(): string
-    {
-        return $this->storage_mode === StorageMode::Local
-            ? "local:{$this->uuid}"
-            : "account:{$this->id}";
-    }
-
-    public function getRunRoute(string $action = 'view'): string
-    {
-        $suffix = $action === 'edit' ? '/edit' : '';
-        return $this->storage_mode === StorageMode::Local
-            ? "/plans/local/{$this->uuid}{$suffix}"
-            : "/plans/{$this->id}{$suffix}";
-    }
-}
-```text
-#### 4.2.3 SkillCareerRun Pivot Model
-
-```php
-class SkillCareerRun extends Pivot
-{
-    protected $table = 'skill_career_runs';
-
-    protected $fillable = [
-        'career_run_id', 'skill_id', 'status', 'turn_acquired', 'notes',
-    ];
-
-    protected $casts = [
-        'status' => SkillStatus::class,
-        'turn_acquired' => 'integer',
-    ];
-
-    // Validation: turn_acquired required when status=acquired
-    public static function rules(): array
+    protected function casts(): array
     {
         return [
-            'status' => ['required', Rule::enum(SkillStatus::class)],
-            'turn_acquired' => [
-                'nullable', 'integer', 'min:1', 'max:78',
-                Rule::requiredIf(fn($input) =>
-                    $input->status === SkillStatus::Acquired->value
-                ),
-            ],
+            'storage_mode' => StorageMode::class,
+            'status' => RunStatus::class,
+            'scenario' => Scenario::class,
+            'stamina_percentage' => 'integer',
+            'energy' => 'integer',
+            'total_available_skill_points' => 'integer',
         ];
     }
 }
-```text
-### 4.3 Enum Definitions
+```
 
-```mermaid
-classDiagram
-    class StorageMode {
-        <<enumeration>>
-        Local
-        Account
-    }
+#### 4.2.3 Validation Notes
 
-    class RunStatus {
-        <<enumeration>>
-        InProgress
-        Completed
-        Archived
-    }
+- `storage_mode` must always be one of the supported modes.
+- `turn_number` must remain sequential within a plan unless the user explicitly edits ordering.
+- `turn_acquired` is required when a skill status is `Acquired`.
+- `stamina_percentage`, `energy`, and stat values must be constrained to the agreed numeric ranges.
+- `notes`, `conditions`, and `strategy` should be sanitized and length-limited before persistence.
 
-    class CareerStage {
-        <<enumeration>>
-        Junior
-        Classic
-        Senior
-    }
+### 4.3 Local Storage Schema
 
-    class SkillStatus {
-        <<enumeration>>
-        Acquired
-        Skipped
-        Suggested
-    }
+`LocalRunStorageService` must treat schema versioning as mandatory.
 
-    class AptitudeGrade {
-        <<enumeration>>
-        SS : 120%
-        S : 110%
-        A : 100%
-        A : 100%
-        B : 90%
-        C : 80%
-        D : 70%
-        E : 60%
-        F : 50%
-        G : 40%
-        +effectiveness() int
-    }
-
-    class Mood {
-        <<enumeration>>
-        Great : +4%
-        Good : +2%
-        Normal : 0%
-        Bad : -2%
-        Awful : -4%
-        +modifier() int
-    }
-```text
 ```php
-enum StorageMode: string {
-    case Local = 'local';
-    case Account = 'account';
+// schema_version is required so older browser payloads can be migrated
+// before they are rendered, edited, or converted to Account mode.
+// migrateSchema() must normalize older versions before any save/export.
+```
+
+The local payload should contain:
+
+- `schema_version`
+- `created_at`
+- `updated_at`
+- `career_run`
+- `stat_progress`
+- `skills`
+- `goals`
+- `race_predictions`
+- `snapshots`
+- `activity_log`
+
+### 4.4 Enums
+
+```php
+enum Strategy: string
+{
+    case Escaping = 'escaping';
+    case Leading = 'leading';
+    case Betweener = 'betweener';
+    case Chasing = 'chasing';
 }
 
-enum RunStatus: string {
-    case InProgress = 'in_progress';
-    case Completed = 'completed';
-    case Archived = 'archived';
+enum Condition: string
+{
+    case Sunny = 'sunny';
+    case Cloudy = 'cloudy';
+    case Rainy = 'rainy';
+    case Windy = 'windy';
+    case Muddy = 'muddy';
+    case Slippery = 'slippery';
 }
 
-enum CareerStage: string {
-    case Junior = 'junior';
-    case Classic = 'classic';
-    case Senior = 'senior';
+enum DistanceCategory: string
+{
+    case Sprint = 'sprint';
+    case Mile = 'mile';
+    case Medium = 'medium';
+    case Long = 'long';
+}
+```
+
+Other canonical enums used by the app include `StorageMode`, `RunStatus`, `SkillStatus`, and `AptitudeGrade`.
+
+### 4.5 TypeScript Interfaces
+
+```ts
+interface AptitudeGrade {
+  value: 'SS' | 'S' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+  label: string;
+  effectivenessPercentage: number;
+  hexColor: string;
 }
 
-enum SkillStatus: string {
-    case Acquired = 'acquired';
-    case Skipped = 'skipped';
-    case Suggested = 'suggested';
+interface ImportTarget {
+  value: 'local' | 'account';
+  label: string;
+  description: string;
+  requiresAuth: boolean;
 }
 
-enum AptitudeGrade: string {
-    case SS = 'SS'; // 120%
-    case S = 'S';  // 110%
-    case A = 'A';  // 100%
-    case B = 'B';  // 90%
-    case C = 'C';  // 80%
-    case D = 'D';  // 70%
-    case E = 'E';  // 60%
-    case F = 'F';  // 50%
-    case G = 'G';  // 40%
-
-    public function effectiveness(): int {
-        return match($this) {
-            self::SS => 120, self::S => 110, self::A => 100, self::B => 90, self::C => 80,
-            self::D => 70, self::E => 60, self::F => 50, self::G => 40,
-        };
-    }
+interface ImportResult {
+  success: boolean;
+  created: number;
+  updated: number;
+  skipped: number;
+  errors: Array<{ row: number; message: string }>;
+  imported_ids: Array<{ type: 'local' | 'account'; id: string | number }>;
 }
 
-enum Mood: string {
-    case Great = 'great';    // +4%
-    case Good = 'good';      // +2%
-    case Normal = 'normal';  // 0%
-    case Bad = 'bad';        // -2%
-    case Awful = 'awful';    // -4%
-
-    public function modifier(): int {
-        return match($this) {
-            self::Great => 4, self::Good => 2, self::Normal => 0,
-            self::Bad => -2, self::Awful => -4,
-        };
-    }
-}
-```text
-### 4.4 TypeScript Interfaces (Frontend)
-
-```typescript
-interface CareerRun {
-  id: number | null;
-  uuid: string;
-  title: string;
-  character_id: number | null;
-  character_name: string;
-  storage_mode: 'local' | 'account';
-  status: 'in_progress' | 'completed' | 'archived';
-  career_stage: 'junior' | 'classic' | 'senior';
-  current_turn: number;
-
-  // Stats
-  speed: number;
-  stamina: number;
-  power: number;
-  guts: number;
-  wit: number;
-
-  // Growth rates
-  speed_growth: number;
-  stamina_growth: number;
-  power_growth: number;
-  guts_growth: number;
-  wit_growth: number;
-
-  // Aptitudes
-  turf_aptitude: AptitudeGrade;
-  dirt_aptitude: AptitudeGrade;
-  // ... other aptitudes
-
-  // Status
-  mood: Mood;
-  conditions: Condition[];
-  energy: number;
-  total_sp_available: number;
-  stamina_percentage: number;
-
-  // Relations
-  skills: SkillEntry[];
-  turns: TurnEntry[];
-  goals: Goal[];
-  race_predictions: RacePrediction[];
-  snapshots: RaceSnapshot[];
-
-  // Metadata
-  strategy: Strategy | null;
-  notes: string;
-  image_path: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface SkillEntry {
-  id: string;
-  name: string;
-  name_jp: string | null;
-  sp_cost: number;
-  tier: 'G-' | 'G' | 'G+' | 'F-' | 'F' | 'F+' | 'E-' | 'E' | 'E+' | 'D-' | 'D' | 'D+' | 'C-' | 'C' | 'C+' | 'B-' | 'B' | 'B+' | 'A-' | 'A' | 'A+' | 'S-' | 'S' | 'S+' | 'SS';
-  type: 'speed' | 'stamina' | 'power' | 'guts' | 'wit' | 'debuff';
-  status: 'acquired' | 'skipped' | 'suggested';
-  turn_acquired: number | null;
-  notes: string;
-}
-
-interface TurnEntry {
-  id: string;
-  turn_number: number;
-  career_year: 'junior' | 'classic' | 'senior';
-  speed: number;
-  stamina: number;
-  power: number;
-  guts: number;
-  wit: number;
-  energy: number;
-  notes: string;
-  is_milestone: boolean;
-  milestone_name: string | null;
-}
-
-// localStorage Schema
 interface LocalRunsStore {
-  schema_version: string;  // e.g., "1.0"
+  schema_version: string;
+  created_at?: string;
+  updated_at: string;
   runs: CareerRun[];
   last_modified: string;
 }
+```
 
-type RunKey = `local:${string}` | `account:${number}`;
-```text
 ---
 
 ## 5. Service Layer Design
 
-### 5.1 Service Architecture
+### 5.1 Service Dependency Diagram
 
 ```mermaid
 flowchart TD
-    subgraph Services["app/Services/"]
-        CRS[CareerRunService]
-        UMS[UmaMusumeService]
-        SS[SkillService]
-        SPS[StatProgressService]
-        SNS[SnapshotService]
-        ES[ExportService]
-        IS[ImportService]
-        LRS[LocalRunStorageService]
-        CLS[ConvertLocalRunService]
-        DDS[DuplicateDetectionService]
-        ALS[ActivityLogService]
-        IPS[ImageProcessingService]
-        CDS[ChartDataService]
-    end
+    PlanService[PlanService]
+    StatProgressService[StatProgressService]
+    SkillService[SkillService]
+    ImportService[ImportService]
+    LocalRunStorageService[LocalRunStorageService]
+    ConvertLocalRunService[ConvertLocalRunService]
+    DuplicateDetectionService[DuplicateDetectionService]
+    SchemaMigrationService[SchemaMigrationService]
+    NotificationService[NotificationService]
+    ActivityLogService[ActivityLogService]
+    FormatDetector[FormatDetector]
 
-    CRS --> SPS
-    CRS --> SS
-    IS --> DDS
-    CLS --> DDS
-    CLS --> CRS
-```text
-**Directory Structure:**
+    PlanService --> StatProgressService
+    PlanService --> SkillService
+    PlanService --> ActivityLogService
+    ConvertLocalRunService --> DuplicateDetectionService
+    ConvertLocalRunService --> SchemaMigrationService
+    ConvertLocalRunService --> ActivityLogService
+    ImportService --> FormatDetector
+    ImportService --> DuplicateDetectionService
+    ImportService --> NotificationService
+    LocalRunStorageService --> SchemaMigrationService
+    LocalRunStorageService --> NotificationService
+    SkillService --> NotificationService
+```
 
-```text
-app/Services/
-├── CareerRunService.php          # Career run business logic
-├── UmaMusumeService.php          # Character management
-├── SkillService.php              # Skill search and management
-├── StatProgressService.php       # Stat tracking and calculations
-├── SnapshotService.php           # Race-day snapshot creation
-├── ExportService.php             # Export generation
-├── ImportService.php             # Data import handling
-├── LocalRunStorageService.php    # localStorage coordination
-├── ConvertLocalRunService.php    # Local to Account conversion
-├── DuplicateDetectionService.php # Duplicate detection
-├── ActivityLogService.php        # Activity logging
-├── ImageProcessingService.php    # Image upload handling
-└── ChartDataService.php          # Chart data preparation
-```text
-### 5.2 Core Service Implementations
+### 5.2 Core Services
 
-#### 5.2.1 CareerRunService
+#### PlanService
 
-```php
-class CareerRunService
-{
-    public function create(array $data): CareerRun
-    {
-        $data['uuid'] = Str::uuid()->toString();
-        return CareerRun::create($data);
-    }
+Responsibilities:
 
-    public function updateStats(CareerRun $run, array $stats): CareerRun
-    {
-        $run->update([
-            'speed' => $stats['speed'],
-            'stamina' => $stats['stamina'],
-            'power' => $stats['power'],
-            'guts' => $stats['guts'],
-            'wit' => $stats['wit'],
-        ]);
-        return $run->fresh();
-    }
+- Create, update, delete, and duplicate plans.
+- Resolve a plan by numeric ID or UUID.
+- Coordinate relationships, activity logging, and image processing.
 
-    public function calculateEffectiveStats(CareerRun $run): array
-    {
-        $softCap = 1200;
-        $stats = ['speed', 'stamina', 'power', 'guts', 'wit'];
-        $effective = [];
+Recommended public methods:
 
-        foreach ($stats as $stat) {
-            $raw = $run->$stat;
-            $effective[$stat] = $raw <= $softCap
-                ? $raw
-                : $softCap + floor(($raw - $softCap) * 0.5);
-        }
+- `createDetailedPlan()`
+- `createQuickPlan()`
+- `updatePlan()`
+- `getPlanByIdOrUuid()`
+- `deletePlan()`
+- `duplicatePlan()`
 
-        $effective['total'] = array_sum($effective);
-        return $effective;
-    }
+#### StatProgressService
 
-    public function calculateAcquiredSP(CareerRun $run): int
-    {
-        return $run->skills()
-            ->wherePivot('status', SkillStatus::Acquired)
-            ->sum('sp_cost');
-    }
-}
-```text
-#### 5.2.2 LocalRunStorageService
+Responsibilities:
 
-```php
-class LocalRunStorageService
-{
-    private const STORAGE_KEY = 'uma_local_runs';
-    private const SCHEMA_VERSION = '1.0';
+- Add, update, and delete turn records.
+- Produce pagination, totals, averages, and chart data.
 
-    public function serialize(CareerRun $run): array
-    {
-        return [
-            'schema_version' => self::SCHEMA_VERSION,
-            'id' => $run->uuid,
-            'created_at' => $run->created_at->toIsoString(),
-            'updated_at' => now()->toIsoString(),
-            'career_run' => $run->toArray(),
-            'stat_progress' => $run->statProgress->toArray(),
-            'skills' => $run->skills->map(fn($s) => [
-                'skill_id' => $s->id,
-                'status' => $s->pivot->status,
-                'turn_acquired' => $s->pivot->turn_acquired,
-                'notes' => $s->pivot->notes,
-            ])->toArray(),
-            'goals' => $run->goals->toArray(),
-            'race_predictions' => $run->racePredictions->toArray(),
-            'snapshots' => $run->snapshots->toArray(),
-        ];
-    }
+Recommended public methods:
 
-    public function deserialize(array $data): CareerRun
-    {
-        $data = $this->migrateSchema($data);
-        $run = new CareerRun($data['career_run']);
-        $run->uuid = $data['id'];
-        $run->storage_mode = StorageMode::Local;
-        return $run;
-    }
+- `logTurn()` / `addTurn()`
+- `updateTurn()`
+- `deleteTurn()`
+- `bulkCreate()`
+- `getNextTurnNumber()`
+- `getStatTotals()`
 
-    private function migrateSchema(array $data): array
-    {
-        $version = $data['schema_version'] ?? '1.0';
-        // Future migrations go here
-        return $data;
-    }
-}
-```text
-#### 5.2.3 ImportService
+#### SkillService
 
-```php
-class ImportService
-{
-    public function __construct(
-        private FormatDetector $formatDetector,
-        private DuplicateDetectionService $duplicateDetector,
-    ) {}
+Responsibilities:
 
-    public function import(
-        UploadedFile $file,
-        ImportTarget $target,
-        ?User $user = null
-    ): ImportResult {
-        $format = $this->formatDetector->detect($file);
-        $adapter = $this->getAdapter($format);
+- Search skill references across English and Japanese labels.
+- Add, update, bulk update, and remove skills.
+- Calculate SP totals and counts by status.
 
-        $plans = $adapter->parse($file);
-        $result = new ImportResult();
+Caching strategy:
 
-        foreach ($plans as $planData) {
-            try {
-                $duplicate = $this->duplicateDetector->find($planData, $user);
+- Search cache key pattern: `skill_search_{md5(query|limit)}`.
+- Suggested TTL for search results: 300 seconds.
+- Suggested TTL for the full skill reference list: 3600 seconds.
+- Cache invalidation should occur when a skill reference changes or when imports seed new records.
 
-                if ($duplicate) {
-                    $result->addDuplicate($planData, $duplicate);
-                    continue;
-                }
+#### LocalRunStorageService
 
-                $plan = $this->createPlan($planData, $target, $user);
-                $result->addCreated($plan);
+Responsibilities:
 
-            } catch (ValidationException $e) {
-                $result->addError($planData, $e->errors());
-            }
-        }
+- Generate UUIDs for local runs.
+- Validate and migrate browser payloads.
+- Calculate storage usage and quota thresholds.
+- Support list, delete, and clear operations.
 
-        return $result;
-    }
+Recommended public methods:
 
-    private function getAdapter(ImportFormat $format): ImportAdapterInterface
-    {
-        return match($format) {
-            ImportFormat::Json => new JsonImportAdapter(),
-            ImportFormat::Csv => new CsvImportAdapter(),
-        };
-    }
-}
-```text
+- `generateUuid()`
+- `getSchemaVersion()`
+- `createEmptyRun()`
+- `validateStructure()`
+- `migrateSchema()`
+- `prepareForExport()`
+- `prepareBulkExport()`
+- `listAllRuns()`
+- `deleteRun()`
+- `clearAll()`
+
+#### ImportService
+
+Responsibilities:
+
+- Detect input format using `FormatDetector`.
+- Parse JSON and CSV sources through adapters.
+- Preview, validate, and execute imports.
+- Resolve duplicates before account writes.
+
+Notes:
+
+- CSV support must remain explicit in the service contract.
+- Local imports should not require network calls.
+- Account imports must verify authentication before execution.
+
+#### New / Recommended Services
+
+- `SchemaMigrationService`: normalize legacy local payloads and imported records.
+- `NotificationService`: convert domain events into toast-friendly UI messages.
+- `DuplicateDetectionService`: detect plan collisions by title, character, storage mode, or legacy identifiers.
+- `ActivityLogService`: centralize audit-style log writes for plan and local-data actions.
+
 ---
 
-## 6. UI/UX Design Specifications
+## 6. Security Design
 
-### 6.1 Color System
+### 6.1 Authentication
 
-```mermaid
-pie title Stat Color Distribution
-    "Speed (Blue)" : 20
-    "Stamina (Teal)" : 20
-    "Power (Red)" : 20
-    "Guts (Orange)" : 20
-    "Wit (Purple)" : 20
-```text
-```javascript
-// tailwind.config.js
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        // Stat colors (game-accurate)
-        stat: {
-          speed: '#3399ff',
-          stamina: '#33cc99',
-          power: '#ff4d4d',
-          guts: '#ffa500',
-          wit: '#9933ff',
-        },
-        // Aptitude grade colors
-        grade: {
-          SS: '#e5e7eb', // Platinum/Light Gray
-          S: '#ffd700',  // Gold
-          A: '#ef4444',  // Red
-          B: '#f97316',  // Orange
-          C: '#22c55e',  // Green
-          D: '#3b82f6',  // Blue
-          E: '#a855f7',  // Purple
-          F: '#6b7280',  // Gray
-          G: '#9ca3af',  // Dark Gray
-        },
-        // Mood colors
-        mood: {
-          great: '#22c55e',
-          good: '#84cc16',
-          normal: '#6b7280',
-          bad: '#f97316',
-          awful: '#ef4444',
-        },
-        // Storage mode colors
-        storage: {
-          local: '#f59e0b',
-          account: '#8b5cf6',
-        },
-      },
-    },
-  },
-};
-```text
-### 6.2 Dark Mode Implementation
+- Use Laravel Sanctum for authenticated sessions and API access where needed.
+- Local mode should remain usable without authentication.
+- Authenticated Account mode should require a valid session before persistence actions proceed.
+
+### 6.2 Authorization
+
+- Use policies for plan ownership, local-data conversion, and destructive actions.
+- Edit, delete, duplicate, export, and convert operations must confirm the current user can act on the target resource.
+
+### 6.3 CSRF Protection
+
+- All browser-submitted forms must use Laravel CSRF protection.
+- Livewire requests inherit CSRF validation and should not bypass it.
+
+### 6.4 Input Sanitization
+
+- Validate all request and Livewire input on the server.
+- Strip or constrain unsafe HTML in notes and descriptions if rich text is ever introduced.
+- Normalize enum-like input values before persistence.
+
+### 6.5 Upload Validation
+
+- Restrict uploads by MIME type, file size, and extension.
+- Validate images before storage or conversion.
+- Reject malformed import files before they reach parsing or persistence layers.
+
+---
+
+## 7. Performance & Scalability
+
+### 7.1 Performance Goals
+
+- Keep dashboard and editor interactions responsive for normal datasets.
+- Avoid unnecessary full-page reloads when Livewire can update a specific slice of UI.
+- Keep browser-side local storage lightweight enough to remain usable before a quota warning is reached.
+
+### 7.2 Pagination and Lazy Loading
+
+- Use pagination for plan lists, turn histories, activity logs, and large skill result sets.
+- Load detailed child records only when the user opens the relevant tab or panel.
+- Use eager loading for relationships that are always displayed together.
+
+### 7.3 Caching
+
+- Cache skill lookups and lookup-table style data.
+- Prefer short TTLs for user-facing search and longer TTLs for static reference data.
+- Use cache invalidation when imports, seeding, or admin updates change reference content.
+
+### 7.4 IndexedDB Migration Plan
+
+Local mode currently depends on browser storage, but the design should allow a future move from `localStorage` to `IndexedDB` when records or payload size outgrow simple key/value storage.
+
+Migration approach:
+
+1. Read the current `schema_version`.
+2. Migrate payloads in memory to the current format.
+3. Write the normalized structure to the new storage backend.
+4. Keep a compatibility reader for the previous format during rollout.
+5. Remove the legacy backend only after the migration window closes.
+
+---
+
+## 8. Error Handling & Logging
+
+### 8.1 Error Capture
+
+- Validation failures should be handled at the Livewire or Form Request layer and returned as field errors.
+- Service exceptions should be caught at the component boundary when a user-facing response is needed.
+- Unexpected exceptions should bubble to Laravel’s exception handler and be logged centrally.
+
+### 8.2 Logging
+
+- Use application logs for unexpected failures and integration issues.
+- Use activity logs for user-visible actions such as create, update, delete, duplicate, import, export, and conversion.
+- Preserve enough context in logs to identify plan ID, UUID, user ID, and action type without storing secrets.
+
+### 8.3 User Feedback
+
+- Success, warning, and error states should appear as toasts or inline banners.
+- Validation failures should stay visible near the relevant field.
+- Conversion and import conflicts should present a clear resolution path rather than failing silently.
+
+### 8.4 Error Response Pattern
+
+| Condition | System Response | User Feedback |
+| --- | --- | --- |
+| Validation error | Reject the action and preserve state | Inline errors and summary toast where needed |
+| Network failure | Preserve local draft state | Offline warning and retry action |
+| Storage quota exceeded | Block the write and stop autosave | Quota warning with clear next steps |
+| Database failure | Roll back the transaction and log the exception | Error toast and retry path |
+| Import conflict | Pause execution until the user chooses a resolution | Conflict resolution modal |
+
+---
+
+## 9. UI/UX Design Specifications
+
+### 9.1 Color System
 
 ```css
-/* Light Mode (default) */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --border-color: #e2e8f0;
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  --color-info: #2563eb;
+
+  --color-speed: #3399ff;
+  --color-stamina: #33cc99;
+  --color-power: #ff4d4d;
+  --color-guts: #ffa500;
+  --color-wit: #9933ff;
+
+  --color-grade-SS: #e5e7eb;
+  --color-grade-S: #ffd700;
+  --color-grade-A: #ef4444;
+  --color-grade-B: #f97316;
+  --color-grade-C: #22c55e;
+  --color-grade-D: #3b82f6;
+  --color-grade-E: #a855f7;
+  --color-grade-F: #6b7280;
+  --color-grade-G: #9ca3af;
 }
 
-/* Dark Mode */
-:root.dark {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-card: #0f3460;
-  --text-primary: #eaeaea;
-  --text-secondary: #a0a0a0;
-  --border-color: #334155;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f172a;
+    --color-surface: #111827;
+    --color-text: #e5e7eb;
+    --color-text-muted: #9ca3af;
+    --color-border: #334155;
+
+    --color-success: #4ade80;
+    --color-warning: #f59e0b;
+    --color-error: #f87171;
+    --color-info: #60a5fa;
+
+    --color-speed: #7cc0ff;
+    --color-stamina: #7ee0c1;
+    --color-power: #ff8585;
+    --color-guts: #fbbf24;
+    --color-wit: #c084fc;
+  }
 }
-```text
-### 6.3 Responsive Breakpoints
+```
 
-| Breakpoint | Width | Layout |
-| ---------- | ----- | ------ |
-| Mobile | < 640px | Single column, hamburger nav |
-| Tablet | 640px - 1024px | Two column where appropriate |
-| Desktop | > 1024px | Full layout with sidebar |
-| Wide | > 1280px | Maximum content width applied |
+Dark mode must also work with explicit Tailwind `dark:` classes where the app uses utility-driven styling. The media query fallback is the minimum acceptable baseline.
 
-### 6.4 Component Specifications
+### 9.2 Responsive Layout
 
-#### 6.4.1 Circular Progress Component
+| Breakpoint | Layout Goal | Grid / Tailwind Usage |
+| --- | --- | --- |
+| Mobile | Single column, stacked actions, condensed tables | `grid-cols-1`, `gap-4`, `w-full` |
+| Tablet | Two-column layouts where useful | `md:grid-cols-2`, `md:gap-6` |
+| Desktop | Multi-panel editor and dashboard cards | `lg:grid-cols-3`, `xl:grid-cols-4` |
+| Wide | Max-width content with balanced whitespace | `max-w-7xl`, `xl:grid-cols-[...]` |
 
-```html
-<div class="relative w-32 h-32" data-testid="circular-progress-{{ $stat }}">
-  <svg class="transform -rotate-90 w-32 h-32">
-    <!-- Background circle -->
-    <circle cx="64" cy="64" r="56" stroke="currentColor" stroke-width="12"
-      fill="transparent" class="text-gray-200 dark:text-gray-700" />
-    <!-- Progress circle -->
-    <circle cx="64" cy="64" r="56" stroke="currentColor" stroke-width="12"
-      fill="transparent" stroke-dasharray="{{ $circumference }}"
-      stroke-dashoffset="{{ $offset }}"
-      class="text-stat-{{ $stat }} transition-all duration-500"
-      @if($reducedMotion) style="transition: none" @endif />
-    <!-- Overflow indicator (for values > 1200) -->
-    @if($value > 1200)
-    <circle cx="64" cy="64" r="48" stroke="currentColor" stroke-width="4"
-      fill="transparent" class="text-stat-{{ $stat }} opacity-50" />
-    @endif
-  </svg>
-  <!-- Center text -->
-  <div class="absolute inset-0 flex flex-col items-center justify-center">
-    <span class="text-2xl font-bold">{{ $value }}</span>
-    <span class="text-xs text-gray-500">{{ $label }}</span>
-  </div>
-</div>
-```text
-#### 6.4.2 Storage Badge Component
+Guideline:
 
-```html
-<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-       {{ $mode === 'local' ? 'bg-storage-local/20 text-storage-local' :
-          'bg-storage-account/20 text-storage-account' }}"
-  data-testid="storage-badge-{{ $mode }}">
-  @if($mode === 'local')
-    <svg class="w-3 h-3 mr-1"><!-- device icon --></svg>
-    {{ __('Local') }}
-  @else
-    <svg class="w-3 h-3 mr-1"><!-- cloud icon --></svg>
-    {{ __('Account') }}
-  @endif
-</span>
-```text
-#### 6.4.3 Skill Status Badge
+- Use CSS grid for editor layouts, card galleries, and dashboard panels.
+- Use flexbox for controls, inline actions, and toolbars.
+- Prefer gap utilities over manual margins for list spacing.
 
-```html
-@php
-$styles = [
-  'acquired' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  'skipped' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-  'suggested' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-];
-@endphp
+### 9.3 Component Specifications
 
-<span class="px-2 py-0.5 rounded text-xs font-medium {{ $styles[$status] }}"
-  data-testid="skill-status-{{ $status }}">
-  {{ ucfirst($status) }}
-</span>
-```text
+#### StatBar
+
+- Displays one stat value and its cap-relative progress.
+- Supports stat color mapping, overflow indication above the soft cap, and accessible labels.
+- Accepts `stat`, `value`, `max`, `label`, and `data-testid`.
+
+#### ActivityLogItem
+
+- Displays timestamp, action label, icon, and optional metadata.
+- Must support keyboard focus if the item opens details.
+- Accepts `entry`, `compact`, and `data-testid`.
+
+#### ConflictResolution
+
+- Used during imports and account conversion when titles or identifiers collide.
+- Must present the source record, existing record, and the available action choices.
+- Accepts `conflicts`, `resolutionMode`, and `data-testid`.
+
 ---
 
-## 7. Data Flow Specifications
+## 10. Data Flow Specifications
 
-### 7.1 Plan Creation Flow
+### 10.1 Plan Creation Flow
 
 ```mermaid
 flowchart TD
     A[User clicks Create Plan] --> B[Quick Create Modal Opens]
-    B --> C[User enters: Title, Character, Storage Mode]
-    C --> D{Authenticated?}
-    D -->|No| E[Local Mode Only]
-    D -->|Yes| F{Choose Mode}
-    E --> G[Generate UUID]
-    F -->|Local| G
-    F -->|Account| H[Save to Database]
-    G --> I[Save to localStorage]
-    I --> J[Navigate to /plans/local/uuid/edit]
-    H --> K[Navigate to /plans/id/edit]
-```text
-**ASCII Diagram:**
+    B --> C[User enters title, character, storage mode]
+    C --> D{Validation passes?}
+    D -->|No| E[Show field errors]
+    D -->|Yes| F{Storage available?}
+    F -->|No| G[Show localStorage quota error]
+    F -->|Yes| H{Authenticated and Account selected?}
+    H -->|No| I[Save Local payload]
+    H -->|Yes| J[Save to database]
+    I --> K[Navigate to local UUID route]
+    J --> L[Navigate to account ID route]
+```
 
-```text
-User clicks "Create Plan"
-        │
-        ▼
-┌─────────────────┐
-│ Quick Create    │
-│ Modal Opens     │
-└────────┬────────┘
-         │
-         ▼
-User enters: Title, Character, Storage Mode
-         │
-         ▼
-    Authenticated?
-    ┌────┴────┐
-   No        Yes
-    │         │
-    ▼         ▼
-Local Mode  Choose Mode
-Only        (Local/Account)
-    │              │
-    ▼              ▼
-┌──────────┐  ┌──────────┐
-│ Generate │  │ Save to  │
-│ UUID     │  │ Database │
-│ Save to  │  │          │
-│localStorage│ └────┬─────┘
-└────┬─────┘       │
-     │             │
-     ▼             ▼
-/plans/local/   /plans/{id}
-{uuid}/edit     /edit
-```text
-### 7.2 Local to Account Conversion Flow
+Error handling notes:
+
+- If localStorage quota is exceeded, the user should be informed before the write is retried.
+- If the browser denies persistence, the UI should keep the draft in memory and prompt the user to export or reduce data.
+
+### 10.2 Account Conversion Flow
 
 ```mermaid
 flowchart TD
-    A[User logs in with Local_Runs] --> B[Claim Plans Modal Shows]
-    B --> C[User selects plans to convert]
-    C --> D[Optional: Keep local copy checkbox]
-    D --> E{For each plan}
-    E --> F[Validate data]
-    F --> G[Check duplicates]
-    G --> H{Duplicate found?}
-    H -->|Yes| I[Add to duplicates list]
-    H -->|No| J[Create in DB]
-    J --> K[Copy relations]
-    K --> L{Keep local?}
-    L -->|No| M[Delete local copy]
-    L -->|Yes| N[Keep local copy]
-    M --> O[Results Report]
-    N --> O
-    I --> O
-```text
-**ASCII Diagram:**
+    A[User opens Local Data Manager] --> B[Select local runs]
+    B --> C[Verify user ownership]
+    C --> D[Check authentication and policy]
+    D --> E{Duplicate title or identifier?}
+    E -->|Yes| F[Show conflict resolution step]
+    E -->|No| G[Copy to Account mode]
+    F --> G
+    G --> H{Keep local copy?}
+    H -->|Yes| I[Retain local record]
+    H -->|No| J[Delete local record]
+    I --> K[Show results report]
+    J --> K
+```
 
-```text
-User logs in with existing Local_Runs
-        │
-        ▼
-┌─────────────────────┐
-│ "Claim Plans" Modal │
-│ Shows local plans   │
-└────────┬────────────┘
-         │
-         ▼
-User selects plans to convert
-☐ Keep local copy (optional)
-         │
-         ▼
-For each selected plan:
-┌─────────────────────┐
-│ 1. Validate data    │
-│ 2. Check duplicates │
-│ 3. Create in DB     │
-│ 4. Copy relations   │
-│ 5. Delete local     │
-│    (unless keep)    │
-└────────┬────────────┘
-         │
-         ▼
-┌─────────────────────┐
-│ Results Report:     │
-│ - Converted: N      │
-│ - Failed: M         │
-│ - Kept local: K     │
-└─────────────────────┘
-```text
-### 7.3 Skill Autocomplete Flow
+The conversion flow must explicitly verify ownership before copying local data into an authenticated account.
+
+### 10.3 Skill Autocomplete Flow
 
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant A as Alpine.js
     participant L as Livewire
     participant S as SkillService
-    participant C as Cache
+    participant R as Redis / Cache
+    participant LS as localStorage fallback
     participant D as Database
 
-    U->>A: Types in skill field
-    A->>A: Debounce 300ms
-    A->>L: wire:model.live
+    U->>L: Type in skill field
     L->>S: search(query)
-    S->>C: Check cache
+    S->>R: Check cached results
     alt Cache hit
-        C-->>S: Return cached results
+        R-->>S: Cached results
     else Cache miss
-        S->>D: Query skills table
-        D-->>S: Return matches
-        S->>C: Store in cache (5min TTL)
+        S->>D: Query skill references
+        D-->>S: Matching skills
+        S->>R: Store results with TTL
     end
-    S-->>L: Return results
-    L-->>A: Update dropdown
-    A-->>U: Display matches with keyboard nav
-```text
-**ASCII Diagram:**
+    S-->>L: Results
+    L-->>U: Display dropdown
+```
 
-```text
-User types in skill field
-        │
-        ▼
-Debounce 300ms (wire:model.debounce)
-        │
-        ▼
-┌─────────────────┐
-│ Query skills    │
-│ table (cached)  │
-└────────┬────────┘
-         │
-         ▼
-Return matches:
-- name (EN)
-- name_jp (JP)
-- sp_cost
-- tier
-- type
-- description
-         │
-         ▼
-┌─────────────────┐
-│ Display dropdown│
-│ with keyboard   │
-│ navigation      │
-│ (↑/↓/Enter/Esc) │
-└────────┬────────┘
-         │
-User selects skill
-```text
+Caching strategy:
+
+- Primary cache: server-side cache / Redis for normal online use.
+- Secondary fallback: a small static list or browser cache for offline mode and repeat lookups.
+- The UI should continue to work when the network is unavailable, even if search precision is reduced.
+
 ---
 
-## 8. Appendices
+## 11. Testing Strategy
 
-### 8.1 Canonical Field Names Reference
+### 11.1 Test Layers
 
-| UI Label | Canonical Field | Table |
-| -------- | --------------- | ----- |
-| SP Balance | `total_sp_available` | career_runs |
-| Stamina % | `stamina_percentage` | career_runs |
-| Turn | `turn_number` | stat_progress |
-| Current Turn | `current_turn` | career_runs |
-| Plan ID | `career_run_id` | (foreign keys) |
+| Layer | Purpose | Tooling |
+| --- | --- | --- |
+| Unit | Validate pure logic and edge cases | PHPUnit |
+| Feature | Validate Livewire and HTTP behavior | PHPUnit + Laravel test helpers |
+| E2E | Validate key user journeys | Playwright |
+| Accessibility | Validate keyboard and contrast behavior | Playwright accessibility checks |
 
-### 8.2 Related Documents
+### 11.2 `data-testid` Strategy
 
-- D01_System_Development_Plan
-- D02_Business_Requirements_Specifications
-- D03_System_Requirements_Specifications
-- D05_Data_Migration_Plan
-- D06_Data_Migration_Specifications
+- Add stable `data-testid` attributes to interactive controls, summary panels, tables, modals, and important empty states.
+- Use test IDs for Playwright and component tests when visible text may change.
+- Keep the naming consistent across view modes so the same selectors can be reused in Local and Account flows.
 
-### 8.3 Revision History
+### 11.3 Core E2E Flows
+
+- Dashboard render and plan list interaction.
+- Quick create of a Local plan and redirect to the UUID route.
+- Edit and save of Account and Local plans.
+- Skill autocomplete and skill row updates.
+- Import preview, conflict resolution, and final execution.
+- Local data purge and local-to-account conversion.
+
+### 11.4 Accessibility Checks
+
+- Confirm keyboard navigation across tabs, menus, modals, and tables.
+- Verify visible focus states.
+- Validate toast announcements and ARIA labelling.
+- Run accessibility checks when UI color tokens or component structures change.
+
+---
+
+## 12. Third-Party Libraries
+
+| Package | Version | Purpose | Notes |
+| --- | --- | --- | --- |
+| `laravel/framework` | `^12.0 || ^13.0` | Application framework | Core backend stack. |
+| `livewire/livewire` | `^3.6` | Server-driven UI reactivity | Primary UI state layer. |
+| `laravel/sanctum` | `^4.2` | Authentication | Used for authenticated sessions and API auth. |
+| `laravel/tinker` | `^2.10.1` | Interactive debugging | Development-only. |
+| `laravel/boost` | `^1.1` | Boost tooling | Development and assistant support. |
+| `laravel/pint` | `^1.24` | Code formatting | Development-only. |
+| `laravel/sail` | `^1.41` | Containerized development | Development-only. |
+| `larastan/larastan` | `3.6.1` | Static analysis | Development-only. |
+| `phpunit/phpunit` | `^11.5.3` | Test framework | Primary automated testing framework. |
+| `tailwindcss` | `^4.0.0` | Styling | Utility-first CSS framework. |
+| `vite` | `^7.0.4` | Asset bundling | Frontend build tooling. |
+| `alpinejs` | `^3.15.3` | Micro-interactions | Used for lightweight browser interactions. |
+| `sweetalert2` | `^11.23.0` | Dialog and alert UI | Used where richer confirmations are needed. |
+| `@playwright/test` | `^1.55.0` | E2E testing | Browser automation and accessibility checks. |
+| `@axe-core/playwright` | `^4.11.0` | Accessibility testing | Automated a11y assertions in Playwright. |
+| `maatwebsite/excel` | Not installed | Spreadsheet import/export | Not currently in `composer.json`; spreadsheet workflows are handled in-app or via CSV/JSON adapters. |
+
+---
+
+## 13. Appendices
+
+### 13.1 Canonical Field Names Reference
+
+| UI Label | Canonical Field | Notes |
+| --- | --- | --- |
+| Plan / Career Run ID | `id` | Numeric Account identifier. |
+| Local Plan UUID | `local_uuid` / `uuid` | Browser-local identifier. |
+| Storage Mode | `storage_mode` | `local` or `account`. |
+| Career Stage | `career_stage` | Junior, Classic, Senior. |
+| Current Turn | `turn_before` / `current_turn` | Implementation naming depends on layer. |
+| Turn Number | `turn_number` | Used by turn records and snapshots. |
+| SP Balance | `total_available_skill_points` / `total_sp_available` | Keep names consistent across adapters. |
+| Stamina % | `stamina_percentage` | Integer percentage. |
+| Energy | `energy` | Training state indicator. |
+| Mood | `mood` | UI-facing status label or lookup reference. |
+| Conditions | `conditions` | Serialized condition list or label. |
+| Strategy | `strategy` / `strategy_id` | Model-backed lookup or enum mapping. |
+| Notes | `notes` | Free-text plan notes. |
+| Image Path | `image_path` / `trainee_image_path` | File or asset reference. |
+| Race Name | `race_name` | Prediction or snapshot context. |
+| Schema Version | `schema_version` | Required for local payload migration. |
+
+### 13.2 Revision History
 
 | Version | Date | Author | Changes |
-| ------- | ---- | ------ | ------- |
-| 1.0 | 2026-01-03 | System | Initial draft |
-| 2.0 | 2026-01-03 | System | Converted to markdown, added Mermaid diagrams, standardized formatting |
-````
+| --- | --- | --- | --- |
+| 1.0 | 2026-01-03 | System | Initial draft. |
+| 2.0 | 2026-01-03 | System | Markdown conversion and Mermaid diagrams. |
+| 3.0 | 2026-07-03 | System | Added architecture detail, security/performance/logging/testing sections, and updated model/service design. |
