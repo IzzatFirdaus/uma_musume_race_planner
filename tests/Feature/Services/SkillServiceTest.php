@@ -25,6 +25,7 @@ class SkillServiceTest extends TestCase
     use RefreshDatabase;
 
     protected SkillService $service;
+
     protected Plan $plan;
 
     protected function setUp(): void
@@ -67,6 +68,49 @@ class SkillServiceTest extends TestCase
 
         $this->assertCount(1, $results);
         $this->assertEquals('Speed Star', $results->first()->skill_name);
+    }
+
+    public function test_search_skills_by_japanese_name(): void
+    {
+        // Implements REQ-SKILL-1.1: Bilingual search
+        SkillReference::create([
+            'skill_name' => 'Corner Recovery',
+            'name_jp' => 'コーナー回復',
+            'description' => 'Recovers stamina in corners',
+            'tag' => '🏃',
+        ]);
+        SkillReference::create([
+            'skill_name' => 'Speed Demon',
+            'name_jp' => 'スピードデーモン',
+            'description' => 'Increases speed',
+            'tag' => '⚡',
+        ]);
+
+        Cache::flush();
+
+        $results = $this->service->search('コーナー');
+
+        $this->assertCount(1, $results);
+        $this->assertEquals('Corner Recovery', $results->first()->skill_name);
+        $this->assertEquals('コーナー回復', $results->first()->name_jp);
+    }
+
+    public function test_search_skills_by_partial_japanese_name(): void
+    {
+        // Implements REQ-SKILL-1.1: Bilingual search with partial matches
+        SkillReference::create([
+            'skill_name' => 'Corner Recovery',
+            'name_jp' => 'コーナー回復',
+            'description' => 'Recovers stamina in corners',
+            'tag' => '🏃',
+        ]);
+
+        Cache::flush();
+
+        $results = $this->service->search('回復');
+
+        $this->assertCount(1, $results);
+        $this->assertEquals('Corner Recovery', $results->first()->skill_name);
     }
 
     public function test_add_skill_to_plan_with_suggested_status(): void

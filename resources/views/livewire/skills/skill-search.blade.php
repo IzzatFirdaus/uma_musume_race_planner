@@ -53,13 +53,11 @@
                             @endif
                         </div>
                         <div class="text-end">
-                            @if ($skill['type'])
-                                <span class="badge bg-secondary mb-1">{{ $skill['type'] }}</span>
+                            @if ($skill['stat_type'])
+                                <span class="badge bg-secondary mb-1">{{ $skill['stat_type'] }}</span>
                             @endif
-                            @if ($skill['sp_cost'])
-                                <div class="small {{ $highlightedIndex === $index ? 'text-white' : 'text-primary' }}">
-                                    {{ $skill['sp_cost'] }} SP
-                                </div>
+                            @if ($skill['tag'])
+                                <span class="badge bg-info">{{ $skill['tag'] }}</span>
                             @endif
                         </div>
                     </li>

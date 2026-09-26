@@ -21,18 +21,20 @@ use Illuminate\Support\Facades\DB;
 class SkillService
 {
     private const SEARCH_CACHE_TTL = 300; // 5 minutes
+
     private const SEARCH_CACHE_PREFIX = 'skill_search_';
 
     /**
      * Search skills by name (EN or JP).
-     * Implements FR-4.4, FR-4B.1, FR-4B.3: Skill autocomplete with EN+JP matching.
+     * Implements REQ-SKILL-1.1: Bilingual autocomplete with EN+JP matching.
      */
     public function search(string $query, int $limit = 10): Collection
     {
-        $cacheKey = self::SEARCH_CACHE_PREFIX . md5(strtolower($query) . $limit);
+        $cacheKey = self::SEARCH_CACHE_PREFIX.md5(strtolower($query).$limit);
 
         return Cache::remember($cacheKey, self::SEARCH_CACHE_TTL, function () use ($query, $limit) {
             return SkillReference::where('skill_name', 'LIKE', "%{$query}%")
+                ->orWhere('name_jp', 'LIKE', "%{$query}%")
                 ->orWhere('description', 'LIKE', "%{$query}%")
                 ->orderBy('skill_name')
                 ->limit($limit)
@@ -83,7 +85,7 @@ class SkillService
         $skillReferenceId = $data['skill_reference_id'] ?? null;
 
         // If skill_name is provided instead of skill_reference_id, find or create the reference
-        if (!$skillReferenceId && isset($data['skill_name'])) {
+        if (! $skillReferenceId && isset($data['skill_name'])) {
             $skillReference = SkillReference::firstOrCreate(
                 ['skill_name' => $data['skill_name']],
                 [
@@ -150,7 +152,7 @@ class SkillService
 
             // Validate turn_acquired for acquired status
             if ($status === SkillStatus::Acquired) {
-                if (!isset($data['turn_acquired']) && $skill->turn_acquired === null) {
+                if (! isset($data['turn_acquired']) && $skill->turn_acquired === null) {
                     throw new \InvalidArgumentException('turn_acquired is required when status is Acquired');
                 }
                 $updateData['turn_acquired'] = $data['turn_acquired'] ?? $skill->turn_acquired;

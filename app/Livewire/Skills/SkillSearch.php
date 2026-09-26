@@ -47,7 +47,7 @@ class SkillSearch extends Component
 
     /**
      * Get search results.
-     * Implements FR-4B.1: < 200ms response, FR-4B.3: EN+JP matching.
+     * Implements REQ-SKILL-1.1: Bilingual autocomplete with EN+JP matching.
      *
      * @return array<int, array<string, mixed>>
      */
@@ -58,25 +58,25 @@ class SkillSearch extends Component
             return [];
         }
 
-        $cacheKey = 'skill_search_' . md5($this->query);
+        $cacheKey = 'skill_search_'.md5($this->query);
 
         return Cache::remember($cacheKey, 300, function () {
             return SkillReference::query()
                 ->where(function ($q) {
-                    $q->where('name', 'like', "%{$this->query}%")
+                    $q->where('skill_name', 'like', "%{$this->query}%")
                         ->orWhere('name_jp', 'like', "%{$this->query}%")
                         ->orWhere('description', 'like', "%{$this->query}%");
                 })
-                ->orderBy('name')
+                ->orderBy('skill_name')
                 ->limit(10)
                 ->get()
-                ->map(fn($skill) => [
+                ->map(fn ($skill) => [
                     'id' => $skill->id,
-                    'name' => $skill->name,
+                    'name' => $skill->skill_name,
                     'name_jp' => $skill->name_jp,
-                    'type' => $skill->type,
-                    'sp_cost' => $skill->sp_cost,
+                    'stat_type' => $skill->stat_type,
                     'description' => $skill->description,
+                    'tag' => $skill->tag,
                 ])
                 ->toArray();
         });
