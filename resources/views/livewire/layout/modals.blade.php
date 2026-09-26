@@ -18,7 +18,7 @@
                         {{ $messageModal['title'] ?? 'Notification' }}
                     </h5>
                     <button type="button"
-                            class="btn-close"
+                            class="btn-close min-h-11 min-w-11"
                             wire:click="closeMessageModal"
                             aria-label="Close modal">
                     </button>
@@ -63,7 +63,7 @@
                         {{ $confirmationModal['title'] ?? 'Confirm Action' }}
                     </h5>
                     <button type="button"
-                            class="btn-close"
+                            class="btn-close min-h-11 min-w-11"
                             wire:click="closeConfirmationModal"
                             aria-label="Close modal">
                     </button>
@@ -110,7 +110,7 @@
         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
             <div class="modal-content modal-theme border-0">
                 <div class="modal-body text-center py-4">
-                    <div class="spinner-border text-primary mb-3"
+                    <div class="spinner-border text-primary mb-3 motion-reduce:hidden"
                          style="width: 3rem; height: 3rem;"
                          role="status"
                          aria-hidden="true">

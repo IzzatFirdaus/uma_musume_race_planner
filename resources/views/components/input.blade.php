@@ -12,8 +12,8 @@
 
 @php
     $errorId = $error ? "{$id}-error" : null;
-    $baseClasses = 'block w-full px-4 py-2 border rounded-lg font-normal text-base transition-colors duration-200';
-    $normalClasses = 'border-slate-300 bg-white text-slate-900 placeholder-slate-500 hover:border-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400 dark:hover:border-slate-500 dark:focus-visible:ring-blue-400';
+    $baseClasses = 'block w-full min-h-11 px-4 py-2 border rounded-lg font-normal text-base motion-safe:transition-colors motion-safe:duration-200 motion-reduce:transition-none';
+    $normalClasses = 'border-slate-300 bg-white text-slate-900 placeholder-slate-500 hover:border-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400 dark:hover:border-slate-500 dark:focus-visible:ring-sky-400 dark:focus-visible:ring-offset-slate-900';
     $errorClasses = $error
         ? 'border-red-500 bg-red-50 text-slate-900 dark:bg-red-900 dark:border-red-400 focus-visible:ring-red-500 dark:focus-visible:ring-red-400'
         : $normalClasses;

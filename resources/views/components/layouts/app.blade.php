@@ -116,7 +116,8 @@
 
 <body class="{{ $bodyClass ?? '' }}" data-theme="{{ config('app.theme', 'auto') }}">
     {{-- Skip-to-content link for accessibility --}}
-    <a class="visually-hidden-focusable" href="#main-content">Skip to content</a>
+    <a class="visually-hidden-focusable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+        href="#main-content">Skip to Main Content</a>
 
     {{-- Navbar - prefer Livewire component with Blade fallback --}}
     @if (class_exists(\Livewire\Livewire::class))
@@ -126,7 +127,7 @@
     @endif
 
     {{-- Main content area (accessible landmark) --}}
-    <main id="main-content" tabindex="-1" role="main">
+    <main id="main-content" tabindex="-1" role="main" aria-label="Main content">
         {{ $slot }}
     </main>
 

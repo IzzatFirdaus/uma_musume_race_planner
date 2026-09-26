@@ -51,17 +51,16 @@
                 </li>
 
                 <li class="nav-item" role="none">
-                    <a class="nav-link"
-                       href="#"
-                       id="newPlanBtn"
-                       role="menuitem"
-                       role="button"
-                       data-bs-toggle="modal"
-                       data-bs-target="#createPlanModal"
-                       wire:click="$dispatch('open-create-plan-modal')">
+                    <button type="button"
+                        class="nav-link btn btn-link border-0 bg-transparent min-h-11"
+                        id="newPlanBtn"
+                        role="menuitem"
+                        data-bs-toggle="modal"
+                        data-bs-target="#createPlanModal"
+                        wire:click="$dispatch('open-create-plan-modal')">
                         <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
                         New Training Plan
-                    </a>
+                    </button>
                 </li>
 
                 @if(Route::has('guide'))
@@ -77,15 +76,14 @@
                 @endif
 
                 <li class="nav-item dropdown" role="none">
-                    <a class="nav-link dropdown-toggle"
-                       href="#"
+                          <button type="button" class="nav-link dropdown-toggle btn btn-link border-0 bg-transparent min-h-11"
                        role="button"
                        data-bs-toggle="dropdown"
                        aria-expanded="false"
                        aria-haspopup="true">
                         <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
                         Game Info
-                    </a>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-glass" role="menu">
                         <li role="none">
                             <a class="dropdown-item"
@@ -176,12 +174,10 @@
                     if(btn.dataset.bound === '1') return;
                     btn.dataset.bound = '1';
                     btn.addEventListener('click', function(e){
-                        // allow Livewire to handle dispatch if available; fallback to bootstrap modal if present
                         try{
-                            if(modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal){
+                            if (typeof Livewire !== 'undefined') {
                                 e.preventDefault();
-                                var m = new bootstrap.Modal(modalEl);
-                                m.show();
+                                Livewire.dispatch('open-create-plan-modal');
                             }
                         }catch(err){/* ignore */}
                     });

@@ -100,7 +100,14 @@
                     {{-- Skills Tab --}}
                     <div class="tab-pane fade" id="skills-pane" role="tabpanel" aria-labelledby="skills-tab"
                         tabindex="0">
-                        <livewire:plans.skills-editor :planId="$planId" :skills="$skills" />
+                        @if ($planId)
+                            @php
+                                $plan = \App\Models\Plan::find($planId);
+                            @endphp
+                            @if ($plan)
+                                <livewire:skills.skill-editor :plan="$plan" key="skill-editor-{{ $planId }}" />
+                            @endif
+                        @endif
                     </div>
 
                     {{-- Race Predictions Tab --}}

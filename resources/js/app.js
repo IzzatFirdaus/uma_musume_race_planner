@@ -10,7 +10,8 @@ import {
 window.Alpine = Alpine;
 
 // Import and register stores (must be before Livewire.start())
-import "./stores/index.js";
+import { registerStores } from "./stores/index.js";
+registerStores(Alpine);
 
 // Import keyboard shortcuts manager (Task 30.2 - Accessibility)
 import "./keyboard-shortcuts.js";
@@ -20,24 +21,32 @@ import { localRunStorage, draftService } from "./services/index.js";
 window.localRunStorage = localRunStorage;
 window.draftService = draftService;
 
-// Import and register Alpine components
+// Import and register Alpine components.
+// Alpine.data() is what makes `x-data="componentName(...)"` resolve; assigning
+// to window alone does not, which is why the manager and plan editor pages
+// were inert.
 import { localDataManager } from "./components/localDataManager.js";
 window.localDataManager = localDataManager;
+Alpine.data("localDataManager", localDataManager);
 
 import { offlineDraftManager } from "./components/offlineDraftManager.js";
 window.offlineDraftManager = offlineDraftManager;
+Alpine.data("offlineDraftManager", offlineDraftManager);
 
 import { accountPlanEditor } from "./components/accountPlanEditor.js";
 window.accountPlanEditor = accountPlanEditor;
+Alpine.data("accountPlanEditor", accountPlanEditor);
 
 import { raceSnapshotQuota } from "./components/raceSnapshotQuota.js";
 window.raceSnapshotQuota = raceSnapshotQuota;
+Alpine.data("raceSnapshotQuota", raceSnapshotQuota);
 
 // Start Livewire (which also starts Alpine)
 Livewire.start();
 
-// Initialize stores after Livewire/Alpine starts
-// Alpine stores don't auto-call init() like components do
+// Initialize stores after Livewire/Alpine starts.
+// Alpine stores don't auto-call init() like components do, so each store
+// exposes an idempotent init() that app.js invokes explicitly.
 if (Alpine.store("connection")?.init) {
     Alpine.store("connection").init();
 }
@@ -51,7 +60,35 @@ if (Alpine.store("keyboard")?.init) {
     Alpine.store("keyboard").init();
 }
 
-// Import SweetAlert2
+// Surface failed Livewire requests to the connection store so the
+// x-connection-banner and x-reconnection-prompt-modal can react.
+document.addEventListener("livewire:init", () => {
+    const connection = Alpine.store("connection");
+
+    Livewire.hook("request", ({ fail, component }) => {
+        if (!fail) {
+            connection?.clearFailure();
+            return;
+        }
+
+        // 419 is an expired CSRF session, not a connectivity problem.
+        if (fail.status === 419) {
+            return;
+        }
+
+        connection?.onRequestFailure(
+            fail.status,
+            `The server responded with ${fail.status}. Your last change may not have been saved.`
+        );
+    });
+});
+
+// Apply theme changes requested by the keyboard shortcut.
+window.addEventListener("uma:toggle-theme", () => {
+    Alpine.store("preferences")?.toggle();
+});
+
+// SweetAlert2
 import Swal from "sweetalert2";
 window.Swal = Swal;
 

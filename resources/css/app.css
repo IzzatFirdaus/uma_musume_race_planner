@@ -1,3 +1,5 @@
+@import "tailwindcss";
+@config "../../tailwind.config.js";
 @import url("style.css");
 
 /**
@@ -9,28 +11,47 @@
 
 /* You can add any additional app-wide CSS overrides here if needed in the future. */
 
-/* Accessibility: prefer focus-visible and reduced motion rules */
-/* Visible focus for keyboard users (non-destructive - complements Tailwind focus utilities) */
-:focus {
-    outline-offset: 2px;
+/* Hide Alpine elements until Alpine initialises (prevents flash of unstyled content) */
+[x-cloak] {
+    display: none !important;
 }
 
-/* Prefer focus-visible for browsers that support it */
-:where(:focus-visible) {
-    outline: 2px solid var(--color-secondary);
+/* Accessibility: prefer focus-visible and reduced motion rules */
+:where(a, button, input, select, textarea, [role="button"], [role="link"], [tabindex]):focus-visible {
+    outline: 2px solid rgb(14 165 233);
     outline-offset: 2px;
-    box-shadow: 0 0 0 0.2rem rgb(149 117 205 / 25%);
+    box-shadow: 0 0 0 0.2rem rgb(14 165 233 / 20%);
+}
+
+body.dark-mode :where(a, button, input, select, textarea, [role="button"], [role="link"], [tabindex]):focus-visible {
+    outline-color: rgb(56 189 248);
+    box-shadow: 0 0 0 0.2rem rgb(56 189 248 / 25%);
+}
+
+:where(a, button, input, select, textarea, [role="button"], [role="link"], [tabindex]):focus:not(:focus-visible) {
+    outline: none;
 }
 
 /* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+        scroll-behavior: auto;
+    }
+
     *,
     *::before,
     *::after {
-        animation-duration: 0.001ms !important;
+        animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
+        transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+
+    .spinner-border,
+    .spinner-grow,
+    [x-transition] {
+        animation: none !important;
+        transition: none !important;
     }
 }
 
@@ -43,6 +64,13 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+}
+
+.reduce-motion .spinner-border,
+.reduce-motion .spinner-grow,
+.reduce-motion [x-transition] {
+    animation: none !important;
+    transition: none !important;
 }
 
 /* Disable specific component animations when reduced motion is active */

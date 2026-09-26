@@ -85,6 +85,11 @@ class ExportModal extends Component
                 'icon' => 'bi-filetype-json',
                 'description' => 'For import/backup purposes with schema version',
             ],
+            'csv' => [
+                'label' => 'CSV',
+                'icon' => 'bi-filetype-csv',
+                'description' => 'Spreadsheet-compatible format with UTF-8 BOM',
+            ],
             'text' => [
                 'label' => 'Plain Text',
                 'icon' => 'bi-file-text',
@@ -109,6 +114,7 @@ class ExportModal extends Component
         }
 
         $this->previewContent = match ($this->format) {
+            'csv' => $this->exportService->toCsv($this->plan),
             'markdown' => $this->exportService->toMarkdown($this->plan),
             'text' => $this->generateTextExport(),
             default => $this->exportService->toJson($this->plan),
@@ -259,18 +265,21 @@ class ExportModal extends Component
 
         // Generate full export content
         $content = match ($this->format) {
+            'csv' => $this->exportService->toCsv($this->plan),
             'markdown' => $this->exportService->toMarkdown($this->plan),
             'text' => $this->generateTextExport(),
             default => $this->exportService->toJson($this->plan),
         };
 
         $extension = match ($this->format) {
+            'csv' => 'csv',
             'markdown' => 'md',
             'text' => 'txt',
             default => 'json',
         };
 
         $mimeType = match ($this->format) {
+            'csv' => 'text/csv',
             'markdown' => 'text/markdown',
             'text' => 'text/plain',
             default => 'application/json',

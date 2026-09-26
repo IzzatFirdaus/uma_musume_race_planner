@@ -42,13 +42,13 @@
         </li>
 
         <li class="nav-item" role="none">
-          <a class="nav-link"
-             href="#"
-             id="newPlanBtn"
-             role="menuitem">
+          <button type="button"
+                  class="nav-link btn btn-link border-0 bg-transparent min-h-11"
+                  id="newPlanBtn"
+                  role="menuitem">
             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
             Create Plan
-          </a>
+          </button>
         </li>
 
         @if(Route::has('guide'))

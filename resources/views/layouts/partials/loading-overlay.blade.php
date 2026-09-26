@@ -14,7 +14,7 @@
     aria-modal="{{ $visible ? 'true' : 'false' }}"
     tabindex="-1">
 
-    <div class="text-center text-white">
+    <div class="text-center text-white" role="status" aria-live="polite" aria-atomic="true">
        <div class="spinner-border mb-3"
            style="width: 3rem; height: 3rem;"
            role="status"
@@ -33,6 +33,12 @@
 
     .loading-overlay .spinner-border {
         color: #fff;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .loading-overlay .spinner-border {
+            display: none;
+        }
     }
 
     /* Dark mode considerations */

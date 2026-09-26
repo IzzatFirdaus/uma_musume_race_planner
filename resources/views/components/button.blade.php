@@ -6,7 +6,7 @@
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200';
+    $baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg motion-safe:transition-colors motion-safe:duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-sky-400 dark:focus-visible:ring-offset-slate-900';
 
     $variantClasses = match($variant) {
         'primary' => 'bg-blue-600 text-white hover:bg-blue-700 dark:hover:bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed',
@@ -17,15 +17,13 @@
     };
 
     $sizeClasses = match($size) {
-        'sm' => 'px-3 py-1.5 text-sm',
-        'md' => 'px-4 py-2 text-base',
-        'lg' => 'px-6 py-3 text-lg',
-        default => 'px-4 py-2 text-base',
+        'sm' => 'min-h-10 px-3 py-1.5 text-sm',
+        'md' => 'min-h-11 px-4 py-2 text-base',
+        'lg' => 'min-h-12 px-6 py-3 text-lg',
+        default => 'min-h-11 px-4 py-2 text-base',
     };
 
-    $focusClasses = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-blue-500 focus-visible:ring-0';
-
-    $mergedClasses = "$baseClasses $variantClasses $sizeClasses $focusClasses";
+    $mergedClasses = "$baseClasses $variantClasses $sizeClasses";
 @endphp
 
 <button

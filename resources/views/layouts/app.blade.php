@@ -113,13 +113,14 @@
 
 <body class="@yield('body-class', '')" data-theme="{{ config('app.theme', 'auto') }}" style="overflow-x: hidden;">
     {{-- Skip-to-main link for keyboard users (matches Playwright tests) --}}
-    <a class="visually-hidden-focusable" href="#main">Skip to main</a>
+    <a class="visually-hidden-focusable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+        href="#main">Skip to Main Content</a>
 
     {{-- Page header/banner (landmark) - the navbar component renders its own header role. Insert it directly. --}}
     <livewire:layout.navbar />
 
     {{-- Main content area (accessible landmark) --}}
-    <main id="main" tabindex="-1" role="main">
+    <main id="main" tabindex="-1" role="main" aria-label="Main content">
         @hasSection('content')
             @yield('content')
         @else

@@ -499,7 +499,7 @@
             id="skills{{ $id_suffix }}" role="tabpanel" aria-labelledby="skills-tab{{ $id_suffix }}"
             x-show="activeTab === 'skills'" data-testid="tab-panel-skills">
             @livewire(
-                'skills.skills-editor',
+                'skills.skill-editor',
                 [
                     'planId' => $planId,
                     'isEditMode' => $isEditMode,

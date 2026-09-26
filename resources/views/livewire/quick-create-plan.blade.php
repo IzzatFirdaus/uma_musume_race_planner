@@ -1,247 +1,220 @@
-<div>
-    {{-- QuickCreatePlan Modal - Task 7.1, 7.2 --}}
-    {{-- Requirements: 2.1, 2.2, 2.3, 2.4, 2.6, 56.2, 56.3 --}}
-    <div class="modal fade" id="createPlanModal" tabindex="-1" aria-labelledby="createPlanModalLabel" aria-hidden="true"
-        wire:ignore.self x-data="quickCreatePlan()" x-on:show-create-plan-modal.window="openModal()"
-        x-on:close-create-plan-modal.window="closeModal()"
-        x-on:create-local-plan.window="handleLocalPlanCreate($event.detail)">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal-theme">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title" id="createPlanModalLabel">
-                        <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>
-                        Create New Plan
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        data-testid="quick-create-close-btn"></button>
+<div
+    x-data="{
+        handleLocalPlanCreate(detail) {
+            const payload = detail[0] ?? detail;
+            const planData = payload.planData ?? payload;
+            const redirectUrl = payload.redirectUrl ?? `/plans/local/${planData.id}/edit`;
+
+            try {
+                if (typeof window.localRunStorage !== 'undefined') {
+                    window.localRunStorage.create(planData);
+                } else {
+                    const storageKey = 'uma_local_runs';
+                    let store = JSON.parse(localStorage.getItem(storageKey) || 'null');
+
+                    if (!store) {
+                        store = {
+                            schema_version: '1.0.0',
+                            runs: [],
+                            last_modified: new Date().toISOString(),
+                        };
+                    }
+
+                    store.runs.push(planData);
+                    store.last_modified = new Date().toISOString();
+                    localStorage.setItem(storageKey, JSON.stringify(store));
+                }
+
+                window.location.href = redirectUrl;
+            } catch (error) {
+                console.error('Failed to create local plan:', error);
+                window.dispatchEvent(new CustomEvent('toast', {
+                    detail: {
+                        type: 'error',
+                        message: 'Failed to create local plan. Please try again.',
+                    },
+                }));
+            }
+        },
+    }"
+    x-on:create-local-plan.window="handleLocalPlanCreate($event.detail)"
+>
+    <x-common.modal
+        wire:model="showModal"
+        title="Create New Plan"
+        title-id="createPlanModalLabel"
+        test-id="quick-create-modal"
+    >
+        <form wire:submit.prevent="save" id="quickCreatePlanForm" novalidate class="flex flex-col">
+            <div class="space-y-4 px-6 py-4">
+                <div>
+                    <label for="quick_title" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Plan Title <span class="text-red-500" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="quick_title"
+                        wire:model.live="title"
+                        placeholder="e.g., Special Week's Training Plan"
+                        required
+                        aria-describedby="titleFeedback"
+                        data-testid="quick-create-title-input"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 @error('title') border-red-500 @enderror"
+                    >
+                    @error('title')
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400" id="titleFeedback">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <form wire:submit.prevent="save" id="quickCreatePlanForm" novalidate>
-                    <div class="modal-body">
-                        {{-- Plan Title (Req 2.1, 2.4) --}}
-                        <div class="mb-3">
-                            <label for="quick_title" class="form-label">
-                                Plan Title <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" class="form-control @error('title') is-invalid @enderror"
-                                id="quick_title" wire:model.live="title"
-                                placeholder="e.g., Special Week's Training Plan" required
-                                aria-describedby="titleFeedback" data-testid="quick-create-title-input">
-                            @error('title')
-                                <div class="invalid-feedback d-block" id="titleFeedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                <div>
+                    <label for="quick_character" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Character <span class="text-red-500" aria-hidden="true">*</span>
+                    </label>
+                    <select
+                        id="quick_character"
+                        wire:model.live="characterId"
+                        aria-describedby="characterFeedback"
+                        data-testid="quick-create-character-select"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 @error('characterId') border-red-500 @enderror"
+                    >
+                        <option value="">-- Select Character --</option>
+                        @foreach ($characters as $character)
+                            <option value="{{ $character->id }}">
+                                {{ $character->name }}
+                                @if ($character->team)
+                                    ({{ $character->team }})
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('characterId')
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400" id="characterFeedback">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Selecting a character auto-populates growth rates and aptitudes.
+                    </p>
+                </div>
 
-                        {{-- Character Selection (Req 2.2) --}}
-                        <div class="mb-3">
-                            <label for="quick_character" class="form-label">Character (Optional)</label>
-                            <select class="form-select @error('characterId') is-invalid @enderror" id="quick_character"
-                                wire:model.live="characterId" wire:change="selectCharacter($event.target.value)"
-                                aria-describedby="characterFeedback" data-testid="quick-create-character-select">
-                                <option value="">-- Select Character --</option>
-                                @foreach ($characters as $character)
-                                    <option value="{{ $character->id }}">
-                                        {{ $character->name }}
-                                        @if ($character->team)
-                                            ({{ $character->team }})
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('characterId')
-                                <div class="invalid-feedback d-block" id="characterFeedback">{{ $message }}</div>
-                            @enderror
-                            <div class="form-text">
-                                Selecting a character will auto-populate growth rates and aptitudes.
-                            </div>
-                        </div>
+                <fieldset>
+                    <legend class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Storage Mode
+                    </legend>
+                    <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Storage mode selection">
+                        <label
+                            class="flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition @if ($storageMode === 'local') border-blue-500 bg-blue-50 text-blue-800 dark:border-blue-400 dark:bg-blue-900/40 dark:text-blue-200 @else border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 @endif"
+                            data-testid="quick-create-storage-local-label"
+                        >
+                            <input
+                                type="radio"
+                                name="storageMode"
+                                value="local"
+                                wire:model.live="storageMode"
+                                class="sr-only"
+                                data-testid="quick-create-storage-local"
+                            >
+                            <span aria-hidden="true">📱</span>
+                            Local
+                        </label>
 
-                        {{-- Storage Mode Selector (Req 2.3, 56.3) --}}
-                        <div class="mb-3">
-                            <label class="form-label d-block">Storage Mode</label>
-                            <div class="btn-group w-100" role="group" aria-label="Storage mode selection">
-                                <input type="radio" class="btn-check" name="storageMode" id="storage_local"
-                                    value="local" wire:model.live="storageMode" autocomplete="off"
-                                    data-testid="quick-create-storage-local">
-                                <label class="btn btn-outline-warning" for="storage_local"
-                                    data-testid="quick-create-storage-local-label">
-                                    <i class="bi bi-phone me-1" aria-hidden="true"></i>
-                                    Local
-                                </label>
+                        <label
+                            class="flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition @if (!$isAuthenticated) cursor-not-allowed opacity-50 @else cursor-pointer @endif @if ($storageMode === 'account') border-green-500 bg-green-50 text-green-800 dark:border-green-400 dark:bg-green-900/40 dark:text-green-200 @else border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 @endif"
+                            data-testid="quick-create-storage-account-label"
+                        >
+                            <input
+                                type="radio"
+                                name="storageMode"
+                                value="account"
+                                wire:model.live="storageMode"
+                                class="sr-only"
+                                @disabled(!$isAuthenticated)
+                                data-testid="quick-create-storage-account"
+                            >
+                            <span aria-hidden="true">☁️</span>
+                            Account
+                        </label>
+                    </div>
+                    @if (!$isAuthenticated)
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                            <a href="{{ route('login') }}" class="text-blue-600 underline dark:text-blue-400">Sign in</a>
+                            to save plans to your account.
+                        </p>
+                    @elseif ($storageMode === 'local')
+                        <p class="mt-2 text-xs text-blue-700 dark:text-blue-300">
+                            Plan will be stored in your browser's local storage.
+                        </p>
+                    @else
+                        <p class="mt-2 text-xs text-green-700 dark:text-green-300">
+                            Plan will be saved to your account.
+                        </p>
+                    @endif
+                    @error('storageMode')
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    @enderror
+                </fieldset>
 
-                                <input type="radio" class="btn-check" name="storageMode" id="storage_account"
-                                    value="account" wire:model.live="storageMode" autocomplete="off"
-                                    {{ !$isAuthenticated ? 'disabled' : '' }}
-                                    data-testid="quick-create-storage-account">
-                                <label class="btn btn-outline-primary {{ !$isAuthenticated ? 'disabled' : '' }}"
-                                    for="storage_account" data-testid="quick-create-storage-account-label">
-                                    <i class="bi bi-cloud me-1" aria-hidden="true"></i>
-                                    Account
-                                </label>
-                            </div>
-                            @if (!$isAuthenticated)
-                                <div class="form-text text-muted">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    <a href="{{ route('login') }}">Sign in</a> to save plans to your account.
-                                </div>
-                            @else
-                                <div class="form-text">
-                                    @if ($storageMode === 'local')
-                                        <span class="text-warning">
-                                            <i class="bi bi-phone me-1"></i>
-                                            Plan will be stored in your browser's local storage.
-                                        </span>
-                                    @else
-                                        <span class="text-primary">
-                                            <i class="bi bi-cloud me-1"></i>
-                                            Plan will be saved to your account.
-                                        </span>
-                                    @endif
-                                </div>
-                            @endif
-                            @error('storageMode')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="row">
-                            {{-- Career Stage --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="quick_career_stage" class="form-label">Career Stage</label>
-                                <select class="form-select @error('careerStage') is-invalid @enderror"
-                                    id="quick_career_stage" wire:model.live="careerStage" required
-                                    aria-describedby="careerStageFeedback"
-                                    data-testid="quick-create-career-stage-select">
-                                    @foreach ($careerStageOptions as $option)
-                                        <option value="{{ $option['value'] }}">{{ $option['text'] }}</option>
-                                    @endforeach
-                                </select>
-                                @error('careerStage')
-                                    <div class="invalid-feedback d-block" id="careerStageFeedback">{{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            {{-- Class --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="quick_trainee_class" class="form-label">Class</label>
-                                <select class="form-select @error('traineeClass') is-invalid @enderror"
-                                    id="quick_trainee_class" wire:model.live="traineeClass" required
-                                    aria-describedby="classFeedback" data-testid="quick-create-class-select">
-                                    @foreach ($classOptions as $option)
-                                        <option value="{{ $option['value'] }}">{{ $option['text'] }}</option>
-                                    @endforeach
-                                </select>
-                                @error('traineeClass')
-                                    <div class="invalid-feedback d-block" id="classFeedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label for="quick_career_stage" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Career Stage
+                        </label>
+                        <select
+                            id="quick_career_stage"
+                            wire:model.live="careerStage"
+                            aria-describedby="careerStageFeedback"
+                            data-testid="quick-create-career-stage-select"
+                            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                        >
+                            @foreach ($careerStageOptions as $option)
+                                <option value="{{ $option['value'] }}">{{ $option['text'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('careerStage')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400" id="careerStageFeedback">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                            data-testid="quick-create-cancel-btn">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-uma" wire:loading.attr="disabled" wire:target="save"
-                            data-testid="quick-create-submit-btn">
-                            <span wire:loading.remove wire:target="save">
-                                <i class="bi bi-check-lg me-1" aria-hidden="true"></i>
-                                Create Plan
-                            </span>
-                            <span wire:loading wire:target="save">
-                                <span class="spinner-border spinner-border-sm me-1" role="status"
-                                    aria-hidden="true"></span>
-                                Creating...
-                            </span>
-                        </button>
+                    <div>
+                        <label for="quick_trainee_class" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Class
+                        </label>
+                        <select
+                            id="quick_trainee_class"
+                            wire:model.live="traineeClass"
+                            aria-describedby="classFeedback"
+                            data-testid="quick-create-class-select"
+                            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                        >
+                            @foreach ($classOptions as $option)
+                                <option value="{{ $option['value'] }}">{{ $option['text'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('traineeClass')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400" id="classFeedback">{{ $message }}</p>
+                        @enderror
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
+
+            <div class="flex justify-end gap-3 border-t border-gray-200 px-6 py-4 dark:border-gray-700">
+                <button
+                    type="button"
+                    class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                    x-on:click="$wire.closeModal()"
+                    data-testid="quick-create-cancel-btn"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
+                    wire:loading.attr="disabled"
+                    wire:target="save"
+                    data-testid="quick-create-submit-btn"
+                >
+                    <span wire:loading.remove wire:target="save">Create Plan</span>
+                    <span wire:loading wire:target="save">Creating...</span>
+                </button>
+            </div>
+        </form>
+    </x-common.modal>
 </div>
-
-@script
-    <script>
-        Alpine.data('quickCreatePlan', () => ({
-            modal: null,
-
-            init() {
-                // Initialize Bootstrap modal reference
-                this.modal = new bootstrap.Modal(document.getElementById('createPlanModal'));
-            },
-
-            openModal() {
-                if (this.modal) {
-                    this.modal.show();
-                }
-            },
-
-            closeModal() {
-                if (this.modal) {
-                    this.modal.hide();
-                }
-            },
-
-            /**
-             * Handle local plan creation (Req 56.2, 56.3)
-             * Saves plan to localStorage and redirects to edit page
-             */
-            handleLocalPlanCreate(detail) {
-                const {
-                    planData,
-                    redirectUrl
-                } = detail[0] || detail;
-
-                try {
-                    // Import or use the LocalRunStorageService
-                    if (typeof window.localRunStorage !== 'undefined') {
-                        // Use the existing service
-                        window.localRunStorage.create(planData);
-                    } else {
-                        // Fallback: Direct localStorage save with versioned schema
-                        const storageKey = 'uma_local_runs';
-                        let store = JSON.parse(localStorage.getItem(storageKey) || 'null');
-
-                        if (!store) {
-                            store = {
-                                schema_version: '1.0',
-                                runs: [],
-                                last_modified: new Date().toISOString()
-                            };
-                        }
-
-                        // Add timestamps if not present
-                        planData.created_at = planData.created_at || new Date().toISOString();
-                        planData.updated_at = new Date().toISOString();
-
-                        store.runs.push(planData);
-                        store.last_modified = new Date().toISOString();
-
-                        localStorage.setItem(storageKey, JSON.stringify(store));
-                    }
-
-                    // Close modal
-                    this.closeModal();
-
-                    // Navigate to edit page
-                    window.location.href = redirectUrl;
-                } catch (error) {
-                    console.error('Failed to create local plan:', error);
-
-                    // Show error notification
-                    if (typeof window.dispatchEvent === 'function') {
-                        window.dispatchEvent(new CustomEvent('toast', {
-                            detail: {
-                                type: 'error',
-                                message: 'Failed to create local plan. Please try again.'
-                            }
-                        }));
-                    }
-                }
-            }
-        }));
-    </script>
-@endscript

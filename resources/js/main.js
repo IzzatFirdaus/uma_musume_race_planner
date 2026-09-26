@@ -71,31 +71,25 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- Main Event Listener for all clicks ---
     setupGlobalEventListeners();
 
-    // Open Quick Create modal when Create button clicked
-    const createBtn = document.getElementById("createPlanBtn");
-    if (createBtn) {
-        createBtn.addEventListener("click", () => {
-            const modalEl = document.getElementById("createPlanModal");
-            if (modalEl) {
-                bootstrap.Modal.getOrCreateInstance(modalEl).show();
-            }
-        });
-    }
-
-    // Open Quick Create modal when navbar 'New Training Plan' clicked
-    const newPlanBtn = document.getElementById("newPlanBtn");
-    if (newPlanBtn) {
-        newPlanBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const modalEl = document.getElementById("createPlanModal");
-            if (modalEl) {
-                bootstrap.Modal.getOrCreateInstance(modalEl).show();
-            }
-        });
-    }
-
     // Listen for Livewire events to open modal/inline views
     document.addEventListener("livewire:init", () => {
+        const openQuickCreateModal = () => {
+            Livewire.dispatch("open-create-plan-modal");
+        };
+
+        const createBtn = document.getElementById("createPlanBtn");
+        if (createBtn) {
+            createBtn.addEventListener("click", openQuickCreateModal);
+        }
+
+        const newPlanBtn = document.getElementById("newPlanBtn");
+        if (newPlanBtn) {
+            newPlanBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                openQuickCreateModal();
+            });
+        }
+
         // Handle plan modal and inline opening
         Livewire.on("openPlanModal", ({ planId }) => {
             // Dispatch the event to load plan data in modal
