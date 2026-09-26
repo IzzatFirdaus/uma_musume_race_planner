@@ -10,7 +10,7 @@
         "test": "jest",
         "test:vitest": "vitest run",
         "test:vitest:watch": "vitest",
-        "test:a11y": "playwright test tests/playwright/accessibility.spec.ts",
+        "test:a11y": "playwright test tests/playwright/accessibility.spec.js",
         "lighthouse-ci": "lhci autorun --config=.lighthouseci/lighthouserc.json",
         "lint:css": "stylelint \"resources/**/*.css\"",
         "lint:css:fix": "stylelint \"resources/**/*.css\" --fix",
